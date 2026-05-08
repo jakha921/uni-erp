@@ -164,3 +164,33 @@ class Group(BaseModel):
 
     def __str__(self) -> str:
         return self.name
+
+
+class AuditLog(models.Model):
+    ACTION_CHOICES = [
+        ("create", "Yaratish"),
+        ("update", "O'zgartirish"),
+        ("delete", "O'chirish"),
+    ]
+
+    user = models.ForeignKey(
+        "accounts.User",
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="audit_logs",
+    )
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    model = models.CharField(max_length=100)
+    object_id = models.CharField(max_length=50, blank=True)
+    object_repr = models.CharField(max_length=200, blank=True)
+    changes = models.JSONField(default=dict, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    path = models.CharField(max_length=500, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "Audit log"
+
+    def __str__(self) -> str:
+        return f"{self.user} — {self.action} {self.model} [{self.timestamp:%Y-%m-%d %H:%M}]"

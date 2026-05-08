@@ -915,7 +915,7 @@ class Leave(BaseModel):
 
 ## MILESTONE 6: System Admin + Deploy
 
-### - [ ] PHASE 17: System Admin (Users, Roles, Audit Log)
+### - [x] PHASE 17: System Admin (Users, Roles, Audit Log)
   - **Цель:** Управление пользователями и ролями через API, аудит лог.
   - **Создать/обновить файлы:**
     - `backend/apps/accounts/serializers.py` — добавить:

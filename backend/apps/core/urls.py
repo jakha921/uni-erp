@@ -1,7 +1,9 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
     AcademicYearViewSet,
+    AuditLogListView,
     BranchViewSet,
     DepartmentViewSet,
     FacultyViewSet,
@@ -19,4 +21,6 @@ router.register("academic-years", AcademicYearViewSet, basename="academic-year")
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("groups", GroupViewSet, basename="group")
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path("audit/", AuditLogListView.as_view(), name="audit-log"),
+]

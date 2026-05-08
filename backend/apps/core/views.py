@@ -1,10 +1,12 @@
-"""Core read-only ViewSets for reference data."""
+"""Core read-only ViewSets for reference data + AuditLogListView."""
 
+import django_filters
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .filters import DepartmentFilter, GroupFilter
-from .models import AcademicYear, Branch, Department, Faculty, Group, Semester, Specialty
+from .models import AcademicYear, AuditLog, Branch, Department, Faculty, Group, Semester, Specialty
 from .serializers import (
     AcademicYearSerializer,
     BranchSerializer,
@@ -67,3 +69,46 @@ class GroupViewSet(ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     filterset_class = GroupFilter
     search_fields = ["name"]
+
+
+class AuditLogFilter(django_filters.FilterSet):
+    user_id = django_filters.NumberFilter(field_name="user__id")
+    model = django_filters.CharFilter(lookup_expr="icontains")
+    action = django_filters.ChoiceFilter(choices=AuditLog.ACTION_CHOICES)
+    date_from = django_filters.DateFilter(field_name="timestamp", lookup_expr="date__gte")
+    date_to = django_filters.DateFilter(field_name="timestamp", lookup_expr="date__lte")
+
+    class Meta:
+        model = AuditLog
+        fields = ["user_id", "model", "action", "date_from", "date_to"]
+
+
+class AuditLogListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    filterset_class = AuditLogFilter
+
+    def get_queryset(self):
+        return AuditLog.objects.select_related("user").order_by("-timestamp")
+
+    def list(self, request, *args, **kwargs):
+        from rest_framework.response import Response
+
+        qs = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(qs)
+        data = [
+            {
+                "id": a.id,
+                "userId": a.user_id,
+                "userName": a.user.full_name if a.user else "",
+                "action": a.action,
+                "model": a.model,
+                "objectId": a.object_id,
+                "path": a.path,
+                "ipAddress": a.ip_address,
+                "timestamp": a.timestamp.isoformat(),
+            }
+            for a in (page if page is not None else qs)
+        ]
+        if page is not None:
+            return self.get_paginated_response(data)
+        return Response(data)
