@@ -22,6 +22,9 @@ DATABASES = {
 
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # type: ignore[name-defined]
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # type: ignore[name-defined]
+
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"

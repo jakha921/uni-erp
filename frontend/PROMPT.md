@@ -939,7 +939,7 @@ class Leave(BaseModel):
     ```
   - Commit: `feat: add system admin and audit log`
 
-### - [ ] PHASE 18: Docker + Nginx + PostgreSQL Setup
+### - [x] PHASE 18: Docker + Nginx + PostgreSQL Setup
   - **Цель:** Контейнеризация для production deploy.
   - **Создать файлы:**
     - `backend/Dockerfile` — python:3.12-slim, uv, gunicorn

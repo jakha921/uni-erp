@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-unierp}
+      POSTGRES_USER: ${POSTGRES_USER:-unierp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-unierp_password}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-unierp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      DATABASE_URL: postgres://${POSTGRES_USER:-unierp}:${POSTGRES_PASSWORD:-unierp_password}@db:5432/${POSTGRES_DB:-unierp}
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media_files:/app/media
+      - static_files:/app/staticfiles
+    command: >
+      sh -c "uv run python manage.py migrate &&
+             uv run gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - media_files:/app/media
+      - static_files:/app/staticfiles
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  postgres_data:
+  media_files:
+  static_files:
