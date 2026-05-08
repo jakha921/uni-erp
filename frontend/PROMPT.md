@@ -1001,19 +1001,19 @@ class Leave(BaseModel):
 > Эти задачи НЕ требуют бэкенда — чисто фронтенд с mock data.
 > Можно делать параллельно с бэкендом.
 
-### - [ ] PHASE 20: ReferencesPage — Add DictionaryDetail drill-down
+### - [x] PHASE 20: ReferencesPage — Add DictionaryDetail drill-down
   - File: `src/features/admin/pages/ReferencesPage.tsx`
   - **Прототип (NewModules.jsx:968-1030):** Клик по справочнику → таблица записей (code, name, count, status)
   - **Реализация:** state `activeDict`, компонент DictionaryDetail, back button, таблица, mock data
   - Run `npm run build` — must pass
 
-### - [ ] PHASE 21: CrmReportPage — Implement CRM Analytics
+### - [x] PHASE 21: CrmReportPage — Implement CRM Analytics
   - File: `src/features/crm/pages/CrmReportPage.tsx` (currently StubPage)
   - **Реализация:** 4 stat cards, воронка конверсии (bar chart), таблица источников, период фильтр
   - Mock data inline
   - Run `npm run build` — must pass
 
-### - [ ] PHASE 22: MyStudentsPage — Teacher's Student Groups
+### - [x] PHASE 22: MyStudentsPage — Teacher's Student Groups
   - File: `src/features/education/pages/MyStudentsPage.tsx` (currently StubPage)
   - **Реализация:** Tabs по группам, таблица студентов (davomat %, ball), stat cards, search
   - Mock data inline
