@@ -2,119 +2,17 @@ import { useState, useMemo } from 'react';
 import { Package, Warehouse, AlertTriangle, ShoppingCart } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, Spinner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
-import { rnum } from '@/api/mock/shared-data';
+import { useWarehouseItems, useWarehouseStats } from '@/api/hooks/useWarehouse';
+import type { WarehouseItem } from '@/types/warehouse';
 
 type WarehouseStatus = 'Yetarli' | 'Kam' | 'Tugagan';
 
-interface WarehouseItem {
-  id: number;
-  name: string;
-  category: string;
-  unit: string;
-  quantity: number;
-  minQuantity: number;
-  status: WarehouseStatus;
-  lastReceived: string;
-}
-
-const CATEGORIES = ['Jihozlar', 'Tozalash', 'Kanselyariya', 'Ehtiyot qismlar'];
-
-const ITEM_NAMES: Record<string, string[]> = {
-  Jihozlar: [
-    'Proyektor Epson EB-X51',
-    'Kompyuter monitori 24"',
-    'Printer HP LaserJet',
-    'UPS APC 1500VA',
-  ],
-  Tozalash: [
-    'Dezinfeksiya vositasi 5L',
-    'Pol yuvish vositasi',
-    'Chiqindi qoplari (100 dona)',
-    'Shvabra sopi',
-  ],
-  Kanselyariya: [
-    'A4 qog\'oz (500 varaq)',
-    'Ruchka (ko\'k, 50 dona)',
-    'Papka registrator',
-    'Shtamp yostig\'i',
-  ],
-  'Ehtiyot qismlar': [
-    'Toner kartridj HP 85A',
-    'Sichqoncha USB',
-    'Klaviatura USB',
-    'HDMI kabel 3m',
-  ],
-};
-
-const UNITS: Record<string, string> = {
-  Jihozlar: 'dona',
-  Tozalash: 'dona',
-  Kanselyariya: 'pachka',
-  'Ehtiyot qismlar': 'dona',
-};
-
-function generateWarehouseItems(): WarehouseItem[] {
-  const items: WarehouseItem[] = [];
-  let id = 1;
-
-  for (const category of CATEGORIES) {
-    const names = ITEM_NAMES[category] ?? [];
-    for (const name of names) {
-      const minQty = rnum(id + 100, 5, 20);
-      const qty = rnum(id + 200, 0, 80);
-      let status: WarehouseStatus = 'Yetarli';
-      if (qty <= 0) status = 'Tugagan';
-      else if (qty <= minQty) status = 'Kam';
-
-      const day = rnum(id + 300, 1, 28);
-      const month = rnum(id + 400, 1, 4);
-
-      items.push({
-        id,
-        name,
-        category,
-        unit: UNITS[category] ?? 'dona',
-        quantity: qty,
-        minQuantity: minQty,
-        status,
-        lastReceived: `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.2026`,
-      });
-      id++;
-    }
-  }
-
-  // Add a few extra items to reach 15
-  const extraItems = [
-    { name: 'Stul ofisiy', category: 'Jihozlar', unit: 'dona' },
-    { name: 'Suv sovutgich', category: 'Jihozlar', unit: 'dona' },
-    { name: 'Sanitariya vositasi', category: 'Tozalash', unit: 'dona' },
-  ];
-  for (const extra of extraItems) {
-    const minQty = rnum(id + 100, 5, 20);
-    const qty = rnum(id + 200, 0, 80);
-    let status: WarehouseStatus = 'Yetarli';
-    if (qty <= 0) status = 'Tugagan';
-    else if (qty <= minQty) status = 'Kam';
-
-    const day = rnum(id + 300, 1, 28);
-    const month = rnum(id + 400, 1, 4);
-
-    items.push({
-      id,
-      name: extra.name,
-      category: extra.category,
-      unit: extra.unit,
-      quantity: qty,
-      minQuantity: minQty,
-      status,
-      lastReceived: `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.2026`,
-    });
-    id++;
-  }
-
-  return items.slice(0, 15);
+function getStatus(item: WarehouseItem): WarehouseStatus {
+  if (item.quantity <= 0) return 'Tugagan';
+  if (item.quantity <= item.minQuantity) return 'Kam';
+  return 'Yetarli';
 }
 
 const STATUS_CONFIG: Record<WarehouseStatus, { variant: 'success' | 'warning' | 'error'; label: string }> = {
@@ -123,6 +21,7 @@ const STATUS_CONFIG: Record<WarehouseStatus, { variant: 'success' | 'warning' | 
   Tugagan: { variant: 'error', label: 'Tugagan' },
 };
 
+const CATEGORIES = ['Jihozlar', 'Tozalash', 'Kanselyariya', 'Ehtiyot qismlar'];
 const CATEGORY_OPTIONS = [
   { value: '', label: 'Umumiy' },
   ...CATEGORIES.map((c) => ({ value: c, label: c })),
@@ -132,7 +31,14 @@ export function WarehousePage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
-  const items = useMemo(() => generateWarehouseItems(), []);
+  const { data: itemsData, isLoading } = useWarehouseItems({
+    page: 1,
+    pageSize: 50,
+    search: search || undefined,
+  });
+  const { data: statsData } = useWarehouseStats();
+
+  const items = itemsData?.data ?? [];
 
   const filtered = useMemo(() => {
     return items.filter((item) => {
@@ -145,15 +51,16 @@ export function WarehousePage() {
     });
   }, [items, search, categoryFilter]);
 
-  const totalItems = items.length;
+  // Use stats from API if available, otherwise compute from items
+  const totalItems = statsData?.totalItems ?? items.length;
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
-  const lowCount = items.filter((i) => i.status === 'Kam').length;
-  const outCount = items.filter((i) => i.status === 'Tugagan').length;
+  const lowCount = statsData?.belowMinCount ?? items.filter((i) => i.quantity > 0 && i.quantity <= i.minQuantity).length;
+  const outCount = items.filter((i) => i.quantity <= 0).length;
 
   const columns: Column<WarehouseItem>[] = [
     {
       key: 'idx',
-      header: '№',
+      header: '?',
       width: '50px',
       render: (_, index) => <span className="text-slate-500">{index + 1}</span>,
     },
@@ -168,10 +75,12 @@ export function WarehousePage() {
       header: 'Kategoriya',
       render: (row) => {
         const colors: Record<string, string> = {
-          Jihozlar: 'bg-blue-50 text-blue-700',
-          Tozalash: 'bg-emerald-50 text-emerald-700',
-          Kanselyariya: 'bg-amber-50 text-amber-700',
-          'Ehtiyot qismlar': 'bg-violet-50 text-violet-700',
+          office: 'bg-amber-50 text-amber-700',
+          cleaning: 'bg-emerald-50 text-emerald-700',
+          technical: 'bg-blue-50 text-blue-700',
+          furniture: 'bg-violet-50 text-violet-700',
+          food: 'bg-orange-50 text-orange-700',
+          other: 'bg-slate-100 text-slate-700',
         };
         return (
           <span
@@ -206,7 +115,8 @@ export function WarehousePage() {
       key: 'status',
       header: 'Holat',
       render: (row) => {
-        const cfg = STATUS_CONFIG[row.status];
+        const status = getStatus(row);
+        const cfg = STATUS_CONFIG[status];
         return (
           <Badge variant={cfg.variant} dot>
             {cfg.label}
@@ -215,9 +125,9 @@ export function WarehousePage() {
       },
     },
     {
-      key: 'lastReceived',
+      key: 'lastMovementDate',
       header: 'Oxirgi kirim',
-      render: (row) => <span className="tabular-nums text-slate-500">{row.lastReceived}</span>,
+      render: (row) => <span className="tabular-nums text-slate-500">{row.lastMovementDate ?? '—'}</span>,
     },
   ];
 
@@ -289,12 +199,18 @@ export function WarehousePage() {
       />
 
       <Card noPadding className="mt-4">
-        <DataTable
-          data={filtered}
-          columns={columns}
-          keyField="id"
-          emptyMessage="Mahsulotlar topilmadi"
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <DataTable
+            data={filtered}
+            columns={columns}
+            keyField="id"
+            emptyMessage="Mahsulotlar topilmadi"
+          />
+        )}
       </Card>
     </PageContent>
   );

@@ -1,84 +1,32 @@
 import { useState, useMemo } from 'react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form';
 import { DataTable, type Column } from '@/components/table';
 import { Monitor, CheckCircle, Wrench, XCircle, Plus } from 'lucide-react';
-import { rnum, pick, generateName } from '@/api/mock/shared-data';
+import { useEquipment } from '@/api/hooks/useInfrastructure';
+import type { Equipment, EquipmentStatus } from '@/types/infrastructure';
 
-// --- Types ---
-
-interface Equipment {
-  id: number;
-  name: string;
-  category: string;
-  inventoryNumber: string;
-  room: string;
-  status: 'working' | 'repair' | 'decommissioned';
-  date: string;
-  responsible: string;
-  value: number;
-}
-
-// --- Mock Data ---
-
+// --- Categories for filter ---
 const CATEGORIES = ['Kompyuter texnikasi', "O'quv jihozlari", 'Laboratoriya', 'Mebel', 'Boshqa'];
 
-const EQUIPMENT_NAMES = [
-  ['Proyektor Epson EB-X51', 'Kompyuter texnikasi'],
-  ['Kompyuter Dell OptiPlex 3080', 'Kompyuter texnikasi'],
-  ['Printer HP LaserJet Pro M404n', 'Kompyuter texnikasi'],
-  ['Interaktiv doska SMART Board', "O'quv jihozlari"],
-  ['Mikroskop Levenhuk 320 BASE', 'Laboratoriya'],
-  ["O'quv stendi (Elektrotexnika)", 'Laboratoriya'],
-  ['Laboratoriya shkafi LS-21', 'Laboratoriya'],
-  ['Monitor Samsung 27" LF27T350', 'Kompyuter texnikasi'],
-  ["O'quv stoli 1400x700", 'Mebel'],
-  ['Ofis kreslo Prestige', 'Mebel'],
-  ['Router MikroTik hAP ac3', 'Kompyuter texnikasi'],
-  ['UPS APC Back-UPS 1100VA', 'Boshqa'],
-] as const;
-
-const STATUSES: Equipment['status'][] = ['working', 'repair', 'decommissioned'];
-const ROOMS = ['101-A', '203-B', '305-A', '102-C', '210-A', '401-B', '112-A', '307-C'];
-
-const VALUES = [3500000, 8500000, 12000000, 850000, 420000, 24000000, 1800000, 4200000, 38000000, 65000000, 5400000, 2200000];
-
-const EQUIPMENT_ITEMS: Equipment[] = EQUIPMENT_NAMES.map((row, i) => {
-  const name = generateName(i + 700, 0.3);
-  const statusIdx = rnum(i * 5, 0, 10);
-  const status: Equipment['status'] = statusIdx < 8 ? 'working' : statusIdx < 10 ? 'repair' : 'decommissioned';
-  return {
-    id: i + 1,
-    name: row[0],
-    category: row[1],
-    inventoryNumber: `INV/2024/${String(100 + i * 17).padStart(4, '0')}`,
-    room: pick(ROOMS, i + 3),
-    status,
-    date: `${String(rnum(i + 10, 1, 28)).padStart(2, '0')}.${String(rnum(i + 20, 1, 12)).padStart(2, '0')}.2026`,
-    responsible: name.short,
-    value: VALUES[i] ?? 1000000,
-  };
-});
-
-const WORKING = EQUIPMENT_ITEMS.filter((e) => e.status === 'working').length;
-const REPAIR = EQUIPMENT_ITEMS.filter((e) => e.status === 'repair').length;
-const DECOMMISSIONED = EQUIPMENT_ITEMS.filter((e) => e.status === 'decommissioned').length;
-const TOTAL_VALUE = EQUIPMENT_ITEMS.reduce((s, e) => s + e.value, 0);
+const STATUSES: EquipmentStatus[] = ['working', 'repair', 'written_off', 'storage'];
 
 // --- Status Config ---
 
-const STATUS_LABELS: Record<Equipment['status'], string> = {
+const STATUS_LABELS: Record<EquipmentStatus, string> = {
   working: 'Ishlamoqda',
   repair: "Ta'mirda",
-  decommissioned: 'Hisobdan chiqarilgan',
+  written_off: 'Hisobdan chiqarilgan',
+  storage: 'Omborxonada',
 };
 
-const STATUS_VARIANTS: Record<Equipment['status'], 'success' | 'warning' | 'error'> = {
+const STATUS_VARIANTS: Record<EquipmentStatus, 'success' | 'warning' | 'error' | 'default'> = {
   working: 'success',
   repair: 'warning',
-  decommissioned: 'error',
+  written_off: 'error',
+  storage: 'default',
 };
 
 // --- Columns ---
@@ -86,7 +34,7 @@ const STATUS_VARIANTS: Record<Equipment['status'], 'success' | 'warning' | 'erro
 const columns: Column<Equipment>[] = [
   {
     key: 'id',
-    header: '№',
+    header: '?',
     width: '50px',
     render: (row) => <span className="text-slate-500 tabular-nums">{row.id}</span>,
   },
@@ -102,24 +50,24 @@ const columns: Column<Equipment>[] = [
   },
   {
     key: 'inventoryNumber',
-    header: 'Inv №',
+    header: 'Inv ?',
     render: (row) => <span className="text-slate-500 tabular-nums font-mono text-xs">{row.inventoryNumber}</span>,
   },
   {
-    key: 'room',
+    key: 'location',
     header: 'Joylashuv',
-    render: (row) => <span className="text-slate-600">{row.room}</span>,
+    render: (row) => <span className="text-slate-600">{row.location}</span>,
   },
   {
-    key: 'responsible',
+    key: 'responsiblePerson',
     header: "Mas'ul",
-    render: (row) => <span className="text-slate-500">{row.responsible}</span>,
+    render: (row) => <span className="text-slate-500">{row.responsiblePerson}</span>,
   },
   {
-    key: 'value',
+    key: 'cost',
     header: 'Qiymat',
     className: 'text-right',
-    render: (row) => <span className="tabular-nums font-medium text-slate-900">{row.value.toLocaleString('ru-RU')}</span>,
+    render: (row) => <span className="tabular-nums font-medium text-slate-900">{row.cost.toLocaleString('ru-RU')}</span>,
   },
   {
     key: 'status',
@@ -131,9 +79,9 @@ const columns: Column<Equipment>[] = [
     ),
   },
   {
-    key: 'date',
+    key: 'purchaseDate',
     header: 'Sana',
-    render: (row) => <span className="text-slate-500 tabular-nums">{row.date}</span>,
+    render: (row) => <span className="text-slate-500 tabular-nums">{row.purchaseDate}</span>,
   },
 ];
 
@@ -141,20 +89,37 @@ const columns: Column<Equipment>[] = [
 
 export function EquipmentPage() {
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
+  const { data: equipmentData, isLoading } = useEquipment({
+    page: 1,
+    pageSize: 50,
+    search: search || undefined,
+    category: categoryFilter || undefined,
+    status: (statusFilter as EquipmentStatus) || undefined,
+  });
+
+  const items = equipmentData?.data ?? [];
+
+  // Client-side filtering for instant response
   const filtered = useMemo(() => {
-    return EQUIPMENT_ITEMS.filter((item) => {
+    return items.filter((item) => {
       const matchesSearch =
         !search ||
         item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.inventoryNumber.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
-      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+      const matchesCategory = !categoryFilter || item.category === categoryFilter;
+      const matchesStatus = !statusFilter || item.status === statusFilter;
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [search, categoryFilter, statusFilter]);
+  }, [items, search, categoryFilter, statusFilter]);
+
+  // Stats
+  const working = items.filter((e) => e.status === 'working').length;
+  const repair = items.filter((e) => e.status === 'repair').length;
+  const writtenOff = items.filter((e) => e.status === 'written_off').length;
+  const totalValue = items.reduce((s, e) => s + e.cost, 0);
 
   return (
     <PageContent>
@@ -171,26 +136,26 @@ export function EquipmentPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <StatCard
           label="Umumiy qiymat"
-          value={`${(TOTAL_VALUE / 1_000_000_000).toFixed(2)} mlrd`}
+          value={totalValue > 0 ? `${(totalValue / 1_000_000_000).toFixed(2)} mlrd` : '0'}
           icon={<Monitor className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
           sub="so'm"
         />
         <StatCard
           label="Ishlamoqda"
-          value={WORKING}
+          value={working}
           icon={<CheckCircle className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
         />
         <StatCard
           label="Ta'mirda"
-          value={REPAIR}
+          value={repair}
           icon={<Wrench className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
           label="Hisobdan chiq."
-          value={DECOMMISSIONED}
+          value={writtenOff}
           icon={<XCircle className="h-[18px] w-[18px]" />}
           iconBg="#94A3B8"
         />
@@ -211,7 +176,7 @@ export function EquipmentPage() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="h-9 px-3 pr-8 border border-border rounded-md text-sm bg-white"
           >
-            <option value="all">Barcha kategoriyalar</option>
+            <option value="">Barcha kategoriyalar</option>
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
@@ -221,19 +186,25 @@ export function EquipmentPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-9 px-3 pr-8 border border-border rounded-md text-sm bg-white"
           >
-            <option value="all">Barcha holatlar</option>
+            <option value="">Barcha holatlar</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>{STATUS_LABELS[s]}</option>
             ))}
           </select>
         </div>
 
-        <DataTable
-          data={filtered}
-          columns={columns}
-          keyField="id"
-          emptyMessage="Jihozlar topilmadi"
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <DataTable
+            data={filtered}
+            columns={columns}
+            keyField="id"
+            emptyMessage="Jihozlar topilmadi"
+          />
+        )}
       </Card>
     </PageContent>
   );

@@ -2,89 +2,62 @@ import { useState, useMemo } from 'react';
 import { Search, MoreHorizontal, Upload, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Avatar } from '@/components/ui';
+import { Badge, Button, Avatar, Spinner } from '@/components/ui';
 import { DataTable, Pagination, type Column } from '@/components/table';
-import {
-  generateName,
-  generatePhone,
-  generateEmail,
-  pick,
-  rnum,
-  seed,
-  DEPARTMENTS,
-} from '@/api/mock/shared-data';
-import type { PersonName } from '@/types/shared';
+import { useTeachersList } from '@/api/hooks/useTeachers';
+import type { TeacherListItem } from '@/types/teacher';
 
-type Degree = 'PhD' | 'DSc' | '—';
-type TeacherMode = 'Shtatli' | 'Soatbay';
-
-interface Teacher {
-  id: number;
-  name: PersonName;
-  email: string;
-  phone: string;
-  department: string;
-  degree: Degree;
-  title: string;
-  mode: TeacherMode;
-  hours: number;
-  experience: number;
-}
-
-const TITLES = ['Katta o\'qituvchi', 'Dotsent', 'Professor', 'Assistent', 'O\'qituvchi'];
-
-function generateTeachers(count: number): Teacher[] {
-  return Array.from({ length: count }, (_, i) => {
-    const name = generateName(i + 100);
-    const degreeRoll = seed(i * 19);
-    const degree: Degree = degreeRoll > 0.7 ? 'PhD' : degreeRoll > 0.85 ? 'DSc' : '—';
-    return {
-      id: i + 1,
-      name,
-      email: generateEmail(name),
-      phone: generatePhone(i + 100),
-      department: pick(DEPARTMENTS, i + 50),
-      degree,
-      title: pick(TITLES, i + 30),
-      mode: seed(i * 23) > 0.35 ? 'Shtatli' : 'Soatbay',
-      hours: rnum(i * 17, 120, 640),
-      experience: rnum(i * 13, 1, 25),
-    };
-  });
-}
-
-const teachers = generateTeachers(22);
-
+// --- Employment form labels ---
+const EMPLOYMENT_LABELS: Record<string, string> = {
+  shtatliy: 'Shtatli',
+  sovmestitel: 'Sovmestitel',
+  soatbay: 'Soatbay',
+};
 
 export function TeachersListPage() {
   const [search, setSearch] = useState('');
   const [dept, setDept] = useState('');
-  const [mode, setMode] = useState('');
+  const [empForm, setEmpForm] = useState('');
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const filtered = useMemo(() => {
-    return teachers.filter((t) => {
-      if (search && !t.name.full.toLowerCase().includes(search.toLowerCase())) return false;
-      if (dept && t.department !== dept) return false;
-      if (mode && t.mode !== mode) return false;
-      return true;
-    });
-  }, [search, dept, mode]);
+  const { data: teachersData, isLoading } = useTeachersList({
+    page,
+    pageSize,
+    search: search || undefined,
+    departmentId: dept ? Number(dept) : undefined,
+    employmentForm: empForm || undefined,
+  });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const teachers = teachersData?.data ?? [];
+  const total = teachersData?.total ?? 0;
+  const totalPages = teachersData?.totalPages ?? Math.max(1, Math.ceil(total / pageSize));
 
-  const columns: Column<Teacher>[] = [
+  // Compute department list from data for filter
+  const departments = useMemo(() => {
+    const depts = Array.from(new Set(teachers.map((t) => t.department)));
+    return depts.sort();
+  }, [teachers]);
+
+  // Stats computed from current page data (best-effort until API provides stats endpoint)
+  const stats = useMemo(() => {
+    const shtatli = teachers.filter((t) => t.employmentForm === 'shtatliy').length;
+    const soatbay = teachers.filter((t) => t.employmentForm === 'soatbay').length;
+    const phd = teachers.filter((t) => t.academicDegree && t.academicDegree !== '—').length;
+    const professor = teachers.filter((t) => t.academicRank?.toLowerCase().includes('professor')).length;
+    return { total, shtatli, soatbay, phd, professor };
+  }, [teachers, total]);
+
+  const columns: Column<TeacherListItem>[] = [
     {
-      key: 'name',
+      key: 'fullName',
       header: 'F.I.Sh.',
       render: (row) => (
         <div className="flex items-center gap-2.5">
-          <Avatar name={row.name.full} size="sm" />
+          <Avatar name={row.fullName} size="sm" />
           <div>
-            <div className="text-[13px] font-medium text-slate-900">{row.name.full}</div>
-            <div className="text-[11px] text-muted">{row.email}</div>
+            <div className="text-[13px] font-medium text-slate-900">{row.fullName}</div>
+            <div className="text-[11px] text-muted">{row.shortName}</div>
           </div>
         </div>
       ),
@@ -95,49 +68,48 @@ export function TeachersListPage() {
       render: (row) => <span className="text-[13px] text-slate-700">{row.department}</span>,
     },
     {
-      key: 'title',
+      key: 'position',
       header: 'Lavozim',
-      render: (row) => <span className="text-[13px] text-slate-700">{row.title}</span>,
+      render: (row) => <span className="text-[13px] text-slate-700">{row.position}</span>,
     },
     {
-      key: 'degree',
+      key: 'academicDegree',
       header: 'Daraja',
       render: (row) =>
-        row.degree !== '—' ? (
-          <Badge variant="info">{row.degree}</Badge>
+        row.academicDegree && row.academicDegree !== '—' ? (
+          <Badge variant="info">{row.academicDegree}</Badge>
         ) : (
           <span className="text-slate-400">—</span>
         ),
     },
     {
-      key: 'mode',
+      key: 'employmentForm',
       header: 'Shakl',
       render: (row) => (
-        <Badge variant={row.mode === 'Shtatli' ? 'success' : 'warning'} dot>
-          {row.mode}
+        <Badge variant={row.employmentForm === 'shtatliy' ? 'success' : 'warning'} dot>
+          {EMPLOYMENT_LABELS[row.employmentForm] ?? row.employmentForm}
         </Badge>
       ),
     },
     {
-      key: 'experience',
-      header: 'Tajriba',
+      key: 'academicRank',
+      header: 'Unvon',
       render: (row) => (
-        <span className="text-[13px] text-slate-700 tabular-nums">{row.experience} yil</span>
+        <span className="text-[13px] text-slate-700">{row.academicRank || '—'}</span>
       ),
     },
     {
-      key: 'hours',
-      header: 'Soatlar',
-      render: (row) => (
-        <span className="text-[13px] text-slate-700 tabular-nums">{row.hours} s.</span>
-      ),
-    },
-    {
-      key: 'phone',
-      header: 'Aloqa',
-      render: (row) => (
-        <span className="text-xs text-muted">{row.phone}</span>
-      ),
+      key: 'status',
+      header: 'Holat',
+      render: (row) => {
+        const variant = row.status === 'active' ? 'success' : row.status === 'leave' ? 'warning' : 'error';
+        const label = row.status === 'active' ? 'Faol' : row.status === 'leave' ? "Ta'tilda" : 'Nofaol';
+        return (
+          <Badge variant={variant} dot>
+            {label}
+          </Badge>
+        );
+      },
     },
   ];
 
@@ -147,18 +119,18 @@ export function TeachersListPage() {
         title="O'qituvchilar"
         subtitle="O'qituvchilar ro'yxati va statistikasi"
         breadcrumbs={[
-          { label: 'Ta\'lim', path: '/teachers' },
-          { label: 'O\'qituvchilar' },
+          { label: "Ta'lim", path: '/teachers' },
+          { label: "O'qituvchilar" },
         ]}
       />
 
       {/* KPI StatCards */}
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Jami o'qituvchilar" value="186" />
-        <StatCard label="Shtatli" value="142" />
-        <StatCard label="Soatbay" value="44" />
-        <StatCard label="PhD / DSc" value="68" />
-        <StatCard label="Professor" value="23" />
+        <StatCard label="Jami o'qituvchilar" value={stats.total.toString()} />
+        <StatCard label="Shtatli" value={stats.shtatli.toString()} />
+        <StatCard label="Soatbay" value={stats.soatbay.toString()} />
+        <StatCard label="PhD / DSc" value={stats.phd.toString()} />
+        <StatCard label="Professor" value={stats.professor.toString()} />
       </div>
 
       {/* Table with toolbar inside */}
@@ -186,23 +158,24 @@ export function TeachersListPage() {
             className="h-9 rounded-lg border border-border px-3 text-[13px]"
           >
             <option value="">Barchasi</option>
-            {DEPARTMENTS.map((d) => (
+            {departments.map((d) => (
               <option key={d} value={d}>
                 {d}
               </option>
             ))}
           </select>
           <select
-            value={mode}
+            value={empForm}
             onChange={(e) => {
-              setMode(e.target.value);
+              setEmpForm(e.target.value);
               setPage(1);
             }}
             className="h-9 rounded-lg border border-border px-3 text-[13px]"
           >
             <option value="">Barchasi</option>
-            <option value="Shtatli">Shtatli</option>
-            <option value="Soatbay">Soatbay</option>
+            <option value="shtatliy">Shtatli</option>
+            <option value="soatbay">Soatbay</option>
+            <option value="sovmestitel">Sovmestitel</option>
           </select>
           <div className="flex-1" />
           <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
@@ -213,25 +186,33 @@ export function TeachersListPage() {
           </Button>
         </div>
 
-        <DataTable<Teacher>
-          data={paged}
-          columns={columns}
-          keyField="id"
-          actions={() => (
-            <button className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          )}
-        />
-        <div className="border-t border-[#F1F5F9] px-4 py-3">
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            total={filtered.length}
-            pageSize={pageSize}
-          />
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <>
+            <DataTable<TeacherListItem>
+              data={teachers}
+              columns={columns}
+              keyField="id"
+              actions={() => (
+                <button className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              )}
+            />
+            <div className="border-t border-[#F1F5F9] px-4 py-3">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                total={total}
+                pageSize={pageSize}
+              />
+            </div>
+          </>
+        )}
       </Card>
     </PageContent>
   );
