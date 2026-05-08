@@ -1,7 +1,7 @@
 import type { Document as Doc, DocumentListParams, CreateDocumentDto, Folder } from '@/types/admin';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { DmsMockService } from '../mock/dms.mock';
 
 export interface IDmsService {
@@ -15,9 +15,12 @@ export interface IDmsService {
 
 class DmsApiService implements IDmsService {
   async getDocuments(params: DocumentListParams) {
-    return apiClient.get<PaginatedResponse<Doc>>(ENDPOINTS.admin.documents, {
-      params: { page: params.page, page_size: params.pageSize, search: params.search, folder_id: params.folderId, status: params.status, priority: params.priority, category: params.category },
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Doc[] }>(ENDPOINTS.admin.documents, {
+      params: { page, page_size: pageSize, search: params.search, folder_id: params.folderId, status: params.status, priority: params.priority, category: params.category },
     });
+    return transformPaginated(drf, page, pageSize);
   }
   async getDocumentById(id: number) { return apiClient.get<Doc>(ENDPOINTS.admin.documentDetail(id)); }
   async createDocument(data: CreateDocumentDto) { return apiClient.post<Doc>(ENDPOINTS.admin.documents, data); }

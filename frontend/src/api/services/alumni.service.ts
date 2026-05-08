@@ -6,7 +6,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { AlumniMockService } from '../mock/alumni.mock';
 
 export interface IAlumniService {
@@ -18,16 +18,19 @@ export interface IAlumniService {
 
 class AlumniApiService implements IAlumniService {
   async getAlumni(params?: AlumniListParams): Promise<PaginatedResponse<Alumni>> {
-    return apiClient.get<PaginatedResponse<Alumni>>(ENDPOINTS.alumni.list, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Alumni[] }>(ENDPOINTS.alumni.list, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         graduation_year: params?.graduationYear,
         faculty_id: params?.facultyId,
         status: params?.status,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getAlumniById(id: number): Promise<Alumni> {

@@ -66,12 +66,12 @@ export function FinanceDashboardPage() {
       {/* Charts grid 2x2 */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <PaymentStatusDonut
-          full={stats.byStatus[0]?.count ?? 0}
-          partial={stats.byStatus[1]?.count ?? 0}
-          none={stats.byStatus[2]?.count ?? 0}
+          full={stats.byStatus?.[0]?.count ?? 0}
+          partial={stats.byStatus?.[1]?.count ?? 0}
+          none={stats.byStatus?.[2]?.count ?? 0}
         />
-        <RevenueByFaculty data={stats.byFaculty} />
-        <MonthlyTrend data={stats.byMonth} />
+        <RevenueByFaculty data={stats.byFaculty ?? []} />
+        <MonthlyTrend data={stats.byMonth ?? []} />
         {/* Course-based chart placeholder using bar approach */}
         <Card title="Kurslar bo'yicha" subtitle="To'langan va qarz nisbati">
           <div className="flex items-end gap-4" style={{ height: 200 }}>

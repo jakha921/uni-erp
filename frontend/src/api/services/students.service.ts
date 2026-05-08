@@ -10,7 +10,7 @@ import type {
 } from '@/types/student';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { StudentsMockService } from '../mock/students.mock';
 
 export interface IStudentsService {
@@ -26,10 +26,12 @@ export interface IStudentsService {
 
 class StudentsApiService implements IStudentsService {
   async getList(params: StudentListParams): Promise<PaginatedResponse<StudentListItem>> {
-    return apiClient.get<PaginatedResponse<StudentListItem>>(ENDPOINTS.students.list, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: StudentListItem[] }>(ENDPOINTS.students.list, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         faculty_id: params.facultyId,
         department_id: params.departmentId,
@@ -40,6 +42,7 @@ class StudentsApiService implements IStudentsService {
         payment_form: params.paymentForm,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getById(id: number): Promise<Student> {

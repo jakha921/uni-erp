@@ -5,7 +5,7 @@ import type {
 } from '@/types/finance';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { PayrollMockService } from '../mock/payroll.mock';
 
 export interface IPayrollService {
@@ -16,10 +16,12 @@ export interface IPayrollService {
 
 class PayrollApiService implements IPayrollService {
   async getPayroll(params: PayrollListParams): Promise<PaginatedResponse<PayrollEmployee>> {
-    return apiClient.get<PaginatedResponse<PayrollEmployee>>(ENDPOINTS.payroll.list, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: PayrollEmployee[] }>(ENDPOINTS.payroll.list, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         month: params.month,
         year: params.year,
@@ -27,6 +29,7 @@ class PayrollApiService implements IPayrollService {
         status: params.status,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getPayrollSummary(month: number, year: number): Promise<PayrollSummary> {

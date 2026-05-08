@@ -5,7 +5,7 @@ import type {
 } from '@/types/teacher';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { TeacherMockService } from '../mock/teacher.mock';
 
 export interface ITeacherService {
@@ -15,10 +15,12 @@ export interface ITeacherService {
 
 class TeacherApiService implements ITeacherService {
   async getTeachers(params: TeacherListParams): Promise<PaginatedResponse<TeacherListItem>> {
-    return apiClient.get<PaginatedResponse<TeacherListItem>>(ENDPOINTS.teachers.list, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: TeacherListItem[] }>(ENDPOINTS.teachers.list, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         department_id: params.departmentId,
         degree_code: params.degreeCode,
@@ -26,6 +28,7 @@ class TeacherApiService implements ITeacherService {
         employment_form: params.employmentForm,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getTeacherById(id: number): Promise<Teacher> {

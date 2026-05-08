@@ -38,7 +38,7 @@ export function LoginForm() {
         password: data.password,
         branch: data.branch,
       });
-      login(response.user, response.token);
+      login(response.user, response.token, response.refresh);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Xatolik yuz berdi";

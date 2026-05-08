@@ -10,7 +10,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 
 export interface IEducationService {
   getSubjects(params?: SubjectListParams): Promise<PaginatedResponse<Subject>>;
@@ -22,39 +22,48 @@ export interface IEducationService {
 
 class EducationApiService implements IEducationService {
   async getSubjects(params?: SubjectListParams): Promise<PaginatedResponse<Subject>> {
-    return apiClient.get<PaginatedResponse<Subject>>(ENDPOINTS.education.subjects, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Subject[] }>(ENDPOINTS.education.subjects, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         department_id: params?.departmentId,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getSchedules(params?: ScheduleListParams): Promise<PaginatedResponse<Schedule>> {
-    return apiClient.get<PaginatedResponse<Schedule>>(ENDPOINTS.education.schedules, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Schedule[] }>(ENDPOINTS.education.schedules, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         group: params?.groupId,
         teacher: params?.teacherId,
         semester: params?.semesterId,
         day_of_week: params?.dayOfWeek,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getGrades(params?: GradeListParams): Promise<PaginatedResponse<Grade>> {
-    return apiClient.get<PaginatedResponse<Grade>>(ENDPOINTS.education.grades, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Grade[] }>(ENDPOINTS.education.grades, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         subject_id: params?.subjectId,
         semester_id: params?.semesterId,
         grade_type: params?.gradeType,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async bulkAttendance(dto: BulkAttendanceDto): Promise<void> {

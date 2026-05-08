@@ -22,7 +22,7 @@ export function RoleSelectPage() {
       const user = demoUsers.find((u) => u.role === roleKey);
       if (!user) return;
       const response = await authService.login({ phone: user.phone, password: 'demo' });
-      login(response.user, response.token);
+      login(response.user, response.token, response.refresh);
       navigate('/dashboard', { replace: true });
     } catch {
       // Ignore errors in demo mode

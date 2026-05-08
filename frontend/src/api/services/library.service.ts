@@ -9,7 +9,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { LibraryMockService } from '../mock/library.mock';
 
 export interface ILibraryService {
@@ -24,15 +24,18 @@ export interface ILibraryService {
 
 class LibraryApiService implements ILibraryService {
   async getBooks(params?: BookListParams): Promise<PaginatedResponse<Book>> {
-    return apiClient.get<PaginatedResponse<Book>>(ENDPOINTS.library.books, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Book[] }>(ENDPOINTS.library.books, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         category: params?.category,
         available: params?.available,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getBookById(id: number): Promise<Book> {
@@ -48,15 +51,18 @@ class LibraryApiService implements ILibraryService {
   }
 
   async getLoans(params?: LoanListParams): Promise<PaginatedResponse<BookLoan>> {
-    return apiClient.get<PaginatedResponse<BookLoan>>(ENDPOINTS.library.loans, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: BookLoan[] }>(ENDPOINTS.library.loans, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         status: params?.status,
         student_id: params?.studentId,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async createLoan(data: CreateLoanDto): Promise<BookLoan> {

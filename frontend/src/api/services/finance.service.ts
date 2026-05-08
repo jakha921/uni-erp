@@ -12,7 +12,7 @@ import type {
 } from '@/types/finance';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { FinanceMockService } from '../mock/finance.mock';
 
 export interface IFinanceService {
@@ -40,10 +40,12 @@ export interface IFinanceService {
 
 class FinanceApiService implements IFinanceService {
   async getContracts(params?: ContractListParams): Promise<PaginatedResponse<Contract>> {
-    return apiClient.get<PaginatedResponse<Contract>>(ENDPOINTS.finance.contracts, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Contract[] }>(ENDPOINTS.finance.contracts, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         faculty_id: params?.facultyId,
         status: params?.status,
@@ -51,6 +53,7 @@ class FinanceApiService implements IFinanceService {
         education_year: params?.educationYear,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getContractById(id: string): Promise<Contract> {
@@ -70,10 +73,12 @@ class FinanceApiService implements IFinanceService {
   }
 
   async getPayments(params?: PaymentListParams): Promise<PaginatedResponse<Payment>> {
-    return apiClient.get<PaginatedResponse<Payment>>(ENDPOINTS.finance.payments, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Payment[] }>(ENDPOINTS.finance.payments, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         faculty_id: params?.facultyId,
         payment_method: params?.paymentMethod,
@@ -82,6 +87,7 @@ class FinanceApiService implements IFinanceService {
         period: params?.period,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async createPayment(dto: CreatePaymentDto): Promise<Payment> {

@@ -13,7 +13,8 @@ export interface IAuthService {
 
 class AuthApiService implements IAuthService {
   async login(data: LoginRequest): Promise<LoginResponse> {
-    return apiClient.post<LoginResponse>(ENDPOINTS.auth.login, data);
+    const res = await apiClient.post<LoginResponse>(ENDPOINTS.auth.login, data);
+    return res;
   }
 
   async logout(): Promise<void> {

@@ -7,7 +7,7 @@ import type {
 } from '@/types/operations';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { AppealMockService } from '../mock/appeal.mock';
 
 export interface IAppealService {
@@ -21,15 +21,18 @@ export interface IAppealService {
 
 class AppealApiService implements IAppealService {
   async getList(params: AppealListParams): Promise<PaginatedResponse<Appeal>> {
-    return apiClient.get<PaginatedResponse<Appeal>>(ENDPOINTS.operations.appeals, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Appeal[] }>(ENDPOINTS.operations.appeals, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         status: params.status,
         category: params.category,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getById(id: number): Promise<Appeal> {

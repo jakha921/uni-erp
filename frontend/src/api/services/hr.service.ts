@@ -14,7 +14,7 @@ import type {
 } from '@/types/hr';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { HrMockService } from '../mock/hr.mock';
 
 export interface IHrService {
@@ -35,16 +35,19 @@ export interface IHrService {
 
 class HrApiService implements IHrService {
   async getEmployees(params?: EmployeeListParams): Promise<PaginatedResponse<EmployeeListItem>> {
-    return apiClient.get<PaginatedResponse<EmployeeListItem>>(ENDPOINTS.hr.employees, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: EmployeeListItem[] }>(ENDPOINTS.hr.employees, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         department_id: params?.departmentId,
         position_code: params?.positionCode,
         status: params?.status,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getEmployeeById(id: number): Promise<Employee> {

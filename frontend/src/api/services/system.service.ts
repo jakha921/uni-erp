@@ -6,7 +6,7 @@ import type {
 } from '@/types/system';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { SystemMockService } from '../mock/system.mock';
 
 export interface ISystemService {
@@ -24,9 +24,12 @@ export interface ISystemService {
 
 class SystemApiService implements ISystemService {
   async getUsers(params: SystemUserListParams) {
-    return apiClient.get<PaginatedResponse<SystemUserListItem>>(ENDPOINTS.system.users, {
-      params: { page: params.page, page_size: params.pageSize, search: params.search, role: params.role, status: params.status, branch_id: params.branchId },
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: SystemUserListItem[] }>(ENDPOINTS.system.users, {
+      params: { page, page_size: pageSize, search: params.search, role: params.role, status: params.status, branch_id: params.branchId },
     });
+    return transformPaginated(drf, page, pageSize);
   }
   async getUserById(id: number) { return apiClient.get<SystemUser>(ENDPOINTS.system.userDetail(id)); }
   async createUser(data: CreateUserDto) { return apiClient.post<SystemUser>(ENDPOINTS.system.users, data); }
@@ -37,9 +40,12 @@ class SystemApiService implements ISystemService {
   async createRole(data: CreateRoleDto) { return apiClient.post<Role>(ENDPOINTS.system.roles, data); }
   async updateRole(id: string, data: CreateRoleDto) { return apiClient.patch<Role>(ENDPOINTS.system.roleDetail(id), data); }
   async getAuditLog(params: AuditLogParams) {
-    return apiClient.get<PaginatedResponse<AuditLogEntry>>(ENDPOINTS.system.auditLog, {
-      params: { page: params.page, page_size: params.pageSize, search: params.search, action: params.action, module: params.module, severity: params.severity, date_from: params.dateFrom, date_to: params.dateTo },
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: AuditLogEntry[] }>(ENDPOINTS.system.auditLog, {
+      params: { page, page_size: pageSize, search: params.search, action: params.action, module: params.module, severity: params.severity, date_from: params.dateFrom, date_to: params.dateTo },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 }
 

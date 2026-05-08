@@ -36,7 +36,9 @@ class ApiClient {
   }
 
   private buildUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const url = new URL(endpoint, this.baseUrl);
+    const base = this.baseUrl.endsWith('/') ? this.baseUrl.slice(0, -1) : this.baseUrl;
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = new URL(`${base}${path}`);
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -139,3 +141,29 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
+
+interface DrfPaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+export function transformPaginated<T>(
+  drf: { count: number; results: T[] },
+  page: number = 1,
+  pageSize: number = 20,
+): { data: T[]; total: number; page: number; pageSize: number; totalPages: number } {
+  return {
+    data: drf.results,
+    total: drf.count,
+    page,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(drf.count / pageSize)),
+  };
+}
+
+export function drfListToArray<T>(drf: DrfPaginatedResponse<T> | T[]): T[] {
+  if (Array.isArray(drf)) return drf;
+  return drf.results;
+}

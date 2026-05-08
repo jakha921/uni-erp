@@ -5,7 +5,7 @@ import type {
 } from '@/types/operations';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { NewsMockService } from '../mock/news.mock';
 
 export interface INewsService {
@@ -18,15 +18,18 @@ export interface INewsService {
 
 class NewsApiService implements INewsService {
   async getList(params: NewsListParams): Promise<PaginatedResponse<NewsArticle>> {
-    return apiClient.get<PaginatedResponse<NewsArticle>>(ENDPOINTS.operations.news, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: NewsArticle[] }>(ENDPOINTS.operations.news, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         category: params.category,
         tag: params.tag,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getById(id: number): Promise<NewsArticle> {

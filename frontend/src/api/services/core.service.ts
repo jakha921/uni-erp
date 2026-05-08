@@ -1,6 +1,6 @@
 import type { Branch, Faculty, Department, Specialty, Group, AcademicYear, Semester } from '@/types/core';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, drfListToArray } from '../client';
 import { CoreMockService } from '../mock/core.mock';
 
 export interface ICoreService {
@@ -15,41 +15,48 @@ export interface ICoreService {
 
 class CoreApiService implements ICoreService {
   async getBranches(): Promise<Branch[]> {
-    return apiClient.get<Branch[]>(ENDPOINTS.core.branches);
+    const res = await apiClient.get<{ results: Branch[] } | Branch[]>(ENDPOINTS.core.branches);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Branch[] });
   }
 
   async getFaculties(branchId?: number): Promise<Faculty[]> {
-    return apiClient.get<Faculty[]>(ENDPOINTS.core.faculties, {
+    const res = await apiClient.get<{ results: Faculty[] } | Faculty[]>(ENDPOINTS.core.faculties, {
       params: { branch_id: branchId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Faculty[] });
   }
 
   async getDepartments(facultyId?: number): Promise<Department[]> {
-    return apiClient.get<Department[]>(ENDPOINTS.core.departments, {
+    const res = await apiClient.get<{ results: Department[] } | Department[]>(ENDPOINTS.core.departments, {
       params: { faculty_id: facultyId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Department[] });
   }
 
   async getSpecialties(departmentId?: number): Promise<Specialty[]> {
-    return apiClient.get<Specialty[]>(ENDPOINTS.core.specialties, {
+    const res = await apiClient.get<{ results: Specialty[] } | Specialty[]>(ENDPOINTS.core.specialties, {
       params: { department_id: departmentId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Specialty[] });
   }
 
   async getGroups(specialtyId?: number): Promise<Group[]> {
-    return apiClient.get<Group[]>(ENDPOINTS.core.groups, {
+    const res = await apiClient.get<{ results: Group[] } | Group[]>(ENDPOINTS.core.groups, {
       params: { specialty_id: specialtyId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Group[] });
   }
 
   async getAcademicYears(): Promise<AcademicYear[]> {
-    return apiClient.get<AcademicYear[]>(ENDPOINTS.core.academicYears);
+    const res = await apiClient.get<{ results: AcademicYear[] } | AcademicYear[]>(ENDPOINTS.core.academicYears);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: AcademicYear[] });
   }
 
   async getSemesters(academicYearId?: number): Promise<Semester[]> {
-    return apiClient.get<Semester[]>(ENDPOINTS.core.semesters, {
+    const res = await apiClient.get<{ results: Semester[] } | Semester[]>(ENDPOINTS.core.semesters, {
       params: { academic_year_id: academicYearId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Semester[] });
   }
 }
 

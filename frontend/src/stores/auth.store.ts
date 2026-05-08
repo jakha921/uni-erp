@@ -6,10 +6,12 @@ import { canAccessRoute } from '@/lib/permissions';
 interface AuthState {
   currentUser: User | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: User, token: string, refreshToken?: string) => void;
   logout: () => void;
   switchRole: (role: RoleKey) => void;
+  setToken: (token: string) => void;
   can: (routeId: string) => boolean;
 }
 
@@ -18,15 +20,17 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       currentUser: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
-      login: (user, token) => set({ currentUser: user, token, isAuthenticated: true }),
-      logout: () => set({ currentUser: null, token: null, isAuthenticated: false }),
+      login: (user, token, refreshToken) => set({ currentUser: user, token, refreshToken: refreshToken ?? null, isAuthenticated: true }),
+      logout: () => set({ currentUser: null, token: null, refreshToken: null, isAuthenticated: false }),
       switchRole: (role) => {
         const user = get().currentUser;
         if (user) {
           set({ currentUser: { ...user, role } });
         }
       },
+      setToken: (token) => set({ token }),
       can: (routeId) => {
         const user = get().currentUser;
         if (!user) return false;
@@ -38,6 +42,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         currentUser: state.currentUser,
         token: state.token,
+        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     },

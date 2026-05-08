@@ -6,7 +6,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { InternshipMockService } from '../mock/internship.mock';
 
 export interface IInternshipService {
@@ -18,16 +18,19 @@ export interface IInternshipService {
 
 class InternshipApiService implements IInternshipService {
   async getInternships(params?: InternshipListParams): Promise<PaginatedResponse<Internship>> {
-    return apiClient.get<PaginatedResponse<Internship>>(ENDPOINTS.internship.list, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Internship[] }>(ENDPOINTS.internship.list, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         status: params?.status,
         type: params?.type,
         group_id: params?.groupId,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getInternshipById(id: number): Promise<Internship> {

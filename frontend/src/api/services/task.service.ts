@@ -6,7 +6,7 @@ import type {
 } from '@/types/operations';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { TaskMockService } from '../mock/task.mock';
 
 export interface ITaskService {
@@ -20,16 +20,19 @@ export interface ITaskService {
 
 class TaskApiService implements ITaskService {
   async getList(params: TaskListParams): Promise<PaginatedResponse<Task>> {
-    return apiClient.get<PaginatedResponse<Task>>(ENDPOINTS.operations.tasks, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Task[] }>(ENDPOINTS.operations.tasks, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         status: params.status,
         priority: params.priority,
         assignee_id: params.assigneeId,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getById(id: number): Promise<Task> {

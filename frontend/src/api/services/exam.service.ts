@@ -6,7 +6,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { ExamMockService } from '../mock/exam.mock';
 
 export interface IExamService {
@@ -19,10 +19,12 @@ export interface IExamService {
 
 class ExamApiService implements IExamService {
   async getExams(params?: ExamListParams): Promise<PaginatedResponse<Exam>> {
-    return apiClient.get<PaginatedResponse<Exam>>(ENDPOINTS.exams.list, {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: Exam[] }>(ENDPOINTS.exams.list, {
       params: {
-        page: params?.page,
-        page_size: params?.pageSize,
+        page,
+        page_size: pageSize,
         search: params?.search,
         semester_id: params?.semesterId,
         group_id: params?.groupId,
@@ -30,6 +32,7 @@ class ExamApiService implements IExamService {
         type: params?.type,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getExamById(id: number): Promise<Exam> {

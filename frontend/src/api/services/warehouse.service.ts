@@ -4,7 +4,7 @@ import type {
 } from '@/types/warehouse';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { WarehouseMockService } from '../mock/warehouse.mock';
 
 export interface IWarehouseService {
@@ -20,9 +20,12 @@ export interface IWarehouseService {
 
 class WarehouseApiService implements IWarehouseService {
   async getItems(params: WarehouseListParams) {
-    return apiClient.get<PaginatedResponse<WarehouseItem>>(ENDPOINTS.warehouse.items, {
-      params: { page: params.page, page_size: params.pageSize, search: params.search, category: params.category, below_min: params.belowMin },
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: WarehouseItem[] }>(ENDPOINTS.warehouse.items, {
+      params: { page, page_size: pageSize, search: params.search, category: params.category, below_min: params.belowMin },
     });
+    return transformPaginated(drf, page, pageSize);
   }
   async getItemById(id: number) { return apiClient.get<WarehouseItem>(ENDPOINTS.warehouse.itemDetail(id)); }
   async createItem(data: CreateItemDto) { return apiClient.post<WarehouseItem>(ENDPOINTS.warehouse.items, data); }

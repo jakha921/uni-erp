@@ -9,7 +9,7 @@ import type {
 } from '@/types/crm';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, transformPaginated } from '../client';
 import { CrmMockService } from '../mock/crm.mock';
 
 export interface ICrmService {
@@ -24,10 +24,12 @@ export interface ICrmService {
 
 class CrmApiService implements ICrmService {
   async getLeads(params: LeadListParams): Promise<PaginatedResponse<LeadListItem>> {
-    return apiClient.get<PaginatedResponse<LeadListItem>>(ENDPOINTS.crm.leads, {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 20;
+    const drf = await apiClient.get<{ count: number; results: LeadListItem[] }>(ENDPOINTS.crm.leads, {
       params: {
-        page: params.page,
-        page_size: params.pageSize,
+        page,
+        page_size: pageSize,
         search: params.search,
         status: params.status,
         source: params.source,
@@ -38,6 +40,7 @@ class CrmApiService implements ICrmService {
         sort_order: params.sortOrder,
       },
     });
+    return transformPaginated(drf, page, pageSize);
   }
 
   async getLeadById(id: number): Promise<Lead> {
