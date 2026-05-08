@@ -767,7 +767,7 @@ class Leave(BaseModel):
     ```
   - Commit: `feat: add scholarships and finance dashboard API`
 
-### - [ ] PHASE 10: Frontend Integration — Finance
+### - [x] PHASE 10: Frontend Integration — Finance
   - **Цель:** Подключить фронтенд к реальному API для модуля финансов.
   - **Обновить файлы:**
     - `frontend/src/api/services/finance.service.ts`:
