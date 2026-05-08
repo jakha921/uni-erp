@@ -58,6 +58,7 @@ class Faculty(BaseModel):
     class Meta:
         verbose_name = "Fakultet"
         verbose_name_plural = "Fakultetlar"
+        ordering = ["name"]
 
     def __str__(self) -> str:
         return self.name
@@ -79,6 +80,7 @@ class Department(BaseModel):
     class Meta:
         verbose_name = "Kafedra"
         verbose_name_plural = "Kafedralar"
+        ordering = ["name"]
 
     def __str__(self) -> str:
         return self.name
