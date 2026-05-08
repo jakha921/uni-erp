@@ -100,3 +100,60 @@ class StatisticsView(APIView):
                 "byStatus": [{"status": r["status"], "count": r["count"]} for r in by_status],
             }
         )
+
+
+class StudentGradesView(APIView):
+    """GET /students/{id}/grades/ — returns grades from education.Grade model."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request, pk: int) -> Response:
+        try:
+            from apps.education.models import Grade
+
+            grades = Grade.objects.filter(student_id=pk).select_related(
+                "subject", "semester", "graded_by"
+            )
+            data = [
+                {
+                    "id": g.id,
+                    "subjectName": g.subject.name,
+                    "subjectCode": g.subject.code,
+                    "gradeType": g.grade_type,
+                    "gradeTypeLabel": dict(g._meta.get_field("grade_type").choices).get(
+                        g.grade_type, g.grade_type
+                    ),
+                    "score": float(g.score),
+                    "maxScore": float(g.max_score),
+                    "semester": g.semester.number,
+                    "date": str(g.updated_at.date()),
+                    "teacherName": g.graded_by.full_name,
+                }
+                for g in grades
+            ]
+        except Exception:
+            data = []
+        return Response(data)
+
+
+class StudentAttendanceView(APIView):
+    """GET /students/{id}/attendance/ — returns attendance from education.Attendance model."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request, pk: int) -> Response:
+        try:
+            from apps.education.models import Attendance
+
+            records = Attendance.objects.filter(student_id=pk).select_related("schedule__subject")
+            data = [
+                {
+                    "date": str(r.date),
+                    "status": r.status,
+                    "subjectName": r.schedule.subject.name,
+                }
+                for r in records
+            ]
+        except Exception:
+            data = []
+        return Response(data)
