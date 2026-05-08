@@ -1027,7 +1027,7 @@ class Leave(BaseModel):
   - **StaffingPage** — stat cards + grouped table штатного расписания
   - Run `npm run build` — must pass
 
-### - [ ] PHASE 24: Final Build Verification
+### - [x] PHASE 24: Final Build Verification
   - `npm run build` — zero errors
   - `uv run pytest` — all tests pass
   - `docker compose up` — everything works together
