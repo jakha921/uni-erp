@@ -142,3 +142,60 @@ export interface FinanceDashboardStats {
   byMonth: { month: string; amount: number }[];
   byStatus: { status: string; count: number; amount: number }[];
 }
+
+// ---- Payroll ----
+
+export interface PayrollEmployee {
+  id: number;
+  employeeId: number;
+  employeeName: string;
+  department: string;
+  position: string;
+  baseSalary: number;
+  bonus: number;
+  deductions: number;
+  netSalary: number;
+  status: 'paid' | 'pending' | 'processing';
+}
+
+export interface PayrollListParams extends ListParams {
+  month: number;
+  year: number;
+  departmentId?: number;
+  status?: string;
+}
+
+export interface PayrollSummary {
+  totalEmployees: number;
+  totalBase: number;
+  totalBonus: number;
+  totalDeductions: number;
+  totalNet: number;
+  paidCount: number;
+  pendingCount: number;
+}
+
+// ---- Budget ----
+
+export interface BudgetCategory {
+  id: number;
+  name: string;
+  code: string;
+  planned: number;
+  spent: number;
+  remaining: number;
+  percentUsed: number;
+  parentId: number | null;
+}
+
+export interface BudgetListParams {
+  year: number;
+  quarter?: number;
+}
+
+export interface BudgetSummary {
+  totalPlanned: number;
+  totalSpent: number;
+  totalRemaining: number;
+  byQuarter: { quarter: number; planned: number; spent: number }[];
+}

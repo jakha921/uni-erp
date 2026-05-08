@@ -150,4 +150,20 @@ export const ENDPOINTS = {
     student: '/cabinets/student',
     teacher: '/cabinets/teacher',
   },
+  payroll: {
+    list: '/finance/payroll',
+    summary: '/finance/payroll/summary',
+    process: '/finance/payroll/process',
+  },
+  budget: {
+    categories: '/finance/budget/categories',
+    summary: '/finance/budget/summary',
+  },
+  dashboard: {
+    admin: '/dashboard/admin',
+    buxgalter: '/dashboard/buxgalter',
+    dekan: '/dashboard/dekan',
+    oqituvchi: '/dashboard/oqituvchi',
+    talaba: '/dashboard/talaba',
+  },
 } as const;

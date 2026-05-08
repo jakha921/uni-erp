@@ -1,73 +1,39 @@
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge } from '@/components/ui';
-import {
-  GraduationCap,
-  CreditCard,
-  BookOpen,
-  FileText,
-} from 'lucide-react';
-
-// --- Types ---
-
-interface ScheduleItem {
-  time: string;
-  subject: string;
-  room: string;
-  teacher: string;
-  type: 'Ma\'ruza' | 'Amaliyot' | 'Laboratoriya';
-}
-
-interface GradeItem {
-  subject: string;
-  grade: number;
-  status: string;
-}
-
-// --- Mock Data ---
-
-const STUDENT = {
-  name: 'Karimov Sherzod',
-  initials: 'KS',
-  faculty: 'Axborot texnologiyalari',
-  course: 3,
-  group: '301-A',
-  id: 'STU-2024-0847',
-  gpa: 3.92,
-  credits: 147,
-  attendance: 94,
-};
-
-const TODAY_SCHEDULE: ScheduleItem[] = [
-  { time: '08:30', subject: 'Algoritmlar', room: 'A-204', teacher: 'prof. Tursunov R.M.', type: 'Ma\'ruza' },
-  { time: '10:10', subject: 'Ma\'lumotlar bazasi', room: 'B-115', teacher: 'dots. Saidov A.B.', type: 'Amaliyot' },
-  { time: '12:00', subject: 'Veb-dasturlash', room: 'A-301', teacher: 'dots. Nazarov H.S.', type: 'Ma\'ruza' },
-  { time: '13:40', subject: 'Tarmoqlar', room: 'C-208', teacher: 'dots. Hasanov B.O.', type: 'Laboratoriya' },
-];
-
-const RECENT_GRADES: GradeItem[] = [
-  { subject: 'Algoritmlar', grade: 92, status: 'A\'lo' },
-  { subject: 'Ma\'lumotlar bazasi', grade: 88, status: 'Yaxshi' },
-  { subject: 'Veb-dasturlash', grade: 95, status: 'A\'lo' },
-  { subject: 'Tarmoqlar', grade: 78, status: 'Yaxshi' },
-];
+import { Badge, Spinner } from '@/components/ui';
+import { GraduationCap, CreditCard, BookOpen, FileText } from 'lucide-react';
+import { useStudentCabinet } from '@/api/hooks/useCabinet';
 
 const QUICK_ACTIONS = [
   { icon: FileText, label: 'Spravka olish', description: 'Elektron ariza', color: '#2DB976' },
   { icon: GraduationCap, label: 'Test topshirish', description: 'Joriy testlar', color: '#3B82F6' },
-  { icon: CreditCard, label: "To'lov tarixi", description: 'Kontrakt holati', color: '#F59E0B', notifCount: 0 },
-  { icon: BookOpen, label: 'Xabarlar', description: 'Bildirishnomalar', color: '#8B5CF6', notifCount: 3 },
+  { icon: CreditCard, label: "To'lov tarixi", description: 'Kontrakt holati', color: '#F59E0B' },
+  { icon: BookOpen, label: 'Xabarlar', description: 'Bildirishnomalar', color: '#8B5CF6' },
 ] as const;
 
-const TYPE_VARIANT: Record<ScheduleItem['type'], 'info' | 'success' | 'warning'> = {
-  'Ma\'ruza': 'info',
-  Amaliyot: 'success',
-  Laboratoriya: 'warning',
+const LESSON_VARIANT: Record<string, 'info' | 'success' | 'warning'> = {
+  lecture: 'info',
+  practice: 'success',
+  lab: 'warning',
+  seminar: 'info',
 };
 
-// --- Component ---
+const LESSON_LABELS: Record<string, string> = {
+  lecture: "Ma'ruza",
+  practice: 'Amaliyot',
+  lab: 'Laboratoriya',
+  seminar: 'Seminar',
+};
 
 export function StudentCabinetPage() {
+  const { data, isLoading } = useStudentCabinet();
+
+  if (isLoading || !data) {
+    return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;
+  }
+
+  const { student, todaySchedule, currentGrades } = data;
+
   return (
     <PageContent>
       <PageHeader
@@ -75,28 +41,26 @@ export function StudentCabinetPage() {
         breadcrumbs={[{ label: 'Kabinetlar' }, { label: 'Talaba kabineti' }]}
       />
 
-      {/* Hero Banner */}
       <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-700 p-6 text-white flex items-center gap-5 mb-5">
         <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[26px] font-bold">
-          {STUDENT.initials}
+          {student.fullName.split(' ').map((w) => w[0]).join('').slice(0, 2)}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium uppercase tracking-wider opacity-85">Xush kelibsiz</p>
-          <h2 className="mt-1 text-2xl font-bold">{STUDENT.name}</h2>
+          <h2 className="mt-1 text-2xl font-bold">{student.fullName}</h2>
           <p className="mt-1 text-[13px] opacity-90">
-            {STUDENT.faculty} &middot; {STUDENT.course}-kurs &middot; {STUDENT.group} guruh &middot; ID: {STUDENT.id}
+            {student.group} guruh &middot; {student.course}-kurs
           </p>
         </div>
         <div className="hidden md:flex items-center gap-8">
-          <StatBlock value={String(STUDENT.gpa)} label="O'rtacha GPA" />
+          <StatBlock value={String(student.gpa)} label="O'rtacha ball" />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={String(STUDENT.credits)} label="Kreditlar" />
+          <StatBlock value={String(student.totalCredits)} label="Kreditlar" />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={`${STUDENT.attendance}%`} label="Davomat" />
+          <StatBlock value={`${student.attendanceRate}%`} label="Davomat" />
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         {QUICK_ACTIONS.map((action) => (
           <button
@@ -104,80 +68,72 @@ export function StudentCabinetPage() {
             className="flex items-center gap-3.5 rounded-2xl border border-border bg-white p-[18px] text-left hover:shadow-md transition-shadow"
           >
             <div
-              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
               style={{ backgroundColor: `${action.color}15`, color: action.color }}
             >
               <action.icon className="h-5 w-5" />
-              {'notifCount' in action && action.notifCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-white bg-red-500 text-[10px] font-bold text-white">
-                  {action.notifCount}
-                </span>
-              )}
             </div>
             <p className="text-[13px] font-semibold text-slate-900">{action.label}</p>
           </button>
         ))}
       </div>
 
-      {/* Today's Schedule + Recent Grades */}
       <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4">
-        {/* Today's Schedule */}
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">Bugungi dars jadvali</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Chorshanba, 24 aprel 2026</p>
+              <p className="text-xs text-slate-500 mt-0.5">{new Date().toLocaleDateString('uz-UZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
-            <Badge variant="success" dot>
-              {TODAY_SCHEDULE.length} ta dars
-            </Badge>
+            <Badge variant="success" dot>{todaySchedule.length} ta dars</Badge>
           </div>
           <div className="flex flex-col gap-2">
-            {TODAY_SCHEDULE.map((cls, i) => (
-              <div
-                key={cls.time}
-                className={`flex items-center gap-3.5 rounded-xl p-3 ${
-                  i === 0
-                    ? 'bg-green-50 border border-green-200'
-                    : 'bg-[#F8FAFB] border border-transparent'
-                }`}
-              >
-                <div className="w-14 text-center">
-                  <span className="text-base font-bold text-slate-900 tabular-nums">{cls.time}</span>
+            {todaySchedule.map((cls, i) => {
+              const pairTimes = ['08:30', '10:10', '12:00', '13:40', '15:20'];
+              const time = pairTimes[cls.pairNumber - 1] ?? `${cls.pairNumber}-para`;
+              return (
+                <div
+                  key={cls.id}
+                  className={`flex items-center gap-3.5 rounded-xl p-3 ${
+                    i === 0 ? 'bg-green-50 border border-green-200' : 'bg-[#F8FAFB] border border-transparent'
+                  }`}
+                >
+                  <div className="w-14 text-center">
+                    <span className="text-base font-bold text-slate-900 tabular-nums">{time}</span>
+                  </div>
+                  <div className="h-9 w-px bg-slate-200" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13.5px] font-semibold text-slate-900">{cls.subjectName}</p>
+                    <p className="text-[11.5px] text-slate-500 mt-0.5">{cls.teacherName} &middot; {cls.room}</p>
+                  </div>
+                  <Badge variant={LESSON_VARIANT[cls.lessonType] ?? 'info'}>
+                    {LESSON_LABELS[cls.lessonType] ?? cls.lessonType}
+                  </Badge>
                 </div>
-                <div className="h-9 w-px bg-slate-200" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13.5px] font-semibold text-slate-900">{cls.subject}</p>
-                  <p className="text-[11.5px] text-slate-500 mt-0.5">
-                    {cls.teacher} &middot; {cls.room}
-                  </p>
-                </div>
-                <Badge variant={TYPE_VARIANT[cls.type]}>{cls.type}</Badge>
-              </div>
-            ))}
+              );
+            })}
+            {todaySchedule.length === 0 && (
+              <p className="text-center text-sm text-slate-400 py-6">Bugun darslar yo'q</p>
+            )}
           </div>
         </Card>
 
-        {/* Recent Grades */}
         <Card>
           <h3 className="text-sm font-semibold text-slate-900 mb-4">Joriy semestr baholari</h3>
           <div className="flex flex-col gap-1.5">
-            {RECENT_GRADES.map((g) => (
+            {currentGrades.map((g) => (
               <div key={g.subject} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2">
                 <p className="flex-1 text-[13px] font-medium text-slate-900">{g.subject}</p>
                 <div className="h-1 w-20 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full rounded-full"
                     style={{
-                      width: `${g.grade}%`,
-                      backgroundColor:
-                        g.grade >= 90 ? '#2DB976' : g.grade >= 80 ? '#3B82F6' : '#F59E0B',
+                      width: `${g.total}%`,
+                      backgroundColor: g.total >= 90 ? '#2DB976' : g.total >= 80 ? '#3B82F6' : '#F59E0B',
                     }}
                   />
                 </div>
-                <span className="min-w-[30px] text-right text-sm font-bold text-slate-900 tabular-nums">
-                  {g.grade}
-                </span>
+                <span className="min-w-[30px] text-right text-sm font-bold text-slate-900 tabular-nums">{g.total}</span>
               </div>
             ))}
           </div>
