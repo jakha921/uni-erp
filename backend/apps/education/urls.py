@@ -1,3 +1,22 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
-urlpatterns: list = []
+from .views import (
+    AttendanceViewSet,
+    BulkAttendanceView,
+    BulkGradeView,
+    GradeViewSet,
+    ScheduleViewSet,
+    SubjectViewSet,
+)
+
+router = DefaultRouter()
+router.register("subjects", SubjectViewSet, basename="subject")
+router.register("schedule", ScheduleViewSet, basename="schedule")
+router.register("attendance", AttendanceViewSet, basename="attendance")
+router.register("grades", GradeViewSet, basename="grade")
+
+urlpatterns = [
+    path("attendance/bulk/", BulkAttendanceView.as_view(), name="attendance-bulk"),
+    path("grades/bulk/", BulkGradeView.as_view(), name="grade-bulk"),
+] + router.urls
