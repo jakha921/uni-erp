@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django
+*.log
+db.sqlite3
+staticfiles/
+media/
+backend/.env
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env.local
+
+# IDEs
+.DS_Store
+.idea/
+.vscode/
+
+# UV
+uv.lock
