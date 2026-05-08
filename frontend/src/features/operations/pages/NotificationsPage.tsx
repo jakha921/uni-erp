@@ -1,12 +1,9 @@
 import { useState, useMemo } from 'react';
 import {
   Bell,
-  Wallet,
   Clock,
   CheckCircle2,
-  Mail,
   Settings,
-  Users,
   AlertTriangle,
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';

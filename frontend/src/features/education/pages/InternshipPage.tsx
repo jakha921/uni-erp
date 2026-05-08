@@ -5,7 +5,7 @@ import { DataTable, type Column } from '@/components/table';
 import { Badge, Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { Users, Clock, CheckCircle } from 'lucide-react';
-import { useInternships } from '@/api/hooks/useInternships';
+import { useInternshipsList } from '@/api/hooks/useInternships';
 import type { Internship } from '@/types/education';
 
 const STATUS_LABELS: Record<string, string> = { planned: 'Rejalashtirilgan', active: 'Joriy', completed: 'Yakunlangan' };
@@ -27,12 +27,12 @@ const columns: Column<Internship>[] = [
 export function InternshipPage() {
   const [activeTab, setActiveTab] = useState('active');
   const statusFilter = activeTab === 'all' ? undefined : activeTab;
-  const { data, isLoading } = useInternships({ page: 1, pageSize: 50, status: statusFilter });
+  const { data, isLoading } = useInternshipsList({ page: 1, pageSize: 50, status: statusFilter });
 
   const internships = data?.data ?? [];
   const total = data?.total ?? 0;
-  const activeCount = internships.filter((i) => i.status === 'active').length;
-  const completedCount = internships.filter((i) => i.status === 'completed').length;
+  const activeCount = internships.filter((item) => item.status === 'active').length;
+  const completedCount = internships.filter((item) => item.status === 'completed').length;
 
   const tabs = [
     { id: 'active', label: 'Joriy', count: activeCount },
