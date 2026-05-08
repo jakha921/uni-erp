@@ -11,82 +11,56 @@ import {
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard } from '@/components/data-display';
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, Spinner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table/DataTable';
 import { SearchInput } from '@/components/form/SearchInput';
 import { Select } from '@/components/ui/Select';
-import { generateName, pick, rnum } from '@/api/mock/shared-data';
+import { useTasksList, useUpdateTaskStatus } from '@/api/hooks/useTasks';
+import type { Task, TaskStatus, TaskPriority } from '@/types/operations';
 
-type Priority = 'Yuqori' | "O'rta" | 'Past';
-type TaskStatus = 'Yangi' | 'Jarayonda' | 'Bajarildi' | "Muddati o'tgan";
+// --- UI labels ---
 
-interface Task {
-  id: number;
-  title: string;
-  assignee: string;
-  assigner: string;
-  deadline: string;
-  priority: Priority;
-  status: TaskStatus;
-}
+const PRIORITY_LABELS: Record<TaskPriority, string> = {
+  low: 'Past',
+  medium: "O'rta",
+  high: 'Yuqori',
+  urgent: 'Juda yuqori',
+};
 
-const PRIORITIES: Priority[] = ['Yuqori', "O'rta", 'Past'];
-const STATUSES: TaskStatus[] = ['Yangi', 'Jarayonda', 'Bajarildi', "Muddati o'tgan"];
+const STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: 'Yangi',
+  in_progress: 'Jarayonda',
+  review: "Ko'rib chiqilmoqda",
+  done: 'Bajarildi',
+};
 
-const TASK_TITLES = [
-  'Bahorgi sessiya hisobotini tayyorlash',
-  "Imtihon biletlarini yangilash",
-  "O'quv rejani qayta ko'rib chiqish",
-  'Konferensiya materiallarini yuklash',
-  "Talabalar reytingini e'lon qilish",
-  'Kutubxona fondini yangilash',
-  "TTJ bilan shartnoma tuzish",
-  'Laboratoriya jihozlarini buyurtma qilish',
-  "Dars jadvalini kelgusi semestr uchun tuzish",
-  "Amaliyot o'rinlarini kelishish",
-  "Fan dasturlarini ECTS ga moslashtirish",
-  'Stipendiya buyrug\'ini tayyorlash',
-  "Kafedra hisobotini to'ldirish",
-  "Diplom ishlarini tekshirish",
-];
+const PRIORITY_OPTIONS = (['low', 'medium', 'high', 'urgent'] as TaskPriority[]).map((p) => ({
+  value: p,
+  label: PRIORITY_LABELS[p],
+}));
 
-function generateTasks(): Task[] {
-  return TASK_TITLES.map((title, i) => {
-    const assigneeName = generateName(i + 100);
-    const assignerName = generateName(i + 200);
-    const day = rnum(i + 300, 1, 28);
-    const month = rnum(i + 400, 5, 7);
-    return {
-      id: i + 1,
-      title,
-      assignee: assigneeName.short,
-      assigner: assignerName.short,
-      deadline: `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.2026`,
-      priority: pick(PRIORITIES, i + 500),
-      status: pick(STATUSES, i + 600),
-    };
-  });
-}
-
-const TASKS = generateTasks();
+const STATUS_OPTIONS = (['todo', 'in_progress', 'review', 'done'] as TaskStatus[]).map((s) => ({
+  value: s,
+  label: STATUS_LABELS[s],
+}));
 
 const KANBAN_COLUMNS: { id: TaskStatus; label: string; color: string; bg: string }[] = [
-  { id: 'Yangi', label: 'Yangi', color: '#3B82F6', bg: '#EFF6FF' },
-  { id: 'Jarayonda', label: 'Jarayonda', color: '#F59E0B', bg: '#FFFBEB' },
-  { id: 'Bajarildi', label: 'Bajarildi', color: '#2DB976', bg: '#ECFDF5' },
-  { id: "Muddati o'tgan", label: "Muddati o'tgan", color: '#EF4444', bg: '#FEF2F2' },
+  { id: 'todo', label: 'Yangi', color: '#3B82F6', bg: '#EFF6FF' },
+  { id: 'in_progress', label: 'Jarayonda', color: '#F59E0B', bg: '#FFFBEB' },
+  { id: 'done', label: 'Bajarildi', color: '#2DB976', bg: '#ECFDF5' },
+  { id: 'review', label: "Ko'rib chiqilmoqda", color: '#8B5CF6', bg: '#F5F3FF' },
 ];
 
-function priorityVariant(p: Priority): 'error' | 'warning' | 'info' {
-  if (p === 'Yuqori') return 'error';
-  if (p === "O'rta") return 'warning';
+function priorityVariant(p: TaskPriority): 'error' | 'warning' | 'info' {
+  if (p === 'high' || p === 'urgent') return 'error';
+  if (p === 'medium') return 'warning';
   return 'info';
 }
 
 function statusVariant(s: TaskStatus): 'info' | 'warning' | 'success' | 'error' {
-  if (s === 'Yangi') return 'info';
-  if (s === 'Jarayonda') return 'warning';
-  if (s === 'Bajarildi') return 'success';
+  if (s === 'todo') return 'info';
+  if (s === 'in_progress') return 'warning';
+  if (s === 'done') return 'success';
   return 'error';
 }
 
@@ -97,10 +71,22 @@ export function TasksPage() {
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [tasks, setTasks] = useState<Task[]>(TASKS);
   const [dragId, setDragId] = useState<number | null>(null);
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
 
+  const { data: tasksData, isLoading } = useTasksList({
+    page: 1,
+    pageSize: 50,
+    search: search || undefined,
+    priority: (priorityFilter as TaskPriority) || undefined,
+    status: (statusFilter as TaskStatus) || undefined,
+  });
+
+  const updateStatus = useUpdateTaskStatus();
+
+  const tasks = tasksData?.data ?? [];
+
+  // Client-side filtering for instant search responsiveness
   const filtered = useMemo(() => {
     return tasks.filter((t) => {
       if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
@@ -111,11 +97,11 @@ export function TasksPage() {
   }, [tasks, search, priorityFilter, statusFilter]);
 
   const counts = useMemo(() => {
-    const c = { total: tasks.length, yangi: 0, jarayonda: 0, expired: 0 };
+    const c = { total: tasks.length, todo: 0, inProgress: 0, done: 0 };
     for (const t of tasks) {
-      if (t.status === 'Yangi') c.yangi++;
-      else if (t.status === 'Jarayonda') c.jarayonda++;
-      else if (t.status === "Muddati o'tgan") c.expired++;
+      if (t.status === 'todo') c.todo++;
+      else if (t.status === 'in_progress') c.inProgress++;
+      else if (t.status === 'done') c.done++;
     }
     return c;
   }, [tasks]);
@@ -123,12 +109,12 @@ export function TasksPage() {
   const handleDrop = useCallback(
     (colId: TaskStatus) => {
       if (dragId !== null) {
-        setTasks((ts) => ts.map((t) => (t.id === dragId ? { ...t, status: colId } : t)));
+        updateStatus.mutate({ id: dragId, status: colId });
       }
       setDragId(null);
       setOverCol(null);
     },
-    [dragId],
+    [dragId, updateStatus],
   );
 
   const columns: Column<Task>[] = [
@@ -144,20 +130,15 @@ export function TasksPage() {
       render: (row) => <span className="font-medium text-slate-900">{row.title}</span>,
     },
     {
-      key: 'assigner',
-      header: 'Topshiruvchi',
-      render: (row) => <span className="text-slate-600">{row.assigner}</span>,
-    },
-    {
-      key: 'assignee',
+      key: 'assigneeName',
       header: 'Bajaruvchi',
-      render: (row) => <span className="text-slate-600">{row.assignee}</span>,
+      render: (row) => <span className="text-slate-600">{row.assigneeName}</span>,
     },
     {
-      key: 'deadline',
+      key: 'dueDate',
       header: 'Muddat',
       render: (row) => (
-        <span className="text-muted tabular-nums text-xs">{row.deadline}</span>
+        <span className="text-muted tabular-nums text-xs">{row.dueDate}</span>
       ),
     },
     {
@@ -165,7 +146,7 @@ export function TasksPage() {
       header: 'Muhimlik',
       render: (row) => (
         <Badge variant={priorityVariant(row.priority)} dot>
-          {row.priority}
+          {PRIORITY_LABELS[row.priority]}
         </Badge>
       ),
     },
@@ -174,7 +155,7 @@ export function TasksPage() {
       header: 'Holat',
       render: (row) => (
         <Badge variant={statusVariant(row.status)} dot>
-          {row.status}
+          {STATUS_LABELS[row.status]}
         </Badge>
       ),
     },
@@ -203,21 +184,21 @@ export function TasksPage() {
         />
         <StatCard
           label="Yangi"
-          value={counts.yangi}
+          value={counts.todo}
           icon={<Plus className="h-[18px] w-[18px]" />}
           iconBg="#8B5CF6"
         />
         <StatCard
           label="Jarayonda"
-          value={counts.jarayonda}
+          value={counts.inProgress}
           icon={<Clock className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Muddati o'tgan"
-          value={counts.expired}
+          label="Bajarildi"
+          value={counts.done}
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
-          iconBg="#EF4444"
+          iconBg="#2DB976"
         />
       </div>
 
@@ -257,29 +238,36 @@ export function TasksPage() {
         />
 
         <Select
-          options={PRIORITIES.map((p) => ({ value: p, label: p }))}
+          options={PRIORITY_OPTIONS}
           placeholder="Muhimlik"
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value)}
         />
 
         <Select
-          options={STATUSES.map((s) => ({ value: s, label: s }))}
+          options={STATUS_OPTIONS}
           placeholder="Holat"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         />
       </div>
 
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      )}
+
       {/* List View */}
-      {view === 'list' && (
+      {!isLoading && view === 'list' && (
         <div className="rounded-2xl bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden">
           <DataTable data={filtered} columns={columns} keyField="id" />
         </div>
       )}
 
       {/* Kanban View */}
-      {view === 'kanban' && (
+      {!isLoading && view === 'kanban' && (
         <div className="grid grid-cols-4 gap-3.5">
           {KANBAN_COLUMNS.map((col) => {
             const colTasks = filtered.filter((t) => t.status === col.id);
@@ -337,7 +325,7 @@ export function TasksPage() {
                     >
                       <div className="mb-2">
                         <Badge variant={priorityVariant(t.priority)} dot>
-                          {t.priority}
+                          {PRIORITY_LABELS[t.priority]}
                         </Badge>
                       </div>
                       <p className="text-[13px] font-medium leading-tight text-slate-900">
@@ -346,11 +334,11 @@ export function TasksPage() {
                       <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2.5 text-[11px] text-muted">
                         <span className="inline-flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {t.assignee}
+                          {t.assigneeName}
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {t.deadline}
+                          {t.dueDate}
                         </span>
                       </div>
                     </div>

@@ -2,101 +2,42 @@ import { useState } from 'react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
-import { Badge } from '@/components/ui';
+import { Badge, Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { Users, Clock, CheckCircle } from 'lucide-react';
-import { generateName, rnum } from '@/api/mock/shared-data';
+import { useInternships } from '@/api/hooks/useInternships';
+import type { Internship } from '@/types/education';
 
-// --- Types ---
-
-interface Internship {
-  id: number;
-  student: string;
-  organization: string;
-  startDate: string;
-  endDate: string;
-  supervisor: string;
-  status: 'Joriy' | 'Yakunlangan';
-}
-
-// --- Mock Data ---
-
-const ORGANIZATIONS = [
-  'EPAM Systems',
-  'Uzcard',
-  'Uztelecom',
-  'Payme',
-  'Click',
-  'Uzum Bank',
-  'Almalyk MMK',
-  'Navoiy KMK',
-];
-
-const INTERNSHIPS: Internship[] = Array.from({ length: 8 }, (_, i) => {
-  const student = generateName(i + 400);
-  const supervisor = generateName(i + 500);
-  const isActive = i < 4;
-  const startMonth = rnum(i + 90, 1, 6);
-  const endMonth = startMonth + rnum(i + 91, 2, 3);
-  return {
-    id: i + 1,
-    student: student.full,
-    organization: ORGANIZATIONS[i % ORGANIZATIONS.length] as string,
-    startDate: `0${startMonth}.02.2026`.slice(-10),
-    endDate: `0${endMonth}.05.2026`.slice(-10),
-    supervisor: supervisor.short,
-    status: isActive ? 'Joriy' : 'Yakunlangan',
-  };
-});
-
-const PAGE_TABS = [
-  { id: 'current', label: 'Joriy', count: INTERNSHIPS.filter((i) => i.status === 'Joriy').length },
-  { id: 'completed', label: 'Yakunlangan', count: INTERNSHIPS.filter((i) => i.status === 'Yakunlangan').length },
-];
+const STATUS_LABELS: Record<string, string> = { planned: 'Rejalashtirilgan', active: 'Joriy', completed: 'Yakunlangan' };
+const STATUS_VARIANT: Record<string, 'info' | 'success' | 'default'> = { planned: 'default', active: 'info', completed: 'success' };
 
 const columns: Column<Internship>[] = [
+  { key: 'idx', header: 'No', width: '50px', render: (_, index) => <span className="text-slate-500">{index + 1}</span> },
+  { key: 'studentName', header: 'Talaba', render: (row) => <span className="font-medium text-slate-900">{row.studentName}</span> },
+  { key: 'companyName', header: 'Tashkilot' },
+  { key: 'startDate', header: 'Boshlangan', render: (row) => <span className="tabular-nums">{row.startDate}</span> },
+  { key: 'endDate', header: 'Tugash', render: (row) => <span className="tabular-nums">{row.endDate}</span> },
+  { key: 'supervisorName', header: 'Rahbar' },
   {
-    key: 'idx',
-    header: 'No',
-    width: '50px',
-    render: (_, index) => <span className="text-slate-500">{index + 1}</span>,
-  },
-  {
-    key: 'student',
-    header: 'Talaba',
-    render: (row) => <span className="font-medium text-slate-900">{row.student}</span>,
-  },
-  { key: 'organization', header: 'Tashkilot' },
-  {
-    key: 'startDate',
-    header: 'Boshlangan',
-    render: (row) => <span className="tabular-nums">{row.startDate}</span>,
-  },
-  {
-    key: 'endDate',
-    header: 'Tugash',
-    render: (row) => <span className="tabular-nums">{row.endDate}</span>,
-  },
-  { key: 'supervisor', header: 'Rahbar' },
-  {
-    key: 'status',
-    header: 'Holat',
-    render: (row) => (
-      <Badge variant={row.status === 'Joriy' ? 'info' : 'success'} dot>
-        {row.status}
-      </Badge>
-    ),
+    key: 'status', header: 'Holat',
+    render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? 'default'} dot>{STATUS_LABELS[row.status] ?? row.status}</Badge>,
   },
 ];
 
-// --- Component ---
-
 export function InternshipPage() {
-  const [activeTab, setActiveTab] = useState('current');
+  const [activeTab, setActiveTab] = useState('active');
+  const statusFilter = activeTab === 'all' ? undefined : activeTab;
+  const { data, isLoading } = useInternships({ page: 1, pageSize: 50, status: statusFilter });
 
-  const filtered = INTERNSHIPS.filter((i) =>
-    activeTab === 'current' ? i.status === 'Joriy' : i.status === 'Yakunlangan',
-  );
+  const internships = data?.data ?? [];
+  const total = data?.total ?? 0;
+  const activeCount = internships.filter((i) => i.status === 'active').length;
+  const completedCount = internships.filter((i) => i.status === 'completed').length;
+
+  const tabs = [
+    { id: 'active', label: 'Joriy', count: activeCount },
+    { id: 'completed', label: 'Yakunlangan', count: completedCount },
+  ];
 
   return (
     <PageContent>
@@ -107,31 +48,20 @@ export function InternshipPage() {
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
-        <StatCard
-          label="Jami amaliyotchilar"
-          value={86}
-          icon={<Users className="h-[18px] w-[18px]" />}
-          iconBg="#3B82F6"
-        />
-        <StatCard
-          label="Joriy"
-          value={34}
-          icon={<Clock className="h-[18px] w-[18px]" />}
-          iconBg="#F59E0B"
-        />
-        <StatCard
-          label="Yakunlangan"
-          value={52}
-          icon={<CheckCircle className="h-[18px] w-[18px]" />}
-          iconBg="#2DB976"
-        />
+        <StatCard label="Jami amaliyotchilar" value={total} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label="Joriy" value={activeCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label="Yakunlangan" value={completedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
       </div>
 
-      <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-4">
         <Card noPadding>
-          <DataTable data={filtered} columns={columns} keyField="id" />
+          {isLoading ? (
+            <div className="flex justify-center py-12"><Spinner size="lg" /></div>
+          ) : (
+            <DataTable data={internships} columns={columns} keyField="id" emptyMessage="Amaliyotlar topilmadi" />
+          )}
         </Card>
       </div>
     </PageContent>
