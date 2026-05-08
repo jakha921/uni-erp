@@ -1,0 +1,156 @@
+import { useState, useCallback, useMemo } from 'react';
+import { Plus, Search, FileText, CheckCircle, Clock, File } from 'lucide-react';
+import { PageHeader, PageContent } from '@/components/layout';
+import { Card, StatCard } from '@/components/data-display';
+import { Pagination } from '@/components/table';
+import { Button, Spinner } from '@/components/ui';
+import { OrderTable } from '../components/OrderTable';
+import { OrderForm } from '../components/OrderForm';
+import { useOrders, useCreateOrder, useEmployees } from '@/api/hooks/useHr';
+import type { OrderFormData } from '../schemas/order.schema';
+import type { OrderType, OrderStatus } from '@/types/hr';
+
+export function OrdersPage() {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+
+  const { data: ordersData, isLoading } = useOrders();
+  const { data: employeesData } = useEmployees({ pageSize: 100 });
+  const createMutation = useCreateOrder();
+
+  const filteredOrders = (ordersData ?? []).filter((order) => {
+    if (search && !order.employeeName.toLowerCase().includes(search.toLowerCase()) &&
+        !order.number.toLowerCase().includes(search.toLowerCase()) &&
+        !order.title.toLowerCase().includes(search.toLowerCase())) {
+      return false;
+    }
+    if (typeFilter && order.type !== typeFilter) return false;
+    if (statusFilter && order.status !== statusFilter) return false;
+    return true;
+  });
+
+  const pageSize = 20;
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+  const pagedOrders = filteredOrders.slice((page - 1) * pageSize, page * pageSize);
+
+  const handleCreate = useCallback(
+    (formData: OrderFormData) => {
+      createMutation.mutate(
+        {
+          type: formData.type as OrderType,
+          employeeId: Number(formData.employeeId),
+          effectiveDate: formData.effectiveDate,
+          basis: formData.basis,
+          title: formData.title,
+        },
+        { onSuccess: () => setFormOpen(false) },
+      );
+    },
+    [createMutation],
+  );
+
+  const allOrders = ordersData ?? [];
+  const signedCount = useMemo(() => allOrders.filter((o) => o.status === 'signed').length, [allOrders]);
+  const reviewCount = useMemo(() => allOrders.filter((o) => o.status === 'review').length, [allOrders]);
+  const draftCount = useMemo(() => allOrders.filter((o) => o.status === 'draft').length, [allOrders]);
+
+  return (
+    <PageContent>
+      <PageHeader
+        title="Kadrlar buyruqlari"
+        subtitle={`Jami: ${filteredOrders.length} ta`}
+        breadcrumbs={[{ label: 'Kadrlar', path: '/hr' }, { label: 'Buyruqlar' }]}
+      />
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+        <StatCard label="Jami buyruqlar" value={allOrders.length} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label="Imzolangan" value={signedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label="Ko'rib chiqishda" value={reviewCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label="Loyihalar" value={draftCount} icon={<File className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
+      </div>
+
+      {/* Card-toolbar */}
+      <Card className="mb-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Buyruq raqami yoki nomi bo'yicha qidirish…"
+              className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+            />
+          </div>
+          <select
+            value={typeFilter}
+            onChange={(e) => { setTypeFilter(e.target.value as OrderType | ''); setPage(1); }}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Buyruq turi</option>
+            <option value="hire">Ishga qabul qilish</option>
+            <option value="fire">Ishdan bo&apos;shatish</option>
+            <option value="promotion">Lavozimga ko&apos;tarish</option>
+            <option value="salary_change">Maosh o&apos;zgarishi</option>
+            <option value="leave">Ta&apos;tilga jo&apos;natish</option>
+            <option value="business_trip">Xizmat safari</option>
+            <option value="bonus">Mukofotlash</option>
+            <option value="penalty">Hayfsan e&apos;lon qilish</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value as OrderStatus | ''); setPage(1); }}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Holat</option>
+            <option value="draft">Loyiha</option>
+            <option value="review">Ko&apos;rib chiqilmoqda</option>
+            <option value="signed">Imzolangan</option>
+            <option value="cancelled">Bekor qilingan</option>
+          </select>
+          <div className="flex-1" />
+          <Button
+            leftIcon={<Plus className="h-4 w-4" />}
+            onClick={() => setFormOpen(true)}
+          >
+            Yangi buyruq
+          </Button>
+        </div>
+      </Card>
+
+      {/* Table */}
+      <Card noPadding className="overflow-hidden">
+        {isLoading ? (
+          <div className="flex h-64 items-center justify-center"><Spinner /></div>
+        ) : (
+          <>
+            <OrderTable data={pagedOrders} />
+            {totalPages > 1 && (
+              <div className="border-t border-[#F1F5F9] px-4 py-3">
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  total={filteredOrders.length}
+                  pageSize={pageSize}
+                  onPageChange={setPage}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+
+      <OrderForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleCreate}
+        employees={employeesData?.data ?? []}
+        loading={createMutation.isPending}
+      />
+    </PageContent>
+  );
+}

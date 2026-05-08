@@ -1,0 +1,366 @@
+import { useState, useMemo, useCallback } from 'react';
+import {
+  ClipboardList,
+  Plus,
+  Clock,
+  AlertTriangle,
+  LayoutGrid,
+  List,
+  User,
+  Calendar,
+} from 'lucide-react';
+import { PageContent, PageHeader } from '@/components/layout';
+import { StatCard } from '@/components/data-display';
+import { Badge, Button } from '@/components/ui';
+import { DataTable, type Column } from '@/components/table/DataTable';
+import { SearchInput } from '@/components/form/SearchInput';
+import { Select } from '@/components/ui/Select';
+import { generateName, pick, rnum } from '@/api/mock/shared-data';
+
+type Priority = 'Yuqori' | "O'rta" | 'Past';
+type TaskStatus = 'Yangi' | 'Jarayonda' | 'Bajarildi' | "Muddati o'tgan";
+
+interface Task {
+  id: number;
+  title: string;
+  assignee: string;
+  assigner: string;
+  deadline: string;
+  priority: Priority;
+  status: TaskStatus;
+}
+
+const PRIORITIES: Priority[] = ['Yuqori', "O'rta", 'Past'];
+const STATUSES: TaskStatus[] = ['Yangi', 'Jarayonda', 'Bajarildi', "Muddati o'tgan"];
+
+const TASK_TITLES = [
+  'Bahorgi sessiya hisobotini tayyorlash',
+  "Imtihon biletlarini yangilash",
+  "O'quv rejani qayta ko'rib chiqish",
+  'Konferensiya materiallarini yuklash',
+  "Talabalar reytingini e'lon qilish",
+  'Kutubxona fondini yangilash',
+  "TTJ bilan shartnoma tuzish",
+  'Laboratoriya jihozlarini buyurtma qilish',
+  "Dars jadvalini kelgusi semestr uchun tuzish",
+  "Amaliyot o'rinlarini kelishish",
+  "Fan dasturlarini ECTS ga moslashtirish",
+  'Stipendiya buyrug\'ini tayyorlash',
+  "Kafedra hisobotini to'ldirish",
+  "Diplom ishlarini tekshirish",
+];
+
+function generateTasks(): Task[] {
+  return TASK_TITLES.map((title, i) => {
+    const assigneeName = generateName(i + 100);
+    const assignerName = generateName(i + 200);
+    const day = rnum(i + 300, 1, 28);
+    const month = rnum(i + 400, 5, 7);
+    return {
+      id: i + 1,
+      title,
+      assignee: assigneeName.short,
+      assigner: assignerName.short,
+      deadline: `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.2026`,
+      priority: pick(PRIORITIES, i + 500),
+      status: pick(STATUSES, i + 600),
+    };
+  });
+}
+
+const TASKS = generateTasks();
+
+const KANBAN_COLUMNS: { id: TaskStatus; label: string; color: string; bg: string }[] = [
+  { id: 'Yangi', label: 'Yangi', color: '#3B82F6', bg: '#EFF6FF' },
+  { id: 'Jarayonda', label: 'Jarayonda', color: '#F59E0B', bg: '#FFFBEB' },
+  { id: 'Bajarildi', label: 'Bajarildi', color: '#2DB976', bg: '#ECFDF5' },
+  { id: "Muddati o'tgan", label: "Muddati o'tgan", color: '#EF4444', bg: '#FEF2F2' },
+];
+
+function priorityVariant(p: Priority): 'error' | 'warning' | 'info' {
+  if (p === 'Yuqori') return 'error';
+  if (p === "O'rta") return 'warning';
+  return 'info';
+}
+
+function statusVariant(s: TaskStatus): 'info' | 'warning' | 'success' | 'error' {
+  if (s === 'Yangi') return 'info';
+  if (s === 'Jarayonda') return 'warning';
+  if (s === 'Bajarildi') return 'success';
+  return 'error';
+}
+
+type ViewMode = 'list' | 'kanban';
+
+export function TasksPage() {
+  const [view, setView] = useState<ViewMode>('kanban');
+  const [search, setSearch] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [tasks, setTasks] = useState<Task[]>(TASKS);
+  const [dragId, setDragId] = useState<number | null>(null);
+  const [overCol, setOverCol] = useState<TaskStatus | null>(null);
+
+  const filtered = useMemo(() => {
+    return tasks.filter((t) => {
+      if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
+      if (priorityFilter && t.priority !== priorityFilter) return false;
+      if (statusFilter && t.status !== statusFilter) return false;
+      return true;
+    });
+  }, [tasks, search, priorityFilter, statusFilter]);
+
+  const counts = useMemo(() => {
+    const c = { total: tasks.length, yangi: 0, jarayonda: 0, expired: 0 };
+    for (const t of tasks) {
+      if (t.status === 'Yangi') c.yangi++;
+      else if (t.status === 'Jarayonda') c.jarayonda++;
+      else if (t.status === "Muddati o'tgan") c.expired++;
+    }
+    return c;
+  }, [tasks]);
+
+  const handleDrop = useCallback(
+    (colId: TaskStatus) => {
+      if (dragId !== null) {
+        setTasks((ts) => ts.map((t) => (t.id === dragId ? { ...t, status: colId } : t)));
+      }
+      setDragId(null);
+      setOverCol(null);
+    },
+    [dragId],
+  );
+
+  const columns: Column<Task>[] = [
+    {
+      key: 'id',
+      header: '#',
+      width: '60px',
+      render: (row) => <span className="text-muted">{row.id}</span>,
+    },
+    {
+      key: 'title',
+      header: 'Topshiriq',
+      render: (row) => <span className="font-medium text-slate-900">{row.title}</span>,
+    },
+    {
+      key: 'assigner',
+      header: 'Topshiruvchi',
+      render: (row) => <span className="text-slate-600">{row.assigner}</span>,
+    },
+    {
+      key: 'assignee',
+      header: 'Bajaruvchi',
+      render: (row) => <span className="text-slate-600">{row.assignee}</span>,
+    },
+    {
+      key: 'deadline',
+      header: 'Muddat',
+      render: (row) => (
+        <span className="text-muted tabular-nums text-xs">{row.deadline}</span>
+      ),
+    },
+    {
+      key: 'priority',
+      header: 'Muhimlik',
+      render: (row) => (
+        <Badge variant={priorityVariant(row.priority)} dot>
+          {row.priority}
+        </Badge>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Holat',
+      render: (row) => (
+        <Badge variant={statusVariant(row.status)} dot>
+          {row.status}
+        </Badge>
+      ),
+    },
+  ];
+
+  return (
+    <PageContent>
+      <PageHeader
+        title="Topshiriqlar"
+        subtitle="Barcha topshiriqlar va ularning holati"
+        breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Topshiriqlar' }]}
+        actions={
+          <Button leftIcon={<Plus className="h-4 w-4" />}>
+            Topshiriq qo{"'"}shish
+          </Button>
+        }
+      />
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <StatCard
+          label="Jami"
+          value={counts.total}
+          icon={<ClipboardList className="h-[18px] w-[18px]" />}
+          iconBg="#3B82F6"
+        />
+        <StatCard
+          label="Yangi"
+          value={counts.yangi}
+          icon={<Plus className="h-[18px] w-[18px]" />}
+          iconBg="#8B5CF6"
+        />
+        <StatCard
+          label="Jarayonda"
+          value={counts.jarayonda}
+          icon={<Clock className="h-[18px] w-[18px]" />}
+          iconBg="#F59E0B"
+        />
+        <StatCard
+          label="Muddati o'tgan"
+          value={counts.expired}
+          icon={<AlertTriangle className="h-[18px] w-[18px]" />}
+          iconBg="#EF4444"
+        />
+      </div>
+
+      {/* Toolbar */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="flex gap-1 rounded-lg border border-border bg-white p-0.5">
+          <button
+            onClick={() => setView('kanban')}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              view === 'kanban'
+                ? 'bg-primary-500 text-white'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Kanban
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              view === 'list'
+                ? 'bg-primary-500 text-white'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <List className="h-3.5 w-3.5" />
+            Ro{"'"}yxat
+          </button>
+        </div>
+
+        <SearchInput
+          placeholder="Topshiriq izlash..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch('')}
+          className="w-64"
+        />
+
+        <Select
+          options={PRIORITIES.map((p) => ({ value: p, label: p }))}
+          placeholder="Muhimlik"
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+        />
+
+        <Select
+          options={STATUSES.map((s) => ({ value: s, label: s }))}
+          placeholder="Holat"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        />
+      </div>
+
+      {/* List View */}
+      {view === 'list' && (
+        <div className="rounded-2xl bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden">
+          <DataTable data={filtered} columns={columns} keyField="id" />
+        </div>
+      )}
+
+      {/* Kanban View */}
+      {view === 'kanban' && (
+        <div className="grid grid-cols-4 gap-3.5">
+          {KANBAN_COLUMNS.map((col) => {
+            const colTasks = filtered.filter((t) => t.status === col.id);
+            return (
+              <div
+                key={col.id}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setOverCol(col.id);
+                }}
+                onDragLeave={() => setOverCol(null)}
+                onDrop={() => handleDrop(col.id)}
+                className="rounded-xl p-3 min-h-[420px] transition-colors"
+                style={{
+                  background: overCol === col.id ? col.bg : '#F8FAFB',
+                  border:
+                    overCol === col.id
+                      ? `2px dashed ${col.color}`
+                      : '2px dashed transparent',
+                }}
+              >
+                {/* Column header */}
+                <div className="flex items-center gap-2 px-1.5 pb-3">
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ background: col.color }}
+                  />
+                  <span className="text-[13px] font-semibold text-slate-900 flex-1">
+                    {col.label}
+                  </span>
+                  <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-muted">
+                    {colTasks.length}
+                  </span>
+                </div>
+
+                {/* Cards */}
+                <div className="flex flex-col gap-2">
+                  {colTasks.map((t) => (
+                    <div
+                      key={t.id}
+                      draggable
+                      onDragStart={() => setDragId(t.id)}
+                      onDragEnd={() => {
+                        setDragId(null);
+                        setOverCol(null);
+                      }}
+                      className="cursor-grab rounded-[10px] border border-slate-200 bg-white p-3 transition-shadow hover:shadow-md"
+                      style={{
+                        opacity: dragId === t.id ? 0.5 : 1,
+                        boxShadow:
+                          dragId === t.id
+                            ? '0 8px 16px rgba(0,0,0,0.12)'
+                            : '0 1px 2px rgba(0,0,0,0.05)',
+                      }}
+                    >
+                      <div className="mb-2">
+                        <Badge variant={priorityVariant(t.priority)} dot>
+                          {t.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-[13px] font-medium leading-tight text-slate-900">
+                        {t.title}
+                      </p>
+                      <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2.5 text-[11px] text-muted">
+                        <span className="inline-flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          {t.assignee}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {t.deadline}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </PageContent>
+  );
+}

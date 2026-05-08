@@ -1,0 +1,76 @@
+import type {
+  Student,
+  StudentListItem,
+  StudentListParams,
+  CreateStudentDto,
+  UpdateStudentDto,
+  StudentGrade,
+  StudentAttendance,
+  StudentStatistics,
+} from '@/types/student';
+import type { PaginatedResponse } from '@/types/common';
+import { USE_MOCK, ENDPOINTS } from '@/config/api';
+import { apiClient } from '../client';
+import { StudentsMockService } from '../mock/students.mock';
+
+export interface IStudentsService {
+  getList(params: StudentListParams): Promise<PaginatedResponse<StudentListItem>>;
+  getById(id: number): Promise<Student>;
+  create(data: CreateStudentDto): Promise<Student>;
+  update(id: number, data: UpdateStudentDto): Promise<Student>;
+  delete(id: number): Promise<void>;
+  getStatistics(): Promise<StudentStatistics>;
+  getGrades(studentId: number): Promise<StudentGrade[]>;
+  getAttendance(studentId: number): Promise<StudentAttendance[]>;
+}
+
+class StudentsApiService implements IStudentsService {
+  async getList(params: StudentListParams): Promise<PaginatedResponse<StudentListItem>> {
+    return apiClient.get<PaginatedResponse<StudentListItem>>(ENDPOINTS.students.list, {
+      params: {
+        page: params.page,
+        page_size: params.pageSize,
+        search: params.search,
+        faculty_id: params.facultyId,
+        department_id: params.departmentId,
+        group_id: params.groupId,
+        course: params.course,
+        status: params.status,
+        education_form: params.educationForm,
+        payment_form: params.paymentForm,
+      },
+    });
+  }
+
+  async getById(id: number): Promise<Student> {
+    return apiClient.get<Student>(ENDPOINTS.students.detail(id));
+  }
+
+  async create(data: CreateStudentDto): Promise<Student> {
+    return apiClient.post<Student>(ENDPOINTS.students.create, data);
+  }
+
+  async update(id: number, data: UpdateStudentDto): Promise<Student> {
+    return apiClient.patch<Student>(ENDPOINTS.students.detail(id), data);
+  }
+
+  async delete(id: number): Promise<void> {
+    await apiClient.delete(ENDPOINTS.students.detail(id));
+  }
+
+  async getStatistics(): Promise<StudentStatistics> {
+    return apiClient.get<StudentStatistics>(ENDPOINTS.students.statistics);
+  }
+
+  async getGrades(studentId: number): Promise<StudentGrade[]> {
+    return apiClient.get<StudentGrade[]>(ENDPOINTS.students.grades(studentId));
+  }
+
+  async getAttendance(studentId: number): Promise<StudentAttendance[]> {
+    return apiClient.get<StudentAttendance[]>(ENDPOINTS.students.attendance(studentId));
+  }
+}
+
+export const studentsService: IStudentsService = USE_MOCK
+  ? new StudentsMockService()
+  : new StudentsApiService();
