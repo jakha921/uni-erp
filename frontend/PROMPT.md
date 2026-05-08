@@ -968,7 +968,7 @@ class Leave(BaseModel):
     ```
   - Commit: `feat: add Docker setup for production`
 
-### - [ ] PHASE 19: Deploy to Server + CI Basics
+### - [x] PHASE 19: Deploy to Server + CI Basics
   - **Цель:** Деплой на сервер, SSL, базовый CI.
   - **Действия:**
     - SSH на сервер, установить Docker + Docker Compose
