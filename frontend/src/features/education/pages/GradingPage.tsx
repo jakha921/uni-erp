@@ -5,6 +5,7 @@ import { Card } from '@/components/data-display';
 import { Badge, Button, Avatar } from '@/components/ui';
 import { generateName, rnum, SUBJECTS } from '@/api/mock/shared-data';
 import type { PersonName } from '@/types/shared';
+import { useSubjects, useGrades } from '@/api/hooks/useEducation';
 
 interface Student {
   id: string;
@@ -64,6 +65,8 @@ function gradeColor(value: number): string {
 }
 
 export function GradingPage() {
+  useSubjects();
+  useGrades();
   const [group, setGroup] = useState('301-A');
   const [subject, setSubject] = useState('Algoritmlar');
   const [grades, setGrades] = useState<Record<string, Grades>>(initGrades);

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button } from '@/components/ui';
+import { useSchedules } from '@/api/hooks/useEducation';
 
 type ViewMode = 'week' | 'day' | 'month';
 type EventType = 'lecture' | 'practice' | 'lab' | 'seminar';
@@ -53,6 +54,7 @@ const SLOT_HEIGHT = 80;
 
 export function SchedulePage() {
   const [view, setView] = useState<ViewMode>('week');
+  useSchedules();
 
   return (
     <PageContent>

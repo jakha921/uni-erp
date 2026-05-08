@@ -33,4 +33,13 @@ export const ENDPOINTS = {
     leaves: '/hr/leaves',
     dashboard: '/hr/dashboard',
   },
+  education: {
+    subjects: '/education/subjects',
+    schedules: '/education/schedules',
+    scheduleDetail: (id: number) => `/education/schedules/${id}`,
+    attendanceBulk: '/education/attendance/bulk',
+    gradesBulk: '/education/grades/bulk',
+    grades: '/education/grades',
+    attendance: '/education/attendance',
+  },
 } as const;

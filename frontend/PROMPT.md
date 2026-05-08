@@ -834,7 +834,7 @@ class Leave(BaseModel):
     ```
   - Commit: `feat: add attendance and grading API with bulk endpoints`
 
-### - [ ] PHASE 13: Frontend Integration — Education
+### - [x] PHASE 13: Frontend Integration — Education
   - **Цель:** Подключить расписание, посещаемость, оценки к реальному API.
   - **Обновить файлы:**
     - Создать `frontend/src/api/services/education.service.ts` — IEducationService + EducationApiService

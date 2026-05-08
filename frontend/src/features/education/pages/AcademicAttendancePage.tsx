@@ -5,6 +5,7 @@ import { Card } from '@/components/data-display';
 import { Button, Avatar } from '@/components/ui';
 import { generateName, seed, SUBJECTS } from '@/api/mock/shared-data';
 import type { PersonName } from '@/types/shared';
+import { useSchedules } from '@/api/hooks/useEducation';
 
 type AttendanceStatus = 'P' | 'N' | 'U';
 
@@ -46,6 +47,7 @@ function cycleStatus(v: AttendanceStatus): AttendanceStatus {
 }
 
 export function AcademicAttendancePage() {
+  useSchedules();
   const [group, setGroup] = useState('301-A');
   const [subject, setSubject] = useState('Algoritmlar');
   const [grid, setGrid] = useState<Record<string, AttendanceStatus[]>>(initGrid);
