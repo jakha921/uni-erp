@@ -5,74 +5,77 @@ import { DataTable, Pagination } from '@/components/table';
 import type { Column } from '@/components/table';
 import { Card, StatCard } from '@/components/data-display';
 import { Avatar, Badge, Button } from '@/components/ui';
-import type { Lead, LeadStatus, LeadSource } from '@/types/crm';
-import { generateName, generatePhone, pick, rnum, DIRECTIONS } from '@/api/mock/shared-data';
+import type { LeadListItem, LeadStatus, LeadSource } from '@/types/crm';
+import { useLeads, useCrmStats } from '@/api/hooks/useCrm';
 
-const CRM_STATUSES: LeadStatus[] = ['Yangi', "Qo'ng'iroq", 'Kutilmoqda', 'Qabul', 'Rad'];
-const CRM_SOURCES: LeadSource[] = ['Website', 'Telegram', 'Instagram', 'Referral'];
-const ASSIGNEES = ['Olimov B.', 'Nazarova M.', 'Saidov R.', 'Xolmatova D.'];
+const STATUS_LABELS: Record<LeadStatus, string> = {
+  new: 'Yangi',
+  contacted: "Qo'ng'iroq",
+  interested: 'Qiziqmoqda',
+  applied: 'Hujjat topshirdi',
+  enrolled: 'Qabul',
+  rejected: 'Rad',
+};
 
-const LEADS: Lead[] = Array.from({ length: 18 }, (_, i) => ({
-  id: i + 1,
-  name: generateName(i + 201, 0.48),
-  phone: generatePhone(i + 203),
-  direction: pick(DIRECTIONS, i + 205),
-  source: pick(CRM_SOURCES, i + 207),
-  status: pick(CRM_STATUSES, i + 209),
-  assignee: pick(ASSIGNEES, i + 211),
-  date: `${rnum(i + 213, 1, 23)}.04.2026`,
-}));
+const SOURCE_LABELS: Record<LeadSource, string> = {
+  website: 'Website',
+  telegram: 'Telegram',
+  instagram: 'Instagram',
+  referral: 'Tavsiya',
+  event: 'Tadbir',
+  call: "Qo'ng'iroq",
+};
 
-const STATUS_TABS: Array<LeadStatus | 'Barchasi'> = ['Barchasi', 'Yangi', "Qo'ng'iroq", 'Kutilmoqda', 'Qabul', 'Rad'];
+const STATUS_TABS: Array<LeadStatus | 'all'> = ['all', 'new', 'contacted', 'interested', 'applied', 'enrolled', 'rejected'];
+const STATUS_TAB_LABELS: Record<LeadStatus | 'all', string> = {
+  all: 'Barchasi',
+  ...STATUS_LABELS,
+};
 
 const STATUS_BADGE_VARIANT: Record<LeadStatus, 'info' | 'warning' | 'default' | 'success' | 'error'> = {
-  Yangi: 'info',
-  "Qo'ng'iroq": 'warning',
-  Kutilmoqda: 'default',
-  Qabul: 'success',
-  Rad: 'error',
+  new: 'info',
+  contacted: 'warning',
+  interested: 'default',
+  applied: 'default',
+  enrolled: 'success',
+  rejected: 'error',
 };
 
 const SOURCE_VARIANT: Record<LeadSource, 'info' | 'success' | 'warning' | 'default'> = {
-  Website: 'success',
-  Telegram: 'info',
-  Instagram: 'warning',
-  Referral: 'default',
+  website: 'success',
+  telegram: 'info',
+  instagram: 'warning',
+  referral: 'default',
+  event: 'default',
+  call: 'default',
 };
 
 const PAGE_SIZE = 10;
 
 export function CrmListPage() {
-  const [statusTab, setStatusTab] = useState<LeadStatus | 'Barchasi'>('Barchasi');
+  const [statusTab, setStatusTab] = useState<LeadStatus | 'all'>('all');
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<LeadSource | ''>('');
   const [page, setPage] = useState(1);
 
-  const filtered = useMemo(() => {
-    return LEADS.filter((lead) => {
-      if (statusTab !== 'Barchasi' && lead.status !== statusTab) return false;
-      if (sourceFilter && lead.source !== sourceFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (
-          !lead.name.full.toLowerCase().includes(q) &&
-          !lead.phone.includes(q)
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [statusTab, search, sourceFilter]);
+  const { data: leadsData } = useLeads({
+    page,
+    pageSize: PAGE_SIZE,
+    search: search || undefined,
+    status: statusTab !== 'all' ? statusTab : undefined,
+    source: sourceFilter || undefined,
+  });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const { data: stats } = useCrmStats();
 
+  const leads = leadsData?.data ?? [];
+  const total = leadsData?.total ?? 0;
+  const totalPages = leadsData?.totalPages ?? 1;
 
-  const columns: Column<Lead>[] = [
+  const columns: Column<LeadListItem>[] = useMemo(() => [
     {
       key: 'id',
-      header: '№',
+      header: '#',
       width: '60px',
       render: (row) => (
         <span className="text-xs text-muted tabular-nums">
@@ -81,14 +84,16 @@ export function CrmListPage() {
       ),
     },
     {
-      key: 'name',
+      key: 'firstName',
       header: 'Abituriyent',
       sortable: true,
       render: (row) => (
         <div className="flex items-center gap-2.5">
-          <Avatar name={row.name.full} size="sm" />
+          <Avatar name={`${row.lastName} ${row.firstName}`} size="sm" />
           <div>
-            <div className="font-medium text-slate-900">{row.name.short}</div>
+            <div className="font-medium text-slate-900">
+              {row.lastName} {row.firstName[0]}.
+            </div>
             <div className="text-xs text-muted">{row.phone}</div>
           </div>
         </div>
@@ -103,31 +108,31 @@ export function CrmListPage() {
       key: 'source',
       header: 'Manba',
       render: (row) => (
-        <Badge variant={SOURCE_VARIANT[row.source]}>{row.source}</Badge>
+        <Badge variant={SOURCE_VARIANT[row.source]}>{SOURCE_LABELS[row.source]}</Badge>
       ),
     },
     {
-      key: 'assignee',
+      key: 'assigneeName',
       header: "Mas'ul",
-      render: (row) => <span className="text-[13px]">{row.assignee}</span>,
+      render: (row) => <span className="text-[13px]">{row.assigneeName}</span>,
     },
     {
       key: 'status',
       header: 'Status',
       render: (row) => (
         <Badge variant={STATUS_BADGE_VARIANT[row.status]} dot>
-          {row.status}
+          {STATUS_LABELS[row.status]}
         </Badge>
       ),
     },
     {
-      key: 'date',
+      key: 'createdAt',
       header: 'Sana',
       render: (row) => (
-        <span className="text-xs text-muted">{row.date}</span>
+        <span className="text-xs text-muted">{row.createdAt}</span>
       ),
     },
-  ];
+  ], []);
 
   return (
     <PageContent>
@@ -142,10 +147,10 @@ export function CrmListPage() {
 
       {/* KPI Cards */}
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Jami arizalar" value="248" sub="+23 bu hafta" />
-        <StatCard label="Yangi" value="42" sub="Ko'rib chiqilmagan" />
-        <StatCard label="Konversiya" value="28%" sub="+4% bu oy" />
-        <StatCard label="Qabul qilindi" value="69" sub="Bu yil" />
+        <StatCard label="Jami arizalar" value={String(stats?.totalLeads ?? '-')} sub="+23 bu hafta" />
+        <StatCard label="Yangi" value={String(stats?.newLeads ?? '-')} sub="Ko'rib chiqilmagan" />
+        <StatCard label="Konversiya" value={`${stats?.conversionRate ?? '-'}%`} sub="+4% bu oy" />
+        <StatCard label="Qabul qilindi" value={String(stats?.enrolledLeads ?? '-')} sub="Bu yil" />
         <StatCard label="O'rtacha vaqt" value="3.2 kun" sub="Javob vaqti" />
       </div>
 
@@ -164,7 +169,7 @@ export function CrmListPage() {
                     : 'rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-muted hover:text-slate-700'
                 }
               >
-                {s}
+                {STATUS_TAB_LABELS[s]}
               </button>
             ))}
           </div>
@@ -190,8 +195,8 @@ export function CrmListPage() {
             className="h-9 w-[160px] rounded-lg border border-border px-3 text-sm"
           >
             <option value="">Barcha manbalar</option>
-            {CRM_SOURCES.map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {(Object.keys(SOURCE_LABELS) as LeadSource[]).map((s) => (
+              <option key={s} value={s}>{SOURCE_LABELS[s]}</option>
             ))}
           </select>
 
@@ -201,8 +206,8 @@ export function CrmListPage() {
         </div>
 
         {/* Table */}
-        <DataTable<Lead>
-          data={paginated}
+        <DataTable<LeadListItem>
+          data={leads}
           columns={columns}
           keyField="id"
           actions={() => (
@@ -217,7 +222,7 @@ export function CrmListPage() {
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
-            total={filtered.length}
+            total={total}
             pageSize={PAGE_SIZE}
           />
         </div>

@@ -8,3 +8,7 @@ export { Avatar } from './Avatar';
 export { Spinner } from './Spinner';
 export { Skeleton } from './Skeleton';
 export { Tooltip } from './Tooltip';
+export { ProgressBar } from './ProgressBar';
+export { Accordion } from './Accordion';
+export { AlertBanner } from './AlertBanner';
+export { Stepper } from './Stepper';

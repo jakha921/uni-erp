@@ -1,25 +1,28 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Calendar, User, Plus, LayoutGrid, BarChart3, Filter } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Avatar, Badge, Button } from '@/components/ui';
-import type { Lead, LeadStatus, LeadSource } from '@/types/crm';
-import { generateName, generatePhone, pick, rnum, DIRECTIONS } from '@/api/mock/shared-data';
+import type { LeadStatus, LeadSource } from '@/types/crm';
+import { useLeads } from '@/api/hooks/useCrm';
 import { cn } from '@/lib/utils';
 
-const CRM_STATUSES: LeadStatus[] = ['Yangi', "Qo'ng'iroq", 'Kutilmoqda', 'Qabul', 'Rad'];
-const CRM_SOURCES: LeadSource[] = ['Website', 'Telegram', 'Instagram', 'Referral'];
-const ASSIGNEES = ['Olimov B.', 'Nazarova M.', 'Saidov R.', 'Xolmatova D.'];
+const SOURCE_LABELS: Record<LeadSource, string> = {
+  website: 'Website',
+  telegram: 'Telegram',
+  instagram: 'Instagram',
+  referral: 'Tavsiya',
+  event: 'Tadbir',
+  call: "Qo'ng'iroq",
+};
 
-const INITIAL_LEADS: Lead[] = Array.from({ length: 18 }, (_, i) => ({
-  id: i + 1,
-  name: generateName(i + 201, 0.48),
-  phone: generatePhone(i + 203),
-  direction: pick(DIRECTIONS, i + 205),
-  source: pick(CRM_SOURCES, i + 207),
-  status: pick(CRM_STATUSES, i + 209),
-  assignee: pick(ASSIGNEES, i + 211),
-  date: `${rnum(i + 213, 1, 23)}.04.2026`,
-}));
+const SOURCE_VARIANT: Record<LeadSource, 'info' | 'success' | 'warning' | 'default'> = {
+  website: 'success',
+  telegram: 'info',
+  instagram: 'warning',
+  referral: 'default',
+  event: 'default',
+  call: 'default',
+};
 
 interface StageConfig {
   id: LeadStatus;
@@ -29,24 +32,38 @@ interface StageConfig {
 }
 
 const STAGES: StageConfig[] = [
-  { id: 'Yangi', label: 'Yangi', color: '#3B82F6', bg: 'bg-blue-50' },
-  { id: "Qo'ng'iroq", label: "Qo'ng'iroq", color: '#F59E0B', bg: 'bg-amber-50' },
-  { id: 'Kutilmoqda', label: 'Hujjat kutilmoqda', color: '#64748B', bg: 'bg-slate-100' },
-  { id: 'Qabul', label: 'Qabul qilindi', color: '#2DB976', bg: 'bg-green-50' },
-  { id: 'Rad', label: 'Rad etildi', color: '#EF4444', bg: 'bg-red-50' },
+  { id: 'new', label: 'Yangi', color: '#3B82F6', bg: 'bg-blue-50' },
+  { id: 'contacted', label: "Qo'ng'iroq", color: '#F59E0B', bg: 'bg-amber-50' },
+  { id: 'interested', label: 'Qiziqmoqda', color: '#8B5CF6', bg: 'bg-violet-50' },
+  { id: 'applied', label: 'Hujjat topshirdi', color: '#64748B', bg: 'bg-slate-100' },
+  { id: 'enrolled', label: 'Qabul qilindi', color: '#2DB976', bg: 'bg-green-50' },
+  { id: 'rejected', label: 'Rad etildi', color: '#EF4444', bg: 'bg-red-50' },
 ];
 
-const SOURCE_VARIANT: Record<LeadSource, 'info' | 'success' | 'warning' | 'default'> = {
-  Website: 'success',
-  Telegram: 'info',
-  Instagram: 'warning',
-  Referral: 'default',
-};
-
 export function CrmKanbanPage() {
-  const [cards, setCards] = useState<Lead[]>(() => INITIAL_LEADS.map((l) => ({ ...l })));
+  const { data: leadsData } = useLeads({ pageSize: 100 });
+  const allLeads = leadsData?.data ?? [];
+
+  // Transform LeadListItem to Lead-like objects for kanban cards
+  const initialCards = useMemo(() =>
+    allLeads.map((l) => ({
+      ...l,
+      status: l.status,
+    })),
+    [allLeads],
+  );
+
+  const [statusOverrides, setStatusOverrides] = useState<Record<number, LeadStatus>>({});
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [overStage, setOverStage] = useState<LeadStatus | null>(null);
+
+  const cards = useMemo(() =>
+    initialCards.map((c) => ({
+      ...c,
+      status: statusOverrides[c.id] ?? c.status,
+    })),
+    [initialCards, statusOverrides],
+  );
 
   const handleDragStart = useCallback((id: number) => {
     setDraggingId(id);
@@ -64,9 +81,7 @@ export function CrmKanbanPage() {
 
   const handleDrop = useCallback((stageId: LeadStatus) => {
     if (draggingId !== null) {
-      setCards((prev) =>
-        prev.map((c) => (c.id === draggingId ? { ...c, status: stageId } : c)),
-      );
+      setStatusOverrides((prev) => ({ ...prev, [draggingId]: stageId }));
     }
     setDraggingId(null);
     setOverStage(null);
@@ -104,7 +119,7 @@ export function CrmKanbanPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-5 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-5 md:grid-cols-3 lg:grid-cols-6">
         {STAGES.map((stage) => {
           const stageCards = cards.filter((c) => c.status === stage.id);
           const isOver = overStage === stage.id;
@@ -162,14 +177,28 @@ export function CrmKanbanPage() {
   );
 }
 
+interface KanbanCardData {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  direction: string;
+  source: LeadSource;
+  assigneeName: string;
+  createdAt: string;
+}
+
 interface KanbanCardProps {
-  card: Lead;
+  card: KanbanCardData;
   isDragging: boolean;
   onDragStart: () => void;
   onDragEnd: () => void;
 }
 
 function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProps) {
+  const fullName = `${card.lastName} ${card.firstName}`;
+  const shortName = `${card.lastName} ${card.firstName[0]}.`;
+
   return (
     <div
       draggable
@@ -184,10 +213,10 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProp
     >
       {/* Header: Avatar + Name */}
       <div className="flex items-start gap-2.5">
-        <Avatar name={card.name.full} size="sm" />
+        <Avatar name={fullName} size="sm" />
         <div className="min-w-0 flex-1">
           <div className="text-[13px] font-semibold leading-tight text-slate-900">
-            {card.name.short}
+            {shortName}
           </div>
           <div className="mt-0.5 text-[11px] text-muted">{card.phone}</div>
         </div>
@@ -196,18 +225,18 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProp
       {/* Badges */}
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         <Badge>{card.direction}</Badge>
-        <Badge variant={SOURCE_VARIANT[card.source]}>{card.source}</Badge>
+        <Badge variant={SOURCE_VARIANT[card.source]}>{SOURCE_LABELS[card.source]}</Badge>
       </div>
 
       {/* Footer */}
       <div className="mt-2.5 flex items-center justify-between border-t border-[#F1F5F9] pt-2.5 text-[11px] text-muted">
         <span className="inline-flex items-center gap-1">
           <Calendar className="h-3 w-3" />
-          {card.date}
+          {card.createdAt}
         </span>
         <span className="inline-flex items-center gap-1">
           <User className="h-3 w-3" />
-          {card.assignee}
+          {card.assigneeName}
         </span>
       </div>
     </div>

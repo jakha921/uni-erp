@@ -6,3 +6,6 @@ export { FormTextarea } from './FormTextarea';
 export { FormPhoneInput } from './FormPhoneInput';
 export { FormMoneyInput } from './FormMoneyInput';
 export { SearchInput } from './SearchInput';
+export { DateRangePicker } from './DateRangePicker';
+export { Combobox, type ComboboxOption } from './Combobox';
+export { FileUpload } from './FileUpload';
