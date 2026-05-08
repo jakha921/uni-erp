@@ -148,3 +148,33 @@ def test_create_leave(auth_client, setup_data):
     )
     assert resp.status_code == 201
     assert Leave.objects.filter(employee=setup_data["employee"], type="annual").exists()
+
+
+@pytest.mark.django_db
+def test_hr_attendance(auth_client, setup_data):
+    url = reverse("hr-attendance")
+    resp = auth_client.get(url, {"year": 2025, "month": 5})
+    assert resp.status_code == 200
+    rows = resp.json()
+    assert isinstance(rows, list)
+    assert len(rows) >= 1
+    row = rows[0]
+    assert "employeeId" in row
+    assert "employeeName" in row
+    assert "days" in row
+    assert len(row["days"]) == 31  # May has 31 days
+    assert all("date" in d and "status" in d for d in row["days"])
+
+
+@pytest.mark.django_db
+def test_hr_dashboard_full(auth_client, setup_data):
+    url = reverse("hr-dashboard")
+    resp = auth_client.get(url)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "activeEmployees" in data
+    assert "pendingOrders" in data
+    assert "pendingLeaves" in data
+    assert "byAge" in data
+    assert "scienceStats" in data
+    assert "recentOrders" in data
