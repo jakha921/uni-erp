@@ -1,50 +1,41 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { Target, CheckCircle, TrendingUp, Wallet } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, Spinner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
+import { useBudgetCategories, useBudgetSummary } from '@/api/hooks/useBudget';
+import type { BudgetCategory } from '@/types/finance';
 
-interface BudgetCategory {
-  id: number;
-  name: string;
-  planned: number;
-  spent: number;
-  remaining: number;
-  percent: number;
-  color: string;
-}
+const CATEGORY_COLORS: Record<string, string> = {
+  'Ish haqi': '#3B82F6',
+  'Kommunal xizmatlar': '#F59E0B',
+  "Ta'mirlash": '#2DB976',
+  'Jihozlar': '#8B5CF6',
+  'Transport': '#EC4899',
+  'Stipendiya': '#06B6D4',
+  'Boshqa xarajatlar': '#94A3B8',
+};
 
-function generateBudgetCategories(): BudgetCategory[] {
-  const categories: Array<{ name: string; planned: number; spent: number; color: string }> = [
-    { name: 'Ish haqi', planned: 14800000000, spent: 12480000000, color: '#3B82F6' },
-    { name: 'Kommunal xizmatlar', planned: 980000000, spent: 720000000, color: '#F59E0B' },
-    { name: "Ta'mirlash", planned: 1850000000, spent: 1240000000, color: '#2DB976' },
-    { name: 'Jihozlar', planned: 720000000, spent: 480000000, color: '#8B5CF6' },
-    { name: 'Transport', planned: 280000000, spent: 145000000, color: '#EC4899' },
-    { name: 'Stipendiya', planned: 2400000000, spent: 1800000000, color: '#06B6D4' },
-    { name: 'Boshqa xarajatlar', planned: 350000000, spent: 180000000, color: '#94A3B8' },
-  ];
+const DEFAULT_COLOR = '#64748B';
 
-  return categories.map((cat, i) => ({
-    id: i + 1,
-    name: cat.name,
-    planned: cat.planned,
-    spent: cat.spent,
-    remaining: cat.planned - cat.spent,
-    percent: Math.round((cat.spent / cat.planned) * 100),
-    color: cat.color,
-  }));
+function getCategoryColor(name: string): string {
+  return CATEGORY_COLORS[name] ?? DEFAULT_COLOR;
 }
 
 export function BudgetPage() {
-  const categories = useMemo(() => generateBudgetCategories(), []);
+  const [year] = useState(2026);
 
-  const totalPlanned = categories.reduce((s, c) => s + c.planned, 0);
-  const totalSpent = categories.reduce((s, c) => s + c.spent, 0);
-  const totalRemaining = totalPlanned - totalSpent;
-  const totalPercent = Math.round((totalSpent / totalPlanned) * 100);
+  const { data: categoriesData, isLoading: isLoadingCategories } = useBudgetCategories({ year });
+  const { data: summary, isLoading: isLoadingSummary } = useBudgetSummary(year);
+
+  const categories = categoriesData ?? [];
+
+  const totalPlanned = summary?.totalPlanned ?? categories.reduce((s: number, c: BudgetCategory) => s + c.planned, 0);
+  const totalSpent = summary?.totalSpent ?? categories.reduce((s: number, c: BudgetCategory) => s + c.spent, 0);
+  const totalRemaining = summary?.totalRemaining ?? (totalPlanned - totalSpent);
+  const totalPercent = totalPlanned > 0 ? Math.round((totalSpent / totalPlanned) * 100) : 0;
 
   const columns: Column<BudgetCategory>[] = [
     {
@@ -60,7 +51,7 @@ export function BudgetPage() {
         <div className="flex items-center gap-2.5">
           <span
             className="h-2.5 w-2.5 rounded-sm shrink-0"
-            style={{ backgroundColor: row.color }}
+            style={{ backgroundColor: getCategoryColor(row.name) }}
           />
           <span className="font-medium text-slate-900">{row.name}</span>
         </div>
@@ -93,7 +84,7 @@ export function BudgetPage() {
       ),
     },
     {
-      key: 'percent',
+      key: 'percentUsed',
       header: 'Ijro %',
       width: '220px',
       render: (row) => (
@@ -102,26 +93,28 @@ export function BudgetPage() {
             <div
               className="h-full rounded-full transition-all"
               style={{
-                width: `${Math.min(row.percent, 100)}%`,
-                backgroundColor: row.color,
+                width: `${Math.min(row.percentUsed, 100)}%`,
+                backgroundColor: getCategoryColor(row.name),
               }}
             />
           </div>
           <Badge
-            variant={row.percent >= 90 ? 'error' : row.percent >= 75 ? 'warning' : 'success'}
+            variant={row.percentUsed >= 90 ? 'error' : row.percentUsed >= 75 ? 'warning' : 'success'}
           >
-            {row.percent}%
+            {row.percentUsed}%
           </Badge>
         </div>
       ),
     },
   ];
 
+  const isLoading = isLoadingCategories || isLoadingSummary;
+
   return (
     <PageContent>
       <PageHeader
         title="Byudjet"
-        subtitle="Daromad va xarajatlar rejasi va ijrosi - 2026"
+        subtitle={`Daromad va xarajatlar rejasi va ijrosi - ${year}`}
         breadcrumbs={[
           { label: 'Moliya', path: '/finance' },
           { label: 'Byudjet' },
@@ -148,7 +141,7 @@ export function BudgetPage() {
           value={formatMoney(totalSpent)}
           icon={<CheckCircle className="h-5 w-5" />}
           iconBg="bg-emerald-500"
-          sub={`April 2026 holatiga`}
+          sub={`April ${year} holatiga`}
         />
         <StatCard
           label="Qoldiq"
@@ -166,12 +159,18 @@ export function BudgetPage() {
       </div>
 
       <Card title="Byudjet kategoriyalari" subtitle="Xarajat moddalari bo'yicha reja va ijro" noPadding>
-        <DataTable
-          data={categories}
-          columns={columns}
-          keyField="id"
-          emptyMessage="Kategoriyalar topilmadi"
-        />
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <DataTable
+            data={categories}
+            columns={columns}
+            keyField="id"
+            emptyMessage="Kategoriyalar topilmadi"
+          />
+        )}
       </Card>
 
       <Card className="mt-4">

@@ -2,122 +2,77 @@ import { useState, useMemo } from 'react';
 import { Calculator, Download, Wallet, TrendingUp, Users, Percent } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, Spinner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
-import { generateName, pick, rnum, DEPARTMENTS } from '@/api/mock/shared-data';
 import { formatMoney } from '@/lib/utils';
-
-interface PayrollEmployee {
-  id: number;
-  name: string;
-  position: string;
-  department: string;
-  rate: number;
-  base: number;
-  bonus: number;
-  tax: number;
-  net: number;
-}
-
-const POSITIONS = [
-  'Professor',
-  'Dotsent',
-  'Katta o\'qituvchi',
-  'O\'qituvchi',
-  'Assistent',
-  'Laborant',
-  'Buxgalter',
-  'Dekan',
-  'Kafedra mudiri',
-  'Metodist',
-  'Dasturchi',
-  'Texnik',
-  'Farrosh',
-  'Kutubxonachi',
-  'Sekretar',
-];
+import { usePayroll, usePayrollSummary } from '@/api/hooks/usePayroll';
+import type { PayrollEmployee } from '@/types/finance';
 
 const MONTHS = [
-  { value: '01', label: 'Yanvar' },
-  { value: '02', label: 'Fevral' },
-  { value: '03', label: 'Mart' },
-  { value: '04', label: 'April' },
-  { value: '05', label: 'May' },
-  { value: '06', label: 'Iyun' },
-  { value: '07', label: 'Iyul' },
-  { value: '08', label: 'Avgust' },
-  { value: '09', label: 'Sentyabr' },
-  { value: '10', label: 'Oktyabr' },
-  { value: '11', label: 'Noyabr' },
-  { value: '12', label: 'Dekabr' },
+  { value: 1, label: 'Yanvar' },
+  { value: 2, label: 'Fevral' },
+  { value: 3, label: 'Mart' },
+  { value: 4, label: 'April' },
+  { value: 5, label: 'May' },
+  { value: 6, label: 'Iyun' },
+  { value: 7, label: 'Iyul' },
+  { value: 8, label: 'Avgust' },
+  { value: 9, label: 'Sentyabr' },
+  { value: 10, label: 'Oktyabr' },
+  { value: 11, label: 'Noyabr' },
+  { value: 12, label: 'Dekabr' },
 ];
 
 const YEARS = [
-  { value: '2024', label: '2024' },
-  { value: '2025', label: '2025' },
-  { value: '2026', label: '2026' },
+  { value: 2024, label: '2024' },
+  { value: 2025, label: '2025' },
+  { value: 2026, label: '2026' },
 ];
 
-function generateEmployees(): PayrollEmployee[] {
-  return Array.from({ length: 15 }, (_, i) => {
-    const person = generateName(i + 500, 0.4);
-    const rate = rnum(i + 510, 3000000, 8000000);
-    const base = rate;
-    const bonus = rnum(i + 520, 200000, 2000000);
-    const gross = base + bonus;
-    const tax = Math.round(gross * 0.12);
-    const net = gross - tax;
-    return {
-      id: i + 1,
-      name: person.full,
-      position: pick(POSITIONS, i + 530),
-      department: pick(DEPARTMENTS, i + 540),
-      rate,
-      base,
-      bonus,
-      tax,
-      net,
-    };
-  });
-}
-
 export function PayrollPage() {
-  const [month, setMonth] = useState('04');
-  const [year, setYear] = useState('2026');
+  const [month, setMonth] = useState(4);
+  const [year, setYear] = useState(2026);
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
 
-  const employees = useMemo(() => generateEmployees(), []);
+  const { data: payrollData, isLoading: isLoadingPayroll } = usePayroll({
+    month,
+    year,
+    search: search || undefined,
+    departmentId: deptFilter ? Number(deptFilter) : undefined,
+  });
 
-  const filtered = useMemo(() => {
-    return employees.filter((e) => {
-      if (search) {
-        const q = search.toLowerCase();
-        if (!e.name.toLowerCase().includes(q) && !e.position.toLowerCase().includes(q)) return false;
-      }
-      if (deptFilter && e.department !== deptFilter) return false;
-      return true;
-    });
-  }, [employees, search, deptFilter]);
+  const { data: summary, isLoading: isLoadingSummary } = usePayrollSummary(month, year);
+
+  const employees = payrollData?.data ?? [];
+  const totalCount = payrollData?.total ?? 0;
 
   const totals = useMemo(() => {
-    return filtered.reduce(
+    return employees.reduce(
       (acc, e) => ({
-        base: acc.base + e.base,
+        base: acc.base + e.baseSalary,
         bonus: acc.bonus + e.bonus,
-        tax: acc.tax + e.tax,
-        net: acc.net + e.net,
+        deductions: acc.deductions + e.deductions,
+        net: acc.net + e.netSalary,
       }),
-      { base: 0, bonus: 0, tax: 0, net: 0 },
+      { base: 0, bonus: 0, deductions: 0, net: 0 },
     );
-  }, [filtered]);
+  }, [employees]);
 
-  const totalFond = employees.reduce((s, e) => s + e.net, 0);
-  const avgSalary = employees.length > 0 ? Math.round(totalFond / employees.length) : 0;
-  const taxTotal = employees.reduce((s, e) => s + e.tax, 0);
-  const taxPercent = totalFond > 0 ? ((taxTotal / (totalFond + taxTotal)) * 100).toFixed(0) : '0';
+  const totalFond = summary?.totalNet ?? totals.net;
+  const avgSalary = summary ? (summary.totalEmployees > 0 ? Math.round(summary.totalNet / summary.totalEmployees) : 0) : (employees.length > 0 ? Math.round(totals.net / employees.length) : 0);
+  const totalDeductions = summary?.totalDeductions ?? totals.deductions;
+  const totalGross = totalFond + totalDeductions;
+  const taxPercent = totalGross > 0 ? ((totalDeductions / totalGross) * 100).toFixed(0) : '0';
+  const employeeCount = summary?.totalEmployees ?? totalCount;
 
-  const selectedMonth = MONTHS.find((m) => m.value === month)?.label ?? month;
+  const selectedMonth = MONTHS.find((m) => m.value === month)?.label ?? String(month);
+
+  // Collect unique departments for filter dropdown
+  const departments = useMemo(() => {
+    const depts = new Set(employees.map((e) => e.department));
+    return Array.from(depts).sort();
+  }, [employees]);
 
   const columns: Column<PayrollEmployee>[] = [
     {
@@ -127,12 +82,12 @@ export function PayrollPage() {
       render: (_, index) => <span className="text-slate-500">{index + 1}</span>,
     },
     {
-      key: 'name',
+      key: 'employeeName',
       header: 'Xodim',
       sortable: true,
       render: (row) => (
         <div>
-          <p className="font-medium text-slate-900">{row.name}</p>
+          <p className="font-medium text-slate-900">{row.employeeName}</p>
           <p className="text-xs text-slate-500">{row.position}</p>
         </div>
       ),
@@ -143,19 +98,11 @@ export function PayrollPage() {
       render: (row) => <span className="text-slate-700">{row.department}</span>,
     },
     {
-      key: 'rate',
-      header: 'Stavka',
-      className: 'text-right',
-      render: (row) => (
-        <span className="tabular-nums text-slate-600">{formatMoney(row.rate)}</span>
-      ),
-    },
-    {
-      key: 'base',
+      key: 'baseSalary',
       header: 'Asosiy',
       className: 'text-right',
       render: (row) => (
-        <span className="tabular-nums font-medium text-slate-900">{formatMoney(row.base)}</span>
+        <span className="tabular-nums font-medium text-slate-900">{formatMoney(row.baseSalary)}</span>
       ),
     },
     {
@@ -167,23 +114,25 @@ export function PayrollPage() {
       ),
     },
     {
-      key: 'tax',
-      header: 'Soliq',
+      key: 'deductions',
+      header: 'Ushlanmalar',
       className: 'text-right',
       render: (row) => (
-        <span className="tabular-nums text-red-700">-{formatMoney(row.tax)}</span>
+        <span className="tabular-nums text-red-700">-{formatMoney(row.deductions)}</span>
       ),
     },
     {
-      key: 'net',
+      key: 'netSalary',
       header: "Qo'lga",
       className: 'text-right',
       sortable: true,
       render: (row) => (
-        <span className="tabular-nums font-bold text-slate-900">{formatMoney(row.net)}</span>
+        <span className="tabular-nums font-bold text-slate-900">{formatMoney(row.netSalary)}</span>
       ),
     },
   ];
+
+  const isLoading = isLoadingPayroll || isLoadingSummary;
 
   return (
     <PageContent>
@@ -221,7 +170,7 @@ export function PayrollPage() {
         />
         <StatCard
           label="Xodimlar soni"
-          value={employees.length}
+          value={employeeCount}
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-violet-500"
         />
@@ -236,7 +185,7 @@ export function PayrollPage() {
       <div className="flex items-center gap-3 mb-4">
         <select
           value={month}
-          onChange={(e) => setMonth(e.target.value)}
+          onChange={(e) => setMonth(Number(e.target.value))}
           className="h-9 rounded-md border border-border px-3 text-sm"
         >
           {MONTHS.map((m) => (
@@ -247,7 +196,7 @@ export function PayrollPage() {
         </select>
         <select
           value={year}
-          onChange={(e) => setYear(e.target.value)}
+          onChange={(e) => setYear(Number(e.target.value))}
           className="h-9 rounded-md border border-border px-3 text-sm"
         >
           {YEARS.map((y) => (
@@ -274,40 +223,48 @@ export function PayrollPage() {
             className="h-9 rounded-md border border-border px-3 text-sm"
           >
             <option value="">Barcha bo&apos;limlar</option>
-            {DEPARTMENTS.map((d) => (
+            {departments.map((d) => (
               <option key={d} value={d}>
                 {d}
               </option>
             ))}
           </select>
         }
-        actions={<Badge variant="default">{filtered.length} ta xodim</Badge>}
+        actions={<Badge variant="default">{totalCount} ta xodim</Badge>}
       />
 
       <Card noPadding className="mt-4">
-        <DataTable
-          data={filtered}
-          columns={columns}
-          keyField="id"
-          emptyMessage="Xodimlar topilmadi"
-        />
-
-        {filtered.length > 0 && (
-          <div className="border-t border-slate-200 bg-slate-50 px-3 py-3">
-            <div className="flex items-center text-sm font-semibold text-slate-900">
-              <span className="flex-1">Jami:</span>
-              <span className="w-[120px] text-right tabular-nums">{formatMoney(totals.base)}</span>
-              <span className="w-[120px] text-right tabular-nums text-green-700">
-                +{formatMoney(totals.bonus)}
-              </span>
-              <span className="w-[100px] text-right tabular-nums text-red-700">
-                -{formatMoney(totals.tax)}
-              </span>
-              <span className="w-[120px] text-right tabular-nums font-bold">
-                {formatMoney(totals.net)}
-              </span>
-            </div>
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Spinner size="lg" />
           </div>
+        ) : (
+          <>
+            <DataTable
+              data={employees}
+              columns={columns}
+              keyField="id"
+              emptyMessage="Xodimlar topilmadi"
+            />
+
+            {employees.length > 0 && (
+              <div className="border-t border-slate-200 bg-slate-50 px-3 py-3">
+                <div className="flex items-center text-sm font-semibold text-slate-900">
+                  <span className="flex-1">Jami:</span>
+                  <span className="w-[120px] text-right tabular-nums">{formatMoney(totals.base)}</span>
+                  <span className="w-[120px] text-right tabular-nums text-green-700">
+                    +{formatMoney(totals.bonus)}
+                  </span>
+                  <span className="w-[100px] text-right tabular-nums text-red-700">
+                    -{formatMoney(totals.deductions)}
+                  </span>
+                  <span className="w-[120px] text-right tabular-nums font-bold">
+                    {formatMoney(totals.net)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </Card>
     </PageContent>

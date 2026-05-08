@@ -2,26 +2,22 @@ import { useState, useCallback, useMemo } from 'react';
 import { Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Button, Avatar } from '@/components/ui';
-import { generateName, rnum, SUBJECTS } from '@/api/mock/shared-data';
-import type { PersonName } from '@/types/shared';
+import { Badge, Button, Avatar, Spinner } from '@/components/ui';
 import { useSubjects, useGrades } from '@/api/hooks/useEducation';
+import { useGroups } from '@/api/hooks/useCore';
+import type { Grade } from '@/types/education';
 
-interface Student {
-  id: string;
-  name: PersonName;
-}
+// --- Types ---
 
-interface Grades {
+interface GradeInputs {
   a1: number;
   a2: number;
   mid: number;
   final: number;
 }
 
-type GradeKey = keyof Grades;
+type GradeKey = keyof GradeInputs;
 
-const GROUPS = ['301-A', '301-B', '302-A', '205-A'];
 const GRADE_KEYS: GradeKey[] = ['a1', 'a2', 'mid', 'final'];
 const GRADE_LABELS: Record<GradeKey, string> = {
   a1: 'A1 (10%)',
@@ -31,25 +27,7 @@ const GRADE_LABELS: Record<GradeKey, string> = {
 };
 const WEIGHTS: Record<GradeKey, number> = { a1: 0.1, a2: 0.1, mid: 0.3, final: 0.5 };
 
-const students: Student[] = Array.from({ length: 10 }, (_, i) => {
-  const name = generateName(i + 300);
-  return { id: `STD-${String(i + 1).padStart(3, '0')}`, name };
-});
-
-function initGrades(): Record<string, Grades> {
-  const result: Record<string, Grades> = {};
-  students.forEach((s, i) => {
-    result[s.id] = {
-      a1: rnum(i * 3, 60, 95),
-      a2: rnum(i * 5, 55, 92),
-      mid: rnum(i * 7, 55, 95),
-      final: rnum(i * 11, 55, 95),
-    };
-  });
-  return result;
-}
-
-function calcTotal(g: Grades): number {
+function calcTotal(g: GradeInputs): number {
   return GRADE_KEYS.reduce((sum, k) => sum + g[k] * WEIGHTS[k], 0);
 }
 
@@ -64,33 +42,106 @@ function gradeColor(value: number): string {
   return value >= 55 ? 'text-slate-800' : 'text-red-700';
 }
 
-export function GradingPage() {
-  useSubjects();
-  useGrades();
-  const [group, setGroup] = useState('301-A');
-  const [subject, setSubject] = useState('Algoritmlar');
-  const [grades, setGrades] = useState<Record<string, Grades>>(initGrades);
+// Build initial grades from API grade data
+function initGradesFromData(grades: Grade[]): { students: { id: number; name: string }[]; gradeMap: Record<number, GradeInputs> } {
+  const studentMap = new Map<number, { name: string; scores: Partial<Record<string, number>> }>();
 
-  const handleUpdate = useCallback((studentId: string, key: GradeKey, rawValue: string) => {
+  grades.forEach((g) => {
+    const existing = studentMap.get(g.studentId) ?? { name: g.studentName, scores: {} };
+    // Map gradeType to our keys
+    if (g.gradeType === 'midterm') {
+      existing.scores['mid'] = g.score;
+    } else if (g.gradeType === 'final') {
+      existing.scores['final'] = g.score;
+    } else if (g.gradeType === 'coursework') {
+      existing.scores['a1'] = g.score;
+    }
+    studentMap.set(g.studentId, existing);
+  });
+
+  const students: { id: number; name: string }[] = [];
+  const gradeMap: Record<number, GradeInputs> = {};
+
+  studentMap.forEach((value, studentId) => {
+    students.push({ id: studentId, name: value.name });
+    gradeMap[studentId] = {
+      a1: value.scores['a1'] ?? 70,
+      a2: value.scores['a2'] ?? 70,
+      mid: value.scores['mid'] ?? 70,
+      final: value.scores['final'] ?? 70,
+    };
+  });
+
+  return { students, gradeMap };
+}
+
+export function GradingPage() {
+  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
+  const { data: gradesData, isLoading: gradesLoading } = useGrades();
+  const { data: groupsData, isLoading: groupsLoading } = useGroups();
+
+  const subjects = subjectsData?.data ?? [];
+  const apiGrades = gradesData?.data ?? [];
+  const groups = groupsData ?? [];
+
+  const isLoading = subjectsLoading || gradesLoading || groupsLoading;
+
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+
+  const { students, gradeMap: initialGradeMap } = useMemo(
+    () => initGradesFromData(apiGrades),
+    [apiGrades],
+  );
+
+  const [grades, setGrades] = useState<Record<number, GradeInputs>>({});
+
+  // Merge initial grades with edited grades
+  const effectiveGrades = useMemo(() => {
+    const result: Record<number, GradeInputs> = { ...initialGradeMap };
+    for (const [key, value] of Object.entries(grades)) {
+      result[Number(key)] = value;
+    }
+    return result;
+  }, [initialGradeMap, grades]);
+
+  const handleUpdate = useCallback((studentId: number, key: GradeKey, rawValue: string) => {
     const num = Math.max(0, Math.min(100, Number(rawValue) || 0));
     setGrades((prev) => {
-      const existing = prev[studentId];
-      if (!existing) return prev;
+      const existing = prev[studentId] ?? initialGradeMap[studentId] ?? { a1: 0, a2: 0, mid: 0, final: 0 };
       return {
         ...prev,
-        [studentId]: { ...existing, [key]: num } as Grades,
+        [studentId]: { ...existing, [key]: num },
       };
     });
-  }, []);
+  }, [initialGradeMap]);
 
   const totals = useMemo(() => {
-    const result: Record<string, number> = {};
+    const result: Record<number, number> = {};
     students.forEach((s) => {
-      const g = grades[s.id];
+      const g = effectiveGrades[s.id];
       if (g) result[s.id] = calcTotal(g);
     });
     return result;
-  }, [grades]);
+  }, [effectiveGrades, students]);
+
+  if (isLoading) {
+    return (
+      <PageContent>
+        <PageHeader
+          title="Baholash"
+          subtitle="Talabalar baholarini kiritish va tahrirlash"
+          breadcrumbs={[
+            { label: "Ta'lim", path: '/grading' },
+            { label: 'Baholash' },
+          ]}
+        />
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>
@@ -109,24 +160,26 @@ export function GradingPage() {
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-muted">Guruh</label>
             <select
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
+              value={selectedGroupId}
+              onChange={(e) => setSelectedGroupId(e.target.value)}
               className="h-9 min-w-[140px] rounded-lg border border-border px-3 text-sm"
             >
-              {GROUPS.map((g) => (
-                <option key={g}>{g}</option>
+              <option value="">Barcha guruhlar</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-muted">Fan</label>
             <select
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              value={selectedSubjectId}
+              onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="h-9 min-w-[180px] rounded-lg border border-border px-3 text-sm"
             >
-              {SUBJECTS.map((s) => (
-                <option key={s}>{s}</option>
+              <option value="">Barcha fanlar</option>
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           </div>
@@ -174,8 +227,15 @@ export function GradingPage() {
               </tr>
             </thead>
             <tbody>
+              {students.length === 0 && (
+                <tr>
+                  <td colSpan={GRADE_KEYS.length + 3} className="px-3.5 py-8 text-center text-sm text-slate-500">
+                    Baholar topilmadi
+                  </td>
+                </tr>
+              )}
               {students.map((s) => {
-                const g = grades[s.id];
+                const g = effectiveGrades[s.id];
                 if (!g) return null;
                 const total = totals[s.id] ?? 0;
                 const letterGrade = getLetterGrade(total);
@@ -184,9 +244,9 @@ export function GradingPage() {
                   <tr key={s.id} className="border-t border-[#F1F5F9]">
                     <td className="px-3.5 py-2.5">
                       <div className="flex items-center gap-2.5">
-                        <Avatar name={s.name.full} size="sm" />
+                        <Avatar name={s.name} size="sm" />
                         <div className="text-[13px] font-medium text-slate-900">
-                          {s.name.short}
+                          {s.name}
                         </div>
                       </div>
                     </td>

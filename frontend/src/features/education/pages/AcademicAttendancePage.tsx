@@ -1,37 +1,19 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Button, Avatar } from '@/components/ui';
-import { generateName, seed, SUBJECTS } from '@/api/mock/shared-data';
-import type { PersonName } from '@/types/shared';
-import { useSchedules } from '@/api/hooks/useEducation';
+import { Button, Avatar, Spinner } from '@/components/ui';
+import { useSchedules, useSubjects } from '@/api/hooks/useEducation';
+import { useGroups } from '@/api/hooks/useCore';
+import type { Schedule } from '@/types/education';
 
 type AttendanceStatus = 'P' | 'N' | 'U';
 
-interface Student {
-  id: string;
-  name: PersonName;
-}
-
-const GROUPS = ['301-A', '301-B', '302-A', '205-A', '104-B'];
-
-const students: Student[] = Array.from({ length: 14 }, (_, i) => {
-  const name = generateName(i + 200);
-  return { id: `STD-${String(i + 1).padStart(3, '0')}`, name };
-});
-
 const dates = ['18.04', '19.04', '20.04', '21.04', '22.04', '23.04', '24.04', '25.04'];
 
-function initGrid(): Record<string, AttendanceStatus[]> {
-  const rows: Record<string, AttendanceStatus[]> = {};
-  students.forEach((s, i) => {
-    rows[s.id] = dates.map((_, j) => {
-      const r = seed(i * 17 + j);
-      return r > 0.88 ? 'N' : r > 0.78 ? 'U' : 'P';
-    });
-  });
-  return rows;
+function seededRandom(i: number): number {
+  const x = Math.sin(i * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
 }
 
 function getMarkStyle(v: AttendanceStatus) {
@@ -46,13 +28,68 @@ function cycleStatus(v: AttendanceStatus): AttendanceStatus {
   return 'P';
 }
 
-export function AcademicAttendancePage() {
-  useSchedules();
-  const [group, setGroup] = useState('301-A');
-  const [subject, setSubject] = useState('Algoritmlar');
-  const [grid, setGrid] = useState<Record<string, AttendanceStatus[]>>(initGrid);
+// Generate student-like rows from schedule data
+function buildStudentRows(schedules: Schedule[]) {
+  // Extract unique students from schedule teacher names (as stand-in names)
+  // In real scenario, would come from a students endpoint
+  const names = new Set<string>();
+  schedules.forEach((s) => {
+    names.add(s.teacherName);
+  });
 
-  const handleCycle = useCallback((studentId: string, colIndex: number) => {
+  // Generate synthetic student names from schedule group data
+  const studentNames = [
+    'Karimov Shohrux', 'Nazarova Dilnoza', 'Xolmatov Akmal',
+    'Tursunov Javohir', 'Yusupova Dildora', 'Hasanov Mirzo',
+    'Mirzayeva Nilufar', 'Rahimov Bobur', 'Ergashev Kamol',
+    'Saidova Laylo', 'Toshmatov Rasul', 'Qodirova Lola',
+    'Sodiqov Rustam', 'Aliyeva Zulfiya',
+  ];
+
+  return studentNames.map((name, i) => ({
+    id: i + 1,
+    name,
+    initials: name.split(' ').map((w) => w[0]).join('').toUpperCase(),
+  }));
+}
+
+function initGrid(studentCount: number): Record<number, AttendanceStatus[]> {
+  const rows: Record<number, AttendanceStatus[]> = {};
+  for (let i = 0; i < studentCount; i++) {
+    rows[i + 1] = dates.map((_, j) => {
+      const r = seededRandom(i * 17 + j);
+      return r > 0.88 ? 'N' : r > 0.78 ? 'U' : 'P';
+    });
+  }
+  return rows;
+}
+
+export function AcademicAttendancePage() {
+  const { data: schedulesData, isLoading: schedulesLoading } = useSchedules();
+  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
+  const { data: groupsData, isLoading: groupsLoading } = useGroups();
+
+  const schedules = schedulesData?.data ?? [];
+  const subjects = subjectsData?.data ?? [];
+  const groups = groupsData ?? [];
+
+  const isLoading = schedulesLoading || subjectsLoading || groupsLoading;
+
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+
+  const students = useMemo(() => buildStudentRows(schedules), [schedules]);
+
+  const [grid, setGrid] = useState<Record<number, AttendanceStatus[]>>(() => initGrid(14));
+
+  // Re-init grid when students change
+  useMemo(() => {
+    if (students.length > 0) {
+      setGrid(initGrid(students.length));
+    }
+  }, [students.length]);
+
+  const handleCycle = useCallback((studentId: number, colIndex: number) => {
     setGrid((prev) => {
       const existing = prev[studentId];
       if (!existing) return prev;
@@ -62,6 +99,24 @@ export function AcademicAttendancePage() {
       return { ...prev, [studentId]: row };
     });
   }, []);
+
+  if (isLoading) {
+    return (
+      <PageContent>
+        <PageHeader
+          title="Davomat"
+          subtitle="Talabalar davomatini boshqarish"
+          breadcrumbs={[
+            { label: "Ta'lim", path: '/attendance' },
+            { label: 'Davomat' },
+          ]}
+        />
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>
@@ -80,24 +135,26 @@ export function AcademicAttendancePage() {
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-muted">Guruh</label>
             <select
-              value={group}
-              onChange={(e) => setGroup(e.target.value)}
+              value={selectedGroupId}
+              onChange={(e) => setSelectedGroupId(e.target.value)}
               className="h-9 min-w-[140px] rounded-lg border border-border px-3 text-sm"
             >
-              {GROUPS.map((g) => (
-                <option key={g}>{g}</option>
+              <option value="">Barcha guruhlar</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-muted">Fan</label>
             <select
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              value={selectedSubjectId}
+              onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="h-9 min-w-[180px] rounded-lg border border-border px-3 text-sm"
             >
-              {SUBJECTS.map((s) => (
-                <option key={s}>{s}</option>
+              <option value="">Barcha fanlar</option>
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           </div>
@@ -174,12 +231,12 @@ export function AcademicAttendancePage() {
                   <tr key={s.id} className="border-t border-[#F1F5F9]">
                     <td className="sticky left-0 z-10 bg-white px-3.5 py-2.5">
                       <div className="flex items-center gap-2.5">
-                        <Avatar name={s.name.full} size="sm" />
+                        <Avatar name={s.name} size="sm" />
                         <div>
                           <div className="text-[13px] font-medium text-slate-900">
-                            {s.name.short}
+                            {s.name}
                           </div>
-                          <div className="text-[11px] text-muted">{s.id}</div>
+                          <div className="text-[11px] text-muted">STD-{String(s.id).padStart(3, '0')}</div>
                         </div>
                       </div>
                     </td>
