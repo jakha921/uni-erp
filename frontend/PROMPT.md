@@ -897,7 +897,7 @@ class Leave(BaseModel):
     ```
   - Commit: `feat: add HR orders, leaves, attendance, dashboard API`
 
-### - [ ] PHASE 16: Frontend Integration — HR
+### - [x] PHASE 16: Frontend Integration — HR
   - **Цель:** Подключить HR модуль к реальному API.
   - **Обновить файлы:**
     - `frontend/src/api/services/hr.service.ts` — HrApiService implements IHrService

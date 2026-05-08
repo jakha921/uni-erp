@@ -13,6 +13,8 @@ import type {
   HrDashboardStats,
 } from '@/types/hr';
 import type { PaginatedResponse } from '@/types/common';
+import { USE_MOCK, ENDPOINTS } from '@/config/api';
+import { apiClient } from '../client';
 import { HrMockService } from '../mock/hr.mock';
 
 export interface IHrService {
@@ -31,4 +33,69 @@ export interface IHrService {
   getDashboardStats(): Promise<HrDashboardStats>;
 }
 
-export const hrService: IHrService = new HrMockService();
+class HrApiService implements IHrService {
+  async getEmployees(params?: EmployeeListParams): Promise<PaginatedResponse<EmployeeListItem>> {
+    return apiClient.get<PaginatedResponse<EmployeeListItem>>(ENDPOINTS.hr.employees, {
+      params: {
+        page: params?.page,
+        page_size: params?.pageSize,
+        search: params?.search,
+        department_id: params?.departmentId,
+        position_code: params?.positionCode,
+        status: params?.status,
+      },
+    });
+  }
+
+  async getEmployeeById(id: number): Promise<Employee> {
+    return apiClient.get<Employee>(ENDPOINTS.hr.employeeDetail(id));
+  }
+
+  async createEmployee(dto: CreateEmployeeDto): Promise<Employee> {
+    return apiClient.post<Employee>(ENDPOINTS.hr.employees, dto);
+  }
+
+  async updateEmployee(id: number, dto: UpdateEmployeeDto): Promise<Employee> {
+    return apiClient.patch<Employee>(ENDPOINTS.hr.employeeDetail(id), dto);
+  }
+
+  async deleteEmployee(id: number): Promise<void> {
+    await apiClient.delete(ENDPOINTS.hr.employeeDetail(id));
+  }
+
+  async getDepartments(): Promise<HrDepartment[]> {
+    return apiClient.get<HrDepartment[]>(ENDPOINTS.hr.departments);
+  }
+
+  async getOrders(): Promise<HrOrder[]> {
+    return apiClient.get<HrOrder[]>(ENDPOINTS.hr.orders);
+  }
+
+  async createOrder(dto: CreateOrderDto): Promise<HrOrder> {
+    return apiClient.post<HrOrder>(ENDPOINTS.hr.orders, dto);
+  }
+
+  async getLeaves(): Promise<Leave[]> {
+    return apiClient.get<Leave[]>(ENDPOINTS.hr.leaves);
+  }
+
+  async createLeave(dto: CreateLeaveDto): Promise<Leave> {
+    return apiClient.post<Leave>(ENDPOINTS.hr.leaves, dto);
+  }
+
+  async updateLeave(id: string, patch: Partial<Pick<Leave, 'status'>>): Promise<Leave> {
+    return apiClient.patch<Leave>(`${ENDPOINTS.hr.leaves}/${id}`, patch);
+  }
+
+  async getAttendance(departmentId?: number): Promise<EmployeeAttendanceRow[]> {
+    return apiClient.get<EmployeeAttendanceRow[]>(ENDPOINTS.hr.attendance, {
+      params: { department_id: departmentId },
+    });
+  }
+
+  async getDashboardStats(): Promise<HrDashboardStats> {
+    return apiClient.get<HrDashboardStats>(ENDPOINTS.hr.dashboard);
+  }
+}
+
+export const hrService: IHrService = USE_MOCK ? new HrMockService() : new HrApiService();
