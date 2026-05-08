@@ -1019,7 +1019,7 @@ class Leave(BaseModel):
   - Mock data inline
   - Run `npm run build` — must pass
 
-### - [ ] PHASE 23: Remaining Stub Pages (Transport, Patents, Conferences, Legacy)
+### - [x] PHASE 23: Remaining Stub Pages (Transport, Patents, Conferences, Legacy)
   - **TransportPage** — stat cards + таблица транспорта + фильтры
   - **PatentsPage** — stat cards + таблица патентов + фильтры
   - **ConferencesPage** — card grid + tabs (Rejadagi/O'tkazilgan)
