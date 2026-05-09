@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Uni ERP — университетская ERP-система (BITU). Full-stack: Django backend + React frontend. Интерфейс на **узбекском языке** (i18n: uz/ru/en, default uz). 66 страниц, 17 модулей, полная service layer архитектура. Frontend подключён к реальному Django API (`VITE_USE_MOCK=false`). Backend: 36 тестов проходят.
+Uni ERP — университетская ERP-система (BITU). Full-stack: Django backend + React frontend. Интерфейс на **узбекском языке** (i18n: uz/ru/en, default uz). 66 страниц, 17 модулей, полная service layer архитектура. Задеплоен на **https://erp.niuedu.uz** (Coolify + Docker + PostgreSQL + SSL).
 
 ## Tech Stack
 
@@ -13,7 +13,7 @@ Uni ERP — университетская ERP-система (BITU). Full-stack
 | **Frontend** | React 19, TypeScript 6 strict, Vite 8 (port 3000), Tailwind CSS 4, Zustand 5, TanStack Query 5, React Hook Form + Zod 4, Recharts 3, Lucide React, i18next |
 | **Backend** | Django 5.1, DRF 3.15, SimpleJWT, django-filter, django-cors-headers, Unfold Admin |
 | **Database** | SQLite (dev) / PostgreSQL 16 (prod) |
-| **Infra** | Docker, Nginx, Gunicorn |
+| **Infra** | Docker, Nginx, Gunicorn, Coolify, Let's Encrypt SSL |
 | **Package Managers** | `uv` (Python), `npm` (JS) |
 
 ## Commands
@@ -173,3 +173,46 @@ Tailwind v4 via `@theme` in `globals.css`. Primary: `#2DB976` (emerald green). F
 - Backend serializers match frontend TypeScript interfaces in `types/`
 - Seed data matches frontend mock data for visual consistency
 - All pages use service layer hooks (zero inline mock data in page components)
+
+## Deployment
+
+**Production:** https://erp.niuedu.uz
+**GitHub:** https://github.com/jakha921/uni-erp
+**Server:** 213.230.69.57 (ssh jakha@213.230.69.57)
+
+### Architecture
+```
+Internet → Host Nginx (SSL/proxy) → Docker containers
+  ├── frontend (port 3080) — React + Nginx, serves SPA
+  ├── backend  (port 3081) — Django + Gunicorn + WhiteNoise (static)
+  └── postgres              — PostgreSQL 16
+```
+
+Host nginx (`/etc/nginx/sites-available/erp.niuedu.uz`):
+- `/` → frontend:3080
+- `/api/`, `/admin/`, `/static/` → backend:3081
+- SSL via Let's Encrypt (certbot, auto-renew)
+
+### Coolify Resources
+| Resource | UUID | Type |
+|----------|------|------|
+| PostgreSQL | `xkxu4i5qnitqu1yip6yaq2n9` | Database |
+| Backend | `xdz9mszvj6xjj2xaq7k3u67a` | Application (Dockerfile) |
+| Frontend | `fi2artj9b7dulned4ejncm88` | Application (Dockerfile) |
+
+### Credentials
+- **Admin login:** +998901234567 / admin123
+- **Django admin:** https://erp.niuedu.uz/admin/ (same credentials)
+
+### Deploy flow
+1. Push to `main` branch
+2. In Coolify dashboard or API: restart backend/frontend applications
+3. Backend `entrypoint.sh` auto-runs: migrate → collectstatic → seed (if empty) → gunicorn
+
+### Key files
+- `backend/Dockerfile` — Python 3.12 + uv + gunicorn
+- `backend/entrypoint.sh` — auto migrate, seed, create admin on first deploy
+- `frontend/Dockerfile` — Node 22 + npm build (VITE_USE_MOCK=false) + nginx
+- `frontend/nginx.conf` — SPA fallback (no backend proxy, host nginx handles it)
+- `docker-compose.prod.yml` — local prod testing (not used by Coolify)
+- `backend/config/settings/prod.py` — PostgreSQL, WhiteNoise, security headers
