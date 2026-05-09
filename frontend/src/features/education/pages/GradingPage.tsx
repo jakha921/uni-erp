@@ -47,7 +47,7 @@ function initGradesFromData(grades: Grade[]): { students: { id: number; name: st
   const studentMap = new Map<number, { name: string; scores: Partial<Record<string, number>> }>();
 
   grades.forEach((g) => {
-    const existing = studentMap.get(g.studentId) ?? { name: g.studentName, scores: {} };
+    const existing = studentMap.get(g.studentId) ?? { name: g.studentName ?? `Talaba #${g.studentId}`, scores: {} };
     // Map gradeType to our keys
     if (g.gradeType === 'midterm') {
       existing.scores['mid'] = g.score;
@@ -244,9 +244,9 @@ export function GradingPage() {
                   <tr key={s.id} className="border-t border-[#F1F5F9]">
                     <td className="px-3.5 py-2.5">
                       <div className="flex items-center gap-2.5">
-                        <Avatar name={s.name} size="sm" />
+                        <Avatar name={s.name ?? 'N/A'} size="sm" />
                         <div className="text-[13px] font-medium text-slate-900">
-                          {s.name}
+                          {s.name ?? 'Talaba'}
                         </div>
                       </div>
                     </td>

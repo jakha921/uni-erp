@@ -12,7 +12,7 @@ import type {
 } from '@/types/finance';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient, transformPaginated } from '../client';
+import { apiClient, transformPaginated, drfListToArray } from '../client';
 import { FinanceMockService } from '../mock/finance.mock';
 
 export interface IFinanceService {
@@ -102,9 +102,10 @@ class FinanceApiService implements IFinanceService {
     type?: ScholarshipType;
     status?: string;
   }): Promise<Scholarship[]> {
-    return apiClient.get<Scholarship[]>(ENDPOINTS.finance.scholarships, {
+    const res = await apiClient.get<{ results: Scholarship[] } | Scholarship[]>(ENDPOINTS.finance.scholarships, {
       params: { type: params?.type, status: params?.status },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Scholarship[] });
   }
 
   async createScholarship(dto: CreateScholarshipDto): Promise<Scholarship> {

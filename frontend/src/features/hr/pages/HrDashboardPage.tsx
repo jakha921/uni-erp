@@ -4,6 +4,7 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Spinner } from '@/components/ui';
 import { useHrDashboard, useLeaves } from '@/api/hooks/useHr';
+import type { Leave } from '@/types/hr';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { formatDate } from '@/lib/utils';
 
@@ -34,7 +35,7 @@ export function HrDashboardPage() {
   const navigate = useNavigate();
   const { data: stats, isLoading } = useHrDashboard();
   const { data: allLeaves } = useLeaves();
-  const pendingLeaves = (allLeaves ?? []).filter((l) => l.status === 'pending').slice(0, 5);
+  const pendingLeaves = (allLeaves ?? []).filter((l: Leave) => l.status === 'pending').slice(0, 5);
 
   if (isLoading || !stats) {
     return (

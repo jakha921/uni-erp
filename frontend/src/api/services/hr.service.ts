@@ -14,7 +14,7 @@ import type {
 } from '@/types/hr';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient, transformPaginated } from '../client';
+import { apiClient, transformPaginated, drfListToArray } from '../client';
 import { HrMockService } from '../mock/hr.mock';
 
 export interface IHrService {
@@ -71,7 +71,8 @@ class HrApiService implements IHrService {
   }
 
   async getOrders(): Promise<HrOrder[]> {
-    return apiClient.get<HrOrder[]>(ENDPOINTS.hr.orders);
+    const res = await apiClient.get<{ results: HrOrder[] } | HrOrder[]>(ENDPOINTS.hr.orders);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: HrOrder[] });
   }
 
   async createOrder(dto: CreateOrderDto): Promise<HrOrder> {
@@ -79,7 +80,8 @@ class HrApiService implements IHrService {
   }
 
   async getLeaves(): Promise<Leave[]> {
-    return apiClient.get<Leave[]>(ENDPOINTS.hr.leaves);
+    const res = await apiClient.get<{ results: Leave[] } | Leave[]>(ENDPOINTS.hr.leaves);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: Leave[] });
   }
 
   async createLeave(dto: CreateLeaveDto): Promise<Leave> {
