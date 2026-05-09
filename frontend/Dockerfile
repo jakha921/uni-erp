@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+
+ENV VITE_USE_MOCK=false
+ENV VITE_API_BASE_URL=/api/v1
+
 RUN npm run build
 
 FROM nginx:alpine
