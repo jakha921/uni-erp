@@ -48,7 +48,7 @@ export function ConferencesPage() {
         breadcrumbs={[{ label: 'Ilm-fan' }, { label: 'Konferensiyalar' }]}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami" value={(conferencesData?.total ?? allConferences.length).toString()} icon={<Presentation className="h-5 w-5" />} />
         <StatCard label="Rejalashtirilgan" value={upcomingList.length.toString()} icon={<Calendar className="h-5 w-5" />} trend={{ value: 2 }} />
         <StatCard label="Jami ishtirokchilar" value={totalParticipants.toLocaleString()} icon={<Users className="h-5 w-5" />} />

@@ -39,7 +39,7 @@ export function PatentsPage() {
         breadcrumbs={[{ label: 'Ilm-fan' }, { label: 'Patentlar' }]}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami patentlar" value={total.toString()} icon={<ScrollText className="h-5 w-5" />} trend={{ value: 5 }} />
         <StatCard label="Tasdiqlangan" value={granted.toString()} icon={<CheckCircle className="h-5 w-5" />} />
         <StatCard label="Ko'rib chiqilmoqda" value={underReview.toString()} icon={<Clock className="h-5 w-5" />} />

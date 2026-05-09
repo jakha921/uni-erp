@@ -68,7 +68,7 @@ export function StaffingPage() {
         breadcrumbs={[{ label: 'Eski tizim' }, { label: 'Shtatlash jadvali' }]}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami shtat birliklari" value={totalSlots.toString()} icon={<Briefcase className="h-5 w-5" />} />
         <StatCard label="Band" value={filledSlots.toString()} icon={<Users className="h-5 w-5" />} />
         <StatCard label="Bo'sh o'rinlar" value={vacantSlots.toString()} icon={<AlertCircle className="h-5 w-5" />} />

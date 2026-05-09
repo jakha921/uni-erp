@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Globe, Moon, Sun, Bell, Shield } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Toggle } from '@/components/ui/Toggle';
@@ -23,7 +23,7 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <PageContent className="space-y-4">
       <PageHeader
         title="Sozlamalar"
         breadcrumbs={[{ label: 'Sozlamalar' }]}
@@ -137,7 +137,7 @@ export function SettingsPage() {
           </div>
         </Card>
       </div>
-    </div>
+    </PageContent>
   );
 }
 

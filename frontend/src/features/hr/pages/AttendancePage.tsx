@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Download } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -21,7 +21,7 @@ export function AttendancePage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <PageContent className="space-y-4">
       <PageHeader
         title="Xodimlar davomati (Tabel)"
         subtitle={`${MONTH_NAMES[month - 1]} ${year}`}
@@ -85,6 +85,6 @@ export function AttendancePage() {
           </div>
         )}
       </Card>
-    </div>
+    </PageContent>
   );
 }

@@ -86,7 +86,7 @@ export function AppealsPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-4 mb-5">
         <StatCard
           label="Jami"
           value={counts.total}

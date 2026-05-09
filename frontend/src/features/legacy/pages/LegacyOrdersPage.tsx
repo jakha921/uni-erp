@@ -35,7 +35,7 @@ export function LegacyOrdersPage() {
         breadcrumbs={[{ label: 'Eski tizim' }, { label: 'Buyruqlar' }]}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami buyruqlar" value={String(total)} icon={<FileText className="h-5 w-5" />} />
         <StatCard label="Faol" value={String(orders.filter((o) => o.status === 'active').length)} icon={<FileText className="h-5 w-5" />} />
         <StatCard label="Qabul qilish" value={String(hires)} icon={<UserPlus className="h-5 w-5" />} />

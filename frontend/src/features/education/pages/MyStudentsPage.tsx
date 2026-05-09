@@ -42,7 +42,7 @@ export function MyStudentsPage() {
       <PageHeader title="Mening talabalarim" subtitle="Sizga biriktirilgan guruhlar va talabalar"
         breadcrumbs={[{ label: "Ta'lim" }, { label: 'Mening talabalarim' }]} />
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4 mb-5">
         <StatCard label="Jami talabalar" value={String(totalStudents)} icon={<Users className="h-5 w-5" />} />
         <StatCard label="Guruhlar" value={String(groups.length)} icon={<Clock className="h-5 w-5" />} />
         <StatCard label="Talabalar" value={String(students.length)} icon={<Star className="h-5 w-5" />} />

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Save } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/form/FormField';
@@ -142,11 +142,11 @@ export function StudentFormPage() {
   };
 
   if (isEdit && isLoadingStudent) {
-    return <div className="p-6 text-muted">Yuklanmoqda...</div>;
+    return <PageContent className="text-muted">Yuklanmoqda...</PageContent>;
   }
 
   return (
-    <div className="space-y-4">
+    <PageContent className="space-y-4">
       <PageHeader
         title={isEdit ? 'Talabani tahrirlash' : 'Yangi talaba qo\'shish'}
         breadcrumbs={[
@@ -422,6 +422,6 @@ export function StudentFormPage() {
           </Button>
         </div>
       </form>
-    </div>
+    </PageContent>
   );
 }

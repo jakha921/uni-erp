@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Plus, Clock, Briefcase, Calendar, Search, BarChart3 } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { StatCard } from '@/components/data-display/StatCard';
 import { Tabs } from '@/components/navigation/Tabs';
@@ -47,7 +47,7 @@ export function LeavesPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <PageContent className="space-y-4">
       <PageHeader
         title="Ta'tillar va xizmat safarlari"
         subtitle={`Jami: ${filtered.length} ta`}
@@ -122,6 +122,6 @@ export function LeavesPage() {
         employees={employees}
         loading={createMutation.isPending}
       />
-    </div>
+    </PageContent>
   );
 }

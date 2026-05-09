@@ -1,5 +1,5 @@
 import { Pencil, Mail, Phone, MapPin, Calendar, GraduationCap, Briefcase } from 'lucide-react';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -22,7 +22,7 @@ export function ProfilePage() {
   const roleLabel = ROLE_LABELS[currentUser.role] ?? currentUser.role;
 
   return (
-    <div className="space-y-4">
+    <PageContent className="space-y-4">
       <PageHeader
         title="Profil"
         breadcrumbs={[{ label: 'Profil' }]}
@@ -133,7 +133,7 @@ export function ProfilePage() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageContent>
   );
 }
 
