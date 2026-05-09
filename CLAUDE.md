@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Uni ERP — университетская ERP-система (BITU). Full-stack: Django backend + React frontend. Интерфейс на **узбекском языке** (i18n: uz/ru/en, default uz). 66 страниц, 17 модулей, полная service layer архитектура. Backend: 36 тестов проходят.
+Uni ERP — университетская ERP-система (BITU). Full-stack: Django backend + React frontend. Интерфейс на **узбекском языке** (i18n: uz/ru/en, default uz). 66 страниц, 17 модулей, полная service layer архитектура. Frontend подключён к реальному Django API (`VITE_USE_MOCK=false`). Backend: 36 тестов проходят.
 
 ## Tech Stack
 
@@ -117,6 +117,12 @@ const KEYS = {
 // features/<module>/schemas/<name>.schema.ts — Zod validation
 ```
 `VITE_USE_MOCK=false` in `.env` activates real API calls for all 66 pages.
+
+**DRF Integration (api/client.ts):**
+- `transformPaginated(drf, page, pageSize)` — converts DRF `{count, results}` → frontend `{data, total, page, pageSize, totalPages}`
+- `drfListToArray(drf)` — unwraps DRF paginated responses that return arrays (orders, leaves, scholarships)
+- All ApiService classes use these helpers in their real API methods
+- Demo users: admin `+998901234567`/`admin123`, buxgalter `+998902345678`/`demo123`, dekan `+998903456789`/`demo123`, oqituvchi `+998904567890`/`demo123`, talaba `+998905678901`/`demo123`
 
 **Frontend service coverage:**
 
