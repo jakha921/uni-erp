@@ -7,23 +7,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
-      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-      BACKEND_UUID: ${{ secrets.BACKEND_UUID }}
-      FRONTEND_UUID: ${{ secrets.FRONTEND_UUID }}
     steps:
-      - name: Deploy Backend
-        run: |
-          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${BACKEND_UUID}/deploy" \
-            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
-            -H "Content-Type: application/json"
-
-      - name: Deploy Frontend
-        run: |
-          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${FRONTEND_UUID}/deploy" \
-            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
-            -H "Content-Type: application/json"
-
-      - name: Verify
-        run: echo "Deployments triggered. Check https://erp.niuedu.uz"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 213.230.69.57
+          username: jakha
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          timeout: 600s
+          script: |
+            bash ~/deploy-erp.sh all 2>&1
