@@ -124,7 +124,19 @@ export function CurriculumPage() {
               </Button>
             </>
           )}
-          <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<Upload className="h-3.5 w-3.5" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = `/api/v1/education/curriculum/export/?specialtyId=${effectiveSpecialtyId ?? ''}&year=${selectedYear}`;
+              a.download = 'oquv-reja.pdf';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
             Eksport PDF
           </Button>
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>

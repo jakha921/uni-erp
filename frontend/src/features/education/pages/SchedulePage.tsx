@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Pencil, Trash2, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Badge } from '@/components/ui';
@@ -320,9 +320,26 @@ export function SchedulePage() {
         subtitle="Haftalik dars jadvali"
         breadcrumbs={[{ label: "Ta'lim", path: '/schedule' }, { label: 'Dars jadvali' }]}
         actions={
-          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Dars qo&apos;shish
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/education/schedule/export/';
+                a.download = 'jadval.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              PDF
+            </Button>
+            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
+              Dars qo&apos;shish
+            </Button>
+          </div>
         }
       />
 

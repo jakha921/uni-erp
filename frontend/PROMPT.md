@@ -136,7 +136,7 @@
 - [x] Фильтры: группа (Combobox), преподаватель, неделя (DatePicker)
 - [x] 3 вида: Haftalik (недельный), Kunlik (дневной), Oylik (месячный)
 - [ ] i18n: все тексты
-- [ ] Экспорт расписания в PDF
+- [x] Экспорт расписания в PDF
 
 ### 4.2 AcademicAttendancePage `/attendance`
 **Файл:** `features/education/pages/AcademicAttendancePage.tsx`
@@ -185,7 +185,7 @@
 - [x] Zod schema: specialtyId, year, subjects[] (name, credits, hours, controlForm)
 - [x] Фильтры: специальность (Combobox из `useSpecialties()`), год обучения
 - [ ] i18n: все тексты
-- [ ] Экспорт учебного плана в PDF
+- [x] Экспорт учебного плана в PDF
 
 ### 4.6 SubjectsPage `/subjects`
 **Файл:** `features/education/pages/SubjectsPage.tsx`
