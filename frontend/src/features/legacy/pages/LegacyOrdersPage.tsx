@@ -3,7 +3,10 @@ import { FileText, UserPlus, UserMinus, Gift } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Spinner } from '@/components/ui';
+import { Pagination } from '@/components/table';
 import { useLegacyOrders } from '@/api/hooks/useLegacy';
+
+const PAGE_SIZE = 20;
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
   active: { label: 'Faol', color: 'bg-emerald-50 text-emerald-700' },
@@ -20,10 +23,12 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 
 export function LegacyOrdersPage() {
   const [typeFilter, setTypeFilter] = useState<string>('');
-  const { data, isLoading } = useLegacyOrders({ page: 1, pageSize: 50, type: typeFilter || undefined });
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useLegacyOrders({ page, pageSize: PAGE_SIZE, type: typeFilter || undefined });
 
   const orders = data?.data ?? [];
   const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
   const hires = orders.filter((o) => o.type === 'hire').length;
   const fires = orders.filter((o) => o.type === 'fire').length;
 
@@ -47,7 +52,7 @@ export function LegacyOrdersPage() {
           {[{ key: '', label: 'Barchasi' }, { key: 'hire', label: 'Qabul' }, { key: 'fire', label: "Bo'shatish" }, { key: 'reward', label: 'Mukofot' }, { key: 'leave', label: "Ta'til" }].map((t) => (
             <button
               key={t.key}
-              onClick={() => setTypeFilter(t.key)}
+              onClick={() => { setTypeFilter(t.key); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 typeFilter === t.key ? 'bg-primary-500 text-white' : 'text-slate-600 hover:bg-slate-100'
               }`}
@@ -99,6 +104,11 @@ export function LegacyOrdersPage() {
 
         {!isLoading && orders.length === 0 && (
           <div className="text-center py-10 text-slate-400 text-sm">Buyruqlar topilmadi</div>
+        )}
+        {!isLoading && totalPages > 1 && (
+          <div className="border-t border-border px-4 py-3">
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} total={total} pageSize={PAGE_SIZE} />
+          </div>
         )}
       </Card>
     </PageContent>

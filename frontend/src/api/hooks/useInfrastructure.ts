@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { DormRoomListParams, CreateRoomDto, EquipmentListParams, CreateEquipmentDto, VehicleListParams, CreateVehicleDto } from '@/types/infrastructure';
+import type { DormRoomListParams, CreateRoomDto, CheckInDto, EquipmentListParams, CreateEquipmentDto, VehicleListParams, CreateVehicleDto } from '@/types/infrastructure';
 import { infrastructureService } from '../services/infrastructure.service';
 
 const KEYS = {
   all: ['infrastructure'] as const,
   buildings: () => [...KEYS.all, 'buildings'] as const,
   rooms: (params: DormRoomListParams) => [...KEYS.all, 'rooms', params] as const,
+  residents: (roomId: number) => [...KEYS.all, 'residents', roomId] as const,
   equipment: () => [...KEYS.all, 'equipment'] as const,
   equipmentList: (params: EquipmentListParams) => [...KEYS.equipment(), params] as const,
   equipmentDetail: (id: number) => [...KEYS.equipment(), 'detail', id] as const,
@@ -34,6 +35,20 @@ export function useUpdateDormRoom() {
 export function useDeleteDormRoom() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: (id: number) => infrastructureService.deleteRoom(id), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.all }); } });
+}
+
+export function useDormResidents(roomId: number) {
+  return useQuery({ queryKey: KEYS.residents(roomId), queryFn: () => infrastructureService.getResidents(roomId), enabled: roomId > 0 });
+}
+
+export function useCheckIn() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data: CheckInDto) => infrastructureService.checkIn(data), onSuccess: (_, vars) => { void qc.invalidateQueries({ queryKey: KEYS.residents(vars.roomId) }); void qc.invalidateQueries({ queryKey: KEYS.all }); } });
+}
+
+export function useCheckOut() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: ({ residentId }: { residentId: number; roomId: number }) => infrastructureService.checkOut(residentId), onSuccess: (_, vars) => { void qc.invalidateQueries({ queryKey: KEYS.residents(vars.roomId) }); void qc.invalidateQueries({ queryKey: KEYS.all }); } });
 }
 
 export function useEquipment(params: EquipmentListParams) {

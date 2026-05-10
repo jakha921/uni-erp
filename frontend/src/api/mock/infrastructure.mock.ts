@@ -2,6 +2,7 @@ import { delay } from './delay';
 import { generateName, pick, rnum } from './shared-data';
 import type {
   DormBuilding, DormRoom, DormRoomListParams, CreateRoomDto,
+  DormResident, CheckInDto,
   Equipment, EquipmentListParams, CreateEquipmentDto,
   Vehicle, VehicleListParams, CreateVehicleDto,
 } from '@/types/infrastructure';
@@ -55,11 +56,23 @@ const VEHICLES: Vehicle[] = Array.from({ length: 8 }, (_, i) => ({
   lastServiceDate: `2026-0${rnum(i, 1, 4)}-${String(rnum(i, 1, 28)).padStart(2, '0')}`,
 }));
 
+const RESIDENTS: DormResident[] = Array.from({ length: 30 }, (_, i) => ({
+  id: i + 1,
+  roomId: (i % 15) + 1,
+  studentId: 1000 + i,
+  studentName: generateName(i + 100, 0.4).full,
+  checkInDate: `2025-09-0${(i % 9) + 1}`,
+  checkOutDate: undefined,
+}));
+
 export class InfrastructureMockService implements IInfrastructureService {
   async getBuildings() { await delay(200); return BUILDINGS; }
   async createRoom(data: CreateRoomDto) { await delay(300); return { id: ROOMS.length + 1, occupied: 0, ...data }; }
   async updateRoom(id: number, data: Partial<CreateRoomDto>) { await delay(300); const r = ROOMS.find((r) => r.id === id); if (!r) throw new Error('Not found'); return { ...r, ...data }; }
   async deleteRoom(_id: number) { await delay(200); }
+  async getResidents(roomId: number) { await delay(200); return RESIDENTS.filter((r) => r.roomId === roomId && !r.checkOutDate); }
+  async checkIn(data: CheckInDto) { await delay(300); const resident: DormResident = { id: RESIDENTS.length + 1, ...data }; RESIDENTS.push(resident); return resident; }
+  async checkOut(residentId: number) { await delay(200); const r = RESIDENTS.find((x) => x.id === residentId); if (r) r.checkOutDate = new Date().toISOString().slice(0, 10); }
 
   async getRooms(params: DormRoomListParams): Promise<PaginatedResponse<DormRoom>> {
     await delay(300);

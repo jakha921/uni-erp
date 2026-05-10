@@ -242,8 +242,8 @@
 **Задачи:**
 - [ ] Подключить к `/education/my-students` endpoint (группы преподавателя)
 - [ ] Убрать inline mock генераторы если есть
-- [ ] Фильтр по группе (Combobox)
-- [ ] Показывать оценки и посещаемость каждого студента
+- [x] Фильтр по группе (Combobox)
+- [x] Показывать оценки и посещаемость каждого студента
 - [ ] i18n: все тексты
 
 ### 4.11 AcademicDepartmentsPage `/departments`
@@ -463,9 +463,9 @@
 **Файл:** `features/operations/pages/MessagesPage.tsx`
 **Задачи:**
 - [ ] Подключить к `useChatThreads()` и `useMessages(threadId)`
-- [ ] Compose: `useSendMessage()` mutation
+- [x] Compose: `useSendMessage()` mutation
 - [ ] Real-time: polling каждые 10 сек
-- [ ] Split layout: треды слева, сообщения справа
+- [x] Split layout: треды слева, сообщения справа
 - [ ] i18n: все тексты
 
 ### 8.4 AppealsPage `/appeals`
@@ -585,7 +585,7 @@
 **Задачи:**
 - [ ] Подключить к `useAnalytics(params)` — реальные данные
 - [ ] DateRangePicker
-- [ ] Графики: тренды, сравнение, top groups
+- [x] Графики: тренды, сравнение, top groups
 - [ ] i18n: все тексты
 
 ### 12.3 ReferencesPage `/reference`
@@ -602,7 +602,7 @@
 **Задачи:**
 - [x] BuildingSelector → floor → room grid
 - [x] CRUD для комнат: DormRoomForm
-- [ ] Поселение/выселение студентов
+- [x] Поселение/выселение студентов
 - [ ] i18n: все тексты
 
 ### 13.2 EquipmentPage `/equipment`
@@ -637,7 +637,7 @@
 
 ### 15.1 LegacyOrdersPage `/orders`
 **Задачи:**
-- [ ] Пагинация
+- [x] Пагинация
 - [ ] DateRangePicker
 - [ ] i18n: все тексты
 
@@ -654,14 +654,14 @@
 ### 16.1 StudentCabinetPage `/student-cabinet`
 **Задачи:**
 - [ ] Подключить к `useStudentCabinet()` — реальные данные
-- [ ] Hero banner, расписание, оценки, экзамены, уведомления
-- [ ] Quick actions: оплата, справка
+- [x] Hero banner, расписание, оценки, экзамены, уведомления
+- [x] Quick actions: оплата, справка
 - [ ] i18n: все тексты
 
 ### 16.2 TeacherCabinetPage `/teacher-cabinet`
 **Задачи:**
 - [ ] Подключить к `useTeacherCabinet()` — реальные данные
-- [ ] Сегодняшние занятия, группы, pending tasks
+- [x] Сегодняшние занятия, группы, pending tasks
 - [ ] i18n: все тексты
 
 ---

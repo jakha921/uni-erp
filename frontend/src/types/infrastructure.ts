@@ -31,6 +31,13 @@ export interface DormResident {
   checkOutDate?: string;
 }
 
+export interface CheckInDto {
+  roomId: number;
+  studentId: number;
+  studentName: string;
+  checkInDate: string;
+}
+
 export interface DormRoomListParams extends ListParams {
   buildingId?: number;
   floor?: number;

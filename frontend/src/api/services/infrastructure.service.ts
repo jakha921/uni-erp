@@ -1,5 +1,6 @@
 import type {
   DormBuilding, DormRoom, DormRoomListParams, CreateRoomDto,
+  DormResident, CheckInDto,
   Equipment, EquipmentListParams, CreateEquipmentDto,
   Vehicle, VehicleListParams, CreateVehicleDto,
 } from '@/types/infrastructure';
@@ -14,6 +15,9 @@ export interface IInfrastructureService {
   createRoom(data: CreateRoomDto): Promise<DormRoom>;
   updateRoom(id: number, data: Partial<CreateRoomDto>): Promise<DormRoom>;
   deleteRoom(id: number): Promise<void>;
+  getResidents(roomId: number): Promise<DormResident[]>;
+  checkIn(data: CheckInDto): Promise<DormResident>;
+  checkOut(residentId: number): Promise<void>;
   getEquipment(params: EquipmentListParams): Promise<PaginatedResponse<Equipment>>;
   getEquipmentById(id: number): Promise<Equipment>;
   createEquipment(data: CreateEquipmentDto): Promise<Equipment>;
@@ -30,6 +34,9 @@ class InfrastructureApiService implements IInfrastructureService {
   async createRoom(data: CreateRoomDto) { return apiClient.post<DormRoom>(ENDPOINTS.infrastructure.rooms, data); }
   async updateRoom(id: number, data: Partial<CreateRoomDto>) { return apiClient.patch<DormRoom>(`${ENDPOINTS.infrastructure.rooms}${id}/`, data); }
   async deleteRoom(id: number) { return apiClient.delete<void>(`${ENDPOINTS.infrastructure.rooms}${id}/`); }
+  async getResidents(roomId: number) { return apiClient.get<DormResident[]>(`${ENDPOINTS.infrastructure.rooms}${roomId}/residents/`); }
+  async checkIn(data: CheckInDto) { return apiClient.post<DormResident>(`${ENDPOINTS.infrastructure.rooms}${data.roomId}/checkin/`, data); }
+  async checkOut(residentId: number) { await apiClient.post<void>(`/api/v1/dorm/residents/${residentId}/checkout/`, {}); }
   async getRooms(params: DormRoomListParams) {
     const page = params.page ?? 1;
     const pageSize = params.pageSize ?? 20;

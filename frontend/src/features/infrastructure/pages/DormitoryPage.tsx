@@ -3,10 +3,10 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table';
-import { ConfirmDialog } from '@/components/overlays';
-import { Building2, Users, DoorOpen, FileText, Plus, Map, List, Pencil, Trash2 } from 'lucide-react';
+import { ConfirmDialog, SlideOver } from '@/components/overlays';
+import { Building2, Users, DoorOpen, FileText, Plus, Map, List, Pencil, Trash2, UserPlus, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useDormBuildings, useDormRooms, useCreateDormRoom, useUpdateDormRoom, useDeleteDormRoom } from '@/api/hooks/useInfrastructure';
+import { useDormBuildings, useDormRooms, useCreateDormRoom, useUpdateDormRoom, useDeleteDormRoom, useDormResidents, useCheckIn, useCheckOut } from '@/api/hooks/useInfrastructure';
 import { DormRoomForm } from '../components/DormRoomForm';
 import type { DormRoom } from '@/types/infrastructure';
 import type { DormRoomFormData } from '../schemas/dormRoom.schema';
@@ -38,6 +38,9 @@ export function DormitoryPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editRoom, setEditRoom] = useState<DormRoom | null>(null);
   const [deleteRoom, setDeleteRoom] = useState<DormRoom | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<DormRoom | null>(null);
+  const [checkInName, setCheckInName] = useState('');
+  const [checkInDate, setCheckInDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const { data: buildings } = useDormBuildings();
   const { data: roomsData, isLoading } = useDormRooms({ buildingId, page: 1, pageSize: 100 });
@@ -45,6 +48,9 @@ export function DormitoryPage() {
   const createRoom = useCreateDormRoom();
   const updateRoom = useUpdateDormRoom();
   const deleteRoomMutation = useDeleteDormRoom();
+  const { data: residents, isLoading: residentsLoading } = useDormResidents(selectedRoom?.id ?? 0);
+  const checkIn = useCheckIn();
+  const checkOut = useCheckOut();
 
   const rooms = roomsData?.data ?? [];
   const currentBuilding = buildings?.find((b) => b.id === buildingId);
@@ -173,16 +179,90 @@ export function DormitoryPage() {
         {isLoading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : view === 'map' ? (
-          <RoomMapView rooms={rooms} />
+          <RoomMapView rooms={rooms} onRoomClick={setSelectedRoom} />
         ) : (
           <DataTable data={rooms} columns={roomColumns} keyField="id" emptyMessage="Xonalar topilmadi" />
         )}
       </Card>
+
+      <SlideOver
+        open={!!selectedRoom}
+        onClose={() => setSelectedRoom(null)}
+        title={selectedRoom ? `${selectedRoom.number}-xona — ${selectedRoom.floor}-qavat` : ''}
+      >
+        {selectedRoom && (
+          <div className="p-5 space-y-4">
+            <div className="flex items-center gap-3">
+              <Badge variant={STATUS_VARIANTS[selectedRoom.status]} dot>{STATUS_LABELS[selectedRoom.status]}</Badge>
+              <span className="text-sm text-slate-600">{selectedRoom.occupied}/{selectedRoom.capacity} talaba</span>
+            </div>
+
+            <div className="rounded-xl border border-border p-4 space-y-3">
+              <h4 className="text-[13px] font-semibold text-slate-900">Yangi talabani joylash</h4>
+              <input
+                type="text"
+                value={checkInName}
+                onChange={(e) => setCheckInName(e.target.value)}
+                placeholder="Talaba ismi..."
+                className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+              />
+              <input
+                type="date"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                className="h-9 w-full rounded-lg border border-border px-3 text-sm"
+              />
+              <Button
+                size="sm"
+                leftIcon={<UserPlus className="h-3.5 w-3.5" />}
+                disabled={!checkInName.trim()}
+                loading={checkIn.isPending}
+                onClick={() => {
+                  if (!checkInName.trim()) return;
+                  checkIn.mutate(
+                    { roomId: selectedRoom.id, studentId: Date.now(), studentName: checkInName.trim(), checkInDate },
+                    { onSuccess: () => setCheckInName('') },
+                  );
+                }}
+              >
+                Joylash
+              </Button>
+            </div>
+
+            <div>
+              <h4 className="text-[13px] font-semibold text-slate-900 mb-2">Hozirgi sakinlar</h4>
+              {residentsLoading ? (
+                <div className="flex justify-center py-6"><Spinner /></div>
+              ) : (residents ?? []).length === 0 ? (
+                <p className="text-sm text-slate-400 py-4 text-center">Sakinlar yo'q</p>
+              ) : (
+                <div className="space-y-2">
+                  {(residents ?? []).map((r) => (
+                    <div key={r.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
+                      <div>
+                        <p className="text-[13px] font-medium text-slate-900">{r.studentName}</p>
+                        <p className="text-[11px] text-slate-400">Kirgan: {r.checkInDate}</p>
+                      </div>
+                      <button
+                        title="Chiqarish"
+                        onClick={() => checkOut.mutate({ residentId: r.id, roomId: selectedRoom.id })}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </SlideOver>
     </PageContent>
   );
 }
 
-function RoomMapView({ rooms }: { rooms: DormRoom[] }) {
+function RoomMapView({ rooms, onRoomClick }: { rooms: DormRoom[]; onRoomClick: (room: DormRoom) => void }) {
   const floors = [...new Set(rooms.map((r) => r.floor))].sort();
 
   return (
@@ -196,6 +276,7 @@ function RoomMapView({ rooms }: { rooms: DormRoom[] }) {
               return (
                 <div
                   key={room.number}
+                  onClick={() => onRoomClick(room)}
                   className={cn(
                     'aspect-[1.2] border-[1.5px] rounded-lg p-1.5 cursor-pointer flex flex-col justify-between hover:opacity-80 transition-opacity',
                     style.bg, style.border,
