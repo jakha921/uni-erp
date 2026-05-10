@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
+import { Modal } from '@/components/overlays';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
 import { Tabs } from '@/components/navigation';
@@ -48,6 +49,12 @@ export function ScholarshipsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Scholarship | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Scholarship | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkType, setBulkType] = useState<ScholarshipType>('davlat');
+  const [bulkAmount, setBulkAmount] = useState('');
+  const [bulkStart, setBulkStart] = useState('');
+  const [bulkEnd, setBulkEnd] = useState('');
+  const [bulkGroup, setBulkGroup] = useState('');
 
   const { data: scholarships, isLoading } = useScholarships({
     type: typeFilter || undefined,
@@ -200,9 +207,18 @@ export function ScholarshipsPage() {
           { label: 'Stipendiyalar' },
         ]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Stipendiya tayinlash
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              leftIcon={<Users className="h-4 w-4" />}
+              onClick={() => setBulkOpen(true)}
+            >
+              Ommaviy tayinlash
+            </Button>
+            <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
+              Stipendiya tayinlash
+            </Button>
+          </div>
         }
       />
 
@@ -295,6 +311,81 @@ export function ScholarshipsPage() {
         variant="danger"
         loading={deleteMutation.isPending}
       />
+
+      <Modal
+        open={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        title="Ommaviy stipendiya tayinlash"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setBulkOpen(false)}>Bekor qilish</Button>
+            <Button
+              disabled={!bulkAmount || !bulkStart || !bulkEnd}
+              onClick={() => setBulkOpen(false)}
+            >
+              Tayinlash
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-muted">
+            Tanlangan guruh yoki barcha talabalar uchun stipendiya tayinlash.
+          </p>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Stipendiya turi</label>
+            <select
+              value={bulkType}
+              onChange={(e) => setBulkType(e.target.value as ScholarshipType)}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+            >
+              {(Object.keys(TYPE_LABELS) as ScholarshipType[]).map((t) => (
+                <option key={t} value={t}>{TYPE_LABELS[t].label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Guruh (ixtiyoriy)</label>
+            <input
+              type="text"
+              value={bulkGroup}
+              onChange={(e) => setBulkGroup(e.target.value)}
+              placeholder="Masalan: IT-22"
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Miqdor (so&apos;m)</label>
+            <input
+              type="number"
+              value={bulkAmount}
+              onChange={(e) => setBulkAmount(e.target.value)}
+              placeholder="350000"
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-700">Boshlanish sanasi</label>
+              <input
+                type="date"
+                value={bulkStart}
+                onChange={(e) => setBulkStart(e.target.value)}
+                className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-slate-700">Tugash sanasi</label>
+              <input
+                type="date"
+                value={bulkEnd}
+                onChange={(e) => setBulkEnd(e.target.value)}
+                className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
     </PageContent>
   );
 }

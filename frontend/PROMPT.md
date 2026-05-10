@@ -314,7 +314,7 @@
 **Задачи:**
 - [x] Update: редактирование стипендии в Modal
 - [ ] Убрать hardcoded TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`
-- [ ] Массовое назначение стипендии (bulk create)
+- [x] Массовое назначение стипендии (bulk create)
 - [ ] i18n: все тексты
 
 ### 5.7 FinanceReportPage `/finance/report`
