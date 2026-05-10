@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Pagination } from '@/components/table';
 import { Button, Spinner } from '@/components/ui';
@@ -15,12 +16,18 @@ import type { Contract, ContractStatus, ContractType } from '@/types/finance';
 import type { ContractFormData, ContractEditFormData } from '../schemas/contract.schema';
 
 export function ContractsListPage() {
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<ContractStatus | ''>('');
   const [contractType, setContractType] = useState<ContractType | ''>('');
   const [fYear, setFYear] = useState('');
-  const [faculty, setFaculty] = useState('');
+  const [faculty, setFaculty] = useState(() => searchParams.get('faculty') ?? '');
+
+  useEffect(() => {
+    const f = searchParams.get('faculty');
+    if (f) setFaculty(f);
+  }, [searchParams]);
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Contract | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Contract | null>(null);

@@ -10,17 +10,22 @@ interface FacultyRevenue {
 
 interface RevenueByFacultyProps {
   data: FacultyRevenue[];
+  onFacultyClick?: (faculty: string) => void;
 }
 
-export function RevenueByFaculty({ data }: RevenueByFacultyProps) {
+export function RevenueByFaculty({ data, onFacultyClick }: RevenueByFacultyProps) {
   return (
-    <ChartCard title="Fakultetlar bo'yicha yig'im">
+    <ChartCard title="Fakultetlar bo'yicha yig'im" subtitle="Kliklang — kontrakt filtrini qo'llash">
       <div className="flex flex-col gap-4">
         {data.map((f) => {
           const pct = f.total > 0 ? Math.round((f.paid / f.total) * 100) : 0;
           const label = f.faculty.split(' ').slice(0, 2).join(' ');
           return (
-            <div key={f.faculty}>
+            <div
+              key={f.faculty}
+              onClick={() => onFacultyClick?.(f.faculty)}
+              className={onFacultyClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}
+            >
               <div className="mb-1.5 flex items-center justify-between text-xs">
                 <span className="font-medium text-slate-700">{label}</span>
                 <span className="tabular-nums text-slate-500">

@@ -70,7 +70,10 @@ export function FinanceDashboardPage() {
           partial={stats.byStatus?.[1]?.count ?? 0}
           none={stats.byStatus?.[2]?.count ?? 0}
         />
-        <RevenueByFaculty data={stats.byFaculty ?? []} />
+        <RevenueByFaculty
+          data={stats.byFaculty ?? []}
+          onFacultyClick={(faculty) => navigate(`/finance/contracts?faculty=${encodeURIComponent(faculty)}`)}
+        />
         <MonthlyTrend data={stats.byMonth ?? []} />
         {/* Course-based chart placeholder using bar approach */}
         <Card title="Kurslar bo'yicha" subtitle="To'langan va qarz nisbati">
