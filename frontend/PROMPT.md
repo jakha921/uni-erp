@@ -456,7 +456,7 @@
 - [x] "O'qilgan deb belgilash" → `useMarkNotificationRead()` mutation
 - [x] "Barchasini o'qilgan" → `useMarkAllRead()` mutation
 - [x] Delete: удаление bildirishnoma
-- [ ] Tabs по типам (info, warning, success, system)
+- [x] Tabs по типам (info, warning, success, system)
 - [ ] i18n: все тексты
 
 ### 8.3 MessagesPage `/messages`
@@ -473,7 +473,7 @@
 **Задачи:**
 - [x] CRUD: Create (AppealForm), Update (статус), Delete
 - [x] AppealForm: title, description, category
-- [ ] Комментарии: `useAddComment()` mutation
+- [x] Комментарии: `useAddComment()` mutation
 - [x] Фильтры: status tabs, category select
 - [ ] i18n: все тексты
 

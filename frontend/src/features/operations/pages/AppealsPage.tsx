@@ -1,12 +1,12 @@
-import { useState, useMemo } from 'react';
-import { Inbox, Bell, Clock, CheckCircle2, Plus, Edit, Users, CheckCircle, Trash2 } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import { Inbox, Bell, Clock, CheckCircle2, Plus, Users, CheckCircle, Trash2, Send } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { Avatar } from '@/components/ui/Avatar';
 import { ConfirmDialog } from '@/components/overlays';
 import { cn } from '@/lib/utils';
-import { useAppealsList, useUpdateAppealStatus, useCreateAppeal, useDeleteAppeal } from '@/api/hooks/useAppeals';
+import { useAppealsList, useUpdateAppealStatus, useCreateAppeal, useDeleteAppeal, useAddAppealComment } from '@/api/hooks/useAppeals';
 import { AppealForm } from '../components/AppealForm';
 import type { AppealFormData } from '../schemas/appeal.schema';
 import type { Appeal, AppealStatus, AppealCategory } from '@/types/operations';
@@ -40,8 +40,11 @@ export function AppealsPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteAppeal, setDeleteAppeal] = useState<Appeal | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const createAppeal = useCreateAppeal();
   const deleteAppealMutation = useDeleteAppeal();
+  const addComment = useAddAppealComment();
 
   const statusParam = filter === 'all' ? undefined : filter as AppealStatus;
 
@@ -252,9 +255,42 @@ export function AppealsPage() {
               </div>
             )}
 
+            {/* Comment input */}
+            <div className="flex gap-2 items-end">
+              <textarea
+                ref={commentInputRef}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Izoh yozing..."
+                rows={2}
+                className="flex-1 resize-none rounded-lg border border-border px-3 py-2 text-[13px] outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.ctrlKey && commentText.trim() && selected) {
+                    addComment.mutate({ id: selected.id, content: commentText.trim() }, {
+                      onSuccess: () => setCommentText(''),
+                    });
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                leftIcon={<Send className="h-3.5 w-3.5" />}
+                loading={addComment.isPending}
+                disabled={!commentText.trim()}
+                onClick={() => {
+                  if (selected && commentText.trim()) {
+                    addComment.mutate({ id: selected.id, content: commentText.trim() }, {
+                      onSuccess: () => setCommentText(''),
+                    });
+                  }
+                }}
+              >
+                Yuborish
+              </Button>
+            </div>
+
             {/* Actions */}
-            <div className="flex gap-2">
-              <Button size="sm" leftIcon={<Edit className="h-3.5 w-3.5" />}>Javob yozish</Button>
+            <div className="flex gap-2 flex-wrap">
               <Button variant="secondary" size="sm" leftIcon={<Users className="h-3.5 w-3.5" />}>Yo{"'"}naltirish</Button>
               <Button
                 variant="secondary"
