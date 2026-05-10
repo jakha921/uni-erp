@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Pencil, Trash2, FileDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Badge } from '@/components/ui';
@@ -14,19 +15,8 @@ import type { ScheduleFormData } from '../schemas/schedule.schema';
 
 type ViewMode = 'week' | 'day' | 'month';
 
-const DAY_NAMES = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
-const DAY_NAMES_SHORT = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'];
-const HOURS = ['08:30', '10:00', '11:30', '13:00', '14:30', '16:00', '17:30'];
 const SLOT_HEIGHT = 80;
-
-const VIEW_LABELS: Record<ViewMode, string> = { week: 'Hafta', day: 'Kun', month: 'Oy' };
-
-const TYPE_STYLES: Record<LessonType, { bg: string; border: string; fg: string; label: string }> = {
-  lecture: { bg: 'bg-green-50', border: 'border-l-emerald-500', fg: 'text-green-700', label: "Ma'ruza" },
-  lab: { bg: 'bg-blue-50', border: 'border-l-blue-500', fg: 'text-blue-700', label: 'Labor.' },
-  seminar: { bg: 'bg-amber-50', border: 'border-l-amber-500', fg: 'text-amber-700', label: 'Seminar' },
-  practice: { bg: 'bg-purple-50', border: 'border-l-violet-500', fg: 'text-purple-700', label: 'Amaliy' },
-};
+const HOURS = ['08:30', '10:00', '11:30', '13:00', '14:30', '16:00', '17:30'];
 
 function getMonday(d: Date): Date {
   const date = new Date(d);
@@ -47,11 +37,6 @@ function fmtDate(d: Date): string {
   return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function fmtMonthYear(d: Date): string {
-  const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
-  return `${months[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 function EventChip({
   event,
   onEdit,
@@ -61,6 +46,15 @@ function EventChip({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
+
+  const TYPE_STYLES: Record<LessonType, { bg: string; border: string; fg: string; label: string }> = {
+    lecture: { bg: 'bg-green-50', border: 'border-l-emerald-500', fg: 'text-green-700', label: t('education.typeLecture') },
+    lab: { bg: 'bg-blue-50', border: 'border-l-blue-500', fg: 'text-blue-700', label: t('education.typeLab') },
+    seminar: { bg: 'bg-amber-50', border: 'border-l-amber-500', fg: 'text-amber-700', label: t('education.typeSeminar') },
+    practice: { bg: 'bg-purple-50', border: 'border-l-violet-500', fg: 'text-purple-700', label: t('education.typePractice') },
+  };
+
   const style = TYPE_STYLES[event.lessonType];
   return (
     <div className={`group relative overflow-hidden rounded-lg border-l-[3px] p-2 ${style.bg} ${style.border}`}>
@@ -87,6 +81,8 @@ function WeekView({ schedules, weekStart, onEdit, onDelete }: {
   onEdit: (s: Schedule) => void;
   onDelete: (s: Schedule) => void;
 }) {
+  const { t } = useTranslation();
+  const daysShort = t('education.daysShort', { returnObjects: true }) as string[];
   const today = new Date();
   const weekDays = Array.from({ length: 6 }, (_, i) => addDays(weekStart, i));
 
@@ -100,7 +96,7 @@ function WeekView({ schedules, weekStart, onEdit, onDelete }: {
               const isToday = fmtDate(d) === fmtDate(today);
               return (
                 <div key={i} className="border-l border-slate-100 px-2.5 py-3 text-center">
-                  <div className="text-[11px] uppercase tracking-[0.05em] text-slate-400">{DAY_NAMES_SHORT[i]}</div>
+                  <div className="text-[11px] uppercase tracking-[0.05em] text-slate-400">{daysShort[i]}</div>
                   <div className={`mt-0.5 text-lg font-bold tabular-nums ${isToday ? 'text-primary-500' : 'text-slate-900'}`}>
                     {d.getDate()}
                   </div>
@@ -147,13 +143,20 @@ function DayView({ schedules, currentDay, onEdit, onDelete }: {
   onEdit: (s: Schedule) => void;
   onDelete: (s: Schedule) => void;
 }) {
+  const { t } = useTranslation();
+  const TYPE_STYLES: Record<LessonType, { bg: string; border: string; fg: string; label: string }> = {
+    lecture: { bg: 'bg-green-50', border: 'border-l-emerald-500', fg: 'text-green-700', label: t('education.typeLecture') },
+    lab: { bg: 'bg-blue-50', border: 'border-l-blue-500', fg: 'text-blue-700', label: t('education.typeLab') },
+    seminar: { bg: 'bg-amber-50', border: 'border-l-amber-500', fg: 'text-amber-700', label: t('education.typeSeminar') },
+    practice: { bg: 'bg-purple-50', border: 'border-l-violet-500', fg: 'text-purple-700', label: t('education.typePractice') },
+  };
   const dayIdx = currentDay.getDay() === 0 ? 6 : currentDay.getDay() - 1;
   const daySchedules = schedules.filter((s) => s.dayOfWeek === dayIdx).sort((a, b) => a.pairNumber - b.pairNumber);
 
   return (
     <Card>
       {daySchedules.length === 0 ? (
-        <div className="py-12 text-center text-sm text-slate-400">Bu kunda darslar yo'q</div>
+        <div className="py-12 text-center text-sm text-slate-400">{t('education.noLessons')}</div>
       ) : (
         <div className="space-y-2">
           {daySchedules.map((event) => {
@@ -161,7 +164,7 @@ function DayView({ schedules, currentDay, onEdit, onDelete }: {
             return (
               <div key={event.id} className={`group flex items-center gap-4 rounded-xl border-l-4 p-4 ${style.bg} ${style.border}`}>
                 <div className="w-14 shrink-0 text-center">
-                  <div className="text-xs text-slate-400">{event.pairNumber}-juft</div>
+                  <div className="text-xs text-slate-400">{t('education.pair', { n: event.pairNumber })}</div>
                   <div className="text-sm font-bold text-slate-700">{HOURS[(event.pairNumber - 1)] ?? ''}</div>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -188,6 +191,10 @@ function MonthView({ schedules, monthStart, onEdit }: {
   onEdit: (s: Schedule) => void;
   onDelete?: (s: Schedule) => void;
 }) {
+  const { t } = useTranslation();
+  const daysShort = t('education.daysShort', { returnObjects: true }) as string[];
+  const months = t('education.months', { returnObjects: true }) as string[];
+
   const year = monthStart.getFullYear();
   const month = monthStart.getMonth();
   const firstDay = new Date(year, month, 1);
@@ -201,12 +208,17 @@ function MonthView({ schedules, monthStart, onEdit }: {
   ];
   while (cells.length % 7 !== 0) cells.push(null);
 
+  const fmtMonthYear = (d: Date) => `${months[d.getMonth()]} ${d.getFullYear()}`;
+
   return (
     <Card noPadding>
       <div className="grid grid-cols-7 border-b border-slate-200">
-        {DAY_NAMES_SHORT.map((d) => (
+        {daysShort.map((d) => (
           <div key={d} className="py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400">{d}</div>
         ))}
+      </div>
+      <div className="text-center py-2 text-sm font-semibold text-slate-700">
+        {fmtMonthYear(monthStart)}
       </div>
       <div className="grid grid-cols-7">
         {cells.map((date, idx) => {
@@ -226,6 +238,12 @@ function MonthView({ schedules, monthStart, onEdit }: {
                   </div>
                   <div className="space-y-0.5">
                     {daySchedules.slice(0, 2).map((s) => {
+                      const TYPE_STYLES: Record<LessonType, { bg: string; fg: string }> = {
+                        lecture: { bg: 'bg-green-50', fg: 'text-green-700' },
+                        lab: { bg: 'bg-blue-50', fg: 'text-blue-700' },
+                        seminar: { bg: 'bg-amber-50', fg: 'text-amber-700' },
+                        practice: { bg: 'bg-purple-50', fg: 'text-purple-700' },
+                      };
                       const style = TYPE_STYLES[s.lessonType];
                       return (
                         <div
@@ -239,7 +257,7 @@ function MonthView({ schedules, monthStart, onEdit }: {
                       );
                     })}
                     {daySchedules.length > 2 && (
-                      <div className="text-[10px] text-slate-400 pl-1">+{daySchedules.length - 2} ta</div>
+                      <div className="text-[10px] text-slate-400 pl-1">{t('education.moreItems', { count: daySchedules.length - 2 })}</div>
                     )}
                   </div>
                 </>
@@ -248,12 +266,12 @@ function MonthView({ schedules, monthStart, onEdit }: {
           );
         })}
       </div>
-      {/* unused onDelete — satisfy linter */}
     </Card>
   );
 }
 
 export function SchedulePage() {
+  const { t } = useTranslation();
   const [view, setView] = useState<ViewMode>('week');
   const [currentDate, setCurrentDate] = useState(() => getMonday(new Date()));
   const [groupFilter, setGroupFilter] = useState<number | undefined>(undefined);
@@ -278,6 +296,8 @@ export function SchedulePage() {
   const teachersList = teachersData?.data ?? [];
   const semestersList = semesters ?? [];
 
+  const days = t('education.days', { returnObjects: true }) as string[];
+
   const handlePrev = () => {
     if (view === 'week') setCurrentDate((d) => addDays(d, -7));
     else if (view === 'day') setCurrentDate((d) => addDays(d, -1));
@@ -294,9 +314,19 @@ export function SchedulePage() {
       const end = addDays(currentDate, 5);
       return `${fmtDate(currentDate)} – ${fmtDate(end)}`;
     }
-    if (view === 'day') return `${DAY_NAMES[currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1]}, ${fmtDate(currentDate)}`;
-    return fmtMonthYear(currentDate);
+    if (view === 'day') {
+      const dayIdx = currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1;
+      return `${days[dayIdx]}, ${fmtDate(currentDate)}`;
+    }
+    const months = t('education.months', { returnObjects: true }) as string[];
+    return `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
   })();
+
+  const VIEW_LABELS: Record<ViewMode, string> = {
+    week: t('education.viewWeek'),
+    day: t('education.viewDay'),
+    month: t('education.viewMonth'),
+  };
 
   const handleOpenCreate = () => { setEditSchedule(null); setFormOpen(true); };
   const handleOpenEdit = (s: Schedule) => { setEditSchedule(s); setFormOpen(true); };
@@ -316,9 +346,9 @@ export function SchedulePage() {
   return (
     <PageContent>
       <PageHeader
-        title="Dars jadvali"
-        subtitle="Haftalik dars jadvali"
-        breadcrumbs={[{ label: "Ta'lim", path: '/schedule' }, { label: 'Dars jadvali' }]}
+        title={t('education.scheduleTitle')}
+        subtitle={t('education.scheduleSubtitle')}
+        breadcrumbs={[{ label: t('nav.education'), path: '/schedule' }, { label: t('education.scheduleTitle') }]}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -337,7 +367,7 @@ export function SchedulePage() {
               PDF
             </Button>
             <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-              Dars qo&apos;shish
+              {t('education.addLesson')}
             </Button>
           </div>
         }
@@ -347,11 +377,11 @@ export function SchedulePage() {
       <Card className="mb-4">
         <div className="flex flex-wrap items-center gap-2.5">
           <Button variant="secondary" size="sm" leftIcon={<ChevronLeft className="h-4 w-4" />} onClick={handlePrev}>
-            Oldingi
+            {t('education.prev')}
           </Button>
           <div className="min-w-[220px] text-center text-sm font-semibold text-slate-900">{periodLabel}</div>
           <Button variant="secondary" size="sm" rightIcon={<ChevronRight className="h-4 w-4" />} onClick={handleNext}>
-            Keyingi
+            {t('education.next')}
           </Button>
           <div className="flex-1" />
           <select
@@ -359,7 +389,7 @@ export function SchedulePage() {
             onChange={(e) => setGroupFilter(e.target.value ? Number(e.target.value) : undefined)}
             className="h-8 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha guruhlar</option>
+            <option value="">{t('education.allGroups')}</option>
             {groupsList.map((g) => (
               <option key={g.id} value={g.id}>{g.name}</option>
             ))}
@@ -369,9 +399,9 @@ export function SchedulePage() {
             onChange={(e) => setTeacherFilter(e.target.value ? Number(e.target.value) : undefined)}
             className="h-8 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha o'qituvchilar</option>
-            {teachersList.map((t) => (
-              <option key={t.id} value={t.id}>{t.fullName}</option>
+            <option value="">{t('education.allTeachers')}</option>
+            {teachersList.map((teacher) => (
+              <option key={teacher.id} value={teacher.id}>{teacher.fullName}</option>
             ))}
           </select>
           <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
@@ -399,7 +429,7 @@ export function SchedulePage() {
         schedule={editSchedule}
         groups={groupsList.map((g) => ({ id: g.id, name: g.name }))}
         subjects={subjectsList.map((s) => ({ id: s.id, name: s.name }))}
-        teachers={teachersList.map((t) => ({ id: t.id, name: t.fullName }))}
+        teachers={teachersList.map((teacher) => ({ id: teacher.id, name: teacher.fullName }))}
         semesters={semestersList.map((s) => ({ id: s.id, name: s.name }))}
         loading={createSchedule.isPending || updateSchedule.isPending}
       />
@@ -411,9 +441,9 @@ export function SchedulePage() {
           if (!deleteSchedule) return;
           deleteScheduleMutation.mutate(deleteSchedule.id, { onSuccess: () => setDeleteSchedule(null) });
         }}
-        title="Darsni o'chirish"
-        message={`"${deleteSchedule?.subjectName}" darsini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteScheduleTitle')}
+        message={t('education.deleteScheduleConfirm', { subject: deleteSchedule?.subjectName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteScheduleMutation.isPending}
       />

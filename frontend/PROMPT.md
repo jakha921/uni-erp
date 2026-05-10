@@ -135,7 +135,7 @@
 - [x] Delete: удаление занятия через ConfirmDialog
 - [x] Фильтры: группа (Combobox), преподаватель, неделя (DatePicker)
 - [x] 3 вида: Haftalik (недельный), Kunlik (дневной), Oylik (месячный)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 - [x] Экспорт расписания в PDF
 
 ### 4.2 AcademicAttendancePage `/attendance`
