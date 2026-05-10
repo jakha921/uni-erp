@@ -1,14 +1,16 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
 import { Card } from '@/components/data-display/Card';
 import { Pagination } from '@/components/table/Pagination';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/overlays';
 import { StudentTable } from '../components/StudentTable';
 import { useStudentsList, useDeleteStudent } from '@/api/hooks/useStudents';
+import { useFaculties } from '@/api/hooks/useCore';
 import { useAuthStore } from '@/stores/auth.store';
 import type { StudentStatus, StudentListParams, StudentListItem } from '@/types/student';
 
@@ -45,6 +47,7 @@ export function StudentsListPage() {
 
   const { data, isLoading } = useStudentsList(params);
   const deleteStudentMutation = useDeleteStudent();
+  const { data: faculties } = useFaculties();
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -81,6 +84,13 @@ export function StudentsListPage() {
       <PageHeader
         title={role === 'oqituvchi' ? 'Mening talabalarim' : "Talabalar ro'yxati"}
         subtitle={data ? `Jami: ${data.total} ta` : undefined}
+        actions={
+          role !== 'oqituvchi' && role !== 'talaba' ? (
+            <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/students/new')}>
+              Yangi talaba
+            </Button>
+          ) : undefined
+        }
       />
 
       {/* Filters — all in one row like prototype */}
@@ -107,10 +117,9 @@ export function StudentsListPage() {
                 className="h-10 rounded-lg border border-border px-3 text-sm"
               >
                 <option value="">Hammasi</option>
-                <option value="1">Axborot texnologiyalari</option>
-                <option value="2">Iqtisodiyot</option>
-                <option value="3">Pedagogika</option>
-                <option value="4">Filologiya</option>
+                {(faculties ?? []).map((f) => (
+                  <option key={f.id} value={String(f.id)}>{f.name}</option>
+                ))}
               </select>
             </div>
           )}

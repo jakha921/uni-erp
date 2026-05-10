@@ -218,8 +218,8 @@
 **Задачи:**
 - [x] CRUD: кнопка "Yangi bitiruvchi" → AlumniForm в SlideOver
 - [x] AlumniForm: fullName, graduationYear, faculty, specialty, workplace, position, phone, email
-- [ ] Edit: клик по строке → SlideOver с предзаполнением
-- [ ] Delete: ConfirmDialog
+- [x] Edit: клик по строке → SlideOver с предзаполнением
+- [x] Delete: ConfirmDialog
 - [x] Zod schema: `alumniSchema`
 - [ ] Фильтры: год выпуска, факультет, статус трудоустройства
 - [ ] Экспорт в Excel
@@ -231,7 +231,7 @@
 **Задачи:**
 - [x] CRUD: кнопка "Yangi amaliyot" → InternshipForm в SlideOver
 - [x] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
-- [ ] Edit + Delete
+- [x] Edit + Delete
 - [x] Zod schema: `internshipSchema`
 - [ ] Tabs: Joriy (текущие), Yakunlangan (завершённые)
 - [ ] i18n: все тексты
@@ -385,7 +385,7 @@
 **Файл:** `features/hr/pages/OrdersPage.tsx` | **Статус:** C✓ R✓, нет U/D
 **Задачи:**
 - [ ] Update: редактирование buyruq (статус: draft → review → signed)
-- [ ] Delete: ConfirmDialog
+- [x] Delete: ConfirmDialog
 - [ ] Генерация PDF приказа → `/hr/orders/{id}/pdf/`
 - [ ] i18n: все тексты
 
@@ -400,7 +400,7 @@
 ### 6.7 LeavesPage `/hr/leaves`
 **Файл:** `features/hr/pages/LeavesPage.tsx` | **Статус:** C✓ R✓ U✓
 **Задачи:**
-- [ ] Delete: отмена ta'til запроса
+- [x] Delete: отмена ta'til запроса
 - [ ] Календарь отпусков (визуализация)
 - [ ] DateRangePicker для фильтрации
 - [ ] i18n: все тексты
