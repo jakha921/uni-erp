@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Clock, Briefcase, Calendar, Search, BarChart3 } from 'lucide-react';
+import { Plus, Clock, Briefcase, Calendar, Search, BarChart3, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { StatCard } from '@/components/data-display/StatCard';
@@ -12,10 +12,112 @@ import { LeaveForm } from '../components/LeaveForm';
 import { useLeaves, useCreateLeave, useUpdateLeave, useDeleteLeave, useEmployees } from '@/api/hooks/useHr';
 import type { CreateLeaveDto, Leave, LeaveStatus } from '@/types/hr';
 
+const MONTH_NAMES = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+const DAY_SHORTS = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+
+const LEAVE_COLORS: Record<string, { bg: string; text: string }> = {
+  annual: { bg: '#DCFCE7', text: '#16A34A' },
+  sick: { bg: '#FEE2E2', text: '#DC2626' },
+  unpaid: { bg: '#FEF3C7', text: '#D97706' },
+  maternity: { bg: '#F3E8FF', text: '#7C3AED' },
+  business_trip: { bg: '#DBEAFE', text: '#2563EB' },
+  study: { bg: '#FEF9C3', text: '#CA8A04' },
+};
+
+function LeaveCalendar({ leaves, calendarMonth, onMonthChange }: {
+  leaves: Leave[];
+  calendarMonth: Date;
+  onMonthChange: (d: Date) => void;
+}) {
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+  const cells: (number | null)[] = [
+    ...Array(startOffset).fill(null),
+    ...Array.from({ length: lastDay.getDate() }, (_, i) => i + 1),
+  ];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const approved = leaves.filter((l) => l.status === 'approved');
+
+  const leavesOnDay = (day: number) => {
+    const date = new Date(year, month, day);
+    return approved.filter((l) => {
+      const start = new Date(l.startDate);
+      const end = new Date(l.endDate);
+      return date >= start && date <= end;
+    });
+  };
+
+  const today = new Date();
+
+  return (
+    <Card noPadding>
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+        <button onClick={() => onMonthChange(new Date(year, month - 1, 1))} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <span className="text-sm font-semibold text-slate-900">{MONTH_NAMES[month]} {year}</span>
+        <button onClick={() => onMonthChange(new Date(year, month + 1, 1))} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-7 border-b border-slate-100">
+        {DAY_SHORTS.map((d) => (
+          <div key={d} className="py-2 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400">{d}</div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7">
+        {cells.map((day, idx) => {
+          const isToday = day !== null && today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+          const dayLeaves = day !== null ? leavesOnDay(day) : [];
+
+          return (
+            <div key={idx} className={`min-h-[80px] border-b border-r border-slate-100 p-1.5 ${day === null ? 'bg-slate-50/50' : ''}`}>
+              {day !== null && (
+                <>
+                  <div className={`mb-1 h-6 w-6 flex items-center justify-center rounded-full text-xs font-semibold ${isToday ? 'bg-primary-500 text-white' : 'text-slate-700'}`}>
+                    {day}
+                  </div>
+                  <div className="space-y-0.5">
+                    {dayLeaves.slice(0, 3).map((l) => {
+                      const colors = LEAVE_COLORS[l.type] ?? { bg: '#F1F5F9', text: '#64748B' };
+                      return (
+                        <div
+                          key={l.id}
+                          title={`${l.employeeName} — ${l.typeLabel}`}
+                          className="truncate rounded px-1 py-0.5 text-[9.5px] font-medium"
+                          style={{ backgroundColor: colors.bg, color: colors.text }}
+                        >
+                          {l.employeeName.split(' ')[0]}
+                        </div>
+                      );
+                    })}
+                    {dayLeaves.length > 3 && (
+                      <div className="text-[9.5px] text-slate-400 pl-1">+{dayLeaves.length - 3}</div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
 export function LeavesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date());
   const [deleteLeave, setDeleteLeave] = useState<Leave | null>(null);
 
   const { data: leaves, isLoading } = useLeaves();
@@ -59,9 +161,27 @@ export function LeavesPage() {
           { label: "Ta'tillar" },
         ]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Yangi ariza
-          </Button>
+          <div className="flex gap-2">
+            <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`rounded-md p-1.5 transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-700'}`}
+                title="Ro'yxat"
+              >
+                <List className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('calendar')}
+                className={`rounded-md p-1.5 transition-colors ${viewMode === 'calendar' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-700'}`}
+                title="Kalendar"
+              >
+                <Calendar className="h-4 w-4" />
+              </button>
+            </div>
+            <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
+              Yangi ariza
+            </Button>
+          </div>
         }
       />
 
@@ -73,46 +193,45 @@ export function LeavesPage() {
       </div>
 
       <div className="mt-6">
-        <Tabs
-          tabs={[
-            { id: 'all', label: 'Hammasi', count: leaves?.length ?? 0 },
-            { id: 'leaves', label: "Ta'tillar", count: leaves?.filter((l) => l.type !== 'business_trip').length ?? 0 },
-            { id: 'trips', label: 'Xizmat safarlari', count: leaves?.filter((l) => l.type === 'business_trip').length ?? 0 },
-            { id: 'pending', label: 'Tasdiqlash kutmoqda', count: pendingCount },
-          ]}
-          activeTab={tab}
-          onTabChange={setTab}
-        />
-
-        {/* Search */}
-        <Card className="mt-4 mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Xodim ismi bo'yicha qidirish…"
-              className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+        {viewMode === 'list' ? (
+          <>
+            <Tabs
+              tabs={[
+                { id: 'all', label: 'Hammasi', count: leaves?.length ?? 0 },
+                { id: 'leaves', label: "Ta'tillar", count: leaves?.filter((l) => l.type !== 'business_trip').length ?? 0 },
+                { id: 'trips', label: 'Xizmat safarlari', count: leaves?.filter((l) => l.type === 'business_trip').length ?? 0 },
+                { id: 'pending', label: 'Tasdiqlash kutmoqda', count: pendingCount },
+              ]}
+              activeTab={tab}
+              onTabChange={setTab}
             />
-          </div>
-        </Card>
-
-        {/* Table */}
-        <Card noPadding className="overflow-hidden">
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <Spinner size="lg" />
-          </div>
+            <Card className="mt-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Xodim ismi bo'yicha qidirish…"
+                  className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                />
+              </div>
+            </Card>
+            <Card noPadding className="overflow-hidden">
+              {isLoading ? (
+                <div className="flex justify-center py-12"><Spinner size="lg" /></div>
+              ) : (
+                <LeaveTable data={filtered} onApprove={handleApprove} onReject={handleReject} onDelete={setDeleteLeave} />
+              )}
+            </Card>
+          </>
         ) : (
-          <LeaveTable
-            data={filtered}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onDelete={setDeleteLeave}
+          <LeaveCalendar
+            leaves={leaves ?? []}
+            calendarMonth={calendarMonth}
+            onMonthChange={setCalendarMonth}
           />
         )}
-      </Card>
       </div>
 
       <LeaveForm

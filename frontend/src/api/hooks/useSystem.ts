@@ -54,6 +54,11 @@ export function useUpdateRole() {
   return useMutation({ mutationFn: ({ id, data }: { id: string; data: CreateRoleDto }) => systemService.updateRole(id, data), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.roles() }); } });
 }
 
+export function useDeleteRole() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (id: string) => systemService.deleteRole(id), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.roles() }); } });
+}
+
 export function useUpdateRolePermissions() {
   return useMutation({
     mutationFn: ({ roleId, moduleId, verb, granted }: { roleId: string; moduleId: string; verb: string; granted: boolean }) =>

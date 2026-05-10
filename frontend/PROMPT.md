@@ -133,8 +133,8 @@
 - [x] CRUD: кнопка "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара)
 - [x] Edit: клик по ячейке расписания → редактирование в Modal
 - [x] Delete: удаление занятия через ConfirmDialog
-- [ ] Фильтры: группа (Combobox), преподаватель, неделя (DatePicker)
-- [ ] 3 вида: Haftalik (недельный), Kunlik (дневной), Oylik (месячный)
+- [x] Фильтры: группа (Combobox), преподаватель, неделя (DatePicker)
+- [x] 3 вида: Haftalik (недельный), Kunlik (дневной), Oylik (месячный)
 - [ ] i18n: все тексты
 - [ ] Экспорт расписания в PDF
 
@@ -401,7 +401,7 @@
 **Файл:** `features/hr/pages/LeavesPage.tsx` | **Статус:** C✓ R✓ U✓
 **Задачи:**
 - [x] Delete: отмена ta'til запроса
-- [ ] Календарь отпусков (визуализация)
+- [x] Календарь отпусков (визуализация)
 - [ ] DateRangePicker для фильтрации
 - [ ] i18n: все тексты
 
@@ -415,7 +415,7 @@
 - [x] CRUD: Create (LeadForm в SlideOver), Delete (ConfirmDialog)
 - [x] LeadForm: firstName, lastName, phone, email, direction, source, notes
 - [x] Zod schema: `leadSchema`
-- [ ] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
+- [x] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
 - [ ] Bulk actions: массовое изменение статуса
 - [ ] Кнопка "Excel eksport" → `/crm/leads/export/`
 - [ ] i18n: все тексты
@@ -433,7 +433,7 @@
 **Задачи:**
 - [ ] Подключить к `useCrmStats()` — реальные данные
 - [ ] DateRangePicker для периода
-- [ ] Графики: воронка (BarChart), источники (DonutChart), динамика (LineChart)
+- [x] Графики: воронка (BarChart), источники (DonutChart), динамика (LineChart)
 - [ ] i18n: все тексты
 
 ---
@@ -555,7 +555,7 @@
 ### 11.2 RolesPage `/system/roles`
 **Задачи:**
 - [ ] Убрать hardcoded MODULE_GROUPS → из API
-- [ ] Кастомные роли: CRUD
+- [x] Кастомные роли: CRUD
 - [ ] i18n: все тексты
 
 ### 11.3 PermissionMatrixPage `/system/permissions`
@@ -600,22 +600,22 @@
 
 ### 13.1 DormitoryPage `/dormitory`
 **Задачи:**
-- [ ] BuildingSelector → floor → room grid
-- [ ] CRUD для комнат: DormRoomForm
+- [x] BuildingSelector → floor → room grid
+- [x] CRUD для комнат: DormRoomForm
 - [ ] Поселение/выселение студентов
 - [ ] i18n: все тексты
 
 ### 13.2 EquipmentPage `/equipment`
 **Задачи:**
-- [ ] CRUD: EquipmentForm в SlideOver
-- [ ] Фильтры: category, status, location
+- [x] CRUD: EquipmentForm в SlideOver
+- [x] Фильтры: category, status, location
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты
 
 ### 13.3 TransportPage `/transport`
 **Задачи:**
-- [ ] CRUD: VehicleForm в Modal
-- [ ] Status tabs
+- [x] CRUD: VehicleForm в Modal
+- [x] Status tabs
 - [ ] i18n: все тексты
 
 ---

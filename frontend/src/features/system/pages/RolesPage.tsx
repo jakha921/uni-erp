@@ -5,6 +5,10 @@ import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Badge } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
+import { ConfirmDialog } from '@/components/overlays';
+import { useCreateRole, useDeleteRole } from '@/api/hooks/useSystem';
+import { RoleForm } from '../components/RoleForm';
+import type { RoleFormData } from '../schemas/role.schema';
 import { ROLES, PERM_MATRIX, MODULE_GROUPS, PERM_VERBS, ALL_MODULES, type SystemRole } from '../data';
 
 function PermVerbDot({ verbId, active }: { verbId: string; active: boolean }) {
@@ -92,7 +96,7 @@ function RoleCard({ role, selected, onClick }: { role: SystemRole; selected: boo
   );
 }
 
-function RoleDetailPanel({ role }: { role: SystemRole }) {
+function RoleDetailPanel({ role, onDelete }: { role: SystemRole; onDelete: (role: SystemRole) => void }) {
   const perms = PERM_MATRIX[role.id] ?? {};
   const permCount = Object.values(perms).flat().length;
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(MODULE_GROUPS.map((g) => g.label)));
@@ -206,7 +210,7 @@ function RoleDetailPanel({ role }: { role: SystemRole }) {
         </Button>
         <div className="flex-1" />
         {!role.system && (
-          <Button variant="danger" size="sm">
+          <Button variant="danger" size="sm" onClick={() => onDelete(role)}>
             O&apos;chirish
           </Button>
         )}
@@ -219,6 +223,18 @@ export function RolesPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [selectedId, setSelectedId] = useState('rector');
+  const [formOpen, setFormOpen] = useState(false);
+  const [deleteRole, setDeleteRole] = useState<SystemRole | null>(null);
+
+  const createRole = useCreateRole();
+  const deleteRoleMutation = useDeleteRole();
+
+  const handleCreate = (data: RoleFormData) => {
+    createRole.mutate(
+      { name: data.name, nameUz: data.nameUz, description: data.description, permissions: {} },
+      { onSuccess: () => setFormOpen(false) },
+    );
+  };
 
   const tabs = useMemo(
     () => [
@@ -253,7 +269,7 @@ export function RolesPage() {
             >
               Permission Matrix
             </Button>
-            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
               Yangi rol
             </Button>
           </div>
@@ -272,9 +288,30 @@ export function RolesPage() {
 
         {/* Detail panel */}
         <div className="sticky top-4">
-          <RoleDetailPanel role={selectedRole} />
+          <RoleDetailPanel role={selectedRole} onDelete={setDeleteRole} />
         </div>
       </div>
+
+      <RoleForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleCreate}
+        loading={createRole.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteRole}
+        onClose={() => setDeleteRole(null)}
+        onConfirm={() => {
+          if (!deleteRole) return;
+          deleteRoleMutation.mutate(deleteRole.id, { onSuccess: () => { setDeleteRole(null); setSelectedId('rector'); } });
+        }}
+        title="Rolni o'chirish"
+        message={`"${deleteRole?.name}" rolini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteRoleMutation.isPending}
+      />
     </PageContent>
   );
 }

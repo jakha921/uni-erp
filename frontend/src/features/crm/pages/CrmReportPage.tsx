@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Users, TrendingUp, UserCheck, PhoneCall } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
-import { Card, StatCard, BarChartSimple } from '@/components/data-display';
+import { Card, StatCard, DonutChart, LineChartSimple } from '@/components/data-display';
 
 type Period = 'month' | 'quarter' | 'year';
 
@@ -13,13 +13,15 @@ const FUNNEL_DATA = [
 ];
 
 const SOURCES = [
-  { source: 'Ijtimoiy tarmoqlar', leads: 410, enrolled: 120, rate: 29 },
-  { source: 'Ochiq eshiklar kuni', leads: 280, enrolled: 95, rate: 34 },
-  { source: "Ko'rgazma / Tadbir", leads: 195, enrolled: 58, rate: 30 },
-  { source: "Do'stlar tavsiyasi", leads: 175, enrolled: 71, rate: 41 },
-  { source: 'Veb-sayt', leads: 140, enrolled: 45, rate: 32 },
-  { source: "Reklama (TV/radio)", leads: 40, enrolled: 11, rate: 28 },
+  { source: 'Ijtimoiy tarmoqlar', leads: 410, enrolled: 120, rate: 29, color: '#3B82F6' },
+  { source: 'Ochiq eshiklar kuni', leads: 280, enrolled: 95, rate: 34, color: '#2DB976' },
+  { source: "Ko'rgazma / Tadbir", leads: 195, enrolled: 58, rate: 30, color: '#F59E0B' },
+  { source: "Do'stlar tavsiyasi", leads: 175, enrolled: 71, rate: 41, color: '#8B5CF6' },
+  { source: 'Veb-sayt', leads: 140, enrolled: 45, rate: 32, color: '#EC4899' },
+  { source: "Reklama (TV/radio)", leads: 40, enrolled: 11, rate: 28, color: '#EF4444' },
 ];
+
+const SOURCE_DONUT_DATA = SOURCES.map((s) => ({ name: s.source.split(' ')[0] ?? s.source, value: s.leads, color: s.color }));
 
 const MONTHLY_TREND = [
   { name: 'Sen', value: 85 },
@@ -120,12 +122,13 @@ export function CrmReportPage() {
           </div>
         </Card>
 
-        <Card title="Oylik murojaatlar" className="p-5">
-          <BarChartSimple data={MONTHLY_TREND} color="#2DB976" />
+        <Card title="Oylik dinamika" className="p-5">
+          <LineChartSimple data={MONTHLY_TREND} color="#2DB976" showArea height={220} />
         </Card>
       </div>
 
-      <Card title="Murojaatlar manbalari" className="overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 mb-6">
+        <Card title="Murojaatlar manbalari" className="overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-border bg-slate-50">
@@ -168,7 +171,11 @@ export function CrmReportPage() {
             ))}
           </tbody>
         </table>
-      </Card>
+        </Card>
+        <Card title="Manba ulushi" className="p-5">
+          <DonutChart data={SOURCE_DONUT_DATA} size={220} innerRadius={60} />
+        </Card>
+      </div>
     </PageContent>
   );
 }
