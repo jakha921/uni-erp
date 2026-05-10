@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SlideOver } from '@/components/overlays';
 import { Button } from '@/components/ui';
 import { FormField, FormInput, FormSelect } from '@/components/form';
+import { FileUpload } from '@/components/form/FileUpload';
 import { documentSchema, type DocumentFormData } from '../schemas/document.schema';
 import type { Document } from '@/types/admin';
 
@@ -34,6 +35,7 @@ export function DocumentForm({ open, onClose, onSubmit, document, folders, loadi
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<DocumentFormData>({
@@ -96,8 +98,20 @@ export function DocumentForm({ open, onClose, onSubmit, document, folders, loadi
             error={!!errors.folderId}
           />
         </FormField>
-        <FormField label="Fayl URL" error={errors.fileUrl?.message}>
-          <FormInput {...register('fileUrl')} placeholder="https://..." error={!!errors.fileUrl} />
+        <FormField label="Fayl yuklash" error={errors.fileUrl?.message}>
+          <FileUpload
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png"
+            maxSize={20 * 1024 * 1024}
+            onUpload={(files) => {
+              if (files[0]) setValue('fileUrl', files[0].name);
+            }}
+          />
+          <FormInput
+            {...register('fileUrl')}
+            placeholder="yoki URL kiriting: https://..."
+            error={!!errors.fileUrl}
+            className="mt-2"
+          />
         </FormField>
       </div>
     </SlideOver>

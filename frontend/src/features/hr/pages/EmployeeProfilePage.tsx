@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star } from 'lucide-react';
+import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star, Upload } from 'lucide-react';
+import { FileUpload } from '@/components/form/FileUpload';
 import { PageContent } from '@/components/layout';
 import { Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
@@ -239,20 +240,38 @@ function SalaryTab({ salary }: { salary: number }) {
 }
 
 function DocsTab() {
+  const [extraDocs, setExtraDocs] = useState<{ name: string; date: string }[]>([]);
+  void Upload;
+
+  const handleUpload = (files: File[]) => {
+    const today = new Date().toISOString().slice(0, 10);
+    setExtraDocs((prev) => [...prev, ...files.map((f) => ({ name: f.name, date: today }))]);
+  };
+
+  const allDocs = [...DOCS_DATA, ...extraDocs];
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-      {DOCS_DATA.map((d, i) => (
-        <div
-          key={i}
-          className="p-4 border border-slate-100 rounded-xl cursor-pointer text-center hover:border-cyan-200 hover:bg-cyan-50/30 transition-colors"
-        >
-          <div className="w-10 h-10 rounded-[10px] bg-cyan-50 text-cyan-600 flex items-center justify-center mx-auto mb-2.5">
-            <FileText className="h-[18px] w-[18px]" />
+    <div className="space-y-4">
+      <FileUpload
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        maxSize={10 * 1024 * 1024}
+        multiple
+        onUpload={handleUpload}
+      />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {allDocs.map((d, i) => (
+          <div
+            key={i}
+            className="p-4 border border-slate-100 rounded-xl cursor-pointer text-center hover:border-cyan-200 hover:bg-cyan-50/30 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-[10px] bg-cyan-50 text-cyan-600 flex items-center justify-center mx-auto mb-2.5">
+              <FileText className="h-[18px] w-[18px]" />
+            </div>
+            <p className="text-[13px] font-medium text-slate-900">{d.name}</p>
+            <p className="text-[11px] text-slate-400 mt-1">{d.date}</p>
           </div>
-          <p className="text-[13px] font-medium text-slate-900">{d.name}</p>
-          <p className="text-[11px] text-slate-400 mt-1">{d.date}</p>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

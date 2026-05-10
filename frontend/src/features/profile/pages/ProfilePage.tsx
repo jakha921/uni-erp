@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Pencil, Mail, Phone, MapPin, Calendar, GraduationCap, Briefcase } from 'lucide-react';
+import { Pencil, Mail, Phone, MapPin, Calendar, GraduationCap, Briefcase, Camera } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/overlays';
+import { FileUpload } from '@/components/form/FileUpload';
 import { useAuthStore } from '@/stores/auth.store';
 import { formatDate } from '@/lib/utils';
 import { useUpdateProfile } from '@/api/hooks/useProfile';
@@ -25,6 +26,8 @@ export function ProfilePage() {
   const currentUser = useAuthStore((s) => s.currentUser);
   const patchCurrentUser = useAuthStore((s) => s.patchCurrentUser);
   const [editOpen, setEditOpen] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoUploadOpen, setPhotoUploadOpen] = useState(false);
   const updateProfile = useUpdateProfile();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProfileFormData>({
@@ -68,8 +71,19 @@ export function ProfilePage() {
         <Card className="lg:col-span-2">
           <div className="p-6">
             <div className="flex items-start gap-5">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold shrink-0">
-                {currentUser.initials}
+              <div className="relative shrink-0">
+                <div className="h-20 w-20 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold">
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="avatar" className="h-full w-full object-cover" />
+                  ) : currentUser.initials}
+                </div>
+                <button
+                  onClick={() => setPhotoUploadOpen(true)}
+                  className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+                  title="Rasm yuklash"
+                >
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl font-bold text-slate-900">{currentUser.name}</h2>
@@ -216,6 +230,22 @@ export function ProfilePage() {
             {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
           </div>
         </form>
+      </Modal>
+
+      <Modal open={photoUploadOpen} onClose={() => setPhotoUploadOpen(false)} title="Profil rasmini yuklash">
+        <FileUpload
+          accept="image/jpeg,image/png,image/webp"
+          maxSize={5 * 1024 * 1024}
+          onUpload={(files) => {
+            const file = files[0];
+            if (file) {
+              setPhotoPreview(URL.createObjectURL(file));
+              setPhotoUploadOpen(false);
+            }
+          }}
+          preview={false}
+        />
+        <p className="mt-2 text-xs text-slate-400 text-center">JPG, PNG, WebP. Maks. 5 MB</p>
       </Modal>
     </PageContent>
   );

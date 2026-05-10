@@ -366,7 +366,7 @@
 ### 6.3 EmployeeProfilePage `/hr/employees/:id`
 **Файл:** `features/hr/pages/EmployeeProfilePage.tsx` | **Статус:** Read ✓
 **Задачи:**
-- [ ] Tab "Hujjatlar": FileUpload для загрузки документов
+- [x] Tab "Hujjatlar": FileUpload для загрузки документов
 - [ ] Tab "Maosh": реальные данные зарплаты из API (сейчас hardcoded)
 - [ ] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
 - [x] Кнопка "Tahrirlash" → navigate к форме редактирования
@@ -578,7 +578,7 @@
 **Задачи:**
 - [x] Folder sidebar: `useFolders()`
 - [x] CRUD: DocumentForm в SlideOver (title, category, folderId, priority, file)
-- [ ] FileUpload
+- [x] FileUpload
 - [ ] i18n: все тексты
 
 ### 12.2 AnalyticsPage `/analytics`
@@ -670,7 +670,7 @@
 
 ### 17.1 ProfilePage `/profile`
 **Задачи:**
-- [ ] FileUpload для фото
+- [x] FileUpload для фото
 - [x] `useUpdateProfile()` mutation
 - [x] Форма: firstName, lastName, phone, email
 - [ ] i18n: все тексты
