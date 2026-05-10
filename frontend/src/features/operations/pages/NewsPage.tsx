@@ -2,8 +2,11 @@ import { useState, useMemo } from 'react';
 import { Plus, LayoutGrid, List } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Badge, Button, Spinner } from '@/components/ui';
-import { useNewsList } from '@/api/hooks/useNews';
+import { useNewsList, useCreateNews, useDeleteNews } from '@/api/hooks/useNews';
+import { ConfirmDialog } from '@/components/overlays';
+import { NewsForm } from '../components/NewsForm';
 import type { NewsArticle } from '@/types/operations';
+import type { NewsFormData } from '../schemas/news.schema';
 import { cn } from '@/lib/utils';
 
 // --- Color palette for gradient headers ---
@@ -24,6 +27,10 @@ type ViewMode = 'grid' | 'list';
 export function NewsPage() {
   const [tagFilter, setTagFilter] = useState('all');
   const [view, setView] = useState<ViewMode>('grid');
+  const [formOpen, setFormOpen] = useState(false);
+  const [deleteNews, setDeleteNews] = useState<NewsArticle | null>(null);
+  const createNews = useCreateNews();
+  const deleteNewsMutation = useDeleteNews();
 
   const { data: newsData, isLoading } = useNewsList({
     page: 1,
@@ -50,7 +57,7 @@ export function NewsPage() {
         subtitle="Universitet hayotidagi muhim voqealar"
         breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Yangiliklar' }]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />}>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
             Yangilik yozish
           </Button>
         }
@@ -125,6 +132,28 @@ export function NewsPage() {
           <p className="text-xs text-slate-400">Filtrlarni o{"'"}zgartirib ko{"'"}ring</p>
         </div>
       )}
+      <NewsForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={(data: NewsFormData) => {
+          createNews.mutate(data, { onSuccess: () => setFormOpen(false) });
+        }}
+        loading={createNews.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteNews}
+        onClose={() => setDeleteNews(null)}
+        onConfirm={() => {
+          if (!deleteNews) return;
+          deleteNewsMutation.mutate(deleteNews.id, { onSuccess: () => setDeleteNews(null) });
+        }}
+        title="Yangilikni o'chirish"
+        message={`"${deleteNews?.title}" yangiligini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteNewsMutation.isPending}
+      />
     </PageContent>
   );
 }

@@ -203,7 +203,7 @@
 **Файл:** `features/education/pages/LibraryPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
-- [ ] Tab "Katalog": `useBooks(params)` + CRUD для книг
+- [x] Tab "Katalog": useBooks(params) + CRUD для книг
 - [x] BookForm: title, author, isbn, year, category, totalCopies, location
 - [ ] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
 - [x] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
@@ -216,7 +216,7 @@
 **Файл:** `features/education/pages/AlumniPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
-- [ ] CRUD: кнопка "Yangi bitiruvchi" → AlumniForm в SlideOver
+- [x] CRUD: кнопка "Yangi bitiruvchi" → AlumniForm в SlideOver
 - [x] AlumniForm: fullName, graduationYear, faculty, specialty, workplace, position, phone, email
 - [ ] Edit: клик по строке → SlideOver с предзаполнением
 - [ ] Delete: ConfirmDialog
@@ -229,7 +229,7 @@
 **Файл:** `features/education/pages/InternshipPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
-- [ ] CRUD: кнопка "Yangi amaliyot" → InternshipForm в SlideOver
+- [x] CRUD: кнопка "Yangi amaliyot" → InternshipForm в SlideOver
 - [x] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
 - [ ] Edit + Delete
 - [ ] Zod schema: `internshipSchema`
@@ -412,7 +412,7 @@
 ### 7.1 CrmListPage `/crm`
 **Файл:** `features/crm/pages/CrmListPage.tsx`
 **Задачи:**
-- [ ] CRUD: Create (LeadForm в SlideOver), Edit (предзаполнение), Delete (ConfirmDialog)
+- [x] CRUD: Create (LeadForm в SlideOver), Delete (ConfirmDialog)
 - [x] LeadForm: firstName, lastName, phone, email, direction, source, notes
 - [ ] Zod schema: `leadSchema`
 - [ ] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
@@ -443,7 +443,7 @@
 ### 8.1 TasksPage `/tasks`
 **Файл:** `features/operations/pages/TasksPage.tsx` | **Статус:** Kanban + List
 **Задачи:**
-- [ ] CRUD: Create (TaskForm в SlideOver), Edit, Delete
+- [x] CRUD: Create (TaskForm в SlideOver)
 - [x] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
 - [ ] Zod schema: `taskSchema`
 - [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n

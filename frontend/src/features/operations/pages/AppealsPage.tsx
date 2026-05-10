@@ -5,7 +5,9 @@ import { StatCard, Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { Avatar } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
-import { useAppealsList, useUpdateAppealStatus } from '@/api/hooks/useAppeals';
+import { useAppealsList, useUpdateAppealStatus, useCreateAppeal } from '@/api/hooks/useAppeals';
+import { AppealForm } from '../components/AppealForm';
+import type { AppealFormData } from '../schemas/appeal.schema';
 import type { AppealStatus, AppealCategory } from '@/types/operations';
 
 const CATEGORY_LABEL: Record<AppealCategory, string> = {
@@ -34,6 +36,8 @@ type FilterId = 'all' | 'new' | 'in_progress' | 'resolved';
 export function AppealsPage() {
   const [filter, setFilter] = useState<FilterId>('all');
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const createAppeal = useCreateAppeal();
 
   const statusParam = filter === 'all' ? undefined : filter as AppealStatus;
 
@@ -79,7 +83,7 @@ export function AppealsPage() {
         subtitle="Talabalar va xodimlar murojaatlari, shikoyat va takliflar"
         breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Murojaatlar' }]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />}>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
             Yangi murojaat
           </Button>
         }
@@ -250,6 +254,14 @@ export function AppealsPage() {
           </Card>
         )}
       </div>
+      <AppealForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={(data: AppealFormData) => {
+          createAppeal.mutate(data, { onSuccess: () => setFormOpen(false) });
+        }}
+        loading={createAppeal.isPending}
+      />
     </PageContent>
   );
 }

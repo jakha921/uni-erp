@@ -3,9 +3,12 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { Upload, Plus } from 'lucide-react';
-import { useCurriculumList } from '@/api/hooks/useCurriculum';
+import { useCurriculumList, useCreateCurriculum } from '@/api/hooks/useCurriculum';
 import { useSpecialties } from '@/api/hooks/useCore';
+import { useSubjects } from '@/api/hooks/useEducation';
+import { CurriculumForm } from '../components/CurriculumForm';
 import type { CurriculumSubject, ControlForm } from '@/types/education';
+import type { CreateCurriculumFormData } from '../schemas/curriculum.schema';
 
 // --- Config ---
 
@@ -27,8 +30,11 @@ const YEARS = ['2024-2025', '2023-2024', '2022-2023'];
 
 export function CurriculumPage() {
   const { data: specialties, isLoading: specialtiesLoading } = useSpecialties();
+  const { data: subjectsData } = useSubjects();
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<number | undefined>(undefined);
   const [selectedYear, setSelectedYear] = useState(YEARS[0]);
+  const [formOpen, setFormOpen] = useState(false);
+  const createCurriculum = useCreateCurriculum();
 
   const yearNum = selectedYear ? parseInt(selectedYear.split('-')[0]!, 10) : undefined;
 
@@ -102,7 +108,7 @@ export function CurriculumPage() {
           <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
             Eksport PDF
           </Button>
-          <Button size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
             Yangi reja
           </Button>
         </div>
@@ -196,6 +202,32 @@ export function CurriculumPage() {
           )}
         </>
       )}
+      <CurriculumForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={(data: CreateCurriculumFormData) => {
+          createCurriculum.mutate(
+            {
+              specialtyId: Number(data.specialtyId),
+              year: Number(data.year),
+              subjects: data.subjects.map((s) => ({
+                subjectId: Number(s.subjectId),
+                semester: Number(s.semester),
+                credits: Number(s.credits),
+                hoursLecture: Number(s.hoursLecture),
+                hoursPractice: Number(s.hoursPractice),
+                hoursLab: Number(s.hoursLab),
+                controlForm: s.controlForm,
+                isElective: s.isElective,
+              })),
+            },
+            { onSuccess: () => setFormOpen(false) },
+          );
+        }}
+        specialties={(specialties ?? []).map((s) => ({ id: s.id, name: s.name }))}
+        subjects={(subjectsData?.data ?? []).map((s) => ({ id: s.id, name: s.name }))}
+        loading={createCurriculum.isPending}
+      />
     </PageContent>
   );
 }
