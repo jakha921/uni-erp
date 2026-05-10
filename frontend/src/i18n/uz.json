@@ -70,7 +70,10 @@
     "enterPhone": "Telefon raqamingizni kiriting",
     "enterPassword": "Parolingizni kiriting",
     "invalidCredentials": "Telefon yoki parol noto'g'ri",
-    "sessionExpired": "Sessiya tugadi, qayta kiring"
+    "sessionExpired": "Sessiya tugadi, qayta kiring",
+    "subtitle": "Telefon raqamingiz va parolingizni kiriting",
+    "demoTry": "Demo rejimni sinash",
+    "selectRoleLink": "Rolni tanlang"
   },
   "nav": {
     "dashboard": "Asosiy",

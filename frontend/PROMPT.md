@@ -27,7 +27,7 @@
 **Файл:** `features/auth/pages/LoginPage.tsx`
 **Статус:** Частично работает
 **Задачи:**
-- [ ] i18n: перевести все тексты через `t('auth.*')`
+- [x] i18n: перевести все тексты через `t('auth.*')`
 - [ ] Показывать детальную ошибку API (неверный пароль, пользователь заблокирован) — сейчас показывает "Xatolik: 500"
 - [ ] Добавить rate limiting feedback (показывать таймер при 429)
 - [ ] Кнопка "Показать пароль" — проверить работу toggle
@@ -191,12 +191,12 @@
 **Файл:** `features/education/pages/SubjectsPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
-- [ ] CRUD: кнопка "Yangi fan" → SubjectForm в Modal
-- [ ] SubjectForm: name, code, credits, hoursLecture, hoursPractice, departmentId
-- [ ] Edit: клик по строке → Modal с предзаполненной формой
-- [ ] Delete: ConfirmDialog
-- [ ] Zod schema: `subjectSchema`
-- [ ] Фильтры кафедры: загружать из `useDepartments()` (убрать hardcoded)
+- [x] CRUD: кнопка "Yangi fan" → SubjectForm в Modal
+- [x] SubjectForm: name, code, credits, hoursLecture, hoursPractice, departmentId
+- [x] Edit: клик по строке → Modal с предзаполненной формой
+- [x] Delete: ConfirmDialog
+- [x] Zod schema: `subjectSchema`
+- [x] Фильтры кафедры: загружать из `useDepartments()` (убрать hardcoded)
 - [ ] i18n: все тексты
 
 ### 4.7 LibraryPage `/library`

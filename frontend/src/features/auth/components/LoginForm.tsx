@@ -53,7 +53,7 @@ export function LoginForm() {
           {t('auth.login')}
         </h2>
         <p className="mt-2 text-sm text-slate-500">
-          Telefon raqamingiz va parolingizni kiriting
+          {t('auth.subtitle')}
         </p>
       </div>
 
@@ -153,7 +153,7 @@ export function LoginForm() {
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              Kirish
+              {t('auth.loginBtn')}
               <ArrowRight className="h-4 w-4" />
             </>
           )}
@@ -161,12 +161,12 @@ export function LoginForm() {
 
         {/* Demo link */}
         <div className="mt-2 text-center text-[13px] text-slate-500">
-          Demo rejimni sinash{' '}
+          {t('auth.demoTry')}{' '}
           <Link
             to="/role-select"
             className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
           >
-            Rolni tanlang
+            {t('auth.selectRoleLink')}
           </Link>
         </div>
       </form>

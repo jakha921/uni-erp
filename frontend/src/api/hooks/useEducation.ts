@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { educationService } from '../services/education.service';
+import type { SubjectDto } from '../services/education.service';
 import type {
   SubjectListParams,
   ScheduleListParams,
@@ -18,6 +19,30 @@ export function useSubjects(params?: SubjectListParams) {
   return useQuery({
     queryKey: KEYS.subjects(params),
     queryFn: () => educationService.getSubjects(params),
+  });
+}
+
+export function useCreateSubject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: SubjectDto) => educationService.createSubject(dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'subjects'] }),
+  });
+}
+
+export function useUpdateSubject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dto }: { id: number; dto: SubjectDto }) => educationService.updateSubject(id, dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'subjects'] }),
+  });
+}
+
+export function useDeleteSubject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => educationService.deleteSubject(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'subjects'] }),
   });
 }
 
