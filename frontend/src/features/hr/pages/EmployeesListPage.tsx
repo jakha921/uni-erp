@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Search, Download } from 'lucide-react';
+import { Plus, Search, Download, X, FileDown } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
@@ -24,6 +24,7 @@ export function EmployeesListPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editEmployeeId, setEditEmployeeId] = useState<number | null>(null);
   const [deleteEmployee, setDeleteEmployee] = useState<EmployeeListItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
   const [position, setPosition] = useState('');
 
   const { data, isLoading } = useEmployees(params);
@@ -168,6 +169,44 @@ export function EmployeesListPage() {
       </Card>
 
       {/* Table */}
+      {/* Bulk actions bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
+          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FileDown className="h-3.5 w-3.5" />}
+              onClick={() => {
+                const ids = [...selectedIds].join(',');
+                const a = document.createElement('a');
+                a.href = `/api/v1/hr/employees/export/?ids=${ids}`;
+                a.download = 'xodimlar.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Eksport
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Download className="h-3.5 w-3.5" />}
+            >
+              PDF
+            </Button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-1 rounded p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <Card noPadding className="overflow-hidden">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center"><Spinner /></div>
@@ -180,6 +219,8 @@ export function EmployeesListPage() {
               onSort={handleSort}
               onEdit={(emp) => { setEditEmployeeId(emp.id); setFormOpen(true); }}
               onDelete={setDeleteEmployee}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
             />
             {data && data.totalPages > 1 && (
               <div className="border-t border-[#F1F5F9] px-4 py-3">

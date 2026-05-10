@@ -359,7 +359,7 @@
 - [x] Update: редактирование xodim в Modal/SlideOver
 - [x] Delete: soft delete через ConfirmDialog
 - [x] Убрать hardcoded position list (строки 122-127) → из API
-- [ ] Bulk actions: массовый экспорт
+- [x] Bulk actions: массовый экспорт
 - [ ] Кнопка "Excel eksport" → `/hr/employees/export/`
 - [ ] i18n: все тексты
 

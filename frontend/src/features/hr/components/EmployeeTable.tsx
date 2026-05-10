@@ -12,9 +12,11 @@ interface EmployeeTableProps {
   onSort?: (key: string) => void;
   onEdit?: (employee: EmployeeListItem) => void;
   onDelete?: (employee: EmployeeListItem) => void;
+  selectedIds?: Set<string | number>;
+  onSelectionChange?: (ids: Set<string | number>) => void;
 }
 
-export function EmployeeTable({ data, sortBy, sortOrder, onSort, onEdit, onDelete }: EmployeeTableProps) {
+export function EmployeeTable({ data, sortBy, sortOrder, onSort, onEdit, onDelete, selectedIds, onSelectionChange }: EmployeeTableProps) {
   const navigate = useNavigate();
 
   const columns: Column<EmployeeListItem>[] = [
@@ -70,6 +72,9 @@ export function EmployeeTable({ data, sortBy, sortOrder, onSort, onEdit, onDelet
       data={data}
       columns={columns}
       keyField="id"
+      selectable={!!onSelectionChange}
+      selectedIds={selectedIds}
+      onSelectionChange={onSelectionChange}
       sortBy={sortBy}
       sortOrder={sortOrder}
       onSort={onSort}
