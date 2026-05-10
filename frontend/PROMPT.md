@@ -294,7 +294,7 @@
 **Статус:** Read работает
 **Задачи:**
 - [x] Убрать hardcoded FACULTIES массив → `useFaculties()`
-- [ ] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
+- [x] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
 - [x] Bulk SMS: массовая рассылка выбранным должникам
 - [x] Экспорт списка должников в Excel
 - [ ] i18n: все тексты

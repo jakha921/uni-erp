@@ -280,9 +280,24 @@ function SmsModal({ recipients, onClose }: { recipients: DebtorRow[]; onClose: (
 
   const [text, setText] = useState(defaultText);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSend = () => {
-    setSent(true);
+  const handleSend = async () => {
+    setSending(true);
+    try {
+      await fetch('/api/v1/core/sms/send/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          recipients: recipients.map((r) => ({ phone: r.studentIdNumber, name: r.studentName })),
+          message: text,
+        }),
+      });
+    } finally {
+      setSending(false);
+      setSent(true);
+    }
   };
 
   return (
@@ -376,11 +391,12 @@ function SmsModal({ recipients, onClose }: { recipients: DebtorRow[]; onClose: (
                 Bekor qilish
               </button>
               <button
-                onClick={handleSend}
-                className="h-9 px-5 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+                onClick={() => void handleSend()}
+                disabled={sending}
+                className="h-9 px-5 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 disabled:opacity-60"
               >
                 <Mail className="h-3.5 w-3.5" />
-                Yuborish
+                {sending ? 'Yuborilmoqda...' : 'Yuborish'}
               </button>
             </>
           )}
