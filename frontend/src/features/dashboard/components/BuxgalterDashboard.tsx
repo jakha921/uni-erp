@@ -63,14 +63,14 @@ export function BuxgalterDashboard() {
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
-          label={t('nav.contracts', 'Kontraktlar')}
+          label={t('dashboard.contracts')}
           value={new Intl.NumberFormat('uz-UZ').format(dashStats.totalContracts)}
           icon={<FileText className="h-5 w-5" />}
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
         />
         <StatCard
-          label="Tushumlar"
+          label={t('dashboard.revenue')}
           value={fmtCompact(dashStats.totalPaid)}
           icon={<Wallet className="h-5 w-5" />}
           iconBg="bg-emerald-100"
@@ -78,14 +78,14 @@ export function BuxgalterDashboard() {
           trend={{ value: 12.3, label: 'YoY' }}
         />
         <StatCard
-          label="Jami qarz"
+          label={t('dashboard.totalDebt')}
           value={fmtCompact(dashStats.totalDebt)}
           icon={<AlertTriangle className="h-5 w-5" />}
           iconBg="bg-red-100"
           iconColor="text-red-600"
         />
         <StatCard
-          label="Yig'ilish darajasi"
+          label={t('dashboard.collectionRate')}
           value={`${dashStats.collectionRate.toFixed(1)}%`}
           icon={<Percent className="h-5 w-5" />}
           iconBg="bg-teal-100"
@@ -95,11 +95,11 @@ export function BuxgalterDashboard() {
 
       {/* Charts row */}
       <div className="grid gap-4 md:grid-cols-2">
-        <ChartCard title="To'lov holati" subtitle="Kontraktlar bo'yicha">
+        <ChartCard title={t('dashboard.paymentStatus')} subtitle={t('dashboard.contracts')}>
           <DonutChart data={paymentStatusData} size={220} />
         </ChartCard>
         <ChartCard
-          title="Oylik to'lovlar trendi"
+          title={t('dashboard.paymentTrend')}
           subtitle="mln so'm"
           action={<Badge variant="success" dot>+15.2% YoY</Badge>}
         >

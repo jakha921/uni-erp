@@ -53,7 +53,7 @@ export function DekanDashboard() {
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
-          label="Fakultet talabalari"
+          label={t('dashboard.facultyStudents')}
           value={new Intl.NumberFormat('uz-UZ').format(stats.totalStudents)}
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-emerald-100"
@@ -61,21 +61,21 @@ export function DekanDashboard() {
           trend={{ value: 5.2, label: "o'tgan yilga" }}
         />
         <StatCard
-          label={t('nav.employees', 'Xodimlar')}
+          label={t('nav.employees')}
           value={empData?.total ?? '—'}
           icon={<UserCheck className="h-5 w-5" />}
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
         />
         <StatCard
-          label="Faol talabalar"
+          label={t('dashboard.activeStudents')}
           value={activeCount}
           icon={<BookOpen className="h-5 w-5" />}
           iconBg="bg-indigo-100"
           iconColor="text-indigo-600"
         />
         <StatCard
-          label={t('nav.attendance', 'Davomat')}
+          label={t('nav.attendance')}
           value={`${attendanceRate}%`}
           icon={<Clock className="h-5 w-5" />}
           iconBg="bg-sky-100"
@@ -86,10 +86,10 @@ export function DekanDashboard() {
 
       {/* Charts row */}
       <div className="grid gap-4 md:grid-cols-2">
-        <ChartCard title="Kurslar bo'yicha talabalar" subtitle="2025-2026 o'quv yili">
+        <ChartCard title={t('dashboard.byCourseStudents')} subtitle="2025-2026 o'quv yili">
           <BarChartSimple data={studentsByCourse} color="#2DB976" height={260} />
         </ChartCard>
-        <ChartCard title="Jinsi bo'yicha taqsimot" subtitle="Fakultet talabalari">
+        <ChartCard title={t('dashboard.byGender')} subtitle={t('dashboard.facultyStudents')}>
           <DonutChart data={studentsByGender} size={220} />
         </ChartCard>
       </div>

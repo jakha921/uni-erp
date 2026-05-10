@@ -15,6 +15,7 @@ import {
 
 import { StatCard, ChartCard, DonutChart, LineChartSimple } from '@/components/data-display';
 import { Badge, Skeleton } from '@/components/ui';
+import { useTranslation } from 'react-i18next';
 import { useAdminDashboard } from '@/api/hooks/useDashboard';
 import { useStudentStatistics } from '@/api/hooks/useStudents';
 import { useFinanceDashboard } from '@/api/hooks/useFinance';
@@ -41,6 +42,7 @@ const ACTIVITY_COLORS: Record<string, { color: string; bg: string }> = {
 };
 
 export function AdminDashboard() {
+  const { t } = useTranslation();
   const { data: adminData, isLoading: adminLoading } = useAdminDashboard();
   const { data: studentStats, isLoading: statsLoading } = useStudentStatistics();
   const { data: financeStats } = useFinanceDashboard();
@@ -110,37 +112,37 @@ export function AdminDashboard() {
       {/* Row 1: Core stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <StatCard
-          label="Fakultetlar"
+          label={t('dashboard.faculties')}
           value={faculties?.length ?? '—'}
           icon={<Briefcase className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
         />
         <StatCard
-          label="Kafedralar"
+          label={t('dashboard.departments')}
           value="—"
           icon={<LayoutGrid className="h-[18px] w-[18px]" />}
           iconBg="#10B981"
         />
         <StatCard
-          label="O'qituvchilar"
+          label={t('dashboard.teachers')}
           value={new Intl.NumberFormat('uz-UZ').format(adminData?.totalEmployees ?? 0)}
           icon={<UserCheck className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
         />
         <StatCard
-          label="Talabalar"
+          label={t('dashboard.totalStudents')}
           value={new Intl.NumberFormat('uz-UZ').format(adminData?.totalStudents ?? 0)}
           icon={<Users className="h-[18px] w-[18px]" />}
           iconBg="#1B7A4E"
         />
         <StatCard
-          label="Yangi talabalar"
+          label={t('dashboard.newStudents')}
           value={adminData?.newStudents ?? '—'}
           icon={<GraduationCap className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Bitiruvchilar"
+          label={t('dashboard.graduates')}
           value={adminData?.graduatedStudents ?? '—'}
           icon={<BookOpen className="h-[18px] w-[18px]" />}
           iconBg="#8B5CF6"
@@ -150,37 +152,37 @@ export function AdminDashboard() {
       {/* Row 2: Financial stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <StatCard
-          label="Tushumlar"
+          label={t('dashboard.revenue')}
           value={fmtCompact(financeStats?.totalPaid ?? 0)}
           icon={<Wallet className="h-[18px] w-[18px]" />}
           iconBg="#10B981"
         />
         <StatCard
-          label="Qarzdorlar"
+          label={t('dashboard.debtors')}
           value={financeStats?.debtorCount ?? '—'}
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
           iconBg="#EF4444"
         />
         <StatCard
-          label="Kontraktlar"
+          label={t('dashboard.contracts')}
           value={new Intl.NumberFormat('uz-UZ').format(financeStats?.totalContracts ?? 0)}
           icon={<FileText className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
         />
         <StatCard
-          label="Jami qarz"
+          label={t('dashboard.totalDebt')}
           value={fmtCompact(financeStats?.totalDebt ?? 0)}
           icon={<Inbox className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Stipendiyalar"
+          label={t('dashboard.scholarships')}
           value={financeStats?.scholarshipCount ?? '—'}
           icon={<Award className="h-[18px] w-[18px]" />}
           iconBg="#14B8A6"
         />
         <StatCard
-          label="O'rtacha ball"
+          label={t('dashboard.avgGrade')}
           value={adminData?.avgGrade.toFixed(1) ?? '—'}
           icon={<Clock className="h-[18px] w-[18px]" />}
           iconBg="#8B5CF6"
@@ -189,13 +191,13 @@ export function AdminDashboard() {
 
       {/* Row 3: 3 Donut charts */}
       <div className="grid gap-4 md:grid-cols-3">
-        <ChartCard title="Fakultetlar bo'yicha" subtitle="Talabalar">
+        <ChartCard title={t('dashboard.byFaculty')} subtitle={t('dashboard.totalStudents')}>
           <DonutChart data={facultyDonut} size={160} />
         </ChartCard>
-        <ChartCard title="Jinsi bo'yicha" subtitle="2025-26">
+        <ChartCard title={t('dashboard.byGender')} subtitle="2025-26">
           <DonutChart data={genderDonut} size={160} />
         </ChartCard>
-        <ChartCard title="To'lov holati" subtitle="Kontraktlar">
+        <ChartCard title={t('dashboard.paymentStatus')} subtitle={t('dashboard.contracts')}>
           <DonutChart data={paymentDonut} size={160} />
         </ChartCard>
       </div>
@@ -203,7 +205,7 @@ export function AdminDashboard() {
       {/* Row 4: Line chart + Activity */}
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
         <ChartCard
-          title="Oylik to'lovlar dinamikasi"
+          title={t('dashboard.monthlyPayments')}
           subtitle="mln so'm"
           action={<Badge variant="success" dot>+8.4% YoY</Badge>}
         >

@@ -1,4 +1,5 @@
 import { Users, GraduationCap, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Skeleton } from '@/components/ui';
@@ -17,6 +18,7 @@ const PAIR_TIMES: Record<number, string> = {
 const DAY_NAMES = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
 
 export function OqituvchiDashboard() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.currentUser);
   const todayDow = new Date().getDay(); // 0=Sun, 1=Mon...
   const adjustedDow = todayDow === 0 ? 7 : todayDow; // make Sun=7 for filtering
@@ -49,21 +51,21 @@ export function OqituvchiDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
-          label="Mening guruhlarim"
+          label={t('dashboard.myGroups')}
           value={uniqueGroups.length}
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
         />
         <StatCard
-          label="Darslar soni"
+          label={t('dashboard.lessonsCount')}
           value={allSchedules.length}
           icon={<GraduationCap className="h-5 w-5" />}
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
         />
         <StatCard
-          label="Bugungi darslar"
+          label={t('dashboard.todayLessons')}
           value={todaySchedule.length}
           icon={<Clock className="h-5 w-5" />}
           iconBg="bg-sky-100"
@@ -72,9 +74,9 @@ export function OqituvchiDashboard() {
       </div>
 
       {/* Today's schedule */}
-      <Card title={`Bugungi dars jadvali — ${DAY_NAMES[(adjustedDow - 1) % 7] ?? ''}`}>
+      <Card title={`${t('dashboard.todaySchedule')} — ${DAY_NAMES[(adjustedDow - 1) % 7] ?? ''}`}>
         {todaySchedule.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-400">Bugun dars yo&apos;q</p>
+          <p className="py-6 text-center text-sm text-slate-400">{t('dashboard.noLessonsToday')}</p>
         ) : (
           <div className="space-y-3">
             {todaySchedule.map((lesson) => (

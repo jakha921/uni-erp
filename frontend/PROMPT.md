@@ -46,7 +46,7 @@
 **Файл:** `features/auth/pages/ForgotPasswordPage.tsx`
 **Статус:** UI есть, API нет
 **Задачи:**
-- [ ] i18n: перевести все тексты
+- [x] i18n: перевести все тексты
 - [x] Реализовать 3-step flow: ввод телефона → SMS код → новый пароль (Stepper компонент)
 - [x] Таймер повторной отправки SMS (60 сек countdown)
 - [x] Подключить к реальному API endpoint `/auth/forgot-password/`
@@ -60,7 +60,7 @@
 **Статус:** Частично работает — 5 sub-dashboards по ролям
 **Задачи:**
 - [x] Подключить AdminDashboard к реальному API `/api/v1/dashboard/` (сейчас hardcoded mock данные внутри sub-dashboard компонентов)
-- [ ] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
+- [x] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
 - [x] Добавить DateRangePicker для фильтрации по периоду
 - [x] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
 - [x] DekanDashboard: подключить к real API

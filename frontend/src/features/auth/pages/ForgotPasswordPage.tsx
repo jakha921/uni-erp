@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { Phone, ArrowLeft, Loader2, CheckCircle2, Lock, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Resolver } from 'react-hook-form';
 import {
   forgotPasswordSchema, type ForgotPasswordFormData,
@@ -34,6 +35,7 @@ function StepDots({ step }: { step: Step }) {
 }
 
 export function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
@@ -116,14 +118,12 @@ export function ForgotPasswordPage() {
         {/* Step 1: Phone */}
         {step === 'phone' && (
           <>
-            <h2 className="text-xl font-bold text-slate-900">Parolni tiklash</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Telefon raqamingizni kiriting. SMS orqali tiklash kodi yuboriladi.
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">{t('auth.resetPassword')}</h2>
+            <p className="mt-2 text-sm text-slate-500">{t('auth.resetSubtitle')}</p>
             <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="mt-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="forgot-phone" className="text-sm font-medium text-slate-700">
-                  Telefon raqami
+                  {t('auth.phone')}
                 </label>
                 <div className="relative">
                   <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -145,10 +145,10 @@ export function ForgotPasswordPage() {
                 disabled={phoneForm.formState.isSubmitting}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50 disabled:pointer-events-none"
               >
-                {phoneForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SMS yuborish'}
+                {phoneForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('auth.sendSms')}
               </button>
               <Link to="/login" className="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700">
-                <ArrowLeft className="h-4 w-4" /> Kirish sahifasiga qaytish
+                <ArrowLeft className="h-4 w-4" /> {t('auth.backToLogin')}
               </Link>
             </form>
           </>
@@ -157,13 +157,11 @@ export function ForgotPasswordPage() {
         {/* Step 2: SMS Code */}
         {step === 'code' && (
           <>
-            <h2 className="text-xl font-bold text-slate-900">SMS kodni kiriting</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              <span className="font-medium text-slate-700">{phone}</span> raqamiga yuborilgan 6 ta raqamli kodni kiriting.
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">{t('auth.enterSmsCode')}</h2>
+            <p className="mt-2 text-sm text-slate-500">{t('auth.smsCodeSent', { phone })}</p>
             <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="mt-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">SMS kod</label>
+                <label className="text-sm font-medium text-slate-700">{t('auth.smsCode')}</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -182,19 +180,19 @@ export function ForgotPasswordPage() {
                 disabled={codeForm.formState.isSubmitting}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50 disabled:pointer-events-none"
               >
-                {codeForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Tasdiqlash'}
+                {codeForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('auth.verify')}
               </button>
               <div className="text-center text-sm text-slate-500">
                 {countdown > 0 ? (
-                  <span>Qayta yuborish: <strong className="text-emerald-600">{countdown}s</strong></span>
+                  <span>{t('auth.resendIn', { countdown })}</span>
                 ) : (
                   <button type="button" onClick={handleResend} className="font-medium text-emerald-600 hover:text-emerald-700">
-                    Kodni qayta yuborish
+                    {t('auth.resendCode')}
                   </button>
                 )}
               </div>
               <button type="button" onClick={() => setStep('phone')} className="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700">
-                <ArrowLeft className="h-4 w-4" /> Raqamni o&apos;zgartirish
+                <ArrowLeft className="h-4 w-4" /> {t('auth.changePhone')}
               </button>
             </form>
           </>
@@ -203,11 +201,11 @@ export function ForgotPasswordPage() {
         {/* Step 3: New Password */}
         {step === 'password' && (
           <>
-            <h2 className="text-xl font-bold text-slate-900">Yangi parol o&apos;rnatish</h2>
-            <p className="mt-2 text-sm text-slate-500">Yangi parolni kiriting. Kamida 6 ta belgi bo&apos;lishi kerak.</p>
+            <h2 className="text-xl font-bold text-slate-900">{t('auth.setNewPassword')}</h2>
+            <p className="mt-2 text-sm text-slate-500">{t('auth.setNewPasswordSubtitle')}</p>
             <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="mt-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Yangi parol</label>
+                <label className="text-sm font-medium text-slate-700">{t('auth.newPassword')}</label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
@@ -225,7 +223,7 @@ export function ForgotPasswordPage() {
                 )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Parolni tasdiqlang</label>
+                <label className="text-sm font-medium text-slate-700">{t('auth.confirmPassword')}</label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
@@ -247,7 +245,7 @@ export function ForgotPasswordPage() {
                 disabled={passwordForm.formState.isSubmitting}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50 disabled:pointer-events-none"
               >
-                {passwordForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Parolni saqlash'}
+                {passwordForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('auth.savePassword')}
               </button>
             </form>
           </>
@@ -259,10 +257,8 @@ export function ForgotPasswordPage() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
               <CheckCircle2 className="h-7 w-7 text-emerald-500" />
             </div>
-            <h2 className="text-xl font-bold text-slate-900">Parol yangilandi!</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Parolingiz muvaffaqiyatli yangilandi. Kirish sahifasiga yo&apos;naltirilmoqda...
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">{t('auth.passwordUpdated')}</h2>
+            <p className="mt-2 text-sm text-slate-500">{t('auth.passwordUpdatedDesc')}</p>
           </div>
         )}
       </div>

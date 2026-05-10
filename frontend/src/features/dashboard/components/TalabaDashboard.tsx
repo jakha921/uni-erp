@@ -1,4 +1,5 @@
 import { BookOpen, Clock, FileText, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Skeleton } from '@/components/ui';
@@ -23,6 +24,7 @@ function gradeVariant(grade: number): 'success' | 'warning' | 'error' {
 }
 
 export function TalabaDashboard() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.currentUser);
   const todayDow = new Date().getDay();
   const adjustedDow = todayDow === 0 ? 7 : todayDow;
@@ -63,28 +65,28 @@ export function TalabaDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
-          label="O'rtacha ball"
+          label={t('dashboard.avgGrade')}
           value={avgScore}
           icon={<BookOpen className="h-5 w-5" />}
           iconBg="bg-indigo-100"
           iconColor="text-indigo-600"
         />
         <StatCard
-          label="Bugungi darslar"
+          label={t('dashboard.todayLessons')}
           value={todaySchedule.length}
           icon={<Clock className="h-5 w-5" />}
           iconBg="bg-sky-100"
           iconColor="text-sky-600"
         />
         <StatCard
-          label="Baholar soni"
+          label={t('dashboard.gradesCount')}
           value={recentGrades.length}
           icon={<FileText className="h-5 w-5" />}
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
         />
         <StatCard
-          label="Jami darslar"
+          label={t('dashboard.totalLessons')}
           value={allSchedules.length}
           icon={<Calendar className="h-5 w-5" />}
           iconBg="bg-amber-100"
@@ -93,9 +95,9 @@ export function TalabaDashboard() {
       </div>
 
       {/* Today's schedule */}
-      <Card title="Bugungi dars jadvali">
+      <Card title={t('dashboard.todaySchedule')}>
         {todaySchedule.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-400">Bugun dars yo&apos;q</p>
+          <p className="py-6 text-center text-sm text-slate-400">{t('dashboard.noLessonsToday')}</p>
         ) : (
           <div className="space-y-3">
             {todaySchedule.map((lesson) => (
