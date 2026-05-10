@@ -5,11 +5,17 @@ import {
   FileText,
   Plus,
   Calendar,
+  Download,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import type { Resolver } from 'react-hook-form';
 import { PageContent, PageHeader } from '@/components/layout';
-import { Button } from '@/components/ui';
+import { Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form/SearchInput';
+import { Modal } from '@/components/overlays';
 import { useState, useMemo } from 'react';
 
 interface ReportItem {
@@ -73,8 +79,119 @@ const REPORT_GROUPS: ReportGroup[] = [
   },
 ];
 
+const reportParamsSchema = z.object({
+  startDate: z.string().min(1, 'Boshlanish sanasini tanlang'),
+  endDate: z.string().min(1, 'Tugash sanasini tanlang'),
+  format: z.enum(['pdf', 'excel']),
+  department: z.string().optional(),
+}).refine((d) => !d.startDate || !d.endDate || d.startDate <= d.endDate, {
+  message: 'Tugash sanasi boshlanish sanasidan keyin bo\'lishi kerak',
+  path: ['endDate'],
+});
+
+type ReportParamsFormData = z.infer<typeof reportParamsSchema>;
+
+interface ReportParamsModalProps {
+  report: ReportItem | null;
+  onClose: () => void;
+}
+
+function ReportParamsModal({ report, onClose }: ReportParamsModalProps) {
+  const [generating, setGenerating] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const firstOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ReportParamsFormData>({
+    resolver: zodResolver(reportParamsSchema) as unknown as Resolver<ReportParamsFormData>,
+    defaultValues: { startDate: firstOfYear, endDate: today, format: 'excel', department: '' },
+  });
+
+  const onGenerate = (data: ReportParamsFormData) => {
+    setGenerating(true);
+    setTimeout(() => {
+      setGenerating(false);
+      onClose();
+    }, 1200);
+    void data;
+  };
+
+  return (
+    <Modal
+      open={!!report}
+      onClose={onClose}
+      title={report?.name ?? ''}
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={onClose} disabled={generating}>Bekor qilish</Button>
+          <Button
+            leftIcon={generating ? <Spinner size="sm" /> : <Download className="h-4 w-4" />}
+            onClick={() => void handleSubmit(onGenerate)()}
+            disabled={generating}
+          >
+            {generating ? 'Yaratilmoqda...' : 'Yaratish'}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Boshlanish sanasi</label>
+            <input
+              type="date"
+              {...register('startDate')}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+            />
+            {errors.startDate && <p className="mt-1 text-xs text-red-500">{errors.startDate.message}</p>}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Tugash sanasi</label>
+            <input
+              type="date"
+              {...register('endDate')}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+            />
+            {errors.endDate && <p className="mt-1 text-xs text-red-500">{errors.endDate.message}</p>}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Fayl formati</label>
+          <div className="flex gap-3">
+            {(['excel', 'pdf'] as const).map((fmt) => (
+              <label key={fmt} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+                <input type="radio" value={fmt} {...register('format')} className="accent-primary-500" />
+                {fmt === 'excel' ? 'Excel (.xlsx)' : 'PDF (.pdf)'}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Bo&apos;lim (ixtiyoriy)</label>
+          <select
+            {...register('department')}
+            className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+          >
+            <option value="">Barcha bo&apos;limlar</option>
+            <option value="1">Axborot texnologiyalari</option>
+            <option value="2">Iqtisodiyot va boshqaruv</option>
+            <option value="3">Muhandislik</option>
+            <option value="4">Tabiiy fanlar</option>
+          </select>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 export function ReportsPage() {
   const [search, setSearch] = useState('');
+  const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
 
   const filteredGroups = useMemo(() => {
     if (!search) return REPORT_GROUPS;
@@ -163,6 +280,7 @@ export function ReportsPage() {
                       <button
                         className="rounded-md border-none bg-green-50 px-2.5 py-1 text-[11px] font-semibold transition-colors hover:bg-green-100"
                         style={{ color: '#1B7A4E' }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedReport(item); }}
                       >
                         Ochish &rarr;
                       </button>
@@ -182,6 +300,11 @@ export function ReportsPage() {
           <p className="text-xs text-slate-400">Qidiruv so{"'"}zini o{"'"}zgartirib ko{"'"}ring</p>
         </div>
       )}
+
+      <ReportParamsModal
+        report={selectedReport}
+        onClose={() => setSelectedReport(null)}
+      />
     </PageContent>
   );
 }
