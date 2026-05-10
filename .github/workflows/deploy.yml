@@ -15,13 +15,13 @@ jobs:
     steps:
       - name: Deploy Backend
         run: |
-          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${BACKEND_UUID}/restart" \
+          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${BACKEND_UUID}/deploy" \
             -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
             -H "Content-Type: application/json"
 
       - name: Deploy Frontend
         run: |
-          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${FRONTEND_UUID}/restart" \
+          curl -s -X POST "${COOLIFY_URL}/api/v1/applications/${FRONTEND_UUID}/deploy" \
             -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
             -H "Content-Type: application/json"
 
