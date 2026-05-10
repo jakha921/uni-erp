@@ -29,9 +29,11 @@ export interface IHrService {
   deleteDepartment(id: number): Promise<void>;
   getOrders(): Promise<HrOrder[]>;
   createOrder(dto: CreateOrderDto): Promise<HrOrder>;
+  deleteOrder(id: string): Promise<void>;
   getLeaves(): Promise<Leave[]>;
   createLeave(dto: CreateLeaveDto): Promise<Leave>;
   updateLeave(id: string, patch: Partial<Pick<Leave, 'status'>>): Promise<Leave>;
+  deleteLeave(id: string): Promise<void>;
   getAttendance(departmentId?: number): Promise<EmployeeAttendanceRow[]>;
   getDashboardStats(): Promise<HrDashboardStats>;
 }
@@ -94,6 +96,10 @@ class HrApiService implements IHrService {
     return apiClient.post<HrOrder>(ENDPOINTS.hr.orders, dto);
   }
 
+  async deleteOrder(id: string): Promise<void> {
+    await apiClient.delete(`${ENDPOINTS.hr.orders}${id}/`);
+  }
+
   async getLeaves(): Promise<Leave[]> {
     const res = await apiClient.get<{ results: Leave[] } | Leave[]>(ENDPOINTS.hr.leaves);
     return drfListToArray(res as { count: number; next: null; previous: null; results: Leave[] });
@@ -105,6 +111,10 @@ class HrApiService implements IHrService {
 
   async updateLeave(id: string, patch: Partial<Pick<Leave, 'status'>>): Promise<Leave> {
     return apiClient.patch<Leave>(`${ENDPOINTS.hr.leaves}/${id}`, patch);
+  }
+
+  async deleteLeave(id: string): Promise<void> {
+    await apiClient.delete(`${ENDPOINTS.hr.leaves}/${id}/`);
   }
 
   async getAttendance(departmentId?: number): Promise<EmployeeAttendanceRow[]> {

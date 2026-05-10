@@ -566,6 +566,11 @@ export class HrMockService implements IHrService {
     return order;
   }
 
+  async deleteOrder(id: string): Promise<void> {
+    await delay(200);
+    allOrders = allOrders.filter((o) => o.id !== id);
+  }
+
   async getLeaves(): Promise<Leave[]> {
     await delay(200);
     return [...allLeaves];
@@ -611,6 +616,11 @@ export class HrMockService implements IHrService {
     const updated = { ...allLeaves[idx]!, ...patch };
     allLeaves = allLeaves.map((l) => (l.id === id ? updated : l));
     return updated;
+  }
+
+  async deleteLeave(id: string): Promise<void> {
+    await delay(200);
+    allLeaves = allLeaves.filter((l) => l.id !== id);
   }
 
   async getAttendance(departmentId?: number): Promise<EmployeeAttendanceRow[]> {

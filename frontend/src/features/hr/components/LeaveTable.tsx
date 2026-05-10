@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+import { Check, X, Trash2 } from 'lucide-react';
 import { DataTable, type Column } from '@/components/table';
 import { Button } from '@/components/ui';
 import { LeaveStatusBadge } from './LeaveStatusBadge';
@@ -9,6 +9,7 @@ interface LeaveTableProps {
   data: Leave[];
   onApprove?: (leave: Leave) => void;
   onReject?: (leave: Leave) => void;
+  onDelete?: (leave: Leave) => void;
 }
 
 const LEAVE_TYPE_LABELS: Record<Leave['type'], string> = {
@@ -20,7 +21,7 @@ const LEAVE_TYPE_LABELS: Record<Leave['type'], string> = {
   study: "O'quv ta'tili",
 };
 
-export function LeaveTable({ data, onApprove, onReject }: LeaveTableProps) {
+export function LeaveTable({ data, onApprove, onReject, onDelete }: LeaveTableProps) {
   const columns: Column<Leave>[] = [
     {
       key: 'employeeName',
@@ -70,32 +71,39 @@ export function LeaveTable({ data, onApprove, onReject }: LeaveTableProps) {
       columns={columns}
       keyField="id"
       emptyMessage="Ta'tillar topilmadi"
-      actions={(row) =>
-        row.status === 'pending' ? (
-          <div className="flex items-center gap-1">
-            {onApprove && (
-              <Button
-                variant="ghost"
-                size="sm"
-                leftIcon={<Check className="h-4 w-4 text-green-600" />}
-                onClick={() => onApprove(row)}
-              >
-                Tasdiqlash
-              </Button>
-            )}
-            {onReject && (
-              <Button
-                variant="ghost"
-                size="sm"
-                leftIcon={<X className="h-4 w-4 text-red-600" />}
-                onClick={() => onReject(row)}
-              >
-                Rad etish
-              </Button>
-            )}
-          </div>
-        ) : null
-      }
+      actions={(row) => (
+        <div className="flex items-center gap-1 justify-end">
+          {row.status === 'pending' && onApprove && (
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<Check className="h-4 w-4 text-green-600" />}
+              onClick={(e) => { e.stopPropagation(); onApprove(row); }}
+            >
+              Tasdiqlash
+            </Button>
+          )}
+          {row.status === 'pending' && onReject && (
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<X className="h-4 w-4 text-red-600" />}
+              onClick={(e) => { e.stopPropagation(); onReject(row); }}
+            >
+              Rad etish
+            </Button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(row); }}
+              className="h-7 w-7 rounded-md hover:bg-red-50 text-red-400 inline-flex items-center justify-center transition-colors"
+              title="O'chirish"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     />
   );
 }

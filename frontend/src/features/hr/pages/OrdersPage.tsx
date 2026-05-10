@@ -4,11 +4,12 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Pagination } from '@/components/table';
 import { Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
 import { OrderTable } from '../components/OrderTable';
 import { OrderForm } from '../components/OrderForm';
-import { useOrders, useCreateOrder, useEmployees } from '@/api/hooks/useHr';
+import { useOrders, useCreateOrder, useDeleteOrder, useEmployees } from '@/api/hooks/useHr';
 import type { OrderFormData } from '../schemas/order.schema';
-import type { OrderType, OrderStatus } from '@/types/hr';
+import type { HrOrder, OrderType, OrderStatus } from '@/types/hr';
 
 export function OrdersPage() {
   const [page, setPage] = useState(1);
@@ -16,10 +17,12 @@ export function OrdersPage() {
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
+  const [deleteOrder, setDeleteOrder] = useState<HrOrder | null>(null);
 
   const { data: ordersData, isLoading } = useOrders();
   const { data: employeesData } = useEmployees({ pageSize: 100 });
   const createMutation = useCreateOrder();
+  const deleteMutation = useDeleteOrder();
 
   const filteredOrders = (ordersData ?? []).filter((order) => {
     if (search && !order.employeeName.toLowerCase().includes(search.toLowerCase()) &&
@@ -128,7 +131,7 @@ export function OrdersPage() {
           <div className="flex h-64 items-center justify-center"><Spinner /></div>
         ) : (
           <>
-            <OrderTable data={pagedOrders} />
+            <OrderTable data={pagedOrders} onDelete={setDeleteOrder} />
             {totalPages > 1 && (
               <div className="border-t border-[#F1F5F9] px-4 py-3">
                 <Pagination
@@ -150,6 +153,20 @@ export function OrdersPage() {
         onSubmit={handleCreate}
         employees={employeesData?.data ?? []}
         loading={createMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteOrder}
+        onClose={() => setDeleteOrder(null)}
+        onConfirm={() => {
+          if (!deleteOrder) return;
+          deleteMutation.mutate(deleteOrder.id, { onSuccess: () => setDeleteOrder(null) });
+        }}
+        title="Buyruqni o'chirish"
+        message={`"${deleteOrder?.number}" buyruqni o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteMutation.isPending}
       />
     </PageContent>
   );

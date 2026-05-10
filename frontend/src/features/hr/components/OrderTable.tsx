@@ -1,4 +1,4 @@
-import { Eye } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { DataTable, type Column } from '@/components/table';
 import { Button } from '@/components/ui';
 import { OrderStatusBadge } from './OrderStatusBadge';
@@ -8,9 +8,10 @@ import type { HrOrder } from '@/types/hr';
 interface OrderTableProps {
   data: HrOrder[];
   onView?: (order: HrOrder) => void;
+  onDelete?: (order: HrOrder) => void;
 }
 
-export function OrderTable({ data, onView }: OrderTableProps) {
+export function OrderTable({ data, onView, onDelete }: OrderTableProps) {
   const columns: Column<HrOrder>[] = [
     {
       key: 'number',
@@ -61,14 +62,25 @@ export function OrderTable({ data, onView }: OrderTableProps) {
       onRowClick={onView}
       emptyMessage="Buyruqlar topilmadi"
       actions={(row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          leftIcon={<Eye className="h-4 w-4" />}
-          onClick={() => onView?.(row)}
-        >
-          Ko&apos;rish
-        </Button>
+        <div className="flex items-center gap-1 justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Eye className="h-4 w-4" />}
+            onClick={(e) => { e.stopPropagation(); onView?.(row); }}
+          >
+            Ko&apos;rish
+          </Button>
+          {onDelete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(row); }}
+              className="h-7 w-7 rounded-md hover:bg-red-50 text-red-400 inline-flex items-center justify-center transition-colors"
+              title="O'chirish"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       )}
     />
   );

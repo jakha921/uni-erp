@@ -6,20 +6,23 @@ import { StatCard } from '@/components/data-display/StatCard';
 import { Tabs } from '@/components/navigation/Tabs';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { ConfirmDialog } from '@/components/overlays';
 import { LeaveTable } from '../components/LeaveTable';
 import { LeaveForm } from '../components/LeaveForm';
-import { useLeaves, useCreateLeave, useUpdateLeave, useEmployees } from '@/api/hooks/useHr';
-import type { CreateLeaveDto, LeaveStatus } from '@/types/hr';
+import { useLeaves, useCreateLeave, useUpdateLeave, useDeleteLeave, useEmployees } from '@/api/hooks/useHr';
+import type { CreateLeaveDto, Leave, LeaveStatus } from '@/types/hr';
 
 export function LeavesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
+  const [deleteLeave, setDeleteLeave] = useState<Leave | null>(null);
 
   const { data: leaves, isLoading } = useLeaves();
   const { data: employeesData } = useEmployees();
   const createMutation = useCreateLeave();
   const updateMutation = useUpdateLeave();
+  const deleteMutation = useDeleteLeave();
 
   const employees = employeesData?.data ?? [];
 
@@ -106,6 +109,7 @@ export function LeavesPage() {
             data={filtered}
             onApprove={handleApprove}
             onReject={handleReject}
+            onDelete={setDeleteLeave}
           />
         )}
       </Card>
@@ -121,6 +125,20 @@ export function LeavesPage() {
         }}
         employees={employees}
         loading={createMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteLeave}
+        onClose={() => setDeleteLeave(null)}
+        onConfirm={() => {
+          if (!deleteLeave) return;
+          deleteMutation.mutate(deleteLeave.id, { onSuccess: () => setDeleteLeave(null) });
+        }}
+        title="Arizani bekor qilish"
+        message={`"${deleteLeave?.employeeName}" xodimining ta'til arizasini bekor qilishni tasdiqlaysizmi?`}
+        confirmLabel="Bekor qilish"
+        variant="danger"
+        loading={deleteMutation.isPending}
       />
     </PageContent>
   );

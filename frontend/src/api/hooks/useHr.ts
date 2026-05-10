@@ -117,6 +117,16 @@ export function useCreateOrder() {
   });
 }
 
+export function useDeleteOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => hrService.deleteOrder(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: hrKeys.orders() });
+    },
+  });
+}
+
 export function useLeaves() {
   return useQuery({
     queryKey: hrKeys.leaves(),
@@ -139,6 +149,16 @@ export function useUpdateLeave() {
   return useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: Partial<Pick<Leave, 'status'>> }) =>
       hrService.updateLeave(id, patch),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: hrKeys.leaves() });
+    },
+  });
+}
+
+export function useDeleteLeave() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => hrService.deleteLeave(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: hrKeys.leaves() });
     },
