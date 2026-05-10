@@ -386,7 +386,7 @@
 **Задачи:**
 - [x] Update: редактирование buyruq (статус: draft → review → signed)
 - [x] Delete: ConfirmDialog
-- [ ] Генерация PDF приказа → `/hr/orders/{id}/pdf/`
+- [x] Генерация PDF приказа → `/hr/orders/{id}/pdf/`
 - [ ] i18n: все тексты
 
 ### 6.6 AttendancePage `/hr/attendance`
