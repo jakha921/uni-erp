@@ -8,6 +8,7 @@ import { Tabs } from '@/components/navigation/Tabs';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/overlays';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { LeaveTable } from '../components/LeaveTable';
 import { LeaveForm } from '../components/LeaveForm';
 import { useLeaves, useCreateLeave, useUpdateLeave, useDeleteLeave, useEmployees } from '@/api/hooks/useHr';
@@ -118,6 +119,8 @@ export function LeavesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [tab, setTab] = useState(() => searchParams.get('status') ?? 'all');
   const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
   const [deleteLeave, setDeleteLeave] = useState<Leave | null>(null);
@@ -137,9 +140,11 @@ export function LeavesPage() {
       if (tab === 'leaves' && l.type === 'business_trip') return false;
       if (tab === 'trips' && l.type !== 'business_trip') return false;
       if (tab === 'pending' && l.status !== 'pending') return false;
+      if (dateFrom && l.startDate < dateFrom) return false;
+      if (dateTo && l.endDate > dateTo) return false;
       return true;
     });
-  }, [leaves, tab, search]);
+  }, [leaves, tab, search, dateFrom, dateTo]);
 
   const onLeaveCount = leaves?.filter(l => l.status === 'approved' && l.type !== 'business_trip').length ?? 0;
   const onTripCount = leaves?.filter(l => l.status === 'approved' && l.type === 'business_trip').length ?? 0;
@@ -208,14 +213,21 @@ export function LeavesPage() {
               onTabChange={setTab}
             />
             <Card className="mt-4 mb-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Xodim ismi bo'yicha qidirish…"
-                  className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+              <div className="flex flex-wrap gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Xodim ismi bo'yicha qidirish…"
+                    className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
+                  />
+                </div>
+                <DateRangePicker
+                  from={dateFrom}
+                  to={dateTo}
+                  onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
                 />
               </div>
             </Card>

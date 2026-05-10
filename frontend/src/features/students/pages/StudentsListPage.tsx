@@ -8,6 +8,7 @@ import { Pagination } from '@/components/table/Pagination';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/overlays';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { StudentTable } from '../components/StudentTable';
 import { useStudentsList, useDeleteStudent } from '@/api/hooks/useStudents';
 import { useFaculties } from '@/api/hooks/useCore';
@@ -29,6 +30,8 @@ export function StudentsListPage() {
   const [deleteStudent, setDeleteStudent] = useState<StudentListItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const pageSize = 25;
 
   const params = useMemo<StudentListParams>(
@@ -164,6 +167,15 @@ export function StudentsListPage() {
               <option value="grant">Grant</option>
               <option value="contract">Kontrakt</option>
             </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600">Qabul davri</label>
+            <DateRangePicker
+              from={dateFrom}
+              to={dateTo}
+              onChange={(f, t) => { setDateFrom(f); setDateTo(t); setPage(1); }}
+              presets={false}
+            />
           </div>
         </div>
       </Card>
