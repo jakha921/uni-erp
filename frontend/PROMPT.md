@@ -146,7 +146,7 @@
 - [x] Фильтры: группа, предмет, дата — через API
 - [x] Убрать hardcoded данные, если есть
 - [x] Кнопка "Saqlash" должна отправлять bulk attendance на бэкенд
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 - [x] Экспорт посещаемости в Excel
 
 ### 4.3 GradingPage `/grading`
@@ -158,7 +158,7 @@
 - [x] Inline editing оценок в таблице
 - [x] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
 - [x] Кнопка "Saqlash" — bulk save
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 - [x] Экспорт ведомости в Excel/PDF
 
 ### 4.4 ExamsPage `/exams`

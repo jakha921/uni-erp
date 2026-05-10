@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Check, FileDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Button, Avatar, Spinner } from '@/components/ui';
@@ -19,23 +20,10 @@ interface GradeInputs {
 type GradeKey = keyof GradeInputs;
 
 const GRADE_KEYS: GradeKey[] = ['a1', 'a2', 'mid', 'final'];
-const GRADE_LABELS: Record<GradeKey, string> = {
-  a1: 'A1 (10%)',
-  a2: 'A2 (10%)',
-  mid: 'Oraliq',
-  final: 'Yakuniy',
-};
 const WEIGHTS: Record<GradeKey, number> = { a1: 0.1, a2: 0.1, mid: 0.3, final: 0.5 };
 
 function calcTotal(g: GradeInputs): number {
   return GRADE_KEYS.reduce((sum, k) => sum + g[k] * WEIGHTS[k], 0);
-}
-
-function getLetterGrade(total: number): { label: string; variant: 'success' | 'info' | 'warning' | 'error' } {
-  if (total >= 86) return { label: "A'lo", variant: 'success' };
-  if (total >= 71) return { label: 'Yaxshi', variant: 'info' };
-  if (total >= 55) return { label: 'Qoniqarli', variant: 'warning' };
-  return { label: 'Qoniqarsiz', variant: 'error' };
 }
 
 function gradeColor(value: number): string {
@@ -76,6 +64,22 @@ function initGradesFromData(grades: Grade[]): { students: { id: number; name: st
 }
 
 export function GradingPage() {
+  const { t } = useTranslation();
+
+  const GRADE_LABELS: Record<GradeKey, string> = {
+    a1: t('education.gradeA1'),
+    a2: t('education.gradeA2'),
+    mid: t('education.gradeMid'),
+    final: t('education.gradeFinal'),
+  };
+
+  const getLetterGrade = (total: number): { label: string; variant: 'success' | 'info' | 'warning' | 'error' } => {
+    if (total >= 86) return { label: t('education.gradeLabelExcellent'), variant: 'success' };
+    if (total >= 71) return { label: t('education.gradeLabelGood'), variant: 'info' };
+    if (total >= 55) return { label: t('education.gradeLabelSatisfactory'), variant: 'warning' };
+    return { label: t('education.gradeLabelUnsatisfactory'), variant: 'error' };
+  };
+
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [selectedSemesterId, setSelectedSemesterId] = useState<string>('');
@@ -167,11 +171,11 @@ export function GradingPage() {
     return (
       <PageContent>
         <PageHeader
-          title="Baholash"
-          subtitle="Talabalar baholarini kiritish va tahrirlash"
+          title={t('education.gradingTitle')}
+          subtitle={t('education.gradingSubtitle')}
           breadcrumbs={[
-            { label: "Ta'lim", path: '/grading' },
-            { label: 'Baholash' },
+            { label: t('nav.education'), path: '/grading' },
+            { label: t('education.gradingTitle') },
           ]}
         />
         <div className="flex justify-center py-12">
@@ -184,11 +188,11 @@ export function GradingPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Baholash"
-        subtitle="Talabalar baholarini kiritish va tahrirlash"
+        title={t('education.gradingTitle')}
+        subtitle={t('education.gradingSubtitle')}
         breadcrumbs={[
-          { label: "Ta'lim", path: '/grading' },
-          { label: 'Baholash' },
+          { label: t('nav.education'), path: '/grading' },
+          { label: t('education.gradingTitle') },
         ]}
         actions={
           <Button
@@ -212,39 +216,39 @@ export function GradingPage() {
       <Card className="mb-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Guruh</label>
+            <label className="text-[11px] font-medium text-muted">{t('students.group')}</label>
             <select
               value={selectedGroupId}
               onChange={(e) => setSelectedGroupId(e.target.value)}
               className="h-9 min-w-[140px] rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha guruhlar</option>
+              <option value="">{t('education.allGroups')}</option>
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Fan</label>
+            <label className="text-[11px] font-medium text-muted">{t('education.subject')}</label>
             <select
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="h-9 min-w-[180px] rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha fanlar</option>
+              <option value="">{t('education.allSubjects')}</option>
               {subjects.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Semester</label>
+            <label className="text-[11px] font-medium text-muted">{t('education.semester')}</label>
             <select
               value={selectedSemesterId}
               onChange={(e) => setSelectedSemesterId(e.target.value)}
               className="h-9 rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha semestrlar</option>
+              <option value="">{t('education.allSemesters')}</option>
               <option value="1">2025-2026 - 2-semester</option>
               <option value="2">2025-2026 - 1-semester</option>
               <option value="3">2024-2025 - 2-semester</option>
@@ -252,7 +256,7 @@ export function GradingPage() {
           </div>
           <div className="flex-1" />
           <div className="text-xs text-muted">
-            Og&apos;irlik: A1 10% &middot; A2 10% &middot; Oraliq 30% &middot; Yakuniy 50%
+            {t('education.weightNote')}
           </div>
           <Button
             size="sm"
@@ -260,7 +264,7 @@ export function GradingPage() {
             onClick={() => void handleSave()}
             loading={bulkGrades.isPending}
           >
-            Saqlash
+            {t('common.save')}
           </Button>
         </div>
       </Card>
@@ -272,7 +276,7 @@ export function GradingPage() {
             <thead>
               <tr className="bg-[#F8FAFB]">
                 <th className="px-3.5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-muted">
-                  Talaba
+                  {t('education.student')}
                 </th>
                 {GRADE_KEYS.map((k) => (
                   <th
@@ -283,10 +287,10 @@ export function GradingPage() {
                   </th>
                 ))}
                 <th className="px-3.5 py-2.5 text-center text-[11px] font-semibold text-muted">
-                  Jami
+                  {t('education.total')}
                 </th>
                 <th className="px-3.5 py-2.5 text-center text-[11px] font-semibold text-muted">
-                  Baho
+                  {t('education.letterGrade')}
                 </th>
               </tr>
             </thead>
@@ -294,7 +298,7 @@ export function GradingPage() {
               {students.length === 0 && (
                 <tr>
                   <td colSpan={GRADE_KEYS.length + 3} className="px-3.5 py-8 text-center text-sm text-slate-500">
-                    Baholar topilmadi
+                    {t('education.gradesNotFound')}
                   </td>
                 </tr>
               )}

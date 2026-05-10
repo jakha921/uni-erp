@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Avatar, Spinner } from '@/components/ui';
@@ -78,6 +79,7 @@ function initGrid(studentCount: number): Record<number, AttendanceStatus[]> {
 }
 
 export function AcademicAttendancePage() {
+  const { t } = useTranslation();
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
 
@@ -141,11 +143,11 @@ export function AcademicAttendancePage() {
     return (
       <PageContent>
         <PageHeader
-          title="Davomat"
-          subtitle="Talabalar davomatini boshqarish"
+          title={t('education.attendanceTitle')}
+          subtitle={t('education.attendanceSubtitle')}
           breadcrumbs={[
-            { label: "Ta'lim", path: '/attendance' },
-            { label: 'Davomat' },
+            { label: t('nav.education'), path: '/attendance' },
+            { label: t('education.attendanceTitle') },
           ]}
         />
         <div className="flex justify-center py-12">
@@ -158,11 +160,11 @@ export function AcademicAttendancePage() {
   return (
     <PageContent>
       <PageHeader
-        title="Davomat"
-        subtitle="Talabalar davomatini boshqarish"
+        title={t('education.attendanceTitle')}
+        subtitle={t('education.attendanceSubtitle')}
         breadcrumbs={[
-          { label: "Ta'lim", path: '/attendance' },
-          { label: 'Davomat' },
+          { label: t('nav.education'), path: '/attendance' },
+          { label: t('education.attendanceTitle') },
         ]}
       />
 
@@ -170,35 +172,35 @@ export function AcademicAttendancePage() {
       <Card className="mb-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Guruh</label>
+            <label className="text-[11px] font-medium text-muted">{t('students.group')}</label>
             <select
               value={selectedGroupId}
               onChange={(e) => setSelectedGroupId(e.target.value)}
               className="h-9 min-w-[140px] rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha guruhlar</option>
+              <option value="">{t('education.allGroups')}</option>
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Fan</label>
+            <label className="text-[11px] font-medium text-muted">{t('education.subject')}</label>
             <select
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="h-9 min-w-[180px] rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha fanlar</option>
+              <option value="">{t('education.allSubjects')}</option>
               {subjects.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium text-muted">Davr</label>
+            <label className="text-[11px] font-medium text-muted">{t('education.periodLabel')}</label>
             <select className="h-9 rounded-lg border border-border px-3 text-sm">
-              <option>18.04 — 25.04 (shu hafta)</option>
+              <option>18.04 — 25.04</option>
               <option>11.04 — 17.04</option>
             </select>
           </div>
@@ -209,19 +211,19 @@ export function AcademicAttendancePage() {
               <span className="flex h-4 w-4 items-center justify-center rounded bg-green-50 text-[10px] font-bold text-green-700">
                 +
               </span>
-              Keldi
+              {t('education.legendPresent')}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="flex h-4 w-4 items-center justify-center rounded bg-red-50 text-[10px] font-bold text-red-700">
                 —
               </span>
-              Kelmadi
+              {t('education.legendAbsent')}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="flex h-4 w-4 items-center justify-center rounded bg-amber-50 text-[10px] font-bold text-amber-700">
                 U
               </span>
-              Uzrli
+              {t('education.legendExcused')}
             </span>
           </div>
           <Button
@@ -230,7 +232,7 @@ export function AcademicAttendancePage() {
             onClick={handleSave}
             loading={bulkAttendance.isPending}
           >
-            Saqlash
+            {t('common.save')}
           </Button>
         </div>
       </Card>
@@ -242,7 +244,7 @@ export function AcademicAttendancePage() {
             <thead>
               <tr className="bg-[#F8FAFB]">
                 <th className="sticky left-0 z-10 min-w-[220px] bg-[#F8FAFB] px-3.5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-muted">
-                  Talaba
+                  {t('education.student')}
                 </th>
                 {dates.map((d) => (
                   <th
