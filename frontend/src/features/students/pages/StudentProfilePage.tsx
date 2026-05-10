@@ -20,7 +20,8 @@ import {
   useStudentAttendance,
 } from '@/api/hooks/useStudents';
 import { formatDate } from '@/lib/utils';
-import type { StudentGrade, StudentAttendance } from '@/types/student';
+import { useStudentDocuments } from '@/api/hooks/useStudents';
+import type { StudentGrade, StudentAttendance, StudentDocument } from '@/types/student';
 
 // ---------- Detail row ----------
 function DetailRow({ label, value }: { label: string; value: string | undefined }) {
@@ -517,35 +518,42 @@ export function StudentProfilePage() {
           )}
 
           {activeTab === 'contracts' && <ContractsTab />}
-          {activeTab === 'docs' && <StudentDocsTab />}
+          {activeTab === 'docs' && <StudentDocsTab studentId={studentId} />}
         </div>
       </Card>
     </PageContent>
   );
 }
 
-const STUDENT_DOCS = [
-  { name: 'Pasport nusxasi', date: '01.09.2024' },
-  { name: 'Diplom (attestat)', date: '01.09.2024' },
-  { name: 'Tibbiy ma\'lumotnoma', date: '01.09.2024' },
-  { name: 'Ariza', date: '01.09.2024' },
-  { name: 'Foto 3x4', date: '01.09.2024' },
-  { name: 'Harbiy hisob varaqasi', date: '01.09.2024' },
-];
+function StudentDocsTab({ studentId }: { studentId: number }) {
+  const { data: documents, isLoading } = useStudentDocuments(studentId);
+  const docs: StudentDocument[] = documents ?? [];
 
-function StudentDocsTab() {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="p-4 border border-slate-100 rounded-xl text-center animate-pulse">
+            <div className="w-10 h-10 rounded-[10px] bg-slate-100 mx-auto mb-2.5" />
+            <div className="h-3 bg-slate-100 rounded mx-auto w-3/4" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {STUDENT_DOCS.map((d, i) => (
+      {docs.map((d) => (
         <div
-          key={i}
+          key={d.id}
           className="p-4 border border-slate-100 rounded-xl cursor-pointer text-center hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
         >
           <div className="w-10 h-10 rounded-[10px] bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5">
             <FileText className="h-[18px] w-[18px]" />
           </div>
           <p className="text-[13px] font-medium text-slate-900">{d.name}</p>
-          <p className="text-[11px] text-slate-400 mt-1">{d.date}</p>
+          <p className="text-[11px] text-slate-400 mt-1">{d.uploadedAt}</p>
         </div>
       ))}
     </div>

@@ -7,6 +7,7 @@ import type {
   UpdateStudentDto,
   StudentGrade,
   StudentAttendance,
+  StudentDocument,
   StudentStatistics,
   Faculty,
   Department,
@@ -689,6 +690,18 @@ export class StudentsMockService implements IStudentsService {
     const student = this.students.find((s) => s.id === studentId);
     if (!student) throw new Error('Talaba topilmadi');
     return generateAttendance(student);
+  }
+
+  async getDocuments(_studentId: number): Promise<StudentDocument[]> {
+    await delay(200);
+    return [
+      { id: 1, name: 'Pasport nusxasi', uploadedAt: '01.09.2024' },
+      { id: 2, name: 'Diplom (attestat)', uploadedAt: '01.09.2024' },
+      { id: 3, name: "Tibbiy ma'lumotnoma", uploadedAt: '01.09.2024' },
+      { id: 4, name: 'Ariza', uploadedAt: '02.09.2024' },
+      { id: 5, name: 'Foto 3x4', uploadedAt: '01.09.2024' },
+      { id: 6, name: 'Harbiy hisob varaqasi', uploadedAt: '05.09.2024' },
+    ];
   }
 }
 

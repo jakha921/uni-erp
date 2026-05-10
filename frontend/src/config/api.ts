@@ -27,6 +27,7 @@ export const ENDPOINTS = {
     statistics: '/students/statistics',
     grades: (id: number) => `/students/${id}/grades`,
     attendance: (id: number) => `/students/${id}/attendance`,
+    documents: (id: number) => `/students/${id}/documents`,
     exportExcel: '/students/export',
     exportPdf: '/students/export-pdf',
     importExcel: '/students/import',

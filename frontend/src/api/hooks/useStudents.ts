@@ -15,6 +15,7 @@ const KEYS = {
   statistics: () => [...KEYS.all, 'statistics'] as const,
   grades: (id: number) => [...KEYS.all, 'grades', id] as const,
   attendance: (id: number) => [...KEYS.all, 'attendance', id] as const,
+  documents: (id: number) => [...KEYS.all, 'documents', id] as const,
 };
 
 export function useStudentsList(params: StudentListParams) {
@@ -88,6 +89,14 @@ export function useStudentAttendance(id: number) {
   return useQuery({
     queryKey: KEYS.attendance(id),
     queryFn: () => studentsService.getAttendance(id),
+    enabled: id > 0,
+  });
+}
+
+export function useStudentDocuments(id: number) {
+  return useQuery({
+    queryKey: KEYS.documents(id),
+    queryFn: () => studentsService.getDocuments(id),
     enabled: id > 0,
   });
 }

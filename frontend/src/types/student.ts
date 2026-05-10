@@ -136,6 +136,13 @@ export interface StudentAttendance {
   subjectName: string;
 }
 
+export interface StudentDocument {
+  id: number;
+  name: string;
+  uploadedAt: string;
+  fileUrl?: string;
+}
+
 export interface StudentStatistics {
   totalStudents: number;
   byFaculty: { faculty: string; count: number }[];

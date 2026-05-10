@@ -6,6 +6,7 @@ import type {
   UpdateStudentDto,
   StudentGrade,
   StudentAttendance,
+  StudentDocument,
   StudentStatistics,
 } from '@/types/student';
 import type { PaginatedResponse } from '@/types/common';
@@ -22,6 +23,7 @@ export interface IStudentsService {
   getStatistics(): Promise<StudentStatistics>;
   getGrades(studentId: number): Promise<StudentGrade[]>;
   getAttendance(studentId: number): Promise<StudentAttendance[]>;
+  getDocuments(studentId: number): Promise<StudentDocument[]>;
 }
 
 class StudentsApiService implements IStudentsService {
@@ -71,6 +73,10 @@ class StudentsApiService implements IStudentsService {
 
   async getAttendance(studentId: number): Promise<StudentAttendance[]> {
     return apiClient.get<StudentAttendance[]>(ENDPOINTS.students.attendance(studentId));
+  }
+
+  async getDocuments(studentId: number): Promise<StudentDocument[]> {
+    return apiClient.get<StudentDocument[]>(ENDPOINTS.students.documents(studentId));
   }
 }
 

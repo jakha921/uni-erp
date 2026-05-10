@@ -102,21 +102,21 @@
 - [x] Убрать hardcoded FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS массивы → загружать через `useFaculties()`, `useDepartments()`, `useSpecialties()`, `useGroups()`
 - [x] Cascading selects: Faculty → Department → Specialty → Group (фильтрация зависимых)
 - [ ] FileUpload: загрузка фото студента
-- [ ] При Edit mode: предзаполнение формы данными из `useStudent(id)`
-- [ ] Кнопка "Назад" → navigate('/students')
-- [ ] Success toast после сохранения → redirect на profile
+- [x] При Edit mode: предзаполнение формы данными из `useStudent(id)`
+- [x] Кнопка "Назад" → navigate('/students')
+- [x] Success toast после сохранения → redirect на profile
 
 ### 3.4 StudentProfilePage `/students/:id`
 **Файл:** `features/students/pages/StudentProfilePage.tsx`
 **Статус:** Read работает
 **Задачи:**
 - [ ] i18n: все тексты
-- [ ] Убрать hardcoded `STUDENT_DOCS` массив (строка 527) → загружать из API
+- [x] Убрать hardcoded `STUDENT_DOCS` массив (строка 527) → загружать из API
 - [ ] Tab "Hujjatlar" (Документы): FileUpload для загрузки сканов
 - [ ] Tab "Kontrakt": ссылки на контракты студента из Finance API
 - [ ] Tab "Davomat": реальные данные посещаемости за семестр
 - [ ] Tab "O'zlashtirish": реальные оценки из API
-- [ ] Кнопка "Tahrirlash" → navigate(`/students/${id}/edit`)
+- [x] Кнопка "Tahrirlash" → navigate(`/students/${id}/edit`)
 - [ ] Кнопка "Ma'lumotnoma" → генерация PDF справки
 - [ ] Кнопка "Chop etish" → print-friendly layout
 
