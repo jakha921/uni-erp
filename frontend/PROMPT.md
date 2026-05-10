@@ -370,7 +370,7 @@
 - [ ] Tab "Maosh": реальные данные зарплаты из API (сейчас hardcoded)
 - [ ] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
 - [x] Кнопка "Tahrirlash" → navigate к форме редактирования
-- [ ] Печать карточки сотрудника → PDF
+- [x] Печать карточки сотрудника → PDF
 - [ ] i18n: все тексты
 
 ### 6.4 DepartmentsPage `/hr/departments`

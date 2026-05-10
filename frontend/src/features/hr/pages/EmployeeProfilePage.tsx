@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star, Upload } from 'lucide-react';
+import type { Employee } from '@/types/hr';
+import { formatDate, formatMoney, formatPhone } from '@/lib/utils';
 import { FileUpload } from '@/components/form/FileUpload';
 import { PageContent } from '@/components/layout';
 import { Spinner } from '@/components/ui';
@@ -9,7 +11,6 @@ import { Card } from '@/components/data-display';
 import { EmployeeProfileHeader } from '../components/EmployeeProfileHeader';
 import { EmployeeForm } from '../components/EmployeeForm';
 import { useEmployee, useUpdateEmployee, useDepartments } from '@/api/hooks/useHr';
-import { formatDate, formatMoney, formatPhone } from '@/lib/utils';
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
 const CAREER_EVENTS = [
@@ -27,6 +28,69 @@ const DOCS_DATA = [
   { name: 'PhD dissertatsiya', date: '01.09.2022' },
   { name: 'Buyruq (qabul)', date: '01.09.2018' },
 ];
+
+function printEmployeeCard(e: Employee) {
+  const win = window.open('', '_blank', 'width=794,height=1123');
+  if (!win) return;
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = `
+    body { font-family: 'Times New Roman', serif; margin: 0; padding: 40px 60px; color: #000; }
+    h1 { text-align: center; font-size: 18px; text-transform: uppercase; margin-bottom: 4px; }
+    h2 { text-align: center; font-size: 14px; margin-bottom: 30px; }
+    .title { text-align: center; font-size: 22px; font-weight: bold; text-transform: uppercase; margin: 30px 0 8px; }
+    .subtitle { text-align: center; font-size: 14px; margin-bottom: 30px; color: #555; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    td { padding: 7px 12px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+    td:first-child { color: #64748b; width: 42%; }
+    td:last-child { font-weight: 600; }
+    .footer { margin-top: 50px; display: flex; justify-content: space-between; font-size: 13px; }
+    @media print { @page { margin: 0; } body { padding: 40px 60px; } }
+  `;
+  d.head.appendChild(style);
+  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
+  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const title = d.createElement('div'); title.className = 'title'; title.textContent = "XODIM KARTOCHKASI"; d.body.appendChild(title);
+  const sub = d.createElement('div'); sub.className = 'subtitle'; sub.textContent = `Sana: ${today}`; d.body.appendChild(sub);
+
+  const rows: [string, string][] = [
+    ['F.I.Sh.', e.fullName],
+    ['Xodim ID', e.employeeIdNumber],
+    ["Bo'lim", e.department.name],
+    ['Lavozim', e.position.name],
+    ['Ilmiy daraja', e.academicDegree.name],
+    ['Ilmiy unvon', e.academicRank.name],
+    ['Ish turi', e.employmentForm.name],
+    ['Ishga qabul', formatDate(e.hireDate)],
+    ['Shartnoma №', e.contractNumber],
+    ['Telefon', formatPhone(e.phone)],
+    ['Email', e.email],
+    ['Maosh', formatMoney(e.salary)],
+  ];
+  const table = d.createElement('table');
+  rows.forEach(([label, value]) => {
+    const tr = d.createElement('tr');
+    const td1 = d.createElement('td'); td1.textContent = label;
+    const td2 = d.createElement('td'); td2.textContent = value || '—';
+    tr.appendChild(td1); tr.appendChild(td2);
+    table.appendChild(tr);
+  });
+  d.body.appendChild(table);
+
+  const footer = d.createElement('div'); footer.className = 'footer';
+  const sig = d.createElement('div');
+  const p1 = d.createElement('p'); p1.textContent = "Kadrlar bo'limi boshlig'i: _______________________";
+  const p2 = d.createElement('p'); p2.textContent = `Sana: ${today}`;
+  sig.appendChild(p1); sig.appendChild(p2);
+  footer.appendChild(sig);
+  d.body.appendChild(footer);
+
+  d.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 250);
+}
 
 const TABS_CONFIG = [
   { id: 'info', label: "Asosiy ma'lumotlar" },
@@ -67,7 +131,7 @@ export function EmployeeProfilePage() {
         Orqaga
       </button>
 
-      <EmployeeProfileHeader employee={employee} onEdit={() => setEditOpen(true)} />
+      <EmployeeProfileHeader employee={employee} onEdit={() => setEditOpen(true)} onPrint={() => printEmployeeCard(employee)} />
 
       <div className="mt-6">
         <Tabs tabs={TABS_CONFIG} activeTab={activeTab} onTabChange={setActiveTab} />

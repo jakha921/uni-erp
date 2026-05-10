@@ -1,17 +1,19 @@
-import { Pencil, Mail, FileText } from 'lucide-react';
+import { Pencil, Mail, FileText, Printer } from 'lucide-react';
 import { Badge } from '@/components/ui';
 import { EmployeeStatusBadge } from './EmployeeStatusBadge';
-import { formatMoney, getInitials } from '@/lib/utils';
+import { formatMoney, getInitials, formatDate, formatPhone } from '@/lib/utils';
 import type { Employee } from '@/types/hr';
 
 interface EmployeeProfileHeaderProps {
   employee: Employee;
   onEdit?: () => void;
+  onPrint?: () => void;
 }
 
-export function EmployeeProfileHeader({ employee, onEdit }: EmployeeProfileHeaderProps) {
+export function EmployeeProfileHeader({ employee, onEdit, onPrint }: EmployeeProfileHeaderProps) {
   const initials = getInitials(employee.fullName);
   const e = employee;
+  void formatDate; void formatPhone;
 
   return (
     <div className="bg-surface rounded-lg border border-border shadow-sm overflow-hidden">
@@ -29,6 +31,12 @@ export function EmployeeProfileHeader({ employee, onEdit }: EmployeeProfileHeade
           </button>
           <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/30 bg-white/15 backdrop-blur text-white text-xs font-semibold hover:bg-white/25 transition-colors">
             <FileText className="h-3.5 w-3.5" /> Buyruq
+          </button>
+          <button
+            onClick={onPrint}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/30 bg-white/15 backdrop-blur text-white text-xs font-semibold hover:bg-white/25 transition-colors"
+          >
+            <Printer className="h-3.5 w-3.5" /> Chop etish
           </button>
         </div>
       </div>
