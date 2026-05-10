@@ -76,13 +76,16 @@ export function ForgotPasswordPage() {
     setStep('code');
   };
 
-  const onCodeSubmit = async (_data: SmsCodeFormData) => {
-    await new Promise((r) => setTimeout(r, 600));
+  const [resetToken, setResetToken] = useState('');
+
+  const onCodeSubmit = async (data: SmsCodeFormData) => {
+    const res = await authService.verifyCode(phone, data.code);
+    setResetToken(res.token);
     setStep('password');
   };
 
-  const onPasswordSubmit = async (_data: ResetPasswordFormData) => {
-    await new Promise((r) => setTimeout(r, 600));
+  const onPasswordSubmit = async (data: ResetPasswordFormData) => {
+    await authService.resetPassword(resetToken, data.password);
     setStep('done');
     setTimeout(() => navigate('/login'), 2000);
   };

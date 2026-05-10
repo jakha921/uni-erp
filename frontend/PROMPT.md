@@ -49,7 +49,7 @@
 - [ ] i18n: перевести все тексты
 - [x] Реализовать 3-step flow: ввод телефона → SMS код → новый пароль (Stepper компонент)
 - [x] Таймер повторной отправки SMS (60 сек countdown)
-- [ ] Подключить к реальному API endpoint `/auth/forgot-password/`
+- [x] Подключить к реальному API endpoint `/auth/forgot-password/`
 
 ---
 
@@ -654,14 +654,14 @@
 
 ### 16.1 StudentCabinetPage `/student-cabinet`
 **Задачи:**
-- [ ] Подключить к `useStudentCabinet()` — реальные данные
+- [x] Подключить к `useStudentCabinet()` — реальные данные
 - [x] Hero banner, расписание, оценки, экзамены, уведомления
 - [x] Quick actions: оплата, справка
 - [ ] i18n: все тексты
 
 ### 16.2 TeacherCabinetPage `/teacher-cabinet`
 **Задачи:**
-- [ ] Подключить к `useTeacherCabinet()` — реальные данные
+- [x] Подключить к `useTeacherCabinet()` — реальные данные
 - [x] Сегодняшние занятия, группы, pending tasks
 - [ ] i18n: все тексты
 

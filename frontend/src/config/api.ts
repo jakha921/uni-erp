@@ -7,6 +7,8 @@ export const ENDPOINTS = {
     logout: '/auth/logout',
     me: '/auth/me',
     forgotPassword: '/auth/forgot-password',
+    verifyCode: '/auth/verify-code',
+    resetPassword: '/auth/reset-password',
     refreshToken: '/auth/token/refresh',
   },
   core: {

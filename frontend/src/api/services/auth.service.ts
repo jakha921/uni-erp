@@ -14,6 +14,8 @@ export interface IAuthService {
   logout(): Promise<void>;
   me(): Promise<User>;
   forgotPassword(phone: string): Promise<void>;
+  verifyCode(phone: string, code: string): Promise<{ token: string }>;
+  resetPassword(token: string, newPassword: string): Promise<void>;
   changePassword(currentPassword: string, newPassword: string): Promise<void>;
   updateProfile(dto: UpdateProfileDto): Promise<User>;
   getDemoUsers(): User[];
@@ -43,6 +45,14 @@ class AuthApiService implements IAuthService {
 
   async forgotPassword(phone: string): Promise<void> {
     await apiClient.post<void>(ENDPOINTS.auth.forgotPassword, { phone });
+  }
+
+  async verifyCode(phone: string, code: string): Promise<{ token: string }> {
+    return apiClient.post<{ token: string }>(ENDPOINTS.auth.verifyCode, { phone, code });
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    await apiClient.post<void>(ENDPOINTS.auth.resetPassword, { token, newPassword });
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

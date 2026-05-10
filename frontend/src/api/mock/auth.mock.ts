@@ -94,6 +94,15 @@ export class AuthMockService implements IAuthService {
     await delay(500);
   }
 
+  async verifyCode(_phone: string, _code: string): Promise<{ token: string }> {
+    await delay(600);
+    return { token: 'mock-reset-token' };
+  }
+
+  async resetPassword(_token: string, _newPassword: string): Promise<void> {
+    await delay(600);
+  }
+
   async changePassword(_currentPassword: string, _newPassword: string): Promise<void> {
     await delay(600);
   }
