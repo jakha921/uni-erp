@@ -1,12 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Users, CheckCircle, ShieldAlert, UserPlus, Search, MoreHorizontal, Eye, Lock, KeyRound } from 'lucide-react';
+import { Users, CheckCircle, ShieldAlert, UserPlus, Search, Lock, KeyRound, Pencil } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Avatar, Button, Spinner } from '@/components/ui';
 import { DataTable, Pagination, type Column } from '@/components/table';
-import { useSystemUsers, useBlockUser } from '@/api/hooks/useSystem';
-import { useRoles } from '@/api/hooks/useSystem';
+import { useSystemUsers, useBlockUser, useCreateUser, useUpdateUser, useRoles } from '@/api/hooks/useSystem';
+import { UserForm } from '../components/UserForm';
 import type { SystemUserListItem } from '@/types/system';
+import type { UserFormData } from '../schemas/user.schema';
 
 const ROLE_COLORS: Record<string, string> = {
   admin: '#EF4444', buxgalter: '#F59E0B', dekan: '#3B82F6', oqituvchi: '#10B981', talaba: '#8B5CF6',
@@ -35,6 +36,8 @@ export function UsersListPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editUser, setEditUser] = useState<SystemUserListItem | null>(null);
   const pageSize = 20;
 
   const { data, isLoading } = useSystemUsers({
@@ -43,6 +46,8 @@ export function UsersListPage() {
   });
   const { data: roles } = useRoles();
   const blockUser = useBlockUser();
+  const createUser = useCreateUser();
+  const updateUser = useUpdateUser();
 
   const users = data?.data ?? [];
   const total = data?.total ?? 0;
@@ -50,6 +55,28 @@ export function UsersListPage() {
 
   const activeCount = users.filter((u) => u.status === 'active').length;
   const blockedCount = users.filter((u) => u.status === 'blocked').length;
+
+  const handleCreate = useCallback((formData: UserFormData) => {
+    createUser.mutate(
+      {
+        firstName: formData.firstName,
+        secondName: formData.secondName,
+        phone: formData.phone,
+        email: formData.email || undefined,
+        password: formData.password ?? '',
+        roles: [{ role: formData.role, branchId: 1 }],
+      },
+      { onSuccess: () => setFormOpen(false) },
+    );
+  }, [createUser]);
+
+  const handleEdit = useCallback((formData: UserFormData) => {
+    if (!editUser) return;
+    updateUser.mutate(
+      { id: editUser.id, data: { roles: [{ role: formData.role, branchId: 1 }] } },
+      { onSuccess: () => setEditUser(null) },
+    );
+  }, [editUser, updateUser]);
 
   const columns: Column<SystemUserListItem>[] = useMemo(() => [
     { key: 'index', header: '#', width: '50px', render: (_row, index) => <span className="text-xs text-muted">{(page - 1) * pageSize + index + 1}</span> },
@@ -90,24 +117,27 @@ export function UsersListPage() {
 
   const handleActions = useCallback(
     (row: SystemUserListItem) => (
-      <div className="relative group">
-        <button className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 peer">
-          <MoreHorizontal className="h-4 w-4" />
+      <div className="flex items-center gap-1 justify-end">
+        <button
+          className="h-7 w-7 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 inline-flex items-center justify-center transition-colors"
+          onClick={(e) => { e.stopPropagation(); setEditUser(row); }}
+          title="Tahrirlash"
+        >
+          <Pencil className="h-3.5 w-3.5" />
         </button>
-        <div className="absolute right-0 top-8 z-20 w-44 rounded-lg border border-border bg-white py-1 shadow-lg hidden group-hover:block">
-          <button className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
-            <Eye className="h-3.5 w-3.5" />Ko&apos;rish
-          </button>
-          <button
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
-            onClick={() => blockUser.mutate(row.id)}
-          >
-            <Lock className="h-3.5 w-3.5" />{row.status === 'blocked' ? 'Blokdan chiqarish' : 'Bloklash'}
-          </button>
-          <button className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
-            <KeyRound className="h-3.5 w-3.5" />Parol tiklash
-          </button>
-        </div>
+        <button
+          className="h-7 w-7 rounded-md hover:bg-amber-50 text-slate-400 hover:text-amber-600 inline-flex items-center justify-center transition-colors"
+          onClick={(e) => { e.stopPropagation(); blockUser.mutate(row.id); }}
+          title={row.status === 'blocked' ? 'Blokdan chiqarish' : 'Bloklash'}
+        >
+          <Lock className="h-3.5 w-3.5" />
+        </button>
+        <button
+          className="h-7 w-7 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 inline-flex items-center justify-center transition-colors"
+          title="Parol tiklash"
+        >
+          <KeyRound className="h-3.5 w-3.5" />
+        </button>
       </div>
     ), [blockUser],
   );
@@ -118,7 +148,11 @@ export function UsersListPage() {
         title="Foydalanuvchilar"
         subtitle="Tizim foydalanuvchilari va ularning huquqlari"
         breadcrumbs={[{ label: 'Tizim' }, { label: 'Foydalanuvchilar' }]}
-        actions={<Button variant="primary" size="sm" leftIcon={<UserPlus className="h-4 w-4" />}>Foydalanuvchi qo&apos;shish</Button>}
+        actions={
+          <Button variant="primary" size="sm" leftIcon={<UserPlus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
+            Foydalanuvchi qo&apos;shish
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -159,6 +193,21 @@ export function UsersListPage() {
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} total={total} pageSize={pageSize} />
         </div>
       </Card>
+
+      <UserForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleCreate}
+        loading={createUser.isPending}
+      />
+
+      <UserForm
+        open={!!editUser}
+        onClose={() => setEditUser(null)}
+        onSubmit={handleEdit}
+        user={editUser}
+        loading={updateUser.isPending}
+      />
     </PageContent>
   );
 }
