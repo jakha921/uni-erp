@@ -109,6 +109,20 @@ export function ContractsListPage() {
             >
               Excel
             </Button>
+            <Button
+              variant="secondary"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/finance/contracts/export-pdf/';
+                a.download = 'kontraktlar.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              PDF
+            </Button>
           </div>
         }
       />

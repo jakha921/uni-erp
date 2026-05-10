@@ -3,12 +3,14 @@ import {
   CheckCircle,
   AlertTriangle,
   X,
+  FileDown,
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
 import { StatCard } from '@/components/data-display/StatCard';
 import { Card } from '@/components/data-display/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Button } from '@/components/ui/Button';
 import { useStudentStatistics } from '@/api/hooks/useStudents';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -78,6 +80,22 @@ export function StudentsStatPage() {
       <PageHeader
         title="Talabalar statistikasi"
         subtitle={role === 'dekan' ? (currentUser?.facultyName ?? '') : "Universitet bo'yicha umumiy ma'lumot"}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = '/api/v1/students/export-pdf/';
+              a.download = 'talabalar-statistika.pdf';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            PDF
+          </Button>
+        }
       />
 
       {/* 2×2 StatCards grid — matching prototype */}

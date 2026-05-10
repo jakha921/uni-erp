@@ -106,6 +106,20 @@ export function StudentsListPage() {
               >
                 Excel
               </Button>
+              <Button
+                variant="secondary"
+                leftIcon={<FileDown className="h-4 w-4" />}
+                onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = '/api/v1/students/export-pdf/';
+                  a.download = 'talabalar.pdf';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              >
+                PDF
+              </Button>
               <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/students/new')}>
                 Yangi talaba
               </Button>

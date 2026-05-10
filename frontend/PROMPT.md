@@ -79,7 +79,7 @@
 **Задачи:**
 - [ ] i18n: все тексты через `t('students.*')`
 - [x] Добавить DateRangePicker для фильтрации по периоду
-- [ ] Добавить кнопку "Eksport PDF" → вызов `/students/export-pdf/`
+- [x] Добавить кнопку "Eksport PDF" → вызов `/students/export-pdf/`
 - [x] Dark mode: проверить цвета прогресс-баров и карточек
 
 ### 3.2 StudentsListPage `/students`
@@ -90,7 +90,7 @@
 - [x] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
 - [x] Bulk actions: чекбоксы для массового удаления/экспорта
 - [x] Кнопка "Excel eksport" → вызов `/students/export/`
-- [ ] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
+- [x] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
 - [x] Фильтры факультет/группа: заменить hardcoded массивы на данные из `useFaculties()`, `useGroups()`
 - [x] Кнопка "Yangi talaba" → навигация на `/students/new`
 
@@ -275,7 +275,7 @@
 - [x] Update: редактирование контракта (тип, сумма) в Modal
 - [x] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
 - [x] Кнопка "Excel eksport" → `/finance/contracts/export/`
-- [ ] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
+- [x] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
 - [x] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
 - [ ] i18n: все тексты (TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`)
 
