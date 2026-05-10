@@ -117,7 +117,7 @@
 - [x] Tab "Davomat": реальные данные посещаемости за семестр
 - [x] Tab "O'zlashtirish": реальные оценки из API
 - [x] Кнопка "Tahrirlash" → navigate(`/students/${id}/edit`)
-- [ ] Кнопка "Ma'lumotnoma" → генерация PDF справки
+- [x] Кнопка "Ma'lumotnoma" → генерация PDF справки
 - [x] Кнопка "Chop etish" → print-friendly layout
 
 ---

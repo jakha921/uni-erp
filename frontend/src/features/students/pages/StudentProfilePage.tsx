@@ -278,6 +278,74 @@ function ContractsTab({ studentId }: { studentId: number }) {
   );
 }
 
+const STATUS_NAMES: Record<string, string> = {
+  active: "O'qimoqda",
+  academic_leave: "Akademik ta'tilda",
+  expelled: 'Chetlatilgan',
+  graduated: 'Bitirgan',
+  transferred: "Ko'chirilgan",
+};
+
+function printCertificate(student: { fullName: string; studentIdNumber: string; faculty: { name: string }; group: { name: string }; level: { name: string }; paymentForm: { name: string }; status: string }) {
+  const win = window.open('', '_blank', 'width=794,height=1123');
+  if (!win) return;
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = `
+    body { font-family: 'Times New Roman', serif; margin: 0; padding: 40px 60px; color: #000; }
+    h1 { text-align: center; font-size: 18px; text-transform: uppercase; margin-bottom: 4px; }
+    h2 { text-align: center; font-size: 14px; margin-bottom: 40px; }
+    .title { text-align: center; font-size: 22px; font-weight: bold; text-transform: uppercase; margin: 40px 0 10px; }
+    .subtitle { text-align: center; font-size: 14px; margin-bottom: 40px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    td { padding: 8px 12px; font-size: 14px; border-bottom: 1px solid #ddd; }
+    td:first-child { color: #555; width: 45%; }
+    td:last-child { font-weight: bold; }
+    .footer { margin-top: 60px; display: flex; justify-content: space-between; font-size: 13px; }
+    .seal { width: 80px; height: 80px; border: 2px solid #999; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center; color: #777; }
+    @media print { @page { margin: 0; } body { padding: 40px 60px; } }
+  `;
+  d.head.appendChild(style);
+  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
+  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const title = d.createElement('div'); title.className = 'title'; title.textContent = "MA'LUMOTNOMA"; d.body.appendChild(title);
+  const sub = d.createElement('div'); sub.className = 'subtitle'; sub.textContent = `Talaba haqida ma'lumotnoma — ${today}`; d.body.appendChild(sub);
+
+  const rows: [string, string][] = [
+    ['F.I.Sh.', student.fullName],
+    ['Talaba ID', student.studentIdNumber],
+    ['Fakultet', student.faculty.name],
+    ['Guruh', student.group.name],
+    [student.level.name, 'Talabasi hisoblanadi'],
+    ["To'lov shakli", student.paymentForm.name],
+    ['Holati', STATUS_NAMES[student.status] ?? student.status],
+  ];
+  const table = d.createElement('table');
+  rows.forEach(([label, value]) => {
+    const tr = d.createElement('tr');
+    const td1 = d.createElement('td'); td1.textContent = label;
+    const td2 = d.createElement('td'); td2.textContent = value;
+    tr.appendChild(td1); tr.appendChild(td2);
+    table.appendChild(tr);
+  });
+  d.body.appendChild(table);
+
+  const footer = d.createElement('div'); footer.className = 'footer';
+  const sig = d.createElement('div');
+  const p1 = d.createElement('p'); p1.textContent = "Rektor: _______________________";
+  const p2 = d.createElement('p'); p2.textContent = `Sana: ${today}`;
+  sig.appendChild(p1); sig.appendChild(p2);
+  const seal = d.createElement('div'); seal.className = 'seal'; seal.textContent = "M.O.";
+  footer.appendChild(sig); footer.appendChild(seal);
+  d.body.appendChild(footer);
+
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 250);
+}
+
 // ---------- Main component ----------
 export function StudentProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -354,6 +422,7 @@ export function StudentProfilePage() {
               size="sm"
               leftIcon={<FileText className="h-3.5 w-3.5" />}
               className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              onClick={() => printCertificate(student)}
             >
               Ma&apos;lumotnoma
             </Button>
