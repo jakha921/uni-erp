@@ -1,7 +1,5 @@
 import type { Document as Doc, DocumentListParams, CreateDocumentDto, Folder } from '@/types/admin';
 import type { PaginatedResponse } from '@/types/common';
-import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient, transformPaginated } from '../client';
 import { DmsMockService } from '../mock/dms.mock';
 
 export interface IDmsService {
@@ -13,22 +11,4 @@ export interface IDmsService {
   getFolders(): Promise<Folder[]>;
 }
 
-class DmsApiService implements IDmsService {
-  async getDocuments(params: DocumentListParams) {
-    const page = params.page ?? 1;
-    const pageSize = params.pageSize ?? 20;
-    const drf = await apiClient.get<{ count: number; results: Doc[] }>(ENDPOINTS.admin.documents, {
-      params: { page, page_size: pageSize, search: params.search, folder_id: params.folderId, status: params.status, priority: params.priority, category: params.category },
-    });
-    return transformPaginated(drf, page, pageSize);
-  }
-  async getDocumentById(id: number) { return apiClient.get<Doc>(ENDPOINTS.admin.documentDetail(id)); }
-  async createDocument(data: CreateDocumentDto) { return apiClient.post<Doc>(ENDPOINTS.admin.documents, data); }
-  async updateDocument(id: number, data: Partial<CreateDocumentDto>) { return apiClient.patch<Doc>(ENDPOINTS.admin.documentDetail(id), data); }
-  async deleteDocument(id: number) { return apiClient.delete<void>(ENDPOINTS.admin.documentDetail(id)); }
-  async getFolders() { return apiClient.get<Folder[]>(ENDPOINTS.admin.folders); }
-}
-
-export const dmsService: IDmsService = USE_MOCK
-  ? new DmsMockService()
-  : new DmsApiService();
+export const dmsService: IDmsService = new DmsMockService();

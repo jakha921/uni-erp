@@ -48,10 +48,27 @@ class SystemApiService implements ISystemService {
   async getAuditLog(params: AuditLogParams) {
     const page = params.page ?? 1;
     const pageSize = params.pageSize ?? 20;
-    const drf = await apiClient.get<{ count: number; results: AuditLogEntry[] }>(ENDPOINTS.system.auditLog, {
+    type RawEntry = { id: number; userId: number; userName: string; action: string; model: string; objectId: string; path: string; ipAddress: string; timestamp: string };
+    const drf = await apiClient.get<{ count: number; results: RawEntry[] }>(ENDPOINTS.system.auditLog, {
       params: { page, page_size: pageSize, search: params.search, action: params.action, module: params.module, severity: params.severity, date_from: params.dateFrom, date_to: params.dateTo },
     });
-    return transformPaginated(drf, page, pageSize);
+    const mapped = {
+      ...drf,
+      results: drf.results.map((r): AuditLogEntry => ({
+        id: r.id,
+        userId: r.userId,
+        userName: r.userName,
+        action: r.action as AuditLogEntry['action'],
+        module: r.model ?? '',
+        objectType: '',
+        objectId: r.objectId ?? '',
+        details: r.path ?? '',
+        ipAddress: r.ipAddress ?? '',
+        severity: 'info' as const,
+        createdAt: r.timestamp ?? '',
+      })),
+    };
+    return transformPaginated(mapped, page, pageSize);
   }
 }
 

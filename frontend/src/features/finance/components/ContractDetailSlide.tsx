@@ -63,12 +63,12 @@ export function ContractDetailSlide({ contract, onClose }: ContractDetailSlidePr
           {/* Student header */}
           <div className="flex items-center gap-3.5">
             <div className="h-14 w-14 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold shrink-0">
-              {contract.studentName.split(' ').map((p) => p[0]).slice(0, 2).join('')}
+              {(contract.studentName ?? '').split(' ').map((p) => p[0]).slice(0, 2).join('')}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-base font-bold text-slate-900 dark:text-slate-100">{contract.studentName}</p>
               <p className="text-[12.5px] text-slate-500">ID: {contract.studentIdNumber}</p>
-              <p className="text-[12.5px] text-slate-500">{contract.groupName} · {contract.level} · {contract.facultyName.split(' ').slice(0, 3).join(' ')}</p>
+              <p className="text-[12.5px] text-slate-500">{contract.groupName} · {contract.level} · {(contract.facultyName ?? '').split(' ').slice(0, 3).join(' ')}</p>
             </div>
             <Badge variant={statusCfg.variant} dot>{statusCfg.label}</Badge>
           </div>
@@ -118,7 +118,7 @@ export function ContractDetailSlide({ contract, onClose }: ContractDetailSlidePr
           <div>
             <h3 className="text-[13px] font-semibold text-slate-900 uppercase tracking-wide mb-2.5">To&apos;lov jadvali</h3>
             <div className="flex flex-col gap-1.5">
-              {contract.paymentSchedule.map((s, i) => {
+              {(contract.paymentSchedule ?? []).map((s, i) => {
                 const isPaid = s.status === 'paid';
                 const overdue = s.status === 'overdue' || (!isPaid && s.dueDate < today);
                 const statusInfo = isPaid
