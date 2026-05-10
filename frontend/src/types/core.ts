@@ -19,6 +19,9 @@ export interface Department {
   facultyId: number;
   headId?: number;
   headName?: string;
+  staffCount?: number;
+  studentCount?: number;
+  avgGrade?: number;
 }
 
 export interface Specialty {

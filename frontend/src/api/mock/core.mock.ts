@@ -15,11 +15,21 @@ const MOCK_FACULTIES: Faculty[] = FACULTIES.map((name, i) => ({
   branchId: 1,
 }));
 
+const HEAD_NAMES = [
+  "Karimov Bahrom", "Yusupova Zulfiya", "Toshmatov Ravshan", "Nazarova Nilufar",
+  "Xoliqov Sardor", "Mirzayeva Gulnora", "Rahimov Ulugbek", "Saidova Dildora",
+  "Ergashev Jasur", "Qodirov Mansur", "Aliyeva Shahlo", "Hasanov Timur",
+];
+
 const MOCK_DEPARTMENTS: Department[] = DEPARTMENTS.map((name, i) => ({
   id: i + 1,
   name,
   code: `DEP-${String(i + 1).padStart(2, '0')}`,
   facultyId: (i % MOCK_FACULTIES.length) + 1,
+  headName: HEAD_NAMES[i % HEAD_NAMES.length],
+  staffCount: 8 + (i * 7 % 20),
+  studentCount: 80 + (i * 31 % 200),
+  avgGrade: Math.round((3.2 + (i * 17 % 18) / 10) * 10) / 10,
 }));
 
 const SPECIALTIES_DATA = [

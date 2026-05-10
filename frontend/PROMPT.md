@@ -169,9 +169,9 @@
 - [x] Tab "Sessiyalar": список экзаменов → CRUD (создание, редактирование, удаление)
 - [x] ExamForm: subjectId, groupId, examDate, room, type (midterm/final), teacherId
 - [x] Zod schema: `examSchema` валидация всех полей
-- [ ] Tab "Imtihon jadvali": таблица расписания экзаменов
-- [ ] Tab "Biletlar": загрузка/просмотр экзаменационных билетов
-- [ ] Tab "Vedomost": ведомость оценок (подключить к Grades API)
+- [x] Tab "Imtihon jadvali": таблица расписания экзаменов
+- [x] Tab "Biletlar": загрузка/просмотр экзаменационных билетов
+- [x] Tab "Vedomost": ведомость оценок (подключить к Grades API)
 - [ ] Фильтры: семестр, группа, предмет
 - [ ] i18n: все тексты
 
@@ -250,8 +250,8 @@
 **Файл:** `features/education/pages/AcademicDepartmentsPage.tsx`
 **Статус:** Read через hooks
 **Задачи:**
-- [ ] Показывать статистику: кол-во преподавателей, студентов, средний балл
-- [ ] Клик по кафедре → детальная страница или SlideOver
+- [x] Показывать статистику: кол-во преподавателей, студентов, средний балл
+- [x] Клик по кафедре → детальная страница или SlideOver
 - [ ] i18n: все тексты
 
 ---
@@ -447,7 +447,7 @@
 - [x] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
 - [x] Zod schema: `taskSchema`
 - [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
-- [ ] Drag-and-drop обновление статуса через mutation
+- [x] Drag-and-drop обновление статуса через mutation
 - [ ] i18n: все тексты
 
 ### 8.2 NotificationsPage `/notifications`
