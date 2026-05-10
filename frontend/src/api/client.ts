@@ -77,7 +77,9 @@ class ApiClient {
   private buildUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined>): string {
     const base = this.baseUrl.endsWith('/') ? this.baseUrl.slice(0, -1) : this.baseUrl;
     const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = new URL(`${base}${path}`);
+    const fullPath = `${base}${path}`;
+    // new URL(string) requires an absolute URL; use window.location.origin as fallback for relative base URLs
+    const url = new URL(fullPath, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) {
@@ -85,7 +87,8 @@ class ApiClient {
         }
       });
     }
-    return url.toString();
+    // For relative base URLs return only path+search (fetch handles relative URLs natively)
+    return base.startsWith('http') ? url.toString() : url.pathname + url.search;
   }
 
   private async handleResponse<T>(res: Response): Promise<T> {
