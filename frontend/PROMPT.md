@@ -128,11 +128,11 @@
 **Файл:** `features/education/pages/SchedulePage.tsx`
 **Статус:** ⚠️ КРИТИЧНО — hardcoded EVENTS массив
 **Задачи:**
-- [ ] **УБРАТЬ hardcoded EVENTS массив** (строки 25-38) → `useSchedules(params)`
-- [ ] Убрать hardcoded DAYS, HOURS, DATES массивы
-- [ ] CRUD: кнопка "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара)
-- [ ] Edit: клик по ячейке расписания → редактирование в Modal
-- [ ] Delete: удаление занятия через ConfirmDialog
+- [x] **УБРАТЬ hardcoded EVENTS массив** (строки 25-38) → `useSchedules(params)`
+- [x] Убрать hardcoded DAYS, HOURS, DATES массивы
+- [x] CRUD: кнопка "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара)
+- [x] Edit: клик по ячейке расписания → редактирование в Modal
+- [x] Delete: удаление занятия через ConfirmDialog
 - [ ] Фильтры: группа (Combobox), преподаватель, неделя (DatePicker)
 - [ ] 3 вида: Haftalik (недельный), Kunlik (дневной), Oylik (месячный)
 - [ ] i18n: все тексты

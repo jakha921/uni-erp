@@ -13,6 +13,7 @@ import { USE_MOCK, ENDPOINTS } from '@/config/api';
 import { apiClient, transformPaginated } from '../client';
 
 export type SubjectDto = Omit<Subject, 'id' | 'departmentName'>;
+export type ScheduleDto = Omit<Schedule, 'id' | 'groupName' | 'subjectName' | 'teacherName'>;
 
 export interface IEducationService {
   getSubjects(params?: SubjectListParams): Promise<PaginatedResponse<Subject>>;
@@ -20,6 +21,9 @@ export interface IEducationService {
   updateSubject(id: number, dto: SubjectDto): Promise<Subject>;
   deleteSubject(id: number): Promise<void>;
   getSchedules(params?: ScheduleListParams): Promise<PaginatedResponse<Schedule>>;
+  createSchedule(dto: ScheduleDto): Promise<Schedule>;
+  updateSchedule(id: number, dto: ScheduleDto): Promise<Schedule>;
+  deleteSchedule(id: number): Promise<void>;
   getGrades(params?: GradeListParams): Promise<PaginatedResponse<Grade>>;
   bulkAttendance(dto: BulkAttendanceDto): Promise<void>;
   bulkGrades(dto: BulkGradesDto): Promise<void>;
@@ -83,6 +87,18 @@ class EducationApiService implements IEducationService {
     await apiClient.delete(`${ENDPOINTS.education.subjects}${id}/`);
   }
 
+  async createSchedule(dto: ScheduleDto): Promise<Schedule> {
+    return apiClient.post<Schedule>(ENDPOINTS.education.schedules, dto);
+  }
+
+  async updateSchedule(id: number, dto: ScheduleDto): Promise<Schedule> {
+    return apiClient.patch<Schedule>(`${ENDPOINTS.education.schedules}${id}/`, dto);
+  }
+
+  async deleteSchedule(id: number): Promise<void> {
+    await apiClient.delete(`${ENDPOINTS.education.schedules}${id}/`);
+  }
+
   async bulkAttendance(dto: BulkAttendanceDto): Promise<void> {
     await apiClient.post(ENDPOINTS.education.attendanceBulk, dto);
   }
@@ -94,6 +110,7 @@ class EducationApiService implements IEducationService {
 
 class EducationMockService implements IEducationService {
   private subjects: Subject[] = [];
+  private schedules: Schedule[] = [];
   private nextId = 1;
 
   private empty<T>(): PaginatedResponse<T> {
@@ -120,7 +137,24 @@ class EducationMockService implements IEducationService {
     this.subjects = this.subjects.filter((s) => s.id !== id);
   }
   async getSchedules(): Promise<PaginatedResponse<Schedule>> {
-    return this.empty();
+    return { data: this.schedules, total: this.schedules.length, page: 1, pageSize: 50, totalPages: 1 };
+  }
+  async createSchedule(dto: ScheduleDto): Promise<Schedule> {
+    const s: Schedule = { ...dto, id: this.nextId++, groupName: '', subjectName: '', teacherName: '' };
+    this.schedules.push(s);
+    return s;
+  }
+  async updateSchedule(id: number, dto: ScheduleDto): Promise<Schedule> {
+    const idx = this.schedules.findIndex((s) => s.id === id);
+    if (idx !== -1) {
+      const updated = { ...this.schedules[idx]!, ...dto };
+      this.schedules[idx] = updated;
+      return updated;
+    }
+    return { ...dto, id, groupName: '', subjectName: '', teacherName: '' };
+  }
+  async deleteSchedule(id: number): Promise<void> {
+    this.schedules = this.schedules.filter((s) => s.id !== id);
   }
   async getGrades(): Promise<PaginatedResponse<Grade>> {
     return this.empty();

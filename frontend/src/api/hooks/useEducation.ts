@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { educationService } from '../services/education.service';
-import type { SubjectDto } from '../services/education.service';
+import type { SubjectDto, ScheduleDto } from '../services/education.service';
 import type {
   SubjectListParams,
   ScheduleListParams,
@@ -50,6 +50,30 @@ export function useSchedules(params?: ScheduleListParams) {
   return useQuery({
     queryKey: KEYS.schedules(params),
     queryFn: () => educationService.getSchedules(params),
+  });
+}
+
+export function useCreateSchedule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: ScheduleDto) => educationService.createSchedule(dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'schedules'] }),
+  });
+}
+
+export function useUpdateSchedule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dto }: { id: number; dto: ScheduleDto }) => educationService.updateSchedule(id, dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'schedules'] }),
+  });
+}
+
+export function useDeleteSchedule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => educationService.deleteSchedule(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['education', 'schedules'] }),
   });
 }
 
