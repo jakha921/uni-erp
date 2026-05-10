@@ -423,9 +423,9 @@
 ### 7.2 CrmKanbanPage `/crm/kanban`
 **Файл:** `features/crm/pages/CrmKanbanPage.tsx`
 **Задачи:**
-- [ ] Подключить к `useLeads({})` → группировка по статусу
-- [ ] Drag-and-drop: перемещение карточки → `useUpdateLead({status: newStatus})`
-- [ ] Клик по карточке → LeadDetailSlide (просмотр + история)
+- [x] Подключить к `useLeads({})` → группировка по статусу
+- [x] Drag-and-drop: перемещение карточки → `useUpdateLead({status: newStatus})`
+- [x] Клик по карточке → LeadDetailSlide (просмотр + история)
 - [ ] i18n: все тексты
 
 ### 7.3 CrmReportPage `/crm/report`

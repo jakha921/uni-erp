@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Calendar, User, Plus, LayoutGrid, BarChart3, Filter } from 'lucide-react';
+import { Calendar, User, Plus, LayoutGrid, BarChart3, Filter, X, Phone, Tag, Clock } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Avatar, Badge, Button } from '@/components/ui';
-import type { LeadStatus, LeadSource } from '@/types/crm';
-import { useLeads } from '@/api/hooks/useCrm';
+import type { LeadStatus, LeadSource, LeadListItem } from '@/types/crm';
+import { useLeads, useUpdateLead } from '@/api/hooks/useCrm';
 import { cn } from '@/lib/utils';
 
 const SOURCE_LABELS: Record<LeadSource, string> = {
@@ -43,26 +43,16 @@ const STAGES: StageConfig[] = [
 export function CrmKanbanPage() {
   const { data: leadsData } = useLeads({ pageSize: 100 });
   const allLeads = leadsData?.data ?? [];
-
-  // Transform LeadListItem to Lead-like objects for kanban cards
-  const initialCards = useMemo(() =>
-    allLeads.map((l) => ({
-      ...l,
-      status: l.status,
-    })),
-    [allLeads],
-  );
+  const updateLead = useUpdateLead();
 
   const [statusOverrides, setStatusOverrides] = useState<Record<number, LeadStatus>>({});
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [overStage, setOverStage] = useState<LeadStatus | null>(null);
+  const [detailLead, setDetailLead] = useState<LeadListItem | null>(null);
 
   const cards = useMemo(() =>
-    initialCards.map((c) => ({
-      ...c,
-      status: statusOverrides[c.id] ?? c.status,
-    })),
-    [initialCards, statusOverrides],
+    allLeads.map((l) => ({ ...l, status: statusOverrides[l.id] ?? l.status })),
+    [allLeads, statusOverrides],
   );
 
   const handleDragStart = useCallback((id: number) => {
@@ -82,10 +72,11 @@ export function CrmKanbanPage() {
   const handleDrop = useCallback((stageId: LeadStatus) => {
     if (draggingId !== null) {
       setStatusOverrides((prev) => ({ ...prev, [draggingId]: stageId }));
+      updateLead.mutate({ id: draggingId, data: { status: stageId } });
     }
     setDraggingId(null);
     setOverStage(null);
-  }, [draggingId]);
+  }, [draggingId, updateLead]);
 
   return (
     <PageContent>
@@ -162,6 +153,7 @@ export function CrmKanbanPage() {
                     isDragging={draggingId === card.id}
                     onDragStart={() => handleDragStart(card.id)}
                     onDragEnd={handleDragEnd}
+                    onClick={() => setDetailLead(card)}
                   />
                 ))}
                 <button className="flex items-center justify-center gap-1.5 rounded-[10px] border border-dashed border-slate-300 bg-transparent px-3 py-2.5 text-xs text-muted hover:border-slate-400 hover:text-slate-600">
@@ -173,6 +165,10 @@ export function CrmKanbanPage() {
           );
         })}
       </div>
+
+      {detailLead && (
+        <LeadDetailSlide lead={detailLead} onClose={() => setDetailLead(null)} />
+      )}
     </PageContent>
   );
 }
@@ -193,9 +189,10 @@ interface KanbanCardProps {
   isDragging: boolean;
   onDragStart: () => void;
   onDragEnd: () => void;
+  onClick: () => void;
 }
 
-function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProps) {
+function KanbanCard({ card, isDragging, onDragStart, onDragEnd, onClick }: KanbanCardProps) {
   const fullName = `${card.lastName} ${card.firstName}`;
   const shortName = `${card.lastName} ${card.firstName[0]}.`;
 
@@ -204,11 +201,12 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProp
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
+      onClick={onClick}
       className={cn(
         'cursor-grab rounded-[10px] border border-slate-200 bg-white p-3 transition-shadow',
         isDragging
           ? 'opacity-50 shadow-lg -rotate-1'
-          : 'shadow-sm hover:shadow-md',
+          : 'shadow-sm hover:shadow-md hover:border-slate-300',
       )}
     >
       {/* Header: Avatar + Name */}
@@ -238,6 +236,65 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd }: KanbanCardProp
           <User className="h-3 w-3" />
           {card.assigneeName}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function LeadDetailSlide({ lead, onClose }: { lead: LeadListItem; onClose: () => void }) {
+  const fullName = `${lead.lastName} ${lead.firstName}`;
+  const stageCfg = STAGES.find((s) => s.id === lead.status) ?? STAGES[0]!;
+
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      <div className="flex-1 bg-black/40" onClick={onClose} />
+      <div className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h2 className="text-[15px] font-semibold text-slate-900">Ariza tafsiloti</h2>
+          <button onClick={onClose} className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 p-5 space-y-5">
+          <div className="flex items-start gap-3">
+            <Avatar name={fullName} size="md" />
+            <div>
+              <p className="text-[15px] font-semibold text-slate-900">{fullName}</p>
+              <p className="text-[12px] text-slate-500">{lead.direction}</p>
+            </div>
+          </div>
+
+          <div
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
+            style={{ backgroundColor: stageCfg.color }}
+          >
+            {stageCfg.label}
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5 text-[13px] text-slate-700">
+              <Phone className="h-4 w-4 text-slate-400 shrink-0" />
+              {lead.phone}
+            </div>
+            <div className="flex items-center gap-2.5 text-[13px] text-slate-700">
+              <Tag className="h-4 w-4 text-slate-400 shrink-0" />
+              {SOURCE_LABELS[lead.source]}
+            </div>
+            <div className="flex items-center gap-2.5 text-[13px] text-slate-500">
+              <Clock className="h-4 w-4 text-slate-400 shrink-0" />
+              {lead.createdAt}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-4">
+            <p className="text-[12px] font-semibold text-slate-500 mb-2">Mas&apos;ul shaxs</p>
+            <div className="flex items-center gap-2.5">
+              <Avatar name={lead.assigneeName} size="sm" />
+              <span className="text-[13px] text-slate-700">{lead.assigneeName}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
