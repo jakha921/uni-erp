@@ -750,4 +750,4 @@
 - AuditLogPage → Excel
 
 ### T5. Новые страницы
-- TeacherProfilePage `/teachers/:id` — по аналогии с EmployeeProfilePage
+- [x] TeacherProfilePage `/teachers/:id` — по аналогии с EmployeeProfilePage

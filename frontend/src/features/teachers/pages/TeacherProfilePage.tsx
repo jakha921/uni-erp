@@ -1,17 +1,58 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Phone, BookOpen, Clock, Users } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, BookOpen, Clock, Users, Printer } from 'lucide-react';
 import { PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Avatar, Spinner } from '@/components/ui';
+import { Badge, Avatar, Spinner, Button } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { useTeacher } from '@/api/hooks/useTeachers';
+import type { Teacher } from '@/types/teacher';
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
   shtatliy: 'Shtatli',
   sovmestitel: 'Sovmestitel',
   soatbay: 'Soatbay',
 };
+
+function printTeacherCard(t: Teacher) {
+  const win = window.open('', '_blank', 'width=794,height=1123');
+  if (!win) return;
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = `body{font-family:'Times New Roman',serif;margin:0;padding:40px 60px;color:#000}h1{text-align:center;font-size:18px;text-transform:uppercase;margin-bottom:4px}h2{text-align:center;font-size:14px;margin-bottom:30px}.title{text-align:center;font-size:22px;font-weight:bold;text-transform:uppercase;margin:30px 0 8px}.subtitle{text-align:center;font-size:14px;margin-bottom:30px;color:#555}table{width:100%;border-collapse:collapse;margin-top:16px}td{padding:7px 12px;font-size:13px;border-bottom:1px solid #e2e8f0}td:first-child{color:#64748b;width:42%}td:last-child{font-weight:600}.footer{margin-top:50px;display:flex;justify-content:space-between;font-size:13px}@media print{@page{margin:0}body{padding:40px 60px}}`;
+  d.head.appendChild(style);
+  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+  const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
+  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const title = d.createElement('div'); title.className = 'title'; title.textContent = "O'QITUVCHI KARTOCHKASI"; d.body.appendChild(title);
+  const sub = d.createElement('div'); sub.className = 'subtitle'; sub.textContent = `Sana: ${today}`; d.body.appendChild(sub);
+  const rows: [string, string][] = [
+    ['F.I.Sh.', t.fullName],
+    ['Kafedra', t.department],
+    ['Lavozim', t.position],
+    ['Ilmiy daraja', t.academicDegree || '—'],
+    ['Ilmiy unvon', t.academicRank || '—'],
+    ['Ish shakli', EMPLOYMENT_LABELS[t.employmentForm] ?? t.employmentForm],
+    ['Telefon', t.phone],
+    ['Email', t.email],
+    ['Yuklanma', `${t.loadHours}/${t.maxLoadHours} soat`],
+  ];
+  const table = d.createElement('table');
+  rows.forEach(([label, value]) => {
+    const tr = d.createElement('tr');
+    const td1 = d.createElement('td'); td1.textContent = label;
+    const td2 = d.createElement('td'); td2.textContent = value || '—';
+    tr.appendChild(td1); tr.appendChild(td2); table.appendChild(tr);
+  });
+  d.body.appendChild(table);
+  const footer = d.createElement('div'); footer.className = 'footer';
+  const sig = d.createElement('div');
+  const p1 = d.createElement('p'); p1.textContent = "Kadrlar bo'limi boshlig'i: _______________________";
+  const p2 = d.createElement('p'); p2.textContent = `Sana: ${today}`;
+  sig.appendChild(p1); sig.appendChild(p2); footer.appendChild(sig); d.body.appendChild(footer);
+  d.close(); win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 250);
+}
 
 const TABS_CONFIG = [
   { id: 'info', label: "Asosiy ma'lumotlar" },
@@ -94,6 +135,15 @@ export function TeacherProfilePage() {
                 }}
               />
             </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Printer className="h-3.5 w-3.5" />}
+              className="mt-3"
+              onClick={() => printTeacherCard(teacher)}
+            >
+              Chop etish
+            </Button>
           </div>
         </div>
       </Card>
