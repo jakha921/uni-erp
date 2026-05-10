@@ -628,7 +628,7 @@
 - [x] CRUD: ItemForm в SlideOver
 - [x] Tab "Harakatlar": MovementForm в Modal (itemId, type, quantity, note)
 - [x] AlertBanner для товаров ниже минимума
-- [ ] Убрать hardcoded CATEGORIES, STATUS_CONFIG
+- [x] Убрать hardcoded CATEGORIES, STATUS_CONFIG
 - [x] Экспорт в Excel
 - [x] i18n: все тексты
 
