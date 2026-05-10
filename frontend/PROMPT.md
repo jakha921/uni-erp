@@ -322,7 +322,7 @@
 **Файл:** `features/finance/pages/FinanceReportPage.tsx`
 **Статус:** Read + CSV export работает
 **Задачи:**
-- [ ] PDF export: подключить к реальному endpoint
+- [x] PDF export: подключить к реальному endpoint
 - [ ] Убрать hardcoded report types → из API
 - [ ] i18n: все тексты
 

@@ -218,7 +218,17 @@ export function FinanceReportPage() {
             <button onClick={exportCSV} className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
               <Download className="h-3.5 w-3.5" /> Excel yuklash
             </button>
-            <button className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+            <button
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/finance/report/export-pdf/';
+                a.download = 'moliyaviy-hisobot.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+              className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
+            >
               <FileText className="h-3.5 w-3.5" /> PDF
             </button>
           </div>
@@ -262,6 +272,14 @@ export function FinanceReportPage() {
               <Download className="h-3.5 w-3.5" /> Excel yuklash
             </button>
             <button
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/finance/report/export-pdf/';
+                a.download = 'moliyaviy-hisobot.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
               className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
             >
               <FileText className="h-3.5 w-3.5" /> PDF
