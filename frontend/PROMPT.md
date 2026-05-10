@@ -474,7 +474,7 @@
 - [x] CRUD: Create (AppealForm), Update (статус), Delete
 - [x] AppealForm: title, description, category
 - [ ] Комментарии: `useAddComment()` mutation
-- [ ] Фильтры: status tabs, category select
+- [x] Фильтры: status tabs, category select
 - [ ] i18n: все тексты
 
 ### 8.5 NewsPage `/news`
@@ -482,8 +482,8 @@
 **Задачи:**
 - [x] CRUD (для admin): Create (NewsForm в SlideOver), Edit, Delete
 - [x] NewsForm: title, content, category, tags
-- [ ] Grid/List toggle view
-- [ ] Фильтры: category, tag
+- [x] Grid/List toggle view
+- [x] Фильтры: category, tag
 - [ ] i18n: все тексты
 
 ### 8.6 ReportsPage `/reports`

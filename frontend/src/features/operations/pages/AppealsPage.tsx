@@ -36,6 +36,7 @@ type FilterId = 'all' | 'new' | 'in_progress' | 'resolved';
 
 export function AppealsPage() {
   const [filter, setFilter] = useState<FilterId>('all');
+  const [categoryFilter, setCategoryFilter] = useState<AppealCategory | ''>('');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteAppeal, setDeleteAppeal] = useState<Appeal | null>(null);
@@ -46,6 +47,7 @@ export function AppealsPage() {
 
   const { data: appealsData, isLoading } = useAppealsList({
     status: statusParam,
+    category: categoryFilter || undefined,
   });
 
   const updateStatus = useUpdateAppealStatus();
@@ -124,26 +126,39 @@ export function AppealsPage() {
       <div className="grid grid-cols-[380px_1fr] gap-4" style={{ height: 640 }}>
         {/* Left: list */}
         <Card noPadding className="flex flex-col overflow-hidden">
-          <div className="flex flex-wrap gap-1.5 border-b border-border p-3">
-            {([
-              { id: 'all' as const, label: 'Hammasi' },
-              { id: 'new' as const, label: 'Yangi', count: counts.yangi },
-              { id: 'in_progress' as const, label: 'Jarayonda', count: counts.progress },
-              { id: 'resolved' as const, label: 'Hal qilingan', count: counts.done },
-            ]).map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setFilter(f.id)}
-                className={cn(
-                  'rounded-md px-2.5 py-1.5 text-xs font-medium border transition-colors',
-                  filter === f.id
-                    ? 'border-primary-500 bg-primary-500 text-white'
-                    : 'border-border bg-white text-slate-500',
-                )}
-              >
-                {f.label}{f.count != null ? ` (${f.count})` : ''}
-              </button>
-            ))}
+          <div className="border-b border-border p-3 space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                { id: 'all' as const, label: 'Hammasi' },
+                { id: 'new' as const, label: 'Yangi', count: counts.yangi },
+                { id: 'in_progress' as const, label: 'Jarayonda', count: counts.progress },
+                { id: 'resolved' as const, label: 'Hal qilingan', count: counts.done },
+              ]).map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setFilter(f.id)}
+                  className={cn(
+                    'rounded-md px-2.5 py-1.5 text-xs font-medium border transition-colors',
+                    filter === f.id
+                      ? 'border-primary-500 bg-primary-500 text-white'
+                      : 'border-border bg-white text-slate-500',
+                  )}
+                >
+                  {f.label}{f.count != null ? ` (${f.count})` : ''}
+                </button>
+              ))}
+            </div>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value as AppealCategory | '')}
+              className="h-7 w-full rounded-md border border-border px-2 text-xs text-slate-600"
+            >
+              <option value="">Barcha kategoriyalar</option>
+              <option value="complaint">Shikoyat</option>
+              <option value="request">Ariza</option>
+              <option value="suggestion">Taklif</option>
+              <option value="question">Savol</option>
+            </select>
           </div>
           <div className="flex-1 overflow-y-auto">
             {isLoading ? (
