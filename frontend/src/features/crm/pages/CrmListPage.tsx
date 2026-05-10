@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, MoreHorizontal, X } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, Pagination } from '@/components/table';
 import type { Column } from '@/components/table';
 import { Card, StatCard } from '@/components/data-display';
 import { Avatar, Badge, Button } from '@/components/ui';
 import type { LeadListItem, LeadStatus, LeadSource } from '@/types/crm';
-import { useLeads, useCrmStats, useCreateLead, useDeleteLead } from '@/api/hooks/useCrm';
+import { useLeads, useCrmStats, useCreateLead, useDeleteLead, useBulkUpdateLeadStatus } from '@/api/hooks/useCrm';
 import { ConfirmDialog } from '@/components/overlays';
 import { LeadForm } from '../components/LeadForm';
 
@@ -61,8 +61,11 @@ export function CrmListPage() {
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [deleteLead, setDeleteLead] = useState<LeadListItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<LeadStatus | ''>('');
   const createLead = useCreateLead();
   const deleteLeadMutation = useDeleteLead();
+  const bulkUpdate = useBulkUpdateLeadStatus();
   const [sourceFilter, setSourceFilter] = useState<LeadSource | ''>('');
   const [page, setPage] = useState(1);
 
@@ -162,6 +165,44 @@ export function CrmListPage() {
         <StatCard label="O'rtacha vaqt" value="3.2 kun" sub="Javob vaqti" />
       </div>
 
+      {/* Bulk actions bar */}
+      {selectedIds.size > 0 && (
+        <div className="mb-3 flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
+          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <div className="ml-auto flex items-center gap-2">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value as LeadStatus | '')}
+              className="h-8 rounded-lg border border-border px-2 text-sm"
+            >
+              <option value="">Statusni tanlang</option>
+              {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+              ))}
+            </select>
+            <Button
+              size="sm"
+              disabled={!bulkStatus || bulkUpdate.isPending}
+              onClick={() => {
+                if (!bulkStatus) return;
+                bulkUpdate.mutate(
+                  { ids: [...selectedIds].map(Number), status: bulkStatus },
+                  { onSuccess: () => { setSelectedIds(new Set()); setBulkStatus(''); } },
+                );
+              }}
+            >
+              Qo&apos;llash
+            </Button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-1 rounded p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Toolbar */}
       <Card noPadding className="mb-4 overflow-hidden">
         <div className="flex flex-wrap items-center gap-2.5 border-b border-[#F1F5F9] px-4 py-3">
@@ -218,6 +259,9 @@ export function CrmListPage() {
           data={leads}
           columns={columns}
           keyField="id"
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           actions={() => (
             <button className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
               <MoreHorizontal className="h-4 w-4" />

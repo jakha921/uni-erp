@@ -416,7 +416,7 @@
 - [x] LeadForm: firstName, lastName, phone, email, direction, source, notes
 - [x] Zod schema: `leadSchema`
 - [x] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
-- [ ] Bulk actions: массовое изменение статуса
+- [x] Bulk actions: массовое изменение статуса
 - [ ] Кнопка "Excel eksport" → `/crm/leads/export/`
 - [ ] i18n: все тексты
 
