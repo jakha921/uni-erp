@@ -14,6 +14,7 @@ export interface IInternshipService {
   getInternshipById(id: number): Promise<Internship>;
   createInternship(data: CreateInternshipDto): Promise<Internship>;
   updateInternship(id: number, data: UpdateInternshipDto): Promise<Internship>;
+  deleteInternship(id: number): Promise<void>;
 }
 
 class InternshipApiService implements IInternshipService {
@@ -43,6 +44,10 @@ class InternshipApiService implements IInternshipService {
 
   async updateInternship(id: number, data: UpdateInternshipDto): Promise<Internship> {
     return apiClient.patch<Internship>(ENDPOINTS.internship.detail(id), data);
+  }
+
+  async deleteInternship(id: number): Promise<void> {
+    return apiClient.delete(ENDPOINTS.internship.detail(id));
   }
 }
 

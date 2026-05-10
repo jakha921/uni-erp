@@ -127,4 +127,11 @@ export class AlumniMockService implements IAlumniService {
     this.alumni[idx] = { ...this.alumni[idx]!, ...data } as Alumni;
     return this.alumni[idx]!;
   }
+
+  async deleteAlumni(id: number): Promise<void> {
+    await delay(400);
+    const idx = this.alumni.findIndex((a) => a.id === id);
+    if (idx === -1) throw new Error('Bitiruvchi topilmadi');
+    this.alumni.splice(idx, 1);
+  }
 }

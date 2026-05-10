@@ -2,24 +2,29 @@ import { useState } from 'react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
-import { FlaskConical, Zap, CheckCircle2, Banknote, Plus, MapPin, Calendar, Users } from 'lucide-react';
-import { useProjects, useArticles, useGrants, useConferences } from '@/api/hooks/useScience';
+import { FlaskConical, Zap, CheckCircle2, Banknote, Plus, MapPin, Calendar, Users, Pencil, Trash2 } from 'lucide-react';
+import {
+  useProjects, useArticles, useGrants, useConferences,
+  useCreateProject, useUpdateProject, useDeleteProject,
+  useCreateArticle, useDeleteArticle,
+} from '@/api/hooks/useScience';
+import { useTeachersList } from '@/api/hooks/useTeachers';
+import { ProjectForm } from '../components/ProjectForm';
+import { ArticleForm } from '../components/ArticleForm';
 import type { ResearchProject, Article, Grant, Conference } from '@/types/science';
-
-// --- Helpers ---
+import type { ProjectFormData } from '../schemas/project.schema';
+import type { ArticleFormData } from '../schemas/article.schema';
 
 function fmtSum(n: number): string {
   return (n / 1_000_000).toFixed(0) + ' mln';
 }
 
-// --- Article Columns ---
-
-const articleColumns: Column<Article>[] = [
+const articleColumns = (onDelete: (a: Article) => void): Column<Article>[] => [
   {
-    key: 'title',
-    header: 'Maqola',
+    key: 'title', header: 'Maqola',
     render: (row) => (
       <div>
         <p className="font-medium text-slate-900">{row.title}</p>
@@ -27,61 +32,35 @@ const articleColumns: Column<Article>[] = [
       </div>
     ),
   },
+  { key: 'journal', header: 'Jurnal', render: (row) => <span className="text-slate-600">{row.journal}</span> },
   {
-    key: 'journal',
-    header: 'Jurnal',
-    render: (row) => <span className="text-slate-600">{row.journal}</span>,
-  },
-  {
-    key: 'type',
-    header: 'Tur',
+    key: 'type', header: 'Tur',
     render: (row) => {
-      const variant = row.type.includes('scopus')
-        ? 'success' as const
-        : row.type.includes('wos')
-          ? 'info' as const
-          : 'default' as const;
+      const variant = row.type.includes('scopus') ? 'success' as const : row.type.includes('wos') ? 'info' as const : 'default' as const;
       return <Badge variant={variant}>{row.type}</Badge>;
     },
   },
+  { key: 'year', header: 'Yil', width: '80px', className: 'text-right', render: (row) => <span className="tabular-nums text-slate-500">{row.year}</span> },
+  { key: 'citations', header: 'Iqtibos', width: '80px', className: 'text-right', render: (row) => <span className="tabular-nums font-semibold text-slate-900">{row.citations}</span> },
   {
-    key: 'year',
-    header: 'Yil',
-    width: '80px',
-    className: 'text-right',
-    render: (row) => <span className="tabular-nums text-slate-500">{row.year}</span>,
-  },
-  {
-    key: 'citations',
-    header: 'Iqtibos',
-    width: '80px',
-    className: 'text-right',
-    render: (row) => <span className="tabular-nums font-semibold text-slate-900">{row.citations}</span>,
+    key: 'actions', header: '',
+    render: (row) => (
+      <button type="button" onClick={() => onDelete(row)} className="p-1.5 text-slate-400 hover:text-red-600 rounded">
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    ),
   },
 ];
 
-// --- Grant Columns ---
-
 const grantColumns: Column<Grant>[] = [
+  { key: 'projectName', header: 'Loyiha', render: (row) => <span className="font-medium text-slate-900">{row.projectName}</span> },
+  { key: 'sponsor', header: 'Moliyalashtiruvchi', render: (row) => <span className="text-slate-600">{row.sponsor}</span> },
   {
-    key: 'projectName',
-    header: 'Loyiha',
-    render: (row) => <span className="font-medium text-slate-900">{row.projectName}</span>,
-  },
-  {
-    key: 'sponsor',
-    header: 'Moliyalashtiruvchi',
-    render: (row) => <span className="text-slate-600">{row.sponsor}</span>,
-  },
-  {
-    key: 'amount',
-    header: 'Summa',
-    className: 'text-right',
+    key: 'amount', header: 'Summa', className: 'text-right',
     render: (row) => <span className="tabular-nums font-medium">{fmtSum(row.amount)} so&apos;m</span>,
   },
   {
-    key: 'status',
-    header: 'Holat',
+    key: 'status', header: 'Holat',
     render: (row) => {
       const labels: Record<Grant['status'], string> = { active: 'Faol', completed: 'Yakunlangan', pending: 'Kutilmoqda' };
       const variants: Record<Grant['status'], 'success' | 'default' | 'warning'> = { active: 'success', completed: 'default', pending: 'warning' };
@@ -90,20 +69,34 @@ const grantColumns: Column<Grant>[] = [
   },
 ];
 
-// --- Component ---
-
 export function ResearchPage() {
   const [activeTab, setActiveTab] = useState('projects');
+  const [projectFormOpen, setProjectFormOpen] = useState(false);
+  const [editProject, setEditProject] = useState<ResearchProject | null>(null);
+  const [deleteProject, setDeleteProject] = useState<ResearchProject | null>(null);
+  const [articleFormOpen, setArticleFormOpen] = useState(false);
+  const [deleteArticle, setDeleteArticle] = useState<Article | null>(null);
 
   const { data: projectsData, isLoading: projectsLoading } = useProjects({ page: 1, pageSize: 50 });
   const { data: articlesData, isLoading: articlesLoading } = useArticles({ page: 1, pageSize: 50 });
   const { data: grantsData, isLoading: grantsLoading } = useGrants({ page: 1, pageSize: 50 });
   const { data: conferencesData, isLoading: conferencesLoading } = useConferences({ page: 1, pageSize: 50 });
+  const { data: teachersData } = useTeachersList({ page: 1, pageSize: 100 });
+
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+  const deleteProjectMutation = useDeleteProject();
+  const createArticle = useCreateArticle();
+  const deleteArticleMutation = useDeleteArticle();
 
   const projects = projectsData?.data ?? [];
   const articles = articlesData?.data ?? [];
   const grants = grantsData?.data ?? [];
   const conferences = conferencesData?.data ?? [];
+  const leaders = (teachersData?.data ?? []).map((t) => ({ id: t.id, fullName: t.fullName }));
+
+  const activeProjects = projects.filter((p) => p.status === 'active').length;
+  const totalFunding = projects.reduce((s, p) => s + p.fundAmount, 0);
 
   const PAGE_TABS = [
     { id: 'projects', label: 'Loyihalar', count: projectsData?.total ?? 0 },
@@ -112,8 +105,40 @@ export function ResearchPage() {
     { id: 'conferences', label: 'Konferensiyalar', count: conferencesData?.total ?? 0 },
   ];
 
-  const activeProjects = projects.filter((p) => p.status === 'active').length;
-  const totalFunding = projects.reduce((s, p) => s + p.fundAmount, 0);
+  const handleCreateProject = (data: ProjectFormData) => {
+    createProject.mutate(
+      { ...data, leaderId: Number(data.leaderId), fundAmount: Number(data.fundAmount) },
+      { onSuccess: () => setProjectFormOpen(false) },
+    );
+  };
+
+  const handleEditProject = (data: ProjectFormData) => {
+    if (!editProject) return;
+    updateProject.mutate(
+      { id: editProject.id, data: { ...data, leaderId: Number(data.leaderId), fundAmount: Number(data.fundAmount) } },
+      { onSuccess: () => setEditProject(null) },
+    );
+  };
+
+  const handleCreateArticle = (data: ArticleFormData) => {
+    createArticle.mutate(
+      { ...data, year: Number(data.year) },
+      { onSuccess: () => setArticleFormOpen(false) },
+    );
+  };
+
+  const tabActions: Record<string, React.ReactNode> = {
+    projects: (
+      <Button variant="primary" size="sm" onClick={() => setProjectFormOpen(true)}>
+        <Plus className="h-4 w-4 mr-1.5" /> Yangi loyiha
+      </Button>
+    ),
+    articles: (
+      <Button variant="primary" size="sm" onClick={() => setArticleFormOpen(true)}>
+        <Plus className="h-4 w-4 mr-1.5" /> Yangi maqola
+      </Button>
+    ),
+  };
 
   return (
     <PageContent>
@@ -121,12 +146,9 @@ export function ResearchPage() {
         title="Ilmiy ishlar"
         subtitle="Ilmiy loyihalar, maqolalar va grantlar"
         breadcrumbs={[{ label: 'Ilm-fan' }, { label: 'Ilmiy ishlar' }]}
-        actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />}>Yangi loyiha</Button>
-        }
+        actions={tabActions[activeTab]}
       />
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <StatCard
           label="Faol loyihalar"
@@ -158,31 +180,93 @@ export function ResearchPage() {
         />
       </div>
 
-      {/* Tabs */}
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-4">
-        {activeTab === 'projects' && <ProjectsTab projects={projects} isLoading={projectsLoading} />}
-        {activeTab === 'articles' && <ArticlesTab articles={articles} isLoading={articlesLoading} />}
+        {activeTab === 'projects' && (
+          <ProjectsTab
+            projects={projects}
+            isLoading={projectsLoading}
+            onEdit={(p) => setEditProject(p)}
+            onDelete={(p) => setDeleteProject(p)}
+          />
+        )}
+        {activeTab === 'articles' && (
+          <ArticlesTab
+            articles={articles}
+            isLoading={articlesLoading}
+            onDelete={(a) => setDeleteArticle(a)}
+          />
+        )}
         {activeTab === 'grants' && <GrantsTab grants={grants} isLoading={grantsLoading} />}
         {activeTab === 'conferences' && <ConferencesTab conferences={conferences} isLoading={conferencesLoading} />}
       </div>
+
+      <ProjectForm
+        open={projectFormOpen}
+        onClose={() => setProjectFormOpen(false)}
+        onSubmit={handleCreateProject}
+        leaders={leaders}
+        loading={createProject.isPending}
+      />
+
+      <ProjectForm
+        open={!!editProject}
+        onClose={() => setEditProject(null)}
+        onSubmit={handleEditProject}
+        project={editProject}
+        leaders={leaders}
+        loading={updateProject.isPending}
+      />
+
+      <ArticleForm
+        open={articleFormOpen}
+        onClose={() => setArticleFormOpen(false)}
+        onSubmit={handleCreateArticle}
+        loading={createArticle.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteProject}
+        onClose={() => setDeleteProject(null)}
+        onConfirm={() => {
+          if (!deleteProject) return;
+          deleteProjectMutation.mutate(deleteProject.id, { onSuccess: () => setDeleteProject(null) });
+        }}
+        title="Loyihani o'chirish"
+        message={`"${deleteProject?.title}" loyihasini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteProjectMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteArticle}
+        onClose={() => setDeleteArticle(null)}
+        onConfirm={() => {
+          if (!deleteArticle) return;
+          deleteArticleMutation.mutate(deleteArticle.id, { onSuccess: () => setDeleteArticle(null) });
+        }}
+        title="Maqolani o'chirish"
+        message={`"${deleteArticle?.title}" maqolasini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteArticleMutation.isPending}
+      />
     </PageContent>
   );
 }
 
-function ProjectsTab({ projects, isLoading }: { projects: ResearchProject[]; isLoading: boolean }) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (projects.length === 0) {
-    return <div className="text-center py-10 text-slate-400 text-sm">Loyihalar topilmadi</div>;
-  }
+function ProjectsTab({
+  projects, isLoading, onEdit, onDelete,
+}: {
+  projects: ResearchProject[];
+  isLoading: boolean;
+  onEdit: (p: ResearchProject) => void;
+  onDelete: (p: ResearchProject) => void;
+}) {
+  if (isLoading) return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
+  if (projects.length === 0) return <div className="text-center py-10 text-slate-400 text-sm">Loyihalar topilmadi</div>;
 
   return (
     <div className="space-y-3">
@@ -212,15 +296,20 @@ function ProjectsTab({ projects, isLoading }: { projects: ResearchProject[]; isL
                 <span>{fmtSum(project.fundAmount)} so&apos;m</span>
               </div>
             </div>
+            <div className="flex items-start gap-1">
+              <button type="button" onClick={() => onEdit(project)} className="p-1.5 text-slate-400 hover:text-slate-700 rounded">
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
+              <button type="button" onClick={() => onDelete(project)} className="p-1.5 text-slate-400 hover:text-red-600 rounded">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
             <div className="w-32 text-right shrink-0">
               <span className="text-xl font-bold text-slate-900 tabular-nums">{project.progress}%</span>
               <div className="h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${project.progress}%`,
-                    backgroundColor: project.progress === 100 ? '#94A3B8' : '#2DB976',
-                  }}
+                  style={{ width: `${project.progress}%`, backgroundColor: project.progress === 100 ? '#94A3B8' : '#2DB976' }}
                 />
               </div>
             </div>
@@ -231,31 +320,17 @@ function ProjectsTab({ projects, isLoading }: { projects: ResearchProject[]; isL
   );
 }
 
-function ArticlesTab({ articles, isLoading }: { articles: Article[]; isLoading: boolean }) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
+function ArticlesTab({ articles, isLoading, onDelete }: { articles: Article[]; isLoading: boolean; onDelete: (a: Article) => void }) {
+  if (isLoading) return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
   return (
     <Card noPadding>
-      <DataTable data={articles} columns={articleColumns} keyField="id" emptyMessage="Maqolalar topilmadi" />
+      <DataTable data={articles} columns={articleColumns(onDelete)} keyField="id" emptyMessage="Maqolalar topilmadi" />
     </Card>
   );
 }
 
 function GrantsTab({ grants, isLoading }: { grants: Grant[]; isLoading: boolean }) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
+  if (isLoading) return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
   return (
     <Card noPadding>
       <DataTable data={grants} columns={grantColumns} keyField="id" emptyMessage="Grantlar topilmadi" />
@@ -264,25 +339,14 @@ function GrantsTab({ grants, isLoading }: { grants: Grant[]; isLoading: boolean 
 }
 
 function ConferencesTab({ conferences, isLoading }: { conferences: Conference[]; isLoading: boolean }) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (conferences.length === 0) {
-    return <div className="text-center py-10 text-slate-400 text-sm">Konferensiyalar topilmadi</div>;
-  }
+  if (isLoading) return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
+  if (conferences.length === 0) return <div className="text-center py-10 text-slate-400 text-sm">Konferensiyalar topilmadi</div>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {conferences.map((conf) => (
         <Card key={conf.id}>
-          <h4 className="text-[14px] font-semibold text-slate-900 leading-snug mb-3">
-            {conf.name}
-          </h4>
+          <h4 className="text-[14px] font-semibold text-slate-900 leading-snug mb-3">{conf.name}</h4>
           <div className="space-y-2 text-xs text-slate-500">
             <div className="flex items-center gap-2">
               <Calendar className="h-3.5 w-3.5 text-slate-400" />

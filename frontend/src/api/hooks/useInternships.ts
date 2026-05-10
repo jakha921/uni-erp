@@ -52,3 +52,13 @@ export function useUpdateInternship() {
     },
   });
 }
+
+export function useDeleteInternship() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => internshipService.deleteInternship(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: KEYS.lists() });
+    },
+  });
+}

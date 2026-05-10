@@ -14,6 +14,7 @@ export interface IAlumniService {
   getAlumniById(id: number): Promise<Alumni>;
   createAlumni(data: CreateAlumniDto): Promise<Alumni>;
   updateAlumni(id: number, data: UpdateAlumniDto): Promise<Alumni>;
+  deleteAlumni(id: number): Promise<void>;
 }
 
 class AlumniApiService implements IAlumniService {
@@ -43,6 +44,10 @@ class AlumniApiService implements IAlumniService {
 
   async updateAlumni(id: number, data: UpdateAlumniDto): Promise<Alumni> {
     return apiClient.patch<Alumni>(ENDPOINTS.alumni.detail(id), data);
+  }
+
+  async deleteAlumni(id: number): Promise<void> {
+    return apiClient.delete(ENDPOINTS.alumni.detail(id));
   }
 }
 

@@ -15,8 +15,12 @@ import { Badge, Button, Spinner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table/DataTable';
 import { SearchInput } from '@/components/form/SearchInput';
 import { Select } from '@/components/ui/Select';
-import { useTasksList, useUpdateTaskStatus } from '@/api/hooks/useTasks';
+import { useTasksList, useUpdateTaskStatus, useCreateTask, useDeleteTask } from '@/api/hooks/useTasks';
+import { useTeachersList } from '@/api/hooks/useTeachers';
+import { ConfirmDialog } from '@/components/overlays';
+import { TaskForm } from '../components/TaskForm';
 import type { Task, TaskStatus, TaskPriority } from '@/types/operations';
+import type { TaskFormData } from '../schemas/task.schema';
 
 // --- UI labels ---
 
@@ -73,6 +77,8 @@ export function TasksPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [dragId, setDragId] = useState<number | null>(null);
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [deleteTask, setDeleteTask] = useState<Task | null>(null);
 
   const { data: tasksData, isLoading } = useTasksList({
     page: 1,
@@ -83,6 +89,10 @@ export function TasksPage() {
   });
 
   const updateStatus = useUpdateTaskStatus();
+  const createTask = useCreateTask();
+  const deleteTaskMutation = useDeleteTask();
+  const { data: teachersData } = useTeachersList({ page: 1, pageSize: 100 });
+  const assignees = (teachersData?.data ?? []).map((t) => ({ id: t.id, fullName: t.fullName }));
 
   const tasks = tasksData?.data ?? [];
 
@@ -168,7 +178,7 @@ export function TasksPage() {
         subtitle="Barcha topshiriqlar va ularning holati"
         breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Topshiriqlar' }]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />}>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
             Topshiriq qo{"'"}shish
           </Button>
         }
@@ -349,6 +359,32 @@ export function TasksPage() {
           })}
         </div>
       )}
+      <TaskForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={(data: TaskFormData) => {
+          createTask.mutate(
+            { ...data, assigneeId: Number(data.assigneeId) },
+            { onSuccess: () => setFormOpen(false) },
+          );
+        }}
+        assignees={assignees}
+        loading={createTask.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTask}
+        onClose={() => setDeleteTask(null)}
+        onConfirm={() => {
+          if (!deleteTask) return;
+          deleteTaskMutation.mutate(deleteTask.id, { onSuccess: () => setDeleteTask(null) });
+        }}
+        title="Topshiriqni o'chirish"
+        message={`"${deleteTask?.title}" topshirig'ini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteTaskMutation.isPending}
+      />
     </PageContent>
   );
 }

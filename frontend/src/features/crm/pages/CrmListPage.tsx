@@ -6,7 +6,11 @@ import type { Column } from '@/components/table';
 import { Card, StatCard } from '@/components/data-display';
 import { Avatar, Badge, Button } from '@/components/ui';
 import type { LeadListItem, LeadStatus, LeadSource } from '@/types/crm';
-import { useLeads, useCrmStats } from '@/api/hooks/useCrm';
+import { useLeads, useCrmStats, useCreateLead, useDeleteLead } from '@/api/hooks/useCrm';
+import { ConfirmDialog } from '@/components/overlays';
+import { LeadForm } from '../components/LeadForm';
+
+import type { CreateLeadFormData } from '../schemas/lead.schema';
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
   new: 'Yangi',
@@ -55,6 +59,10 @@ const PAGE_SIZE = 10;
 export function CrmListPage() {
   const [statusTab, setStatusTab] = useState<LeadStatus | 'all'>('all');
   const [search, setSearch] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [deleteLead, setDeleteLead] = useState<LeadListItem | null>(null);
+  const createLead = useCreateLead();
+  const deleteLeadMutation = useDeleteLead();
   const [sourceFilter, setSourceFilter] = useState<LeadSource | ''>('');
   const [page, setPage] = useState(1);
 
@@ -200,7 +208,7 @@ export function CrmListPage() {
             ))}
           </select>
 
-          <Button leftIcon={<Plus className="h-4 w-4" />}>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
             Yangi ariza
           </Button>
         </div>
@@ -227,6 +235,29 @@ export function CrmListPage() {
           />
         </div>
       </Card>
+
+      <LeadForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={(data: CreateLeadFormData) => {
+          createLead.mutate(data, { onSuccess: () => setFormOpen(false) });
+        }}
+        loading={createLead.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteLead}
+        onClose={() => setDeleteLead(null)}
+        onConfirm={() => {
+          if (!deleteLead) return;
+          deleteLeadMutation.mutate(deleteLead.id, { onSuccess: () => setDeleteLead(null) });
+        }}
+        title="Arizani o'chirish"
+        message={`"${deleteLead?.firstName} ${deleteLead?.lastName}" arizasini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteLeadMutation.isPending}
+      />
     </PageContent>
   );
 }

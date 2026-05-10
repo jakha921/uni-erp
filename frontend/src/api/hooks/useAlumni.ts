@@ -52,3 +52,13 @@ export function useUpdateAlumni() {
     },
   });
 }
+
+export function useDeleteAlumni() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => alumniService.deleteAlumni(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: KEYS.lists() });
+    },
+  });
+}

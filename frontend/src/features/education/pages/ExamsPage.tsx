@@ -1,13 +1,18 @@
 import { useState, useMemo } from 'react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
-import { useExamsList } from '@/api/hooks/useExams';
-import type { Exam, ExamStatus, ExamType } from '@/types/education';
-
-// --- Tab Config ---
+import { ConfirmDialog } from '@/components/overlays';
+import { useExamsList, useCreateExam, useUpdateExam, useDeleteExam } from '@/api/hooks/useExams';
+import { useSubjects } from '@/api/hooks/useEducation';
+import { useGroups } from '@/api/hooks/useCore';
+import { useTeachersList } from '@/api/hooks/useTeachers';
+import { ExamForm } from '../components/ExamForm';
+import type { Exam, ExamStatus, ExamType, CreateExamDto } from '@/types/education';
+import type { CreateExamFormData } from '../schemas/exam.schema';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 const PAGE_TABS = [
   { id: 'sessions', label: 'Sessiyalar' },
@@ -26,8 +31,6 @@ const TYPE_LABELS: Record<ExamType, { label: string; variant: 'info' | 'warning'
   midterm: { label: 'Oraliq', variant: 'info' },
   final: { label: 'Yakuniy', variant: 'warning' },
 };
-
-// --- Ticket data (no hook exists, kept as static) ---
 
 interface Ticket {
   id: number;
@@ -53,34 +56,40 @@ const TICKETS: Ticket[] = TICKET_QUESTIONS.map((questions, i) => ({
   questions,
 }));
 
-// --- Columns ---
-
-const examColumns: Column<Exam>[] = [
-  { key: 'subjectName', header: 'Fan', render: (row) => <span className="text-[13.5px] font-medium text-slate-900">{row.subjectName}</span> },
-  { key: 'groupName', header: 'Guruh', render: (row) => <span className="text-[12.5px] text-slate-600">{row.groupName}</span> },
-  { key: 'examDate', header: 'Sana', render: (row) => <span className="text-[13px] text-slate-900 tabular-nums">{row.examDate}</span> },
-  { key: 'room', header: 'Xona', render: (row) => <span className="text-[13px] text-slate-600">{'№'} {row.room}</span> },
-  { key: 'teacherName', header: "O'qituvchi", render: (row) => <span className="text-[13px] text-slate-600">{row.teacherName}</span> },
-  {
-    key: 'type', header: 'Tur',
-    render: (row) => {
-      const cfg = TYPE_LABELS[row.type];
-      return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
-    },
-  },
-  {
-    key: 'status', header: 'Holat',
-    render: (row) => {
-      const cfg = STATUS_LABELS[row.status];
-      return <Badge variant={cfg.variant} dot>{cfg.label}</Badge>;
-    },
-  },
-];
-
-// --- Component ---
-
 export function ExamsPage() {
   const [activeTab, setActiveTab] = useState('sessions');
+  const [formOpen, setFormOpen] = useState(false);
+  const [editExam, setEditExam] = useState<Exam | null>(null);
+  const [deleteExam, setDeleteExam] = useState<Exam | null>(null);
+
+  const { data: subjectsData } = useSubjects();
+  const { data: groupsData } = useGroups();
+  const { data: teachersData } = useTeachersList({ page: 1, pageSize: 100 });
+  const createExam = useCreateExam();
+  const updateExam = useUpdateExam();
+  const deleteExamMutation = useDeleteExam();
+
+  const subjects = (subjectsData?.data ?? []).map((s) => ({ id: s.id, name: s.name }));
+  const groups = (groupsData ?? []).map((g) => ({ id: g.id, name: g.name }));
+  const teachers = (teachersData?.data ?? []).map((t) => ({ id: t.id, fullName: t.fullName }));
+
+  const handleCreate = (data: CreateExamFormData) => {
+    const dto: CreateExamDto = { ...data, subjectId: Number(data.subjectId), groupId: Number(data.groupId), teacherId: Number(data.teacherId) };
+    createExam.mutate(dto, { onSuccess: () => setFormOpen(false) });
+  };
+
+  const handleEdit = (data: CreateExamFormData) => {
+    if (!editExam) return;
+    updateExam.mutate(
+      { id: editExam.id, data: { ...data, subjectId: Number(data.subjectId), groupId: Number(data.groupId), teacherId: Number(data.teacherId) } },
+      { onSuccess: () => setEditExam(null) },
+    );
+  };
+
+  const handleDelete = () => {
+    if (!deleteExam) return;
+    deleteExamMutation.mutate(deleteExam.id, { onSuccess: () => setDeleteExam(null) });
+  };
 
   return (
     <PageContent>
@@ -88,16 +97,58 @@ export function ExamsPage() {
         title="Imtihonlar"
         subtitle="Sessiyalar, jadval va natijalar"
         breadcrumbs={[{ label: "Ta'lim" }, { label: 'Imtihonlar' }]}
+        actions={
+          <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" /> Yangi imtihon
+          </Button>
+        }
       />
 
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-4">
         {activeTab === 'sessions' && <SessionsTab />}
-        {activeTab === 'calendar' && <CalendarTab />}
+        {activeTab === 'calendar' && (
+          <CalendarTab
+            onEdit={(exam) => setEditExam(exam)}
+            onDelete={(exam) => setDeleteExam(exam)}
+          />
+        )}
         {activeTab === 'tickets' && <TicketsTab />}
         {activeTab === 'vedomost' && <VedomostTab />}
       </div>
+
+      <ExamForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleCreate}
+        subjects={subjects}
+        groups={groups}
+        teachers={teachers}
+        loading={createExam.isPending}
+      />
+
+      <ExamForm
+        open={!!editExam}
+        onClose={() => setEditExam(null)}
+        onSubmit={handleEdit}
+        exam={editExam}
+        subjects={subjects}
+        groups={groups}
+        teachers={teachers}
+        loading={updateExam.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteExam}
+        onClose={() => setDeleteExam(null)}
+        onConfirm={handleDelete}
+        title="Imtihonni o'chirish"
+        message={`"${deleteExam?.subjectName}" imtihonini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteExamMutation.isPending}
+      />
     </PageContent>
   );
 }
@@ -106,13 +157,9 @@ function SessionsTab() {
   const { data, isLoading } = useExamsList();
   const exams = data?.data ?? [];
 
-  // Compute session-like aggregation from exam data grouped by status
   const sessions = useMemo(() => {
     const statusGroups: Record<ExamStatus, Exam[]> = { active: [], completed: [], scheduled: [] };
-    exams.forEach((e) => {
-      statusGroups[e.status].push(e);
-    });
-
+    exams.forEach((e) => { statusGroups[e.status].push(e); });
     return [
       { id: 1, name: 'Bahorgi sessiya 2025-2026', period: '15.05 — 30.06.2026', status: 'active' as ExamStatus, exams: statusGroups.active.length + statusGroups.completed.length, students: (statusGroups.active.length + statusGroups.completed.length) * 30 },
       { id: 2, name: 'Kuzgi sessiya 2025-2026', period: '20.12.2025 — 15.01.2026', status: 'completed' as ExamStatus, exams: statusGroups.completed.length, students: statusGroups.completed.length * 30 },
@@ -120,13 +167,7 @@ function SessionsTab() {
     ];
   }, [exams]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -154,17 +195,46 @@ function SessionsTab() {
   );
 }
 
-function CalendarTab() {
+function CalendarTab({ onEdit, onDelete }: { onEdit: (exam: Exam) => void; onDelete: (exam: Exam) => void }) {
   const { data, isLoading } = useExamsList();
   const exams = data?.data ?? [];
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  const examColumns: Column<Exam>[] = [
+    { key: 'subjectName', header: 'Fan', render: (row) => <span className="text-[13.5px] font-medium text-slate-900">{row.subjectName}</span> },
+    { key: 'groupName', header: 'Guruh', render: (row) => <span className="text-[12.5px] text-slate-600">{row.groupName}</span> },
+    { key: 'examDate', header: 'Sana', render: (row) => <span className="text-[13px] text-slate-900 tabular-nums">{row.examDate}</span> },
+    { key: 'room', header: 'Xona', render: (row) => <span className="text-[13px] text-slate-600">{'№'} {row.room}</span> },
+    { key: 'teacherName', header: "O'qituvchi", render: (row) => <span className="text-[13px] text-slate-600">{row.teacherName}</span> },
+    {
+      key: 'type', header: 'Tur',
+      render: (row) => {
+        const cfg = TYPE_LABELS[row.type];
+        return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+      },
+    },
+    {
+      key: 'status', header: 'Holat',
+      render: (row) => {
+        const cfg = STATUS_LABELS[row.status];
+        return <Badge variant={cfg.variant} dot>{cfg.label}</Badge>;
+      },
+    },
+    {
+      key: 'actions', header: '',
+      render: (row) => (
+        <div className="flex items-center gap-1">
+          <button type="button" onClick={() => onEdit(row)} className="p-1.5 text-slate-400 hover:text-slate-700 rounded">
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button type="button" onClick={() => onDelete(row)} className="p-1.5 text-slate-400 hover:text-red-600 rounded">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
     <Card noPadding>
@@ -200,19 +270,10 @@ function TicketsTab() {
 function VedomostTab() {
   const { data, isLoading } = useExamsList();
   const exams = data?.data ?? [];
-
-  // Pick first exam for vedomost header display
   const firstExam = exams[0];
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
-  // Vedomost rows computed from exam data (no dedicated hook)
   const vedomostRows = exams.slice(0, 12).map((exam, i) => {
     const oral = 40 + (i * 3) % 11;
     const written = 38 + (i * 5) % 13;
@@ -222,16 +283,7 @@ function VedomostTab() {
     return { id: i + 1, student: exam.teacherName, ticket: (i % 9) + 1, oral, written, test, total, grade };
   });
 
-  interface VedomostRow {
-    id: number;
-    student: string;
-    ticket: number;
-    oral: number;
-    written: number;
-    test: number;
-    total: number;
-    grade: number;
-  }
+  interface VedomostRow { id: number; student: string; ticket: number; oral: number; written: number; test: number; total: number; grade: number; }
 
   const vedomostColumns: Column<VedomostRow>[] = [
     { key: 'idx', header: 'No', width: '50px', render: (_, index) => <span className="text-slate-500">{index + 1}</span> },
@@ -244,11 +296,7 @@ function VedomostTab() {
       key: 'grade', header: 'Baho',
       render: (row) => {
         const bg = row.grade >= 5 ? 'bg-green-100 text-green-800' : row.grade === 4 ? 'bg-emerald-50 text-emerald-700' : row.grade === 3 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700';
-        return (
-          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-bold ${bg}`}>
-            {row.grade}
-          </span>
-        );
+        return <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-bold ${bg}`}>{row.grade}</span>;
       },
     },
     { key: 'sign', header: 'Imzo', render: () => <span className="text-xs italic text-slate-400">_______</span> },

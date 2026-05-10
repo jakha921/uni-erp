@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { ScrollText, CheckCircle, Clock, Award } from 'lucide-react';
+import { ScrollText, CheckCircle, Clock, Award, Plus, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
-import { usePatents } from '@/api/hooks/useScience';
+import { Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
+import { usePatents, useCreatePatent, useDeletePatent } from '@/api/hooks/useScience';
+import { PatentForm } from '../components/PatentForm';
 import type { Patent } from '@/types/science';
+import type { PatentFormData } from '../schemas/patent.schema';
 
 type PatentFilter = 'all' | Patent['status'];
 
@@ -17,19 +20,22 @@ const STATUS_META: Record<Patent['status'], { label: string; color: string }> = 
 
 export function PatentsPage() {
   const [filter, setFilter] = useState<PatentFilter>('all');
+  const [formOpen, setFormOpen] = useState(false);
+  const [deletePatent, setDeletePatent] = useState<Patent | null>(null);
 
   const { data: patentsData, isLoading } = usePatents({ page: 1, pageSize: 50 });
+  const createPatent = useCreatePatent();
+  const deletePatentMutation = useDeletePatent();
 
   const allPatents = patentsData?.data ?? [];
-
-  const filtered = useMemo(() => {
-    if (filter === 'all') return allPatents;
-    return allPatents.filter((p) => p.status === filter);
-  }, [allPatents, filter]);
-
+  const filtered = useMemo(() => filter === 'all' ? allPatents : allPatents.filter((p) => p.status === filter), [allPatents, filter]);
   const granted = allPatents.filter((p) => p.status === 'granted').length;
   const underReview = allPatents.filter((p) => p.status === 'under_review' || p.status === 'filed').length;
   const total = patentsData?.total ?? allPatents.length;
+
+  const handleCreate = (data: PatentFormData) => {
+    createPatent.mutate(data, { onSuccess: () => setFormOpen(false) });
+  };
 
   return (
     <PageContent>
@@ -37,6 +43,11 @@ export function PatentsPage() {
         title="Patentlar"
         subtitle="Intellektual mulk va patentlar boshqaruvi"
         breadcrumbs={[{ label: 'Ilm-fan' }, { label: 'Patentlar' }]}
+        actions={
+          <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" /> Yangi patent
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
@@ -69,8 +80,8 @@ export function PatentsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-border">
-                {['NOMI', 'MUALLIF', 'KATEGORIYA', 'SANA', 'HOLAT'].map((h) => (
-                  <th key={h} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 ${h === 'NOMI' ? 'text-left' : h === 'SANA' || h === 'HOLAT' ? 'text-center' : 'text-left'}`}>
+                {['NOMI', 'MUALLIF', 'KATEGORIYA', 'SANA', 'HOLAT', ''].map((h, i) => (
+                  <th key={i} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 ${h === 'NOMI' || h === 'MUALLIF' || h === 'KATEGORIYA' ? 'text-left' : 'text-center'}`}>
                     {h}
                   </th>
                 ))}
@@ -90,6 +101,11 @@ export function PatentsPage() {
                         {meta?.label ?? p.status}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-center">
+                      <button type="button" onClick={() => setDeletePatent(p)} className="p-1 text-slate-400 hover:text-red-600 rounded">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -101,6 +117,27 @@ export function PatentsPage() {
           )}
         </Card>
       )}
+
+      <PatentForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSubmit={handleCreate}
+        loading={createPatent.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deletePatent}
+        onClose={() => setDeletePatent(null)}
+        onConfirm={() => {
+          if (!deletePatent) return;
+          deletePatentMutation.mutate(deletePatent.id, { onSuccess: () => setDeletePatent(null) });
+        }}
+        title="Patentni o'chirish"
+        message={`"${deletePatent?.title}" patentini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deletePatentMutation.isPending}
+      />
     </PageContent>
   );
 }

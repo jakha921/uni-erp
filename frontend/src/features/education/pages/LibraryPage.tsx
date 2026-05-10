@@ -2,13 +2,17 @@ import { useState } from 'react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard, EmptyState } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
-import { BookOpen, Inbox, Plus } from 'lucide-react';
-import { useBooksList, useLoansList } from '@/api/hooks/useLibrary';
-import type { BookLoan } from '@/types/education';
-
-// --- Tab Config ---
+import { BookOpen, Inbox, Plus, Pencil, RotateCcw } from 'lucide-react';
+import { useBooksList, useLoansList, useCreateBook, useUpdateBook, useCreateLoan, useReturnBook } from '@/api/hooks/useLibrary';
+import { useStudentsList } from '@/api/hooks/useStudents';
+import { BookForm } from '../components/BookForm';
+import { LoanForm } from '../components/LoanForm';
+import type { Book, BookLoan } from '@/types/education';
+import type { CreateBookFormData } from '../schemas/book.schema';
+import type { CreateLoanFormData } from '../schemas/loan.schema';
 
 const PAGE_TABS = [
   { id: 'catalog', label: 'Katalog' },
@@ -20,47 +24,50 @@ const PAGE_TABS = [
 const BOOK_GRADIENT_FROM = ['#2DB976', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
 const BOOK_GRADIENT_TO = ['#1B7A4E', '#1D4ED8', '#B45309', '#6B21A8', '#BE185D', '#0891B2'];
 
-// --- Columns ---
-
-const loanColumns: Column<BookLoan>[] = [
-  { key: 'bookTitle', header: 'Kitob', render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
-  {
-    key: 'studentName', header: 'Talaba',
-    render: (row) => <span className="text-slate-600">{row.studentName}</span>,
-  },
-  { key: 'issueDate', header: 'Berilgan sana', render: (row) => <span className="tabular-nums text-slate-500">{row.issueDate}</span> },
-  {
-    key: 'dueDate', header: 'Qaytarish',
-    render: (row) => (
-      <span className={`tabular-nums ${row.status === 'overdue' ? 'text-red-700 font-medium' : 'text-slate-500'}`}>
-        {row.dueDate}
-      </span>
-    ),
-  },
-  {
-    key: 'status', header: 'Holat',
-    render: (row) => {
-      const variant = row.status === 'overdue' ? 'error' : row.status === 'returned' ? 'default' : 'success';
-      const label = row.status === 'overdue' ? "Muddati o'tgan" : row.status === 'returned' ? 'Qaytarilgan' : 'Faol';
-      return <Badge variant={variant} dot>{label}</Badge>;
-    },
-  },
-];
-
-// --- Component ---
-
 export function LibraryPage() {
   const [activeTab, setActiveTab] = useState('catalog');
+  const [bookFormOpen, setBookFormOpen] = useState(false);
+  const [editBook, setEditBook] = useState<Book | null>(null);
+  const [loanFormOpen, setLoanFormOpen] = useState(false);
+  const [returnLoan, setReturnLoan] = useState<BookLoan | null>(null);
 
   const { data: booksData } = useBooksList();
   const { data: loansData } = useLoansList();
+  const { data: studentsData } = useStudentsList({ page: 1, pageSize: 200 });
+  const createBook = useCreateBook();
+  const updateBook = useUpdateBook();
+  const createLoan = useCreateLoan();
+  const returnBook = useReturnBook();
 
   const books = booksData?.data ?? [];
   const loans = loansData?.data ?? [];
-
   const totalBooks = booksData?.total ?? 0;
   const activeLoans = loans.filter((l) => l.status === 'active').length;
   const overdueLoans = loans.filter((l) => l.status === 'overdue').length;
+  const students = (studentsData?.data ?? []).map((s) => ({ id: s.id, fullName: s.fullName }));
+  const bookOptions = books.map((b) => ({ id: b.id, title: b.title }));
+
+  const handleCreateBook = (formData: CreateBookFormData) => {
+    createBook.mutate(
+      { ...formData, year: Number(formData.year), totalCopies: Number(formData.totalCopies) },
+      { onSuccess: () => setBookFormOpen(false) },
+    );
+  };
+
+  const handleEditBook = (formData: CreateBookFormData) => {
+    if (!editBook) return;
+    updateBook.mutate(
+      { id: editBook.id, data: { ...formData, year: Number(formData.year), totalCopies: Number(formData.totalCopies) } },
+      { onSuccess: () => setEditBook(null) },
+    );
+  };
+
+  const handleCreateLoan = (formData: CreateLoanFormData) => {
+    createLoan.mutate(
+      { bookId: Number(formData.bookId), studentId: Number(formData.studentId), dueDate: formData.dueDate },
+      { onSuccess: () => setLoanFormOpen(false) },
+    );
+  };
 
   return (
     <PageContent>
@@ -68,6 +75,17 @@ export function LibraryPage() {
         title="Kutubxona"
         subtitle="Kitoblar katalogi va ijara boshqaruvi"
         breadcrumbs={[{ label: "Ta'lim" }, { label: 'Kutubxona' }]}
+        actions={
+          activeTab === 'catalog' ? (
+            <Button variant="primary" size="sm" onClick={() => setBookFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" /> Yangi kitob
+            </Button>
+          ) : activeTab === 'loans' ? (
+            <Button variant="primary" size="sm" onClick={() => setLoanFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" /> Kitob berish
+            </Button>
+          ) : undefined
+        }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
@@ -80,33 +98,67 @@ export function LibraryPage() {
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-4">
-        {activeTab === 'catalog' && <CatalogTab />}
-        {activeTab === 'loans' && <LoansTab />}
+        {activeTab === 'catalog' && (
+          <CatalogTab books={books} onEdit={(book) => setEditBook(book)} />
+        )}
+        {activeTab === 'loans' && (
+          <LoansTab loans={loans} onReturn={(loan) => setReturnLoan(loan)} />
+        )}
         {activeTab === 'queue' && <QueueTab />}
-        {activeTab === 'readers' && <ReadersTab />}
+        {activeTab === 'readers' && <ReadersTab loans={loans} />}
       </div>
+
+      <BookForm
+        open={bookFormOpen}
+        onClose={() => setBookFormOpen(false)}
+        onSubmit={handleCreateBook}
+        loading={createBook.isPending}
+      />
+
+      <BookForm
+        open={!!editBook}
+        onClose={() => setEditBook(null)}
+        onSubmit={handleEditBook}
+        book={editBook}
+        loading={updateBook.isPending}
+      />
+
+      <LoanForm
+        open={loanFormOpen}
+        onClose={() => setLoanFormOpen(false)}
+        onSubmit={handleCreateLoan}
+        books={bookOptions}
+        students={students}
+        loading={createLoan.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!returnLoan}
+        onClose={() => setReturnLoan(null)}
+        onConfirm={() => {
+          if (!returnLoan) return;
+          returnBook.mutate(returnLoan.id, { onSuccess: () => setReturnLoan(null) });
+        }}
+        title="Kitobni qaytarish"
+        message={`"${returnLoan?.bookTitle}" kitobini qaytarishni tasdiqlaysizmi?`}
+        confirmLabel="Qaytarish"
+        variant="warning"
+        loading={returnBook.isPending}
+      />
     </PageContent>
   );
 }
 
-function CatalogTab() {
-  const { data, isLoading } = useBooksList();
-  const books = data?.data ?? [];
+function CatalogTab({ books, onEdit }: { books: Book[]; onEdit: (book: Book) => void }) {
+  const { isLoading } = useBooksList();
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {books.map((book) => {
         const gradientFrom = BOOK_GRADIENT_FROM[book.id % BOOK_GRADIENT_FROM.length];
         const gradientTo = BOOK_GRADIENT_TO[book.id % BOOK_GRADIENT_TO.length];
-
         return (
           <Card key={book.id}>
             <div
@@ -125,8 +177,12 @@ function CatalogTab() {
               <Badge variant={book.availableCopies > 0 ? 'success' : 'error'} dot>
                 {book.availableCopies > 0 ? `${book.availableCopies} / ${book.totalCopies}` : "Yo'q"}
               </Badge>
-              <button className="rounded-md bg-green-50 px-2.5 py-1 text-[11px] font-semibold text-green-700 hover:bg-green-100 transition-colors">
-                Band qilish
+              <button
+                type="button"
+                onClick={() => onEdit(book)}
+                className="flex items-center gap-1 rounded-md bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <Pencil className="h-3 w-3" /> Tahrir
               </button>
             </div>
           </Card>
@@ -136,21 +192,43 @@ function CatalogTab() {
   );
 }
 
-function LoansTab() {
-  const { data, isLoading } = useLoansList();
-  const loans = data?.data ?? [];
+const loanColumns = (onReturn: (loan: BookLoan) => void): Column<BookLoan>[] => [
+  { key: 'bookTitle', header: 'Kitob', render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
+  { key: 'studentName', header: 'Talaba', render: (row) => <span className="text-slate-600">{row.studentName}</span> },
+  { key: 'issueDate', header: 'Berilgan sana', render: (row) => <span className="tabular-nums text-slate-500">{row.issueDate}</span> },
+  {
+    key: 'dueDate', header: 'Qaytarish',
+    render: (row) => (
+      <span className={`tabular-nums ${row.status === 'overdue' ? 'text-red-700 font-medium' : 'text-slate-500'}`}>
+        {row.dueDate}
+      </span>
+    ),
+  },
+  {
+    key: 'status', header: 'Holat',
+    render: (row) => {
+      const variant = row.status === 'overdue' ? 'error' : row.status === 'returned' ? 'default' : 'success';
+      const label = row.status === 'overdue' ? "Muddati o'tgan" : row.status === 'returned' ? 'Qaytarilgan' : 'Faol';
+      return <Badge variant={variant} dot>{label}</Badge>;
+    },
+  },
+  {
+    key: 'actions', header: '',
+    render: (row) =>
+      row.status === 'active' || row.status === 'overdue' ? (
+        <button type="button" onClick={() => onReturn(row)} className="flex items-center gap-1 text-[12px] text-slate-500 hover:text-slate-800">
+          <RotateCcw className="h-3.5 w-3.5" /> Qaytarish
+        </button>
+      ) : null,
+  },
+];
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
+function LoansTab({ loans, onReturn }: { loans: BookLoan[]; onReturn: (loan: BookLoan) => void }) {
+  const { isLoading } = useLoansList();
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
   return (
     <Card noPadding>
-      <DataTable data={loans} columns={loanColumns} keyField="id" emptyMessage="Berilgan kitoblar topilmadi" />
+      <DataTable data={loans} columns={loanColumns(onReturn)} keyField="id" emptyMessage="Berilgan kitoblar topilmadi" />
     </Card>
   );
 }
@@ -170,45 +248,21 @@ function QueueTab() {
   );
 }
 
-function ReadersTab() {
-  const { data, isLoading } = useLoansList();
-  const loans = data?.data ?? [];
+function ReadersTab({ loans }: { loans: BookLoan[] }) {
+  const { isLoading } = useLoansList();
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  // Aggregate readers from loan data (no dedicated readers hook)
   const readerMap = new Map<number, { studentId: number; studentName: string; currentLoans: number; totalBorrowed: number; overdueCount: number }>();
   loans.forEach((loan) => {
-    const existing = readerMap.get(loan.studentId) ?? {
-      studentId: loan.studentId,
-      studentName: loan.studentName,
-      currentLoans: 0,
-      totalBorrowed: 0,
-      overdueCount: 0,
-    };
+    const existing = readerMap.get(loan.studentId) ?? { studentId: loan.studentId, studentName: loan.studentName, currentLoans: 0, totalBorrowed: 0, overdueCount: 0 };
     existing.totalBorrowed++;
     if (loan.status === 'active') existing.currentLoans++;
-    if (loan.status === 'overdue') {
-      existing.currentLoans++;
-      existing.overdueCount++;
-    }
+    if (loan.status === 'overdue') { existing.currentLoans++; existing.overdueCount++; }
     readerMap.set(loan.studentId, existing);
   });
   const readers = Array.from(readerMap.values());
 
-  interface ReaderRow {
-    studentId: number;
-    studentName: string;
-    currentLoans: number;
-    totalBorrowed: number;
-    overdueCount: number;
-  }
+  interface ReaderRow { studentId: number; studentName: string; currentLoans: number; totalBorrowed: number; overdueCount: number; }
 
   const readerColumns: Column<ReaderRow>[] = [
     {

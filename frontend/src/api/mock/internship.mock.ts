@@ -117,4 +117,11 @@ export class InternshipMockService implements IInternshipService {
     this.internships[idx] = { ...this.internships[idx]!, ...data } as Internship;
     return this.internships[idx]!;
   }
+
+  async deleteInternship(id: number): Promise<void> {
+    await delay(400);
+    const idx = this.internships.findIndex((i) => i.id === id);
+    if (idx === -1) throw new Error('Amaliyot topilmadi');
+    this.internships.splice(idx, 1);
+  }
 }
