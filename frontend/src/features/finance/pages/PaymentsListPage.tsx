@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight } from 'lucide-react';
+import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight, Printer } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
+import { Modal } from '@/components/overlays';
 import { usePayments, useContracts } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
-import type { PaymentMethod, Contract } from '@/types/finance';
+import type { PaymentMethod, Contract, Payment } from '@/types/finance';
 
 const PAYMENT_METHOD_LABELS: Record<PaymentMethod, { variant: 'info' | 'default' | 'success' | 'warning'; label: string }> = {
   bank: { variant: 'info', label: "Bank o'tkazmasi" },
@@ -24,11 +25,105 @@ const PERIODS: { k: PeriodFilter; l: string }[] = [
   { k: 'all', l: 'Barchasi' },
 ];
 
+function buildReceiptDom(win: Window, payment: Payment) {
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = 'body{font-family:sans-serif;padding:24px;font-size:13px;color:#1e293b}h2{text-align:center;font-size:16px;font-weight:700;margin-bottom:16px}.rr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9}.rl{color:#64748b}.rt{background:#f0fdf4;border-radius:8px;padding:12px;text-align:center;margin:16px 0}.rf{text-align:center;font-size:11px;color:#94a3b8;margin-top:20px}';
+  d.head.appendChild(style);
+  const h2 = d.createElement('h2');
+  h2.textContent = 'BITU Universiteti';
+  d.body.appendChild(h2);
+  const rows: [string, string][] = [
+    ["Kvitansiya №", payment.receiptNumber],
+    ["Sana", formatDate(payment.paymentDate)],
+    ["Talaba", payment.studentName],
+    ["Fakultet", payment.facultyName],
+    ["To'lov usuli", PAYMENT_METHOD_LABELS[payment.paymentMethod]?.label ?? payment.paymentMethod],
+  ];
+  rows.forEach(([label, value]) => {
+    const row = d.createElement('div');
+    row.className = 'rr';
+    const lbl = d.createElement('span');
+    lbl.className = 'rl';
+    lbl.textContent = label;
+    const val = d.createElement('span');
+    val.textContent = value;
+    row.appendChild(lbl);
+    row.appendChild(val);
+    d.body.appendChild(row);
+  });
+  const total = d.createElement('div');
+  total.className = 'rt';
+  const tp = d.createElement('p');
+  tp.textContent = "Qabul qilindi";
+  const tv = d.createElement('p');
+  tv.textContent = formatMoney(payment.amount);
+  Object.assign(tv.style, { fontSize: '22px', fontWeight: '700', color: '#16a34a' });
+  total.appendChild(tp);
+  total.appendChild(tv);
+  d.body.appendChild(total);
+  const footer = d.createElement('p');
+  footer.className = 'rf';
+  footer.textContent = "Ushbu kvitansiya to'lovni tasdiqlaydi";
+  d.body.appendChild(footer);
+}
+
+function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: () => void }) {
+  const handlePrint = () => {
+    if (!payment) return;
+    const win = window.open('', '_blank', 'width=420,height=640');
+    if (!win) return;
+    buildReceiptDom(win, payment);
+    win.print();
+    win.close();
+  };
+
+  return (
+    <Modal
+      open={!!payment}
+      onClose={onClose}
+      title="Kvitansiya"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={onClose}>Yopish</Button>
+          <Button leftIcon={<Printer className="h-4 w-4" />} onClick={handlePrint}>Chop etish</Button>
+        </div>
+      }
+    >
+      {payment && (
+        <div className="space-y-1">
+          <h2 className="text-center text-base font-bold text-slate-900 mb-4">BITU Universiteti</h2>
+          {[
+            { label: 'Kvitansiya №', value: payment.receiptNumber },
+            { label: 'Sana', value: formatDate(payment.paymentDate) },
+            { label: 'Talaba', value: payment.studentName },
+            { label: 'Fakultet', value: payment.facultyName },
+            { label: "To'lov usuli", value: PAYMENT_METHOD_LABELS[payment.paymentMethod]?.label ?? payment.paymentMethod },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex justify-between py-1.5 border-b border-slate-100 text-sm">
+              <span className="text-slate-500">{label}</span>
+              <span className="font-medium text-slate-900">{value}</span>
+            </div>
+          ))}
+          <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-center">
+            <p className="text-xs text-emerald-700 mb-0.5">Qabul qilindi</p>
+            <p className="text-2xl font-bold text-emerald-700">{formatMoney(payment.amount)}</p>
+          </div>
+          <p className="mt-4 text-center text-[11px] text-slate-400">
+            Ushbu kvitansiya to&apos;lovni tasdiqlaydi
+          </p>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
 export function PaymentsListPage() {
   const [period, setPeriod] = useState<PeriodFilter>('all');
   const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [faculty, setFaculty] = useState('');
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [printPayment, setPrintPayment] = useState<Payment | null>(null);
 
   const { data, isLoading } = usePayments({
     page: 1,
@@ -169,12 +264,21 @@ export function PaymentsListPage() {
                   <div className="text-[15px] font-bold text-green-700 tabular-nums min-w-[140px] text-right">
                     {formatMoney(p.amount)}
                   </div>
+                  <button
+                    title="Kvitansiya chop etish"
+                    onClick={() => setPrintPayment(p)}
+                    className="ml-2 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                  >
+                    <Printer className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               );
             })}
           </Card>
         </div>
       ))}
+
+      <ReceiptModal payment={printPayment} onClose={() => setPrintPayment(null)} />
     </PageContent>
   );
 }

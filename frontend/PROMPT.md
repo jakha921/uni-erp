@@ -304,7 +304,7 @@
 **Задачи:**
 - [ ] Убрать hardcoded PAYMENT_METHOD_LABELS → `t('finance.paymentMethod.*')`
 - [ ] DateRangePicker вместо простых пресетов
-- [ ] Receipt печать: кнопка на каждом платеже
+- [x] Receipt печать: кнопка на каждом платеже
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты
 
