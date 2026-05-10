@@ -100,7 +100,7 @@ export function ScholarshipsPage() {
 
   const totalMonthly = filtered
     .filter((s) => s.status === 'active')
-    .reduce((sum, s) => sum + s.amount, 0);
+    .reduce((sum, s) => sum + Number(s.amount), 0);
 
   const columns: Column<Scholarship>[] = [
     {
@@ -150,7 +150,7 @@ export function ScholarshipsPage() {
       sortable: true,
       render: (row) => (
         <span className="font-semibold tabular-nums text-slate-900">
-          {formatMoney(row.amount)}
+          {formatMoney(Number(row.amount))}
         </span>
       ),
     },

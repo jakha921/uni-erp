@@ -61,6 +61,8 @@ class GrantSerializer(serializers.ModelSerializer):
 
 
 class ConferenceSerializer(serializers.ModelSerializer):
+    participantCount = serializers.IntegerField(source="participant_count", read_only=True)
+
     class Meta:
         model = Conference
         fields = [
@@ -71,6 +73,7 @@ class ConferenceSerializer(serializers.ModelSerializer):
             "location",
             "type",
             "participant_count",
+            "participantCount",
             "status",
             "description",
         ]

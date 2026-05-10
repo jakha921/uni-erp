@@ -190,6 +190,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class LeaveSerializer(serializers.ModelSerializer):
     employeeName = serializers.SerializerMethodField()
+    startDate = serializers.DateField(source="start_date", read_only=True)
+    endDate = serializers.DateField(source="end_date", read_only=True)
 
     class Meta:
         model = Leave
@@ -199,7 +201,9 @@ class LeaveSerializer(serializers.ModelSerializer):
             "employeeName",
             "type",
             "start_date",
+            "startDate",
             "end_date",
+            "endDate",
             "days",
             "destination",
             "reason",

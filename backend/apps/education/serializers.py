@@ -89,6 +89,8 @@ class BulkAttendanceSerializer(serializers.Serializer):
 
 
 class GradeSerializer(serializers.ModelSerializer):
+    studentId = serializers.IntegerField(source="student.id", read_only=True)
+    studentName = serializers.SerializerMethodField()
     subjectName = serializers.CharField(source="subject.name", read_only=True)
     subjectCode = serializers.CharField(source="subject.code", read_only=True)
     semesterNumber = serializers.IntegerField(source="semester.number", read_only=True)
@@ -100,6 +102,8 @@ class GradeSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "student",
+            "studentId",
+            "studentName",
             "subject",
             "subjectName",
             "subjectCode",
@@ -113,6 +117,9 @@ class GradeSerializer(serializers.ModelSerializer):
             "teacherName",
             "updated_at",
         ]
+
+    def get_studentName(self, obj: Grade) -> str:
+        return obj.student.get_full_name()
 
     def get_teacherName(self, obj: Grade) -> str:
         return obj.graded_by.full_name

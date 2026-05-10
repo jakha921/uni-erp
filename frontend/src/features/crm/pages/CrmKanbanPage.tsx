@@ -194,7 +194,7 @@ interface KanbanCardProps {
 
 function KanbanCard({ card, isDragging, onDragStart, onDragEnd, onClick }: KanbanCardProps) {
   const fullName = `${card.lastName} ${card.firstName}`;
-  const shortName = `${card.lastName} ${card.firstName[0]}.`;
+  const shortName = `${card.lastName} ${card.firstName?.[0] ?? ''}.`;
 
   return (
     <div
