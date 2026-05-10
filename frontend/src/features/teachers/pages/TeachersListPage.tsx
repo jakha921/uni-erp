@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, MoreHorizontal, Upload, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -15,6 +16,7 @@ const EMPLOYMENT_LABELS: Record<string, string> = {
 };
 
 export function TeachersListPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [dept, setDept] = useState('');
   const [empForm, setEmpForm] = useState('');
@@ -196,6 +198,7 @@ export function TeachersListPage() {
               data={teachers}
               columns={columns}
               keyField="id"
+              onRowClick={(row) => navigate(`/teachers/${row.id}`)}
               actions={() => (
                 <button className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                   <MoreHorizontal className="h-4 w-4" />

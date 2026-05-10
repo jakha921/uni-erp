@@ -33,6 +33,7 @@ const CrmKanbanPage = lazy(() => import('@/features/crm/pages/CrmKanbanPage').th
 const CrmReportPage = lazy(() => import('@/features/crm/pages/CrmReportPage').then(m => ({ default: m.CrmReportPage })));
 
 const TeachersListPage = lazy(() => import('@/features/teachers/pages/TeachersListPage').then(m => ({ default: m.TeachersListPage })));
+const TeacherProfilePage = lazy(() => import('@/features/teachers/pages/TeacherProfilePage').then(m => ({ default: m.TeacherProfilePage })));
 const AcademicAttendancePage = lazy(() => import('@/features/education/pages/AcademicAttendancePage').then(m => ({ default: m.AcademicAttendancePage })));
 const GradingPage = lazy(() => import('@/features/education/pages/GradingPage').then(m => ({ default: m.GradingPage })));
 const SchedulePage = lazy(() => import('@/features/education/pages/SchedulePage').then(m => ({ default: m.SchedulePage })));
@@ -122,6 +123,7 @@ export const router = createBrowserRouter([
           { path: '/my-students', element: <Lazy><MyStudentsPage /></Lazy> },
           // Education
           { path: '/teachers', element: <Lazy><TeachersListPage /></Lazy> },
+          { path: '/teachers/:id', element: <Lazy><TeacherProfilePage /></Lazy> },
           { path: '/attendance', element: <Lazy><AcademicAttendancePage /></Lazy> },
           { path: '/grading', element: <Lazy><GradingPage /></Lazy> },
           { path: '/schedule', element: <Lazy><SchedulePage /></Lazy> },

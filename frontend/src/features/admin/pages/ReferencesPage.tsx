@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import {
-  GraduationCap, FileText, Globe, Users, BookOpen, MapPin, Home, Briefcase, ArrowLeft,
+  GraduationCap, FileText, Globe, Users, BookOpen, MapPin, Home, Briefcase, ArrowLeft, Plus, Pencil, Trash2,
   type LucideIcon,
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Button, Spinner } from '@/components/ui';
-import { useDictionaryItems } from '@/api/hooks/useDictionary';
-import type { DictionaryType, DictionaryItem } from '@/types/admin';
+import { ConfirmDialog } from '@/components/overlays';
+import { useDictionaryItems, useCreateDictionaryItem, useUpdateDictionaryItem, useDeleteDictionaryItem } from '@/api/hooks/useDictionary';
+import { DictionaryItemForm } from '../components/DictionaryItemForm';
+import type { DictionaryType, DictionaryItem, CreateDictionaryItemDto } from '@/types/admin';
 
 interface DictConfig {
   type: DictionaryType;
@@ -28,6 +30,32 @@ const DICT_CONFIGS: DictConfig[] = [
 
 function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () => void }) {
   const { data: items, isLoading } = useDictionaryItems(config.type);
+  const createItem = useCreateDictionaryItem();
+  const updateItem = useUpdateDictionaryItem();
+  const deleteItem = useDeleteDictionaryItem();
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editItem, setEditItem] = useState<DictionaryItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<DictionaryItem | null>(null);
+
+  const handleSubmit = (data: CreateDictionaryItemDto) => {
+    if (editItem) {
+      updateItem.mutate(
+        { id: editItem.id, type: config.type, data },
+        { onSuccess: () => { setFormOpen(false); setEditItem(null); } },
+      );
+    } else {
+      createItem.mutate(
+        { type: config.type, data },
+        { onSuccess: () => setFormOpen(false) },
+      );
+    }
+  };
+
+  const handleEdit = (item: DictionaryItem) => {
+    setEditItem(item);
+    setFormOpen(true);
+  };
 
   return (
     <div>
@@ -38,10 +66,18 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
         <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: config.color + '18', color: config.color }}>
           <config.icon className="h-5 w-5" />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="text-lg font-semibold text-slate-900">{config.name}</h2>
           <p className="text-sm text-slate-500">{items?.length ?? 0} ta yozuv</p>
         </div>
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon={<Plus className="h-4 w-4" />}
+          onClick={() => { setEditItem(null); setFormOpen(true); }}
+        >
+          Qo&apos;shish
+        </Button>
       </div>
 
       {isLoading ? (
@@ -55,11 +91,12 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">NOMI</th>
                 <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">TARTIB</th>
                 <th className="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">HOLAT</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {(items ?? []).map((e: DictionaryItem, i: number) => (
-                <tr key={e.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                <tr key={e.id} className={`group ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                   <td className="px-4 py-3 text-[13px] font-mono text-slate-600">{e.code}</td>
                   <td className="px-4 py-3 text-[13px] text-slate-900 font-medium">{e.name}</td>
                   <td className="px-4 py-3 text-[13px] text-slate-600 text-right">{e.sortOrder}</td>
@@ -68,12 +105,55 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
                       {e.isActive ? 'Faol' : 'Nofaol'}
                     </span>
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleEdit(e)}
+                        className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                        title="Tahrirlash"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(e)}
+                        className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                        title="O'chirish"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <DictionaryItemForm
+        open={formOpen}
+        onClose={() => { setFormOpen(false); setEditItem(null); }}
+        onSubmit={handleSubmit}
+        item={editItem}
+        loading={createItem.isPending || updateItem.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          deleteItem.mutate(
+            { id: deleteTarget.id, type: config.type },
+            { onSuccess: () => setDeleteTarget(null) },
+          );
+        }}
+        title="Yozuvni o'chirish"
+        message={`"${deleteTarget?.name}" yozuvini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteItem.isPending}
+      />
     </div>
   );
 }

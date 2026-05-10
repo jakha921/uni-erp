@@ -590,8 +590,8 @@
 
 ### 12.3 ReferencesPage `/reference`
 **Задачи:**
-- [ ] CRUD для каждого типа справочника
-- [ ] DictionaryItemForm: code, name, description, sortOrder
+- [x] CRUD для каждого типа справочника
+- [x] DictionaryItemForm: code, name, description, sortOrder
 - [ ] i18n: все тексты
 
 ---
