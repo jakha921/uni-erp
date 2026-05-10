@@ -8,26 +8,27 @@ import {
   LineChartSimple,
   Card,
 } from '@/components/data-display';
-import { Badge } from '@/components/ui';
-import { useDashboardStats } from '../hooks/useDashboardStats';
+import { Badge, Spinner } from '@/components/ui';
+import { useFinanceDashboard } from '@/api/hooks/useFinance';
+import { usePayments } from '@/api/hooks/useFinance';
+import { formatMoney } from '@/lib/utils';
 
-const paymentStatusData = [
-  { name: "To'langan", value: 2150, color: '#10B981' },
-  { name: 'Qisman', value: 680, color: '#F59E0B' },
-  { name: "To'lanmagan", value: 415, color: '#EF4444' },
-];
+const STATUS_COLORS: Record<string, string> = {
+  active: '#F59E0B',
+  completed: '#10B981',
+  cancelled: '#EF4444',
+};
 
-const recentPayments = [
-  { id: '1', student: 'Xolmatov A.', amount: '2 500 000', method: 'Click', time: '5 daq. oldin' },
-  { id: '2', student: 'Karimova N.', amount: '1 800 000', method: 'Payme', time: '12 daq. oldin' },
-  { id: '3', student: 'Toshmatov B.', amount: '3 200 000', method: 'Bank', time: '30 daq. oldin' },
-  { id: '4', student: 'Rahimov S.', amount: '2 100 000', method: 'Naqd', time: '1 soat oldin' },
-  { id: '5', student: 'Azimova D.', amount: '1 500 000', method: 'Click', time: '2 soat oldin' },
-];
+const STATUS_LABELS: Record<string, string> = {
+  active: 'Faol',
+  completed: "To'langan",
+  cancelled: 'Bekor qilingan',
+};
 
 export function BuxgalterDashboard() {
   const { t } = useTranslation();
-  const { stats, monthlyPayments } = useDashboardStats();
+  const { data: dashStats, isLoading } = useFinanceDashboard();
+  const { data: recentData } = usePayments({ pageSize: 5 });
 
   const fmtCompact = (n: number): string => {
     if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)} mlrd`;
@@ -35,20 +36,42 @@ export function BuxgalterDashboard() {
     return new Intl.NumberFormat('uz-UZ').format(n);
   };
 
+  if (isLoading || !dashStats) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const paymentStatusData = (dashStats.byStatus ?? []).map((s) => ({
+    name: STATUS_LABELS[s.status] ?? s.status,
+    value: s.count,
+    color: STATUS_COLORS[s.status] ?? '#94A3B8',
+  }));
+
+  const monthlyPayments = (dashStats.byMonth ?? []).map((m) => ({
+    name: m.month,
+    value: m.amount / 1_000_000,
+    color: '#10B981',
+  }));
+
+  const recentPayments = recentData?.data ?? [];
+
   return (
     <div className="space-y-6">
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label={t('nav.contracts', 'Kontraktlar')}
-          value={new Intl.NumberFormat('uz-UZ').format(stats.totalContracts)}
+          value={new Intl.NumberFormat('uz-UZ').format(dashStats.totalContracts)}
           icon={<FileText className="h-5 w-5" />}
           iconBg="bg-blue-100"
           iconColor="text-blue-600"
         />
         <StatCard
           label="Tushumlar"
-          value={fmtCompact(stats.totalRevenue)}
+          value={fmtCompact(dashStats.totalPaid)}
           icon={<Wallet className="h-5 w-5" />}
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
@@ -56,14 +79,14 @@ export function BuxgalterDashboard() {
         />
         <StatCard
           label="Jami qarz"
-          value={fmtCompact(stats.totalDebt)}
+          value={fmtCompact(dashStats.totalDebt)}
           icon={<AlertTriangle className="h-5 w-5" />}
           iconBg="bg-red-100"
           iconColor="text-red-600"
         />
         <StatCard
           label="Yig'ilish darajasi"
-          value={`${stats.collectionRate}%`}
+          value={`${dashStats.collectionRate.toFixed(1)}%`}
           icon={<Percent className="h-5 w-5" />}
           iconBg="bg-teal-100"
           iconColor="text-teal-600"
@@ -93,18 +116,18 @@ export function BuxgalterDashboard() {
                 <th className="pb-3 font-medium text-slate-500">Talaba</th>
                 <th className="pb-3 font-medium text-slate-500">Summa</th>
                 <th className="pb-3 font-medium text-slate-500">Usul</th>
-                <th className="pb-3 text-right font-medium text-slate-500">Vaqt</th>
+                <th className="pb-3 text-right font-medium text-slate-500">Sana</th>
               </tr>
             </thead>
             <tbody>
               {recentPayments.map((p) => (
                 <tr key={p.id} className="border-b border-slate-50 last:border-0">
-                  <td className="py-3 font-medium text-slate-900">{p.student}</td>
-                  <td className="py-3 tabular-nums text-slate-700">{p.amount} so&apos;m</td>
+                  <td className="py-3 font-medium text-slate-900">{p.studentName}</td>
+                  <td className="py-3 tabular-nums text-slate-700">{formatMoney(p.amount)}</td>
                   <td className="py-3">
-                    <Badge variant="info">{p.method}</Badge>
+                    <Badge variant="info">{p.paymentMethod}</Badge>
                   </td>
-                  <td className="py-3 text-right text-slate-400">{p.time}</td>
+                  <td className="py-3 text-right text-slate-400">{p.paymentDate}</td>
                 </tr>
               ))}
             </tbody>

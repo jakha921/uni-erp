@@ -62,7 +62,7 @@
 - [ ] Подключить AdminDashboard к реальному API `/api/v1/dashboard/` (сейчас hardcoded mock данные внутри sub-dashboard компонентов)
 - [ ] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
 - [x] Добавить DateRangePicker для фильтрации по периоду
-- [ ] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
+- [x] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
 - [ ] DekanDashboard: подключить к real API
 - [ ] OqituvchiDashboard: подключить к real API
 - [ ] TalabaDashboard: подключить к real API
