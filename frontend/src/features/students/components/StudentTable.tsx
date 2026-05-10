@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Eye, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DataTable, type Column } from '@/components/table/DataTable';
 import { Button } from '@/components/ui/Button';
 import { StudentStatusBadge } from './StudentStatusBadge';
@@ -30,6 +31,7 @@ export function StudentTable({
   selectedIds,
   onSelectionChange,
 }: StudentTableProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const columns: Column<StudentListItem>[] = [
@@ -43,7 +45,7 @@ export function StudentTable({
     },
     {
       key: 'fullName',
-      header: 'F.I.SH',
+      header: t('students.fullName'),
       sortable: true,
       render: (row) => (
         <div>
@@ -54,14 +56,14 @@ export function StudentTable({
     },
     {
       key: 'group',
-      header: 'Guruh',
+      header: t('students.group'),
       render: (row) => (
         <span className="font-medium text-sm tabular-nums">{row.group.name}</span>
       ),
     },
     {
       key: 'course',
-      header: 'Kurs',
+      header: t('students.course'),
       sortable: true,
       width: '80px',
       render: (row) => (
@@ -70,7 +72,7 @@ export function StudentTable({
     },
     {
       key: 'faculty',
-      header: 'Fakultet',
+      header: t('students.faculty'),
       render: (row) => {
         const name = row.faculty.name;
         return (
@@ -82,7 +84,7 @@ export function StudentTable({
     },
     {
       key: 'paymentForm',
-      header: "To'lov",
+      header: t('students.paymentForm'),
       render: (row) => (
         <span
           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -91,13 +93,13 @@ export function StudentTable({
               : 'bg-amber-50 text-amber-700'
           }`}
         >
-          {row.paymentForm.code === 'grant' ? 'Grant' : 'Kontrakt'}
+          {row.paymentForm.code === 'grant' ? t('students.grant') : t('students.contract')}
         </span>
       ),
     },
     {
       key: 'status',
-      header: 'Holat',
+      header: t('common.status'),
       render: (row) => <StudentStatusBadge status={row.status} />,
     },
   ];
@@ -114,7 +116,7 @@ export function StudentTable({
       sortBy={sortBy}
       sortOrder={sortOrder}
       onSort={onSort}
-      emptyMessage="Talabalar topilmadi"
+      emptyMessage={t('common.noData')}
       actions={(row) => (
         <div className="flex items-center gap-1">
           <Button
@@ -123,7 +125,7 @@ export function StudentTable({
             leftIcon={<Eye className="h-3.5 w-3.5" />}
             onClick={(e) => { e.stopPropagation(); onView(row.id as number); }}
           >
-            Ko&apos;rish
+            {t('common.view')}
           </Button>
           {onDelete && (
             <button

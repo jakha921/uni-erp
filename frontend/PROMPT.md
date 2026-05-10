@@ -86,7 +86,7 @@
 **Файл:** `features/students/pages/StudentsListPage.tsx`
 **Статус:** Read работает, нет Update/Delete
 **Задачи:**
-- [ ] i18n: все тексты (заголовки таблицы, фильтры, кнопки)
+- [x] i18n: все тексты (заголовки таблицы, фильтры, кнопки)
 - [x] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
 - [x] Bulk actions: чекбоксы для массового удаления/экспорта
 - [x] Кнопка "Excel eksport" → вызов `/students/export/`
