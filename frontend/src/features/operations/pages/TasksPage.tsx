@@ -9,6 +9,7 @@ import {
   User,
   Calendar,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -22,37 +23,11 @@ import { TaskForm } from '../components/TaskForm';
 import type { Task, TaskStatus, TaskPriority } from '@/types/operations';
 import type { TaskFormData } from '../schemas/task.schema';
 
-// --- UI labels ---
-
-const PRIORITY_LABELS: Record<TaskPriority, string> = {
-  low: 'Past',
-  medium: "O'rta",
-  high: 'Yuqori',
-  urgent: 'Juda yuqori',
-};
-
-const STATUS_LABELS: Record<TaskStatus, string> = {
-  todo: 'Yangi',
-  in_progress: 'Jarayonda',
-  review: "Ko'rib chiqilmoqda",
-  done: 'Bajarildi',
-};
-
-const PRIORITY_OPTIONS = (['low', 'medium', 'high', 'urgent'] as TaskPriority[]).map((p) => ({
-  value: p,
-  label: PRIORITY_LABELS[p],
-}));
-
-const STATUS_OPTIONS = (['todo', 'in_progress', 'review', 'done'] as TaskStatus[]).map((s) => ({
-  value: s,
-  label: STATUS_LABELS[s],
-}));
-
-const KANBAN_COLUMNS: { id: TaskStatus; label: string; color: string; bg: string }[] = [
-  { id: 'todo', label: 'Yangi', color: '#3B82F6', bg: '#EFF6FF' },
-  { id: 'in_progress', label: 'Jarayonda', color: '#F59E0B', bg: '#FFFBEB' },
-  { id: 'done', label: 'Bajarildi', color: '#2DB976', bg: '#ECFDF5' },
-  { id: 'review', label: "Ko'rib chiqilmoqda", color: '#8B5CF6', bg: '#F5F3FF' },
+const KANBAN_COLUMN_CONFIG: { id: TaskStatus; color: string; bg: string }[] = [
+  { id: 'todo', color: '#3B82F6', bg: '#EFF6FF' },
+  { id: 'in_progress', color: '#F59E0B', bg: '#FFFBEB' },
+  { id: 'done', color: '#2DB976', bg: '#ECFDF5' },
+  { id: 'review', color: '#8B5CF6', bg: '#F5F3FF' },
 ];
 
 function priorityVariant(p: TaskPriority): 'error' | 'warning' | 'info' {
@@ -71,6 +46,7 @@ function statusVariant(s: TaskStatus): 'info' | 'warning' | 'success' | 'error' 
 type ViewMode = 'list' | 'kanban';
 
 export function TasksPage() {
+  const { t } = useTranslation();
   const [view, setView] = useState<ViewMode>('kanban');
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
@@ -79,6 +55,35 @@ export function TasksPage() {
   const [overCol, setOverCol] = useState<TaskStatus | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTask, setDeleteTask] = useState<Task | null>(null);
+
+  const PRIORITY_LABELS: Record<TaskPriority, string> = {
+    low: t('operations.priorityLow'),
+    medium: t('operations.priorityMedium'),
+    high: t('operations.priorityHigh'),
+    urgent: t('operations.priorityUrgent'),
+  };
+
+  const STATUS_LABELS: Record<TaskStatus, string> = {
+    todo: t('operations.statusTodo'),
+    in_progress: t('operations.statusInProgress'),
+    review: t('operations.statusReview'),
+    done: t('operations.statusDone'),
+  };
+
+  const PRIORITY_OPTIONS = (['low', 'medium', 'high', 'urgent'] as TaskPriority[]).map((p) => ({
+    value: p,
+    label: PRIORITY_LABELS[p],
+  }));
+
+  const STATUS_OPTIONS = (['todo', 'in_progress', 'review', 'done'] as TaskStatus[]).map((s) => ({
+    value: s,
+    label: STATUS_LABELS[s],
+  }));
+
+  const KANBAN_COLUMNS = KANBAN_COLUMN_CONFIG.map((cfg) => ({
+    ...cfg,
+    label: STATUS_LABELS[cfg.id],
+  }));
 
   const { data: tasksData, isLoading } = useTasksList({
     page: 1,
@@ -96,22 +101,21 @@ export function TasksPage() {
 
   const tasks = tasksData?.data ?? [];
 
-  // Client-side filtering for instant search responsiveness
   const filtered = useMemo(() => {
-    return tasks.filter((t) => {
-      if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
-      if (priorityFilter && t.priority !== priorityFilter) return false;
-      if (statusFilter && t.status !== statusFilter) return false;
+    return tasks.filter((task) => {
+      if (search && !task.title.toLowerCase().includes(search.toLowerCase())) return false;
+      if (priorityFilter && task.priority !== priorityFilter) return false;
+      if (statusFilter && task.status !== statusFilter) return false;
       return true;
     });
   }, [tasks, search, priorityFilter, statusFilter]);
 
   const counts = useMemo(() => {
     const c = { total: tasks.length, todo: 0, inProgress: 0, done: 0 };
-    for (const t of tasks) {
-      if (t.status === 'todo') c.todo++;
-      else if (t.status === 'in_progress') c.inProgress++;
-      else if (t.status === 'done') c.done++;
+    for (const task of tasks) {
+      if (task.status === 'todo') c.todo++;
+      else if (task.status === 'in_progress') c.inProgress++;
+      else if (task.status === 'done') c.done++;
     }
     return c;
   }, [tasks]);
@@ -136,24 +140,24 @@ export function TasksPage() {
     },
     {
       key: 'title',
-      header: 'Topshiriq',
+      header: t('operations.taskTitle'),
       render: (row) => <span className="font-medium text-slate-900">{row.title}</span>,
     },
     {
       key: 'assigneeName',
-      header: 'Bajaruvchi',
+      header: t('common.assignee'),
       render: (row) => <span className="text-slate-600">{row.assigneeName}</span>,
     },
     {
       key: 'dueDate',
-      header: 'Muddat',
+      header: t('operations.dueDate'),
       render: (row) => (
         <span className="text-muted tabular-nums text-xs">{row.dueDate}</span>
       ),
     },
     {
       key: 'priority',
-      header: 'Muhimlik',
+      header: t('common.priority'),
       render: (row) => (
         <Badge variant={priorityVariant(row.priority)} dot>
           {PRIORITY_LABELS[row.priority]}
@@ -162,7 +166,7 @@ export function TasksPage() {
     },
     {
       key: 'status',
-      header: 'Holat',
+      header: t('common.status'),
       render: (row) => (
         <Badge variant={statusVariant(row.status)} dot>
           {STATUS_LABELS[row.status]}
@@ -174,12 +178,12 @@ export function TasksPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Topshiriqlar"
-        subtitle="Barcha topshiriqlar va ularning holati"
-        breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Topshiriqlar' }]}
+        title={t('nav.tasks')}
+        subtitle={t('operations.tasksSubtitle')}
+        breadcrumbs={[{ label: t('nav.operations') }, { label: t('nav.tasks') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Topshiriq qo{"'"}shish
+            {t('operations.addTask')}
           </Button>
         }
       />
@@ -187,25 +191,25 @@ export function TasksPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-5">
         <StatCard
-          label="Jami"
+          label={t('common.total')}
           value={counts.total}
           icon={<ClipboardList className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
         />
         <StatCard
-          label="Yangi"
+          label={t('operations.statusTodo')}
           value={counts.todo}
           icon={<Plus className="h-[18px] w-[18px]" />}
           iconBg="#8B5CF6"
         />
         <StatCard
-          label="Jarayonda"
+          label={t('operations.statusInProgress')}
           value={counts.inProgress}
           icon={<Clock className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Bajarildi"
+          label={t('operations.statusDone')}
           value={counts.done}
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
@@ -235,12 +239,12 @@ export function TasksPage() {
             }`}
           >
             <List className="h-3.5 w-3.5" />
-            Ro{"'"}yxat
+            {t('operations.listView')}
           </button>
         </div>
 
         <SearchInput
-          placeholder="Topshiriq izlash..."
+          placeholder={t('operations.searchTask')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch('')}
@@ -249,14 +253,14 @@ export function TasksPage() {
 
         <Select
           options={PRIORITY_OPTIONS}
-          placeholder="Muhimlik"
+          placeholder={t('common.priority')}
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value)}
         />
 
         <Select
           options={STATUS_OPTIONS}
-          placeholder="Holat"
+          placeholder={t('common.status')}
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         />
@@ -280,7 +284,7 @@ export function TasksPage() {
       {!isLoading && view === 'kanban' && (
         <div className="grid grid-cols-4 gap-3.5">
           {KANBAN_COLUMNS.map((col) => {
-            const colTasks = filtered.filter((t) => t.status === col.id);
+            const colTasks = filtered.filter((task) => task.status === col.id);
             return (
               <div
                 key={col.id}
@@ -315,40 +319,40 @@ export function TasksPage() {
 
                 {/* Cards */}
                 <div className="flex flex-col gap-2">
-                  {colTasks.map((t) => (
+                  {colTasks.map((task) => (
                     <div
-                      key={t.id}
+                      key={task.id}
                       draggable
-                      onDragStart={() => setDragId(t.id)}
+                      onDragStart={() => setDragId(task.id)}
                       onDragEnd={() => {
                         setDragId(null);
                         setOverCol(null);
                       }}
                       className="cursor-grab rounded-[10px] border border-slate-200 bg-white p-3 transition-shadow hover:shadow-md"
                       style={{
-                        opacity: dragId === t.id ? 0.5 : 1,
+                        opacity: dragId === task.id ? 0.5 : 1,
                         boxShadow:
-                          dragId === t.id
+                          dragId === task.id
                             ? '0 8px 16px rgba(0,0,0,0.12)'
                             : '0 1px 2px rgba(0,0,0,0.05)',
                       }}
                     >
                       <div className="mb-2">
-                        <Badge variant={priorityVariant(t.priority)} dot>
-                          {PRIORITY_LABELS[t.priority]}
+                        <Badge variant={priorityVariant(task.priority)} dot>
+                          {PRIORITY_LABELS[task.priority]}
                         </Badge>
                       </div>
                       <p className="text-[13px] font-medium leading-tight text-slate-900">
-                        {t.title}
+                        {task.title}
                       </p>
                       <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2.5 text-[11px] text-muted">
                         <span className="inline-flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {t.assigneeName}
+                          {task.assigneeName}
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {t.dueDate}
+                          {task.dueDate}
                         </span>
                       </div>
                     </div>
@@ -379,9 +383,9 @@ export function TasksPage() {
           if (!deleteTask) return;
           deleteTaskMutation.mutate(deleteTask.id, { onSuccess: () => setDeleteTask(null) });
         }}
-        title="Topshiriqni o'chirish"
-        message={`"${deleteTask?.title}" topshirig'ini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('operations.deleteTaskTitle')}
+        message={t('operations.deleteTaskConfirm', { title: deleteTask?.title ?? '' })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteTaskMutation.isPending}
       />

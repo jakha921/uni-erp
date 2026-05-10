@@ -447,7 +447,7 @@
 - [x] CRUD: Create (TaskForm в SlideOver)
 - [x] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
 - [x] Zod schema: `taskSchema`
-- [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
+- [x] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
 - [x] Drag-and-drop обновление статуса через mutation
 - [x] i18n: все тексты
 

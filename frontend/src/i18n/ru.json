@@ -622,7 +622,22 @@
     "newAppeal": "Новое обращение",
     "publishNews": "Опубликовать новость",
     "sendMessage": "Отправить сообщение",
-    "generateReport": "Сформировать отчёт"
+    "generateReport": "Сформировать отчёт",
+    "priorityLow": "Низкий",
+    "priorityMedium": "Средний",
+    "priorityHigh": "Высокий",
+    "priorityUrgent": "Срочный",
+    "statusTodo": "Новый",
+    "statusInProgress": "В процессе",
+    "statusReview": "На проверке",
+    "statusDone": "Выполнен",
+    "allPriorities": "Все приоритеты",
+    "allStatuses": "Все статусы",
+    "tasksSubtitle": "Все задачи и их статусы",
+    "searchTask": "Поиск задачи...",
+    "listView": "Список",
+    "deleteTaskTitle": "Удалить задачу",
+    "deleteTaskConfirm": "Подтвердите удаление задачи \"{{title}}\"?"
   },
   "system": {
     "title": "Системные настройки",

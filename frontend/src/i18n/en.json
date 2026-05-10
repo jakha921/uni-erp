@@ -622,7 +622,22 @@
     "newAppeal": "New appeal",
     "publishNews": "Publish news",
     "sendMessage": "Send message",
-    "generateReport": "Generate report"
+    "generateReport": "Generate report",
+    "priorityLow": "Low",
+    "priorityMedium": "Medium",
+    "priorityHigh": "High",
+    "priorityUrgent": "Urgent",
+    "statusTodo": "New",
+    "statusInProgress": "In Progress",
+    "statusReview": "In Review",
+    "statusDone": "Done",
+    "allPriorities": "All priorities",
+    "allStatuses": "All statuses",
+    "tasksSubtitle": "All tasks and their statuses",
+    "searchTask": "Search task...",
+    "listView": "List",
+    "deleteTaskTitle": "Delete task",
+    "deleteTaskConfirm": "Confirm deleting task \"{{title}}\"?"
   },
   "system": {
     "title": "System settings",

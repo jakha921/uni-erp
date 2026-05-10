@@ -630,7 +630,22 @@
     "newAppeal": "Yangi murojaat",
     "publishNews": "Yangilik e'lon qilish",
     "sendMessage": "Xabar yuborish",
-    "generateReport": "Hisobot yaratish"
+    "generateReport": "Hisobot yaratish",
+    "priorityLow": "Past",
+    "priorityMedium": "O'rta",
+    "priorityHigh": "Yuqori",
+    "priorityUrgent": "Juda yuqori",
+    "statusTodo": "Yangi",
+    "statusInProgress": "Jarayonda",
+    "statusReview": "Ko'rib chiqilmoqda",
+    "statusDone": "Bajarildi",
+    "allPriorities": "Barcha muhimliklar",
+    "allStatuses": "Barcha holatlar",
+    "tasksSubtitle": "Barcha topshiriqlar va ularning holati",
+    "searchTask": "Topshiriq izlash...",
+    "listView": "Ro'yxat",
+    "deleteTaskTitle": "Topshiriqni o'chirish",
+    "deleteTaskConfirm": "\"{{title}}\" topshirig'ini o'chirishni tasdiqlaysizmi?"
   },
   "system": {
     "title": "Tizim sozlamalari",
