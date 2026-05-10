@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Clock, Briefcase, Calendar, Search, BarChart3, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
@@ -113,8 +114,9 @@ function LeaveCalendar({ leaves, calendarMonth, onMonthChange }: {
 }
 
 export function LeavesPage() {
+  const [searchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
-  const [tab, setTab] = useState('all');
+  const [tab, setTab] = useState(() => searchParams.get('status') ?? 'all');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());

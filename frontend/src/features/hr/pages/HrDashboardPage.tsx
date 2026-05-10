@@ -57,34 +57,42 @@ export function HrDashboardPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4">
-        <StatCard
-          label="Jami xodimlar"
-          value={stats.totalEmployees}
-          icon={<Users className="h-[18px] w-[18px]" />}
-          iconBg="#3B82F6"
-        />
-        <StatCard
-          label="Faol"
-          value={stats.activeEmployees}
-          icon={<CheckCircle className="h-[18px] w-[18px]" />}
-          iconBg="#2DB976"
-          trend={{
-            value: stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0,
-            label: 'faol',
-          }}
-        />
-        <StatCard
-          label="Ta'tilda"
-          value={stats.onLeave}
-          icon={<Calendar className="h-[18px] w-[18px]" />}
-          iconBg="#F59E0B"
-        />
-        <StatCard
-          label="Xizmat safarida"
-          value={stats.onBusinessTrip}
-          icon={<Briefcase className="h-[18px] w-[18px]" />}
-          iconBg="#8B5CF6"
-        />
+        <div className="cursor-pointer" onClick={() => navigate('/hr/employees')}>
+          <StatCard
+            label="Jami xodimlar"
+            value={stats.totalEmployees}
+            icon={<Users className="h-[18px] w-[18px]" />}
+            iconBg="#3B82F6"
+          />
+        </div>
+        <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=active')}>
+          <StatCard
+            label="Faol"
+            value={stats.activeEmployees}
+            icon={<CheckCircle className="h-[18px] w-[18px]" />}
+            iconBg="#2DB976"
+            trend={{
+              value: stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0,
+              label: 'faol',
+            }}
+          />
+        </div>
+        <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=leave')}>
+          <StatCard
+            label="Ta'tilda"
+            value={stats.onLeave}
+            icon={<Calendar className="h-[18px] w-[18px]" />}
+            iconBg="#F59E0B"
+          />
+        </div>
+        <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=business_trip')}>
+          <StatCard
+            label="Xizmat safarida"
+            value={stats.onBusinessTrip}
+            icon={<Briefcase className="h-[18px] w-[18px]" />}
+            iconBg="#8B5CF6"
+          />
+        </div>
       </div>
 
       {/* 2fr 1fr grid */}
@@ -135,9 +143,15 @@ export function HrDashboardPage() {
         <div className="flex flex-col gap-6">
           <Card>
             <h3 className="text-base font-semibold text-slate-900 mb-3.5">Tuzilma</h3>
-            <KpiMiniRow label="Fakultetlar" value={stats.byDepartment.filter((d) => d.type === 'fakultet').length || 4} />
-            <KpiMiniRow label="Kafedralar" value={stats.byDepartment.filter((d) => d.type === 'kafedra').length || 12} />
-            <KpiMiniRow label="Bo'limlar" value={stats.byDepartment.filter((d) => d.type === 'admin').length || 6} />
+            <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=fakultet')}>
+              <KpiMiniRow label="Fakultetlar" value={stats.byDepartment.filter((d) => d.type === 'fakultet').length || 4} />
+            </div>
+            <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=kafedra')}>
+              <KpiMiniRow label="Kafedralar" value={stats.byDepartment.filter((d) => d.type === 'kafedra').length || 12} />
+            </div>
+            <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=admin')}>
+              <KpiMiniRow label="Bo'limlar" value={stats.byDepartment.filter((d) => d.type === 'admin').length || 6} />
+            </div>
           </Card>
 
           <Card>
@@ -167,6 +181,12 @@ export function HrDashboardPage() {
                 </div>
               ))
             )}
+            <button
+              onClick={() => navigate('/hr/leaves?status=pending')}
+              className="mt-3 text-sm font-medium text-primary-600 hover:text-primary-700"
+            >
+              Barcha arizalar &rarr;
+            </button>
           </Card>
         </div>
       </div>

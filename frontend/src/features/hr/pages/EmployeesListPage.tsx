@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, Download } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
 import { PageHeader, PageContent } from '@/components/layout';
@@ -13,10 +14,12 @@ import type { EmployeeListParams, EmployeeStatus, EmployeeListItem } from '@/typ
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
 export function EmployeesListPage() {
+  const [searchParams] = useSearchParams();
   const [params, setParams] = useState<EmployeeListParams>({
     page: 1,
     pageSize: 20,
     search: '',
+    status: (searchParams.get('status') as EmployeeStatus | null) ?? undefined,
   });
   const [formOpen, setFormOpen] = useState(false);
   const [editEmployeeId, setEditEmployeeId] = useState<number | null>(null);

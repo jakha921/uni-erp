@@ -350,7 +350,7 @@
 ### 6.1 HrDashboardPage `/hr`
 **Файл:** `features/hr/pages/HrDashboardPage.tsx` | **Задачи:**
 - [ ] DateRangePicker для периода
-- [ ] Drill-down по метрикам (клик → фильтр)
+- [x] Drill-down по метрикам (клик → фильтр)
 - [ ] i18n: все тексты
 
 ### 6.2 EmployeesListPage `/hr/employees`
