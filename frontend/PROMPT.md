@@ -32,14 +32,14 @@
 - [x] Добавить rate limiting feedback (показывать таймер при 429)
 - [x] Кнопка "Показать пароль" — проверить работу toggle
 - [x] Загрузка (loading state на кнопке "Kirish" при отправке)
-- [ ] Телефон: input mask `+998 (XX) XXX-XX-XX` — сейчас plain text
+- [x] Телефон: input mask `+998 (XX) XXX-XX-XX` — сейчас plain text
 
 ### 1.2 RoleSelectPage `/role-select`
 **Файл:** `features/auth/pages/RoleSelectPage.tsx`
 **Статус:** Работает (demo mode)
 **Задачи:**
 - [x] i18n: перевести hardcoded тексты ("Demo rejim — rolni tanlang", подписи карточек)
-- [ ] При реальном API (USE_MOCK=false) — логин через `authService.login()` должен работать корректно (сейчас 500 из-за phone format mismatch)
+- [x] При реальном API (USE_MOCK=false) — логин через `authService.login()` должен работать корректно (сейчас 500 из-за phone format mismatch)
 - [x] Loading overlay на карточке при клике — проверить что спиннер показывается
 
 ### 1.3 ForgotPasswordPage `/forgot-password`

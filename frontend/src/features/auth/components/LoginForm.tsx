@@ -20,6 +20,7 @@ export function LoginForm() {
 
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
@@ -32,11 +33,23 @@ export function LoginForm() {
     },
   });
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').replace(/^998/, '');
+    const d = raw.slice(0, 9);
+    let formatted = '';
+    if (d.length === 0) formatted = '';
+    else if (d.length <= 2) formatted = `+998 (${d}`;
+    else if (d.length <= 5) formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2)}`;
+    else if (d.length <= 7) formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2, 5)}-${d.slice(5)}`;
+    else formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2, 5)}-${d.slice(5, 7)}-${d.slice(7)}`;
+    setValue('phone', formatted, { shouldValidate: true });
+  };
+
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null);
     try {
       const response = await authService.login({
-        phone: data.phone,
+        phone: '+' + data.phone.replace(/\D/g, ''),
         password: data.password,
         branch: data.branch,
       });
@@ -101,6 +114,7 @@ export function LoginForm() {
                 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500
                 ${errors.phone ? 'border-red-300' : 'border-slate-200'}`}
               {...register('phone')}
+              onChange={handlePhoneChange}
             />
           </div>
           {errors.phone && (
