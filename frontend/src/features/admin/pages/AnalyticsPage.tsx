@@ -5,24 +5,31 @@ import { Spinner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { Users, UserCog, FileText, Percent } from 'lucide-react';
 import { useAnalytics } from '@/api/hooks/useAnalytics';
+import { useStudentStatistics } from '@/api/hooks/useStudents';
 import type { AnalyticsParams } from '@/types/admin';
 
-const PAYMENT_DONUT = [
-  { name: 'Davlat granti', value: 1876, color: '#2DB976' },
-  { name: 'Kontrakt', value: 2980, color: '#3B82F6' },
-];
+const PAYMENT_COLORS: Record<string, string> = {
+  "Davlat granti": '#2DB976',
+  "To'lov-shartnoma": '#3B82F6',
+};
 
 export function AnalyticsPage() {
   const [params] = useState<AnalyticsParams>({ period: 'year' });
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const { data, isLoading } = useAnalytics(params);
+  const { data: studentStats } = useStudentStatistics();
 
   if (isLoading || !data) {
     return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;
   }
 
   const studentTrend = data.studentTrend.map((d) => ({ name: d.month, value: d.count }));
+  const paymentDonut = (studentStats?.byPaymentForm ?? []).map((p, i) => ({
+    name: p.form,
+    value: p.count,
+    color: PAYMENT_COLORS[p.form] ?? (i % 2 === 0 ? '#2DB976' : '#3B82F6'),
+  }));
   const facultyData = data.byFaculty.map((f) => ({ name: f.faculty.slice(0, 12), value: f.students }));
   const totalStudents = data.studentTrend[data.studentTrend.length - 1]?.count ?? 0;
   const totalRevenue = data.revenueTrend.reduce((s, m) => s + m.amount, 0);
@@ -57,7 +64,7 @@ export function AnalyticsPage() {
           <BarChartSimple data={facultyData} horizontal color="#3B82F6" height={240} />
         </ChartCard>
         <ChartCard title="To'lov holati" subtitle="Grant vs Kontrakt taqsimoti">
-          <DonutChart data={PAYMENT_DONUT} size={220} innerRadius={60} />
+          <DonutChart data={paymentDonut.length > 0 ? paymentDonut : []} size={220} innerRadius={60} />
         </ChartCard>
         <ChartCard title="Top guruhlar" subtitle="Eng yuqori ko'rsatkichlar">
           <div className="flex flex-col gap-2.5">

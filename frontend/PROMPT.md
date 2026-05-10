@@ -584,7 +584,7 @@
 
 ### 12.2 AnalyticsPage `/analytics`
 **Задачи:**
-- [ ] Подключить к `useAnalytics(params)` — реальные данные
+- [x] Подключить к `useAnalytics(params)` — реальные данные
 - [x] DateRangePicker
 - [x] Графики: тренды, сравнение, top groups
 - [ ] i18n: все тексты
