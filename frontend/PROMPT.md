@@ -173,7 +173,7 @@
 - [x] Tab "Biletlar": загрузка/просмотр экзаменационных билетов
 - [x] Tab "Vedomost": ведомость оценок (подключить к Grades API)
 - [x] Фильтры: семестр, группа, предмет
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.5 CurriculumPage `/curriculum`
 **Файл:** `features/education/pages/CurriculumPage.tsx`
@@ -184,7 +184,7 @@
 - [x] CurriculumForm с useFieldArray для предметов (добавление/удаление строк)
 - [x] Zod schema: specialtyId, year, subjects[] (name, credits, hours, controlForm)
 - [x] Фильтры: специальность (Combobox из `useSpecialties()`), год обучения
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 - [x] Экспорт учебного плана в PDF
 
 ### 4.6 SubjectsPage `/subjects`
@@ -197,7 +197,7 @@
 - [x] Delete: ConfirmDialog
 - [x] Zod schema: `subjectSchema`
 - [x] Фильтры кафедры: загружать из `useDepartments()` (убрать hardcoded)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.7 LibraryPage `/library`
 **Файл:** `features/education/pages/LibraryPage.tsx`
@@ -210,7 +210,7 @@
 - [x] Tab "Kutish": очередь ожидания
 - [x] Zod schemas: `bookSchema`, `loanSchema`
 - [x] Поиск книг по названию/автору/ISBN
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.8 AlumniPage `/alumni`
 
@@ -224,7 +224,7 @@
 - [x] Zod schema: `alumniSchema`
 - [x] Фильтры: год выпуска, факультет, статус трудоустройства
 - [x] Экспорт в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.9 InternshipPage `/internship`
 **Файл:** `features/education/pages/InternshipPage.tsx`
@@ -235,7 +235,7 @@
 - [x] Edit + Delete
 - [x] Zod schema: `internshipSchema`
 - [x] Tabs: Joriy (текущие), Yakunlangan (завершённые)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.10 MyStudentsPage `/my-students`
 **Файл:** `features/education/pages/MyStudentsPage.tsx`
@@ -245,7 +245,7 @@
 - [x] Убрать inline mock генераторы если есть
 - [x] Фильтр по группе (Combobox)
 - [x] Показывать оценки и посещаемость каждого студента
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 4.11 AcademicDepartmentsPage `/departments`
 **Файл:** `features/education/pages/AcademicDepartmentsPage.tsx`
@@ -253,7 +253,7 @@
 **Задачи:**
 - [x] Показывать статистику: кол-во преподавателей, студентов, средний балл
 - [x] Клик по кафедре → детальная страница или SlideOver
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -266,7 +266,7 @@
 - [x] Подключить все графики к реальным данным (убрать hardcoded если есть)
 - [x] DateRangePicker для фильтрации по периоду
 - [x] Drill-down: клик по факультету → фильтр контрактов
-- [ ] i18n: все лейблы карточек и графиков
+- [x] i18n: все лейблы карточек и графиков
 
 ### 5.2 ContractsListPage `/finance/contracts`
 **Файл:** `features/finance/pages/ContractsListPage.tsx`
@@ -277,7 +277,7 @@
 - [x] Кнопка "Excel eksport" → `/finance/contracts/export/`
 - [x] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
 - [x] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
-- [ ] i18n: все тексты (TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`)
+- [x] i18n: все тексты (TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`)
 
 ### 5.3 ContractDetailPage `/finance/contracts/:id`
 **Файл:** `features/finance/pages/ContractDetailPage.tsx`
@@ -286,7 +286,7 @@
 - [x] Кнопка "Onlayn to'lov" → показать Payme/Click ссылки из `/contracts/{id}/payment-link/`
 - [x] Кнопка "Shartnomani yuklab olish" → PDF download
 - [x] Кнопка "Nazad" → navigate('/finance/contracts')
-- [ ] i18n: все тексты (убрать hardcoded status labels)
+- [x] i18n: все тексты (убрать hardcoded status labels)
 - [x] PaymentTimeline: подключить к реальной истории платежей
 
 ### 5.4 DebtorsListPage `/finance/debtors`
@@ -297,7 +297,7 @@
 - [x] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
 - [x] Bulk SMS: массовая рассылка выбранным должникам
 - [x] Экспорт списка должников в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 5.5 PaymentsListPage `/finance/payments`
 **Файл:** `features/finance/pages/PaymentsListPage.tsx`
@@ -307,7 +307,7 @@
 - [x] DateRangePicker вместо простых пресетов
 - [x] Receipt печать: кнопка на каждом платеже
 - [x] Экспорт в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 5.6 ScholarshipsPage `/finance/scholarship`
 **Файл:** `features/finance/pages/ScholarshipsPage.tsx`
@@ -316,7 +316,7 @@
 - [x] Update: редактирование стипендии в Modal
 - [ ] Убрать hardcoded TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`
 - [x] Массовое назначение стипендии (bulk create)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 5.7 FinanceReportPage `/finance/report`
 **Файл:** `features/finance/pages/FinanceReportPage.tsx`
@@ -324,7 +324,7 @@
 **Задачи:**
 - [x] PDF export: подключить к реальному endpoint
 - [ ] Убрать hardcoded report types → из API
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 5.8 PayrollPage `/finance/payroll`
 **Файл:** `features/finance/pages/PayrollPage.tsx`
@@ -333,7 +333,7 @@
 - [x] Кнопка "Excel eksport" → подключить к реальному endpoint
 - [x] Кнопка "Hisoblash" (Рассчитать) → `useProcessPayroll()` mutation
 - [x] Убрать hardcoded month/year options
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 5.9 BudgetPage `/finance/budget`
 **Файл:** `features/finance/pages/BudgetPage.tsx`
@@ -342,7 +342,7 @@
 - [x] CRUD: редактирование бюджетных категорий (плановые суммы)
 - [ ] Убрать hardcoded color map → в config
 - [x] Фильтр по кварталу
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -352,7 +352,7 @@
 **Файл:** `features/hr/pages/HrDashboardPage.tsx` | **Задачи:**
 - [x] DateRangePicker для периода
 - [x] Drill-down по метрикам (клик → фильтр)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.2 EmployeesListPage `/hr/employees`
 **Файл:** `features/hr/pages/EmployeesListPage.tsx` | **Статус:** C✓ R✓, нет U/D
@@ -362,7 +362,7 @@
 - [x] Убрать hardcoded position list (строки 122-127) → из API
 - [x] Bulk actions: массовый экспорт
 - [x] Кнопка "Excel eksport" → `/hr/employees/export/`
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.3 EmployeeProfilePage `/hr/employees/:id`
 **Файл:** `features/hr/pages/EmployeeProfilePage.tsx` | **Статус:** Read ✓
@@ -372,7 +372,7 @@
 - [x] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
 - [x] Кнопка "Tahrirlash" → navigate к форме редактирования
 - [x] Печать карточки сотрудника → PDF
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.4 DepartmentsPage `/hr/departments`
 **Файл:** `features/hr/pages/DepartmentsPage.tsx` | **Статус:** Read, нет CRUD
@@ -380,7 +380,7 @@
 - [x] CRUD: создание/редактирование bo'lim в Modal
 - [x] DepartmentForm: name, code, facultyId, headId (Combobox из employees)
 - [x] Delete: ConfirmDialog
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.5 OrdersPage `/hr/orders`
 **Файл:** `features/hr/pages/OrdersPage.tsx` | **Статус:** C✓ R✓, нет U/D
@@ -388,7 +388,7 @@
 - [x] Update: редактирование buyruq (статус: draft → review → signed)
 - [x] Delete: ConfirmDialog
 - [x] Генерация PDF приказа → `/hr/orders/{id}/pdf/`
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.6 AttendancePage `/hr/attendance`
 **Файл:** `features/hr/pages/AttendancePage.tsx` | **Статус:** Read
@@ -396,7 +396,7 @@
 - [x] Убрать hardcoded MONTH_NAMES, department options
 - [x] Кнопка "Excel eksport" — подключить к endpoint
 - [x] Bulk-отметка (выходной для всех)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 6.7 LeavesPage `/hr/leaves`
 **Файл:** `features/hr/pages/LeavesPage.tsx` | **Статус:** C✓ R✓ U✓
@@ -404,7 +404,7 @@
 - [x] Delete: отмена ta'til запроса
 - [x] Календарь отпусков (визуализация)
 - [x] DateRangePicker для фильтрации
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -419,7 +419,7 @@
 - [x] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
 - [x] Bulk actions: массовое изменение статуса
 - [x] Кнопка "Excel eksport" → `/crm/leads/export/`
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 7.2 CrmKanbanPage `/crm/kanban`
 **Файл:** `features/crm/pages/CrmKanbanPage.tsx`
@@ -427,7 +427,7 @@
 - [x] Подключить к `useLeads({})` → группировка по статусу
 - [x] Drag-and-drop: перемещение карточки → `useUpdateLead({status: newStatus})`
 - [x] Клик по карточке → LeadDetailSlide (просмотр + история)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 7.3 CrmReportPage `/crm/report`
 **Файл:** `features/crm/pages/CrmReportPage.tsx`
@@ -435,7 +435,7 @@
 - [x] Подключить к `useCrmStats()` — реальные данные
 - [x] DateRangePicker для периода
 - [x] Графики: воронка (BarChart), источники (DonutChart), динамика (LineChart)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -449,7 +449,7 @@
 - [x] Zod schema: `taskSchema`
 - [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
 - [x] Drag-and-drop обновление статуса через mutation
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 8.2 NotificationsPage `/notifications`
 **Файл:** `features/operations/pages/NotificationsPage.tsx`
@@ -458,7 +458,7 @@
 - [x] "Barchasini o'qilgan" → `useMarkAllRead()` mutation
 - [x] Delete: удаление bildirishnoma
 - [x] Tabs по типам (info, warning, success, system)
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 8.3 MessagesPage `/messages`
 **Файл:** `features/operations/pages/MessagesPage.tsx`
@@ -467,7 +467,7 @@
 - [x] Compose: `useSendMessage()` mutation
 - [x] Real-time: polling каждые 10 сек
 - [x] Split layout: треды слева, сообщения справа
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 8.4 AppealsPage `/appeals`
 **Файл:** `features/operations/pages/AppealsPage.tsx`
@@ -476,7 +476,7 @@
 - [x] AppealForm: title, description, category
 - [x] Комментарии: `useAddComment()` mutation
 - [x] Фильтры: status tabs, category select
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 8.5 NewsPage `/news`
 **Файл:** `features/operations/pages/NewsPage.tsx`
@@ -485,7 +485,7 @@
 - [x] NewsForm: title, content, category, tags
 - [x] Grid/List toggle view
 - [x] Фильтры: category, tag
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 8.6 ReportsPage `/reports`
 **Файл:** `features/operations/pages/ReportsPage.tsx`
@@ -493,7 +493,7 @@
 - [x] Подключить к `useReportTemplates()`
 - [x] Генерация: `useGenerateReport()` → скачивание файла
 - [x] Параметры отчёта в Modal
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -504,7 +504,7 @@
 **Задачи:**
 - [x] Клик по строке → `/teachers/:id` (TeacherProfilePage)
 - [x] Фильтры: кафедра (Combobox), степень, звание, форма занятости
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 9.2 TeacherProfilePage `/teachers/:id` — **НОВАЯ СТРАНИЦА**
 **Файл:** `features/teachers/pages/TeacherProfilePage.tsx` — СОЗДАТЬ
@@ -522,26 +522,26 @@
 - [x] ProjectForm создан (title, leaderId, description, fundAmount, dates)
 - [x] ArticleForm создан (title, authors, journal, year, type, doi)
 - [x] Zod schemas: `projectSchema`, `articleSchema`
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 10.2 ThesesPage `/theses`
 **Задачи:**
 - [x] ThesisForm создан в Modal
 - [x] Zod schema: `thesisSchema`
 - [x] Фильтры: stage tabs, type select, supervisor
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 10.3 ConferencesPage `/conferences`
 **Задачи:**
 - [x] ConferenceForm создан в SlideOver
 - [x] Tabs: Kelgusi / O'tgan
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 10.4 PatentsPage `/patents`
 **Задачи:**
 - [x] PatentForm создан в Modal
 - [ ] Убрать hardcoded STATUS_META → i18n
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -551,25 +551,25 @@
 **Задачи:**
 - [x] UserForm: полная форма (firstName, lastName, phone, email, password, roles[])
 - [x] Edit + Block/Unblock + Reset password
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 11.2 RolesPage `/system/roles`
 **Задачи:**
 - [ ] Убрать hardcoded MODULE_GROUPS → из API
 - [x] Кастомные роли: CRUD
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 11.3 PermissionMatrixPage `/system/permissions`
 **Задачи:**
 - [x] Click → toggle permission → `useUpdateRolePermissions()` mutation
 - [ ] Убрать hardcoded verbs/modules
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 11.4 AuditLogPage `/system/audit`
 **Задачи:**
 - [x] DateRangePicker
 - [x] Экспорт логов в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -580,20 +580,20 @@
 - [x] Folder sidebar: `useFolders()`
 - [x] CRUD: DocumentForm в SlideOver (title, category, folderId, priority, file)
 - [x] FileUpload
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 12.2 AnalyticsPage `/analytics`
 **Задачи:**
 - [x] Подключить к `useAnalytics(params)` — реальные данные
 - [x] DateRangePicker
 - [x] Графики: тренды, сравнение, top groups
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 12.3 ReferencesPage `/reference`
 **Задачи:**
 - [x] CRUD для каждого типа справочника
 - [x] DictionaryItemForm: code, name, description, sortOrder
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -604,20 +604,20 @@
 - [x] BuildingSelector → floor → room grid
 - [x] CRUD для комнат: DormRoomForm
 - [x] Поселение/выселение студентов
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 13.2 EquipmentPage `/equipment`
 **Задачи:**
 - [x] CRUD: EquipmentForm в SlideOver
 - [x] Фильтры: category, status, location
 - [x] Экспорт в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 13.3 TransportPage `/transport`
 **Задачи:**
 - [x] CRUD: VehicleForm в Modal
 - [x] Status tabs
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -630,7 +630,7 @@
 - [x] AlertBanner для товаров ниже минимума
 - [ ] Убрать hardcoded CATEGORIES, STATUS_CONFIG
 - [x] Экспорт в Excel
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -640,13 +640,13 @@
 **Задачи:**
 - [x] Пагинация
 - [x] DateRangePicker
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 15.2 StaffingPage `/staffing`
 **Задачи:**
 - [x] Фильтр по bo'lim
 - [x] ProgressBar для fill rate
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -657,13 +657,13 @@
 - [x] Подключить к `useStudentCabinet()` — реальные данные
 - [x] Hero banner, расписание, оценки, экзамены, уведомления
 - [x] Quick actions: оплата, справка
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 16.2 TeacherCabinetPage `/teacher-cabinet`
 **Задачи:**
 - [x] Подключить к `useTeacherCabinet()` — реальные данные
 - [x] Сегодняшние занятия, группы, pending tasks
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 
@@ -674,13 +674,13 @@
 - [x] FileUpload для фото
 - [x] `useUpdateProfile()` mutation
 - [x] Форма: firstName, lastName, phone, email
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ### 17.2 SettingsPage `/settings`
 **Задачи:**
 - [x] Смена пароля: `useChangePassword()` с Zod валидацией
 - [x] Notification settings → API persistence
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 
 ---
 

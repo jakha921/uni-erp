@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -14,30 +15,6 @@ import type { Exam, ExamStatus, ExamType, CreateExamDto } from '@/types/educatio
 import type { CreateExamFormData } from '../schemas/exam.schema';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
-const PAGE_TABS = [
-  { id: 'sessions', label: 'Sessiyalar' },
-  { id: 'calendar', label: 'Imtihonlar jadvali' },
-  { id: 'tickets', label: 'Biletlar' },
-  { id: 'vedomost', label: 'Vedomostlar' },
-];
-
-const STATUS_LABELS: Record<ExamStatus, { variant: 'success' | 'default' | 'info'; label: string }> = {
-  active: { variant: 'success', label: 'Faol' },
-  completed: { variant: 'default', label: 'Yakunlangan' },
-  scheduled: { variant: 'info', label: 'Rejalashtirilgan' },
-};
-
-const TYPE_LABELS: Record<ExamType, { label: string; variant: 'info' | 'warning' }> = {
-  midterm: { label: 'Oraliq', variant: 'info' },
-  final: { label: 'Yakuniy', variant: 'warning' },
-};
-
-interface Ticket {
-  id: number;
-  number: number;
-  questions: string[];
-}
-
 const TICKET_QUESTIONS = [
   ['Algoritmlarning predmeti va vazifalari', 'Murakkablik nazariyasi', 'Amaliy masala'],
   ['Daraxt strukturalari va funksiyasi', 'Iqtisodiyot asoslari', 'Amaliy masala'],
@@ -50,13 +27,10 @@ const TICKET_QUESTIONS = [
   ["Mashinaviy o'rganish kirish", 'Neyron tarmoqlar', 'Amaliy masala'],
 ];
 
-const TICKETS: Ticket[] = TICKET_QUESTIONS.map((questions, i) => ({
-  id: i + 1,
-  number: i + 1,
-  questions,
-}));
+const TICKETS = TICKET_QUESTIONS.map((questions, i) => ({ id: i + 1, number: i + 1, questions }));
 
 export function ExamsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('sessions');
   const [formOpen, setFormOpen] = useState(false);
   const [editExam, setEditExam] = useState<Exam | null>(null);
@@ -64,6 +38,13 @@ export function ExamsPage() {
   const [filterGroupId, setFilterGroupId] = useState('');
   const [filterSubjectId, setFilterSubjectId] = useState('');
   const [filterSemesterId, setFilterSemesterId] = useState('');
+
+  const PAGE_TABS = [
+    { id: 'sessions', label: t('education.tabSessions') },
+    { id: 'calendar', label: t('education.tabCalendar') },
+    { id: 'tickets', label: t('education.tabTickets') },
+    { id: 'vedomost', label: t('education.tabVedomost') },
+  ];
 
   const { data: subjectsData } = useSubjects();
   const { data: groupsData } = useGroups();
@@ -74,7 +55,7 @@ export function ExamsPage() {
 
   const subjects = (subjectsData?.data ?? []).map((s) => ({ id: s.id, name: s.name }));
   const groups = (groupsData ?? []).map((g) => ({ id: g.id, name: g.name }));
-  const teachers = (teachersData?.data ?? []).map((t) => ({ id: t.id, fullName: t.fullName }));
+  const teachers = (teachersData?.data ?? []).map((teacher) => ({ id: teacher.id, fullName: teacher.fullName }));
 
   const handleCreate = (data: CreateExamFormData) => {
     const dto: CreateExamDto = { ...data, subjectId: Number(data.subjectId), groupId: Number(data.groupId), teacherId: Number(data.teacherId) };
@@ -97,12 +78,12 @@ export function ExamsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Imtihonlar"
-        subtitle="Sessiyalar, jadval va natijalar"
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Imtihonlar' }]}
+        title={t('education.examsTitle')}
+        subtitle={t('education.examsSubtitle')}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('education.examsTitle') }]}
         actions={
           <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" /> Yangi imtihon
+            <Plus className="h-4 w-4 mr-1.5" /> {t('education.addExam')}
           </Button>
         }
       />
@@ -116,7 +97,7 @@ export function ExamsPage() {
             onChange={(e) => setFilterGroupId(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha guruhlar</option>
+            <option value="">{t('education.allGroups')}</option>
             {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
           <select
@@ -124,7 +105,7 @@ export function ExamsPage() {
             onChange={(e) => setFilterSubjectId(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha fanlar</option>
+            <option value="">{t('education.allSubjects')}</option>
             {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <select
@@ -132,7 +113,7 @@ export function ExamsPage() {
             onChange={(e) => setFilterSemesterId(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha semestrlar</option>
+            <option value="">{t('education.allSemesters')}</option>
             <option value="1">2025-2026 - 2-semester</option>
             <option value="2">2025-2026 - 1-semester</option>
           </select>
@@ -181,9 +162,9 @@ export function ExamsPage() {
         open={!!deleteExam}
         onClose={() => setDeleteExam(null)}
         onConfirm={handleDelete}
-        title="Imtihonni o'chirish"
-        message={`"${deleteExam?.subjectName}" imtihonini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteExamTitle')}
+        message={t('education.deleteExamConfirm', { subject: deleteExam?.subjectName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteExamMutation.isPending}
       />
@@ -192,8 +173,15 @@ export function ExamsPage() {
 }
 
 function SessionsTab() {
+  const { t } = useTranslation();
   const { data, isLoading } = useExamsList();
   const exams = data?.data ?? [];
+
+  const STATUS_LABELS: Record<ExamStatus, { variant: 'success' | 'default' | 'info'; label: string }> = {
+    active: { variant: 'success', label: t('education.statusActive') },
+    completed: { variant: 'default', label: t('education.statusCompleted') },
+    scheduled: { variant: 'info', label: t('education.statusScheduled') },
+  };
 
   const sessions = useMemo(() => {
     const statusGroups: Record<ExamStatus, Exam[]> = { active: [], completed: [], scheduled: [] };
@@ -218,11 +206,11 @@ function SessionsTab() {
             <p className="mt-1 text-xs text-slate-500">{s.period}</p>
             <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
               <div>
-                <p className="text-[11px] text-slate-400">Imtihonlar</p>
+                <p className="text-[11px] text-slate-400">{t('education.examsCount')}</p>
                 <p className="text-xl font-bold text-slate-900 tabular-nums">{s.exams}</p>
               </div>
               <div>
-                <p className="text-[11px] text-slate-400">Talabalar</p>
+                <p className="text-[11px] text-slate-400">{t('education.studentsCount')}</p>
                 <p className="text-xl font-bold text-slate-900 tabular-nums">{s.students.toLocaleString()}</p>
               </div>
             </div>
@@ -234,24 +222,36 @@ function SessionsTab() {
 }
 
 function CalendarTab({ params, onEdit, onDelete }: { params?: { groupId?: number; subjectId?: number; semesterId?: number }; onEdit: (exam: Exam) => void; onDelete: (exam: Exam) => void }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useExamsList(params);
   const exams = data?.data ?? [];
 
+  const STATUS_LABELS: Record<ExamStatus, { variant: 'success' | 'default' | 'info'; label: string }> = {
+    active: { variant: 'success', label: t('education.statusActive') },
+    completed: { variant: 'default', label: t('education.statusCompleted') },
+    scheduled: { variant: 'info', label: t('education.statusScheduled') },
+  };
+
+  const TYPE_LABELS: Record<ExamType, { label: string; variant: 'info' | 'warning' }> = {
+    midterm: { label: t('education.typeOraliq'), variant: 'info' },
+    final: { label: t('education.typeYakuniy'), variant: 'warning' },
+  };
+
   const examColumns: Column<Exam>[] = [
-    { key: 'subjectName', header: 'Fan', render: (row) => <span className="text-[13.5px] font-medium text-slate-900">{row.subjectName}</span> },
-    { key: 'groupName', header: 'Guruh', render: (row) => <span className="text-[12.5px] text-slate-600">{row.groupName}</span> },
-    { key: 'examDate', header: 'Sana', render: (row) => <span className="text-[13px] text-slate-900 tabular-nums">{row.examDate}</span> },
-    { key: 'room', header: 'Xona', render: (row) => <span className="text-[13px] text-slate-600">{'№'} {row.room}</span> },
-    { key: 'teacherName', header: "O'qituvchi", render: (row) => <span className="text-[13px] text-slate-600">{row.teacherName}</span> },
+    { key: 'subjectName', header: t('education.subject'), render: (row) => <span className="text-[13.5px] font-medium text-slate-900">{row.subjectName}</span> },
+    { key: 'groupName', header: t('students.group'), render: (row) => <span className="text-[12.5px] text-slate-600">{row.groupName}</span> },
+    { key: 'examDate', header: t('common.date'), render: (row) => <span className="text-[13px] text-slate-900 tabular-nums">{row.examDate}</span> },
+    { key: 'room', header: t('education.room'), render: (row) => <span className="text-[13px] text-slate-600">{'№'} {row.room}</span> },
+    { key: 'teacherName', header: t('students.teacher'), render: (row) => <span className="text-[13px] text-slate-600">{row.teacherName}</span> },
     {
-      key: 'type', header: 'Tur',
+      key: 'type', header: t('education.examType'),
       render: (row) => {
         const cfg = TYPE_LABELS[row.type];
         return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
       },
     },
     {
-      key: 'status', header: 'Holat',
+      key: 'status', header: t('common.status'),
       render: (row) => {
         const cfg = STATUS_LABELS[row.status];
         return <Badge variant={cfg.variant} dot>{cfg.label}</Badge>;
@@ -276,24 +276,25 @@ function CalendarTab({ params, onEdit, onDelete }: { params?: { groupId?: number
 
   return (
     <Card noPadding>
-      <DataTable data={exams} columns={examColumns} keyField="id" emptyMessage="Imtihonlar topilmadi" />
+      <DataTable data={exams} columns={examColumns} keyField="id" emptyMessage={t('education.examsNotFound')} />
     </Card>
   );
 }
 
 function TicketsTab() {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {TICKETS.map((t) => (
-        <Card key={t.id}>
+      {TICKETS.map((ticket) => (
+        <Card key={ticket.id}>
           <div className="flex items-center gap-3 mb-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-sm font-bold text-green-700">
-              No {t.number}
+              No {ticket.number}
             </div>
-            <span className="text-[13px] font-semibold text-slate-900">Bilet {t.number}</span>
+            <span className="text-[13px] font-semibold text-slate-900">{t('education.ticket')} {ticket.number}</span>
           </div>
           <div className="space-y-1 text-xs text-slate-500 leading-relaxed">
-            {t.questions.map((q, qi) => (
+            {ticket.questions.map((q, qi) => (
               <div key={qi}>
                 <span className="font-semibold text-slate-700">{qi + 1}.</span> {q}
               </div>
@@ -306,6 +307,7 @@ function TicketsTab() {
 }
 
 function VedomostTab() {
+  const { t } = useTranslation();
   const { data, isLoading } = useExamsList();
   const exams = data?.data ?? [];
   const firstExam = exams[0];
@@ -325,19 +327,19 @@ function VedomostTab() {
 
   const vedomostColumns: Column<VedomostRow>[] = [
     { key: 'idx', header: 'No', width: '50px', render: (_, index) => <span className="text-slate-500">{index + 1}</span> },
-    { key: 'student', header: 'Talaba', render: (row) => <span className="font-medium text-slate-900">{row.student}</span> },
-    { key: 'ticket', header: 'Bilet', render: (row) => <span className="text-slate-600">No {row.ticket}</span> },
-    { key: 'oral', header: "Og'zaki", className: 'text-center', render: (row) => <span className="tabular-nums">{row.oral}</span> },
-    { key: 'written', header: 'Yozma', className: 'text-center', render: (row) => <span className="tabular-nums">{row.written}</span> },
-    { key: 'test', header: 'Test', className: 'text-center', render: (row) => <span className="tabular-nums">{row.test}</span> },
+    { key: 'student', header: t('education.student'), render: (row) => <span className="font-medium text-slate-900">{row.student}</span> },
+    { key: 'ticket', header: t('education.ticket'), render: (row) => <span className="text-slate-600">No {row.ticket}</span> },
+    { key: 'oral', header: t('education.ticketOral'), className: 'text-center', render: (row) => <span className="tabular-nums">{row.oral}</span> },
+    { key: 'written', header: t('education.ticketWritten'), className: 'text-center', render: (row) => <span className="tabular-nums">{row.written}</span> },
+    { key: 'test', header: t('education.ticketTest'), className: 'text-center', render: (row) => <span className="tabular-nums">{row.test}</span> },
     {
-      key: 'grade', header: 'Baho',
+      key: 'grade', header: t('education.letterGrade'),
       render: (row) => {
         const bg = row.grade >= 5 ? 'bg-green-100 text-green-800' : row.grade === 4 ? 'bg-emerald-50 text-emerald-700' : row.grade === 3 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700';
         return <span className={`inline-flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-bold ${bg}`}>{row.grade}</span>;
       },
     },
-    { key: 'sign', header: 'Imzo', render: () => <span className="text-xs italic text-slate-400">_______</span> },
+    { key: 'sign', header: t('education.ticketSign'), render: () => <span className="text-xs italic text-slate-400">_______</span> },
   ];
 
   return (
@@ -346,11 +348,11 @@ function VedomostTab() {
         <div className="border-b border-slate-100 px-6 py-4">
           <h3 className="text-base font-semibold text-slate-900">{firstExam.subjectName} — {firstExam.groupName}</h3>
           <p className="mt-0.5 text-xs text-slate-500">
-            Imtihon: {firstExam.examDate} &middot; O&apos;qituvchi: {firstExam.teacherName} &middot; Xona: {firstExam.room}
+            {t('education.examLabel')}: {firstExam.examDate} &middot; {t('students.teacher')}: {firstExam.teacherName} &middot; {t('education.room')}: {firstExam.room}
           </p>
         </div>
       )}
-      <DataTable data={vedomostRows} columns={vedomostColumns} keyField="id" emptyMessage="Vedomost bo'sh" />
+      <DataTable data={vedomostRows} columns={vedomostColumns} keyField="id" emptyMessage={t('education.vedomostEmpty')} />
     </Card>
   );
 }

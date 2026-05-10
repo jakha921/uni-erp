@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Banknote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge } from '@/components/ui';
@@ -19,7 +20,10 @@ import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
 
 const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
 
+const COURSE_LEVELS = ['1-kurs', '2-kurs', '3-kurs', '4-kurs'];
+
 export function FinanceDashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -53,14 +57,14 @@ export function FinanceDashboardPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Moliyaviy panel"
-        subtitle="Kontrakt to'lovlari va moliyaviy ko'rsatkichlar"
-        breadcrumbs={[{ label: 'Moliya' }]}
+        title={t('finance.dashboardTitle')}
+        subtitle={t('finance.dashboardSubtitle')}
+        breadcrumbs={[{ label: t('nav.finance') }]}
         actions={
           <DateRangePicker
             from={dateFrom}
             to={dateTo}
-            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+            onChange={(f, to) => { setDateFrom(f); setDateTo(to); }}
           />
         }
       />
@@ -87,17 +91,16 @@ export function FinanceDashboardPage() {
           onFacultyClick={(faculty) => navigate(`/finance/contracts?faculty=${encodeURIComponent(faculty)}`)}
         />
         <MonthlyTrend data={stats.byMonth ?? []} />
-        {/* Course-based chart placeholder using bar approach */}
-        <Card title="Kurslar bo'yicha" subtitle="To'langan va qarz nisbati">
+        <Card title={t('finance.byCourse')} subtitle={t('finance.paidDebtRatio')}>
           <div className="flex items-end gap-4" style={{ height: 200 }}>
-            {['1-kurs', '2-kurs', '3-kurs', '4-kurs'].map((level) => {
+            {COURSE_LEVELS.map((level) => {
               const levelContracts = (contractsData?.data ?? []).filter(
                 (c) => c.level === level,
               );
               const total = levelContracts.reduce((s, c) => s + c.contractAmount, 0);
               const paid = levelContracts.reduce((s, c) => s + c.paidAmount, 0);
               const maxTotal = Math.max(
-                ...['1-kurs', '2-kurs', '3-kurs', '4-kurs'].map((l) =>
+                ...COURSE_LEVELS.map((l) =>
                   (contractsData?.data ?? [])
                     .filter((c) => c.level === l)
                     .reduce((s, c) => s + c.contractAmount, 0),
@@ -127,11 +130,11 @@ export function FinanceDashboardPage() {
           <div className="mt-3 flex items-center justify-center gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />
-              To&apos;langan
+              {t('finance.paidAmount')}
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-sm bg-red-100" />
-              Qarz
+              {t('finance.debtAmount')}
             </span>
           </div>
         </Card>
@@ -140,22 +143,22 @@ export function FinanceDashboardPage() {
       {/* Bottom panels */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Recent payments */}
-        <Card title="So'nggi to'lovlar" noPadding>
+        <Card title={t('finance.recentPayments')} noPadding>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-slate-50/50">
                   <th className="px-4 py-2.5 text-left text-xs font-medium uppercase text-slate-500">
-                    Sana
+                    {t('common.date')}
                   </th>
                   <th className="px-4 py-2.5 text-left text-xs font-medium uppercase text-slate-500">
-                    Talaba
+                    {t('education.student')}
                   </th>
                   <th className="px-4 py-2.5 text-right text-xs font-medium uppercase text-slate-500">
-                    Summa
+                    {t('common.amount')}
                   </th>
                   <th className="px-4 py-2.5 text-left text-xs font-medium uppercase text-slate-500">
-                    Usul
+                    {t('finance.method')}
                   </th>
                 </tr>
               </thead>
@@ -188,19 +191,19 @@ export function FinanceDashboardPage() {
                 onClick={() => navigate('/finance/payments')}
                 className="text-sm font-medium text-primary-600 hover:text-primary-700"
               >
-                Barcha to&apos;lovlar &rarr;
+                {t('finance.allPayments')} &rarr;
               </button>
             </div>
           )}
         </Card>
 
         {/* Top debtors */}
-        <Card title="Top qarzdorlar">
+        <Card title={t('finance.topDebtors')}>
           <div className="flex flex-col gap-3">
             {topDebtors.length === 0 && (
               <div className="flex flex-col items-center py-8 text-center">
                 <Banknote className="mb-2 h-8 w-8 text-slate-300" />
-                <p className="text-sm text-slate-500">Qarzdorlar yo&apos;q</p>
+                <p className="text-sm text-slate-500">{t('finance.noDebtors')}</p>
               </div>
             )}
             {topDebtors.map((d) => (
@@ -212,7 +215,7 @@ export function FinanceDashboardPage() {
               onClick={() => navigate('/finance/debtors')}
               className="mt-3 text-sm font-medium text-primary-600 hover:text-primary-700"
             >
-              Barcha qarzdorlar &rarr;
+              {t('finance.allDebtors')} &rarr;
             </button>
           )}
         </Card>
