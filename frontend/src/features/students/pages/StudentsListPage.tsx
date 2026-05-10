@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2, Download, X } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
 import { Card } from '@/components/data-display/Card';
@@ -27,6 +27,8 @@ export function StudentsListPage() {
   const [sortBy, setSortBy] = useState<string | undefined>();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [deleteStudent, setDeleteStudent] = useState<StudentListItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const pageSize = 25;
 
   const params = useMemo<StudentListParams>(
@@ -166,6 +168,37 @@ export function StudentsListPage() {
         </div>
       </Card>
 
+      {/* Bulk actions bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
+          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Download className="h-3.5 w-3.5" />}
+              onClick={() => { /* export selected */ }}
+            >
+              Eksport
+            </Button>
+            <Button
+              size="sm"
+              leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+              className="bg-red-500 text-white hover:bg-red-600"
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              O&apos;chirish
+            </Button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-1 rounded p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <ConfirmDialog
         open={!!deleteStudent}
         onClose={() => setDeleteStudent(null)}
@@ -178,6 +211,19 @@ export function StudentsListPage() {
         confirmLabel="O'chirish"
         variant="danger"
         loading={deleteStudentMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        onClose={() => setBulkDeleteOpen(false)}
+        onConfirm={() => {
+          setBulkDeleteOpen(false);
+          setSelectedIds(new Set());
+        }}
+        title="Talabalarni o'chirish"
+        message={`${selectedIds.size} ta talabani o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
       />
 
       {/* Table */}
@@ -199,6 +245,8 @@ export function StudentsListPage() {
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={handleSort}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
             />
             {data && (
               <div className="border-t border-[#F1F5F9] px-4 py-3">

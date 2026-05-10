@@ -88,7 +88,7 @@
 **Задачи:**
 - [ ] i18n: все тексты (заголовки таблицы, фильтры, кнопки)
 - [x] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
-- [ ] Bulk actions: чекбоксы для массового удаления/экспорта
+- [x] Bulk actions: чекбоксы для массового удаления/экспорта
 - [ ] Кнопка "Excel eksport" → вызов `/students/export/`
 - [ ] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
 - [x] Фильтры факультет/группа: заменить hardcoded массивы на данные из `useFaculties()`, `useGroups()`

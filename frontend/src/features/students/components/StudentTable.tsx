@@ -14,6 +14,8 @@ interface StudentTableProps {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   onSort?: (key: string) => void;
+  selectedIds?: Set<string | number>;
+  onSelectionChange?: (ids: Set<string | number>) => void;
 }
 
 export function StudentTable({
@@ -25,6 +27,8 @@ export function StudentTable({
   sortBy,
   sortOrder,
   onSort,
+  selectedIds,
+  onSelectionChange,
 }: StudentTableProps) {
   const navigate = useNavigate();
 
@@ -103,6 +107,9 @@ export function StudentTable({
       data={data}
       columns={columns}
       keyField="id"
+      selectable={!!onSelectionChange}
+      selectedIds={selectedIds}
+      onSelectionChange={onSelectionChange}
       onRowClick={(row) => navigate(`/students/${row.id}`)}
       sortBy={sortBy}
       sortOrder={sortOrder}
