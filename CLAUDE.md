@@ -57,18 +57,27 @@ backend/
 │   ├── urls.py            # /api/v1/ prefix for all apps
 │   ├── wsgi.py, asgi.py
 ├── apps/
-│   ├── core/              # Branch, Faculty, Department, Specialty, Group, AcademicYear, Semester
+│   ├── core/              # Branch, Faculty, Department, Specialty, Group, AcademicYear, Semester + export/pdf/sms/notifications utilities
 │   ├── accounts/          # User (phone auth), UserRole, JWT login/logout/me, RBAC permissions
-│   ├── students/          # Student CRUD, statistics, grades, attendance
-│   ├── finance/           # Contract, Payment, Scholarship, Dashboard stats
+│   ├── students/          # Student CRUD, statistics, grades, attendance, Excel/PDF export
+│   ├── finance/           # Contract, Payment, Scholarship, Dashboard, Payme/Click integration
 │   ├── education/         # Subject, Schedule, Attendance, Grade (bulk endpoints)
-│   └── hr/                # Employee, HrOrder, Leave, HrAttendance, Dashboard
+│   ├── hr/                # Employee, HrOrder, Leave, HrAttendance, Dashboard, Excel export
+│   ├── crm/               # Lead CRUD, stats, bulk status, Excel export
+│   ├── operations/        # Task, Notification, Appeal, News CRUD
+│   ├── system/            # System user management, roles, audit log
+│   ├── infrastructure/    # DormBuilding, DormRoom, Equipment, Vehicle CRUD
+│   ├── science/           # ResearchProject, Article, Grant, Conference, Thesis, Patent
+│   ├── warehouse/         # WarehouseItem, StockMovement CRUD + stats
+│   └── legacy/            # LegacyOrder, StaffingPosition (read-only archive)
 ├── manage.py
 ├── pyproject.toml
 ├── Dockerfile, Dockerfile.dev
 ```
 
 Each app: `models.py`, `serializers.py`, `views.py`, `urls.py`, `filters.py`, `admin.py`, `tests/`, `management/commands/seed_*.py`
+
+**Seed commands (run in order):** `seed_core` → `seed_students` → `seed_education` → `seed_finance` → `seed_hr` → `seed_crm` → `seed_operations` → `seed_science` → `seed_infrastructure` → `seed_warehouse`
 
 **Key patterns:**
 - `BaseModel` — abstract base with `created_at`, `updated_at`, `created_by`, `updated_by`
@@ -79,7 +88,18 @@ Each app: `models.py`, `serializers.py`, `views.py`, `urls.py`, `filters.py`, `a
 - Soft delete (`is_deleted`) on Student, Contract, Employee
 - `Contract.recalculate()` — auto-updates `paid_amount`/`debt_amount` after Payment
 
-**API base:** `/api/v1/` — auth, core, students, finance, education, hr, system
+**Reusable utilities in `core/`:**
+- `export.py` — `export_to_excel(data, columns)`, `parse_excel(file, columns)` — branded Excel with `#2DB976` header
+- `pdf.py` — `generate_table_pdf(title, headers, rows)`, `generate_contract_pdf(data)` — styled A4 PDF
+- `sms.py` — `send_sms(phone, message)`, `send_bulk_sms(recipients)` — Eskiz API (eskiz.uz)
+- `notifications.py` — `notify_user()`, `notify_bulk()` — in-app + optional SMS
+
+**Payment integration (`finance/`):**
+- `payment_providers.py` — `generate_payme_link()`, `generate_click_link()`, signature verification
+- `payment_views.py` — `PaymeCallbackView` (JSON-RPC), `ClickCallbackView`, `PaymentLinkView`
+- Env vars: `PAYME_MERCHANT_ID`, `PAYME_SECRET_KEY`, `CLICK_MERCHANT_ID`, `CLICK_SERVICE_ID`, `CLICK_SECRET_KEY`, `ESKIZ_EMAIL`, `ESKIZ_PASSWORD`
+
+**API base:** `/api/v1/` — auth, core, students, finance, education, hr, crm, operations, system, infrastructure, science, warehouse, legacy
 
 ### Frontend (`frontend/src/`)
 
