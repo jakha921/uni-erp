@@ -205,11 +205,11 @@
 **Задачи:**
 - [x] Tab "Katalog": useBooks(params) + CRUD для книг
 - [x] BookForm: title, author, isbn, year, category, totalCopies, location
-- [ ] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
+- [x] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
 - [x] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
 - [ ] Tab "Kutish": очередь ожидания
 - [x] Zod schemas: `bookSchema`, `loanSchema`
-- [ ] Поиск книг по названию/автору/ISBN
+- [x] Поиск книг по названию/автору/ISBN
 - [ ] i18n: все тексты
 
 ### 4.8 AlumniPage `/alumni`
@@ -576,8 +576,8 @@
 
 ### 12.1 DmsPage `/dms`
 **Задачи:**
-- [ ] Folder sidebar: `useFolders()`
-- [ ] CRUD: DocumentForm в SlideOver (title, category, folderId, priority, file)
+- [x] Folder sidebar: `useFolders()`
+- [x] CRUD: DocumentForm в SlideOver (title, category, folderId, priority, file)
 - [ ] FileUpload
 - [ ] i18n: все тексты
 
@@ -624,8 +624,8 @@
 
 ### 14.1 WarehousePage `/warehouse`
 **Задачи:**
-- [ ] CRUD: ItemForm в SlideOver
-- [ ] Tab "Harakatlar": MovementForm в Modal (itemId, type, quantity, note)
+- [x] CRUD: ItemForm в SlideOver
+- [x] Tab "Harakatlar": MovementForm в Modal (itemId, type, quantity, note)
 - [x] AlertBanner для товаров ниже минимума
 - [ ] Убрать hardcoded CATEGORIES, STATUS_CONFIG
 - [ ] Экспорт в Excel

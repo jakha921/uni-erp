@@ -5,7 +5,7 @@ import { Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
-import { BookOpen, Inbox, Plus, Pencil, RotateCcw } from 'lucide-react';
+import { BookOpen, Inbox, Plus, Pencil, RotateCcw, Search } from 'lucide-react';
 import { useBooksList, useLoansList, useCreateBook, useUpdateBook, useCreateLoan, useReturnBook } from '@/api/hooks/useLibrary';
 import { useStudentsList } from '@/api/hooks/useStudents';
 import { BookForm } from '../components/BookForm';
@@ -26,12 +26,13 @@ const BOOK_GRADIENT_TO = ['#1B7A4E', '#1D4ED8', '#B45309', '#6B21A8', '#BE185D',
 
 export function LibraryPage() {
   const [activeTab, setActiveTab] = useState('catalog');
+  const [bookSearch, setBookSearch] = useState('');
   const [bookFormOpen, setBookFormOpen] = useState(false);
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [loanFormOpen, setLoanFormOpen] = useState(false);
   const [returnLoan, setReturnLoan] = useState<BookLoan | null>(null);
 
-  const { data: booksData } = useBooksList();
+  const { data: booksData } = useBooksList({ search: bookSearch || undefined });
   const { data: loansData } = useLoansList();
   const { data: studentsData } = useStudentsList({ page: 1, pageSize: 200 });
   const createBook = useCreateBook();
@@ -97,7 +98,22 @@ export function LibraryPage() {
 
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="mt-4">
+      {activeTab === 'catalog' && (
+        <div className="mt-3 mb-3">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={bookSearch}
+              onChange={(e) => setBookSearch(e.target.value)}
+              placeholder="Nomi, muallif yoki ISBN bo'yicha..."
+              className="h-9 w-full rounded-lg border border-border pl-8 pr-3 text-[13px] outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-0">
         {activeTab === 'catalog' && (
           <CatalogTab books={books} onEdit={(book) => setEditBook(book)} />
         )}
