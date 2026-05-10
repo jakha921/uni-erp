@@ -160,7 +160,6 @@ class FinanceDashboardView(APIView):
 
     def get(self, request: Request) -> Response:
         contracts = Contract.objects.filter(is_deleted=False)
-        payments = Payment.objects.all()
         scholarships = Scholarship.objects.filter(status="active")
 
         totals = contracts.aggregate(
