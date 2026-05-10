@@ -63,9 +63,9 @@
 - [ ] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
 - [x] Добавить DateRangePicker для фильтрации по периоду
 - [x] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
-- [ ] DekanDashboard: подключить к real API
-- [ ] OqituvchiDashboard: подключить к real API
-- [ ] TalabaDashboard: подключить к real API
+- [x] DekanDashboard: подключить к real API
+- [x] OqituvchiDashboard: подключить к real API
+- [x] TalabaDashboard: подключить к real API
 - [ ] Графики (DonutChart, BarChart, LineChart) — проверить что рендерятся с реальными данными
 - [ ] "So'nggi faoliyat" список — подключить к API (сейчас hardcoded)
 

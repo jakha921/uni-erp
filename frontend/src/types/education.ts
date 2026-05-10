@@ -82,6 +82,7 @@ export interface GradeListParams extends ListParams {
   subjectId?: number;
   semesterId?: number;
   gradeType?: GradeType;
+  studentId?: number;
 }
 
 // ---------- Exam types ----------
