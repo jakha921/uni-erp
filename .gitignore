@@ -27,7 +27,12 @@ frontend/.env.local
 # UV
 uv.lock
 
-# Playwright / screenshots (CI artifacts)
+# Playwright / screenshots / design artifacts
 .playwright-mcp/
 *.png
 *.jpeg
+*.jpg
+*.docx
+bitu-erp-design/
+designs/
+prompts/
