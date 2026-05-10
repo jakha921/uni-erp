@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { useStudentStatistics } from '@/api/hooks/useStudents';
 import { useAuthStore } from '@/stores/auth.store';
+import { useTranslation } from 'react-i18next';
 
 const GENDER_COLORS: Record<string, string> = {
   Erkak: '#0EA5E9',
@@ -48,6 +49,7 @@ function ProgressBar({ label, value, max, color = '#4F46E5' }: { label: string; 
 }
 
 export function StudentsStatPage() {
+  const { t } = useTranslation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const role = currentUser?.role;
   const { data: stats, isLoading } = useStudentStatistics();
@@ -78,8 +80,8 @@ export function StudentsStatPage() {
   return (
     <PageContent className="space-y-6">
       <PageHeader
-        title="Talabalar statistikasi"
-        subtitle={role === 'dekan' ? (currentUser?.facultyName ?? '') : "Universitet bo'yicha umumiy ma'lumot"}
+        title={t('students.statistics')}
+        subtitle={role === 'dekan' ? (currentUser?.facultyName ?? '') : t('students.universityWide')}
         actions={
           <Button
             variant="secondary"
@@ -101,14 +103,14 @@ export function StudentsStatPage() {
       {/* 2×2 StatCards grid — matching prototype */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard
-          label="Jami talabalar"
+          label={t('dashboard.totalStudents')}
           value={stats.totalStudents}
           icon={<Users className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
           trend={{ value: 24, raw: '+24' }}
         />
         <StatCard
-          label="Faol o'qiyotgan"
+          label={t('students.activeLearning')}
           value={activeCount}
           icon={<CheckCircle className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
@@ -118,13 +120,13 @@ export function StudentsStatPage() {
           }}
         />
         <StatCard
-          label="Akademik ta'tilda"
+          label={t('students.academicLeave')}
           value={leaveCount}
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Chetlatilgan"
+          label={t('students.expelled')}
           value={expelledCount}
           icon={<X className="h-[18px] w-[18px]" />}
           iconBg="#EF4444"
@@ -134,19 +136,19 @@ export function StudentsStatPage() {
       {/* Charts 2-column grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h3 className="text-base font-semibold text-slate-900 mb-4.5">Kurslar bo&apos;yicha</h3>
+          <h3 className="text-base font-semibold text-slate-900 mb-4.5">{t('students.byCourse')}</h3>
           {stats.byCourse.map((c) => (
             <ProgressBar key={c.course} label={`${c.course}-kurs`} value={c.count} max={courseMax} color="#4F46E5" />
           ))}
         </Card>
 
         <Card>
-          <h3 className="text-base font-semibold text-slate-900 mb-4.5">Jinsi bo&apos;yicha</h3>
+          <h3 className="text-base font-semibold text-slate-900 mb-4.5">{t('students.byGender')}</h3>
           {stats.byGender.map((g) => (
             <ProgressBar key={g.gender} label={g.gender} value={g.count} max={genderMax} color={GENDER_COLORS[g.gender] ?? '#94A3B8'} />
           ))}
           <div className="mt-5 pt-4 border-t border-slate-200">
-            <h4 className="text-sm font-semibold text-slate-900 mb-3.5">Ta&apos;lim shakli</h4>
+            <h4 className="text-sm font-semibold text-slate-900 mb-3.5">{t('students.educationForm')}</h4>
             {stats.byEducationForm.map((f) => (
               <ProgressBar key={f.form} label={f.form} value={f.count} max={eduFormMax} color={EDUCATION_FORM_COLORS[f.form] ?? '#94A3B8'} />
             ))}
@@ -154,7 +156,7 @@ export function StudentsStatPage() {
         </Card>
 
         <Card>
-          <h3 className="text-base font-semibold text-slate-900 mb-4.5">To&apos;lov shakli</h3>
+          <h3 className="text-base font-semibold text-slate-900 mb-4.5">{t('students.byPaymentForm')}</h3>
           {stats.byPaymentForm.map((p) => (
             <ProgressBar key={p.form} label={p.form} value={p.count} max={paymentMax} color={PAYMENT_FORM_COLORS[p.form] ?? '#94A3B8'} />
           ))}
@@ -162,7 +164,7 @@ export function StudentsStatPage() {
 
         {role !== 'dekan' && (
           <Card>
-            <h3 className="text-base font-semibold text-slate-900 mb-4.5">Fakultetlar bo&apos;yicha</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-4.5">{t('students.byFaculty')}</h3>
             {stats.byFaculty.slice(0, 8).map((f) => (
               <ProgressBar key={f.faculty} label={f.faculty.length > 36 ? f.faculty.slice(0, 36) + '…' : f.faculty} value={f.count} max={facultyMax} color="#8B5CF6" />
             ))}

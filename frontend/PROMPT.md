@@ -77,7 +77,7 @@
 **Файл:** `features/students/pages/StudentsStatPage.tsx`
 **Статус:** Работает через hooks
 **Задачи:**
-- [ ] i18n: все тексты через `t('students.*')`
+- [x] i18n: все тексты через `t('students.*')`
 - [x] Добавить DateRangePicker для фильтрации по периоду
 - [x] Добавить кнопку "Eksport PDF" → вызов `/students/export-pdf/`
 - [x] Dark mode: проверить цвета прогресс-баров и карточек
@@ -98,7 +98,7 @@
 **Файл:** `features/students/pages/StudentFormPage.tsx`
 **Статус:** Create работает, Update частично
 **Задачи:**
-- [ ] i18n: все лейблы формы через `t()`
+- [x] i18n: все лейблы формы через `t()`
 - [x] Убрать hardcoded FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS массивы → загружать через `useFaculties()`, `useDepartments()`, `useSpecialties()`, `useGroups()`
 - [x] Cascading selects: Faculty → Department → Specialty → Group (фильтрация зависимых)
 - [x] FileUpload: загрузка фото студента

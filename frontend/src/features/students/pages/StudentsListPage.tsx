@@ -13,9 +13,11 @@ import { StudentTable } from '../components/StudentTable';
 import { useStudentsList, useDeleteStudent } from '@/api/hooks/useStudents';
 import { useFaculties } from '@/api/hooks/useCore';
 import { useAuthStore } from '@/stores/auth.store';
+import { useTranslation } from 'react-i18next';
 import type { StudentStatus, StudentListParams, StudentListItem } from '@/types/student';
 
 export function StudentsListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const role = useAuthStore((s) => s.currentUser?.role);
 
@@ -87,8 +89,8 @@ export function StudentsListPage() {
   return (
     <PageContent className="space-y-4">
       <PageHeader
-        title={role === 'oqituvchi' ? 'Mening talabalarim' : "Talabalar ro'yxati"}
-        subtitle={data ? `Jami: ${data.total} ta` : undefined}
+        title={role === 'oqituvchi' ? t('students.myStudents') : t('students.listTitle')}
+        subtitle={data ? `${t('common.total')}: ${data.total} ta` : undefined}
         actions={
           role !== 'oqituvchi' && role !== 'talaba' ? (
             <div className="flex items-center gap-2">
@@ -121,7 +123,7 @@ export function StudentsListPage() {
                 PDF
               </Button>
               <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/students/new')}>
-                Yangi talaba
+                {t('students.addStudent')}
               </Button>
             </div>
           ) : undefined
@@ -138,20 +140,20 @@ export function StudentsListPage() {
                 type="text"
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="F.I.SH, ID raqam yoki guruh bo'yicha qidirish…"
+                placeholder={t('students.searchPlaceholder')}
                 className="h-10 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
               />
             </div>
           </div>
           {role !== 'dekan' && (
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-slate-600">Fakultet</label>
+              <label className="text-xs font-medium text-slate-600">{t('students.faculty')}</label>
               <select
                 value={facultyId}
                 onChange={(e) => handleFilterChange(setFacultyId)(e.target.value)}
                 className="h-10 rounded-lg border border-border px-3 text-sm"
               >
-                <option value="">Hammasi</option>
+                <option value="">{t('common.all')}</option>
                 {(faculties ?? []).map((f) => (
                   <option key={f.id} value={String(f.id)}>{f.name}</option>
                 ))}
@@ -159,47 +161,47 @@ export function StudentsListPage() {
             </div>
           )}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600">Kurs</label>
+            <label className="text-xs font-medium text-slate-600">{t('students.course')}</label>
             <select
               value={course}
               onChange={(e) => handleFilterChange(setCourse)(e.target.value)}
               className="h-10 rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Hammasi</option>
-              <option value="1">1-kurs</option>
-              <option value="2">2-kurs</option>
-              <option value="3">3-kurs</option>
-              <option value="4">4-kurs</option>
+              <option value="">{t('common.all')}</option>
+              <option value="1">{t('students.course1')}</option>
+              <option value="2">{t('students.course2')}</option>
+              <option value="3">{t('students.course3')}</option>
+              <option value="4">{t('students.course4')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600">Holat</label>
+            <label className="text-xs font-medium text-slate-600">{t('common.status')}</label>
             <select
               value={status}
               onChange={(e) => handleFilterChange(setStatus)(e.target.value)}
               className="h-10 rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Hammasi</option>
-              <option value="active">O&apos;qimoqda</option>
-              <option value="academic_leave">Akademik ta&apos;tilda</option>
-              <option value="expelled">Chetlatilgan</option>
-              <option value="graduated">Bitirgan</option>
+              <option value="">{t('common.all')}</option>
+              <option value="active">{t('students.activeLearning')}</option>
+              <option value="academic_leave">{t('students.academicLeave')}</option>
+              <option value="expelled">{t('students.expelled')}</option>
+              <option value="graduated">{t('students.graduated')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600">To&apos;lov</label>
+            <label className="text-xs font-medium text-slate-600">{t('students.paymentForm')}</label>
             <select
               value={paymentForm}
               onChange={(e) => handleFilterChange(setPaymentForm)(e.target.value)}
               className="h-10 rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Hammasi</option>
-              <option value="grant">Grant</option>
-              <option value="contract">Kontrakt</option>
+              <option value="">{t('common.all')}</option>
+              <option value="grant">{t('students.grant')}</option>
+              <option value="contract">{t('students.contract')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600">Qabul davri</label>
+            <label className="text-xs font-medium text-slate-600">{t('students.enrollmentPeriod')}</label>
             <DateRangePicker
               from={dateFrom}
               to={dateTo}
@@ -213,7 +215,7 @@ export function StudentsListPage() {
       {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
-          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <span className="text-sm font-medium text-primary-700">{selectedIds.size} {t('common.selected')}</span>
           <div className="ml-auto flex items-center gap-2">
             <Button
               variant="secondary"
@@ -221,7 +223,7 @@ export function StudentsListPage() {
               leftIcon={<Download className="h-3.5 w-3.5" />}
               onClick={() => { /* export selected */ }}
             >
-              Eksport
+              {t('common.export')}
             </Button>
             <Button
               size="sm"
@@ -229,7 +231,7 @@ export function StudentsListPage() {
               className="bg-red-500 text-white hover:bg-red-600"
               onClick={() => setBulkDeleteOpen(true)}
             >
-              O&apos;chirish
+              {t('common.delete')}
             </Button>
             <button
               onClick={() => setSelectedIds(new Set())}
@@ -248,9 +250,9 @@ export function StudentsListPage() {
           if (!deleteStudent) return;
           deleteStudentMutation.mutate(deleteStudent.id, { onSuccess: () => setDeleteStudent(null) });
         }}
-        title="Talabani o'chirish"
-        message={`"${deleteStudent?.fullName}" talabani o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('students.deleteStudent')}
+        message={t('students.deleteStudentConfirm', { name: deleteStudent?.fullName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteStudentMutation.isPending}
       />
@@ -262,9 +264,9 @@ export function StudentsListPage() {
           setBulkDeleteOpen(false);
           setSelectedIds(new Set());
         }}
-        title="Talabalarni o'chirish"
-        message={`${selectedIds.size} ta talabani o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('students.deleteStudents')}
+        message={t('students.deleteStudentsConfirm', { count: selectedIds.size })}
+        confirmLabel={t('common.delete')}
         variant="danger"
       />
 

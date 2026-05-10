@@ -18,19 +18,11 @@ import {
 } from '../schemas/student.schema';
 import { useStudent, useCreateStudent, useUpdateStudent } from '@/api/hooks/useStudents';
 import { useFaculties, useDepartments, useSpecialties, useGroups } from '@/api/hooks/useCore';
+import { useTranslation } from 'react-i18next';
 
-const EDUCATION_FORM_OPTIONS = [
-  { value: 'kunduzgi', label: 'Kunduzgi' },
-  { value: 'sirtqi', label: 'Sirtqi' },
-  { value: 'kechki', label: 'Kechki' },
-];
-
-const PAYMENT_FORM_OPTIONS = [
-  { value: 'grant', label: 'Davlat granti' },
-  { value: 'kontrakt', label: "To'lov-shartnoma" },
-];
 
 export function StudentFormPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
@@ -124,18 +116,29 @@ export function StudentFormPage() {
     }
   };
 
+  const educationFormOptions = [
+    { value: 'kunduzgi', label: t('students.kunduzgi') },
+    { value: 'sirtqi', label: t('students.sirtqi') },
+    { value: 'kechki', label: t('students.kechki') },
+  ];
+
+  const paymentFormOptions = [
+    { value: 'grant', label: t('students.grantPayment') },
+    { value: 'kontrakt', label: t('students.contractPayment') },
+  ];
+
   if (isEdit && isLoadingStudent) {
-    return <PageContent className="text-muted">Yuklanmoqda...</PageContent>;
+    return <PageContent className="text-muted">{t('common.loading')}</PageContent>;
   }
 
   return (
     <PageContent className="space-y-4">
       <PageHeader
-        title={isEdit ? 'Talabani tahrirlash' : 'Yangi talaba qo\'shish'}
+        title={isEdit ? t('students.editTitle') : t('students.addTitle')}
         breadcrumbs={[
-          { label: 'Bosh sahifa', path: '/' },
-          { label: 'Talabalar', path: '/students' },
-          { label: isEdit ? 'Tahrirlash' : 'Yangi' },
+          { label: t('nav.dashboard'), path: '/' },
+          { label: t('nav.students'), path: '/students' },
+          { label: isEdit ? t('common.edit') : t('common.new') },
         ]}
         actions={
           <button
@@ -143,17 +146,17 @@ export function StudentFormPage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-slate-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Orqaga
+            {t('common.back')}
           </button>
         }
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Personal info */}
-        <Card title="Shaxsiy ma'lumotlar">
+        <Card title={t('students.personalInfo')}>
           <div className="grid grid-cols-3 gap-4">
             <FormField
-              label="Familiya"
+              label={t('students.lastName')}
               error={errors.secondName?.message}
               required
             >
@@ -164,7 +167,7 @@ export function StudentFormPage() {
               />
             </FormField>
             <FormField
-              label="Ism"
+              label={t('students.firstName')}
               error={errors.firstName?.message}
               required
             >
@@ -175,7 +178,7 @@ export function StudentFormPage() {
               />
             </FormField>
             <FormField
-              label="Sharif"
+              label={t('students.middleName')}
               error={errors.thirdName?.message}
               required
             >
@@ -185,19 +188,19 @@ export function StudentFormPage() {
                 error={!!errors.thirdName}
               />
             </FormField>
-            <FormField label="Jinsi" error={errors.gender?.message} required>
+            <FormField label={t('students.gender')} error={errors.gender?.message} required>
               <FormSelect
                 {...register('gender')}
                 options={[
-                  { value: '1', label: 'Erkak' },
-                  { value: '2', label: 'Ayol' },
+                  { value: '1', label: t('students.male') },
+                  { value: '2', label: t('students.female') },
                 ]}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.gender}
               />
             </FormField>
             <FormField
-              label="Tug'ilgan sana"
+              label={t('students.birthDate')}
               error={errors.birthDate?.message}
               required
             >
@@ -206,13 +209,13 @@ export function StudentFormPage() {
                 error={!!errors.birthDate}
               />
             </FormField>
-            <FormField label="Telefon" error={errors.phone?.message} required>
+            <FormField label={t('common.phone')} error={errors.phone?.message} required>
               <FormPhoneInput
                 {...register('phone')}
                 error={!!errors.phone}
               />
             </FormField>
-            <FormField label="Email" error={errors.email?.message}>
+            <FormField label={t('common.email')} error={errors.email?.message}>
               <FormInput
                 {...register('email')}
                 type="email"
@@ -221,7 +224,7 @@ export function StudentFormPage() {
               />
             </FormField>
             <FormField
-              label="Pasport"
+              label={t('students.passport')}
               error={errors.passport?.message}
               required
             >
@@ -232,7 +235,7 @@ export function StudentFormPage() {
               />
             </FormField>
             <FormField
-              label="PINFL (JSHSHIR)"
+              label={t('students.pinfl')}
               error={errors.pinfl?.message}
               required
             >
@@ -245,7 +248,7 @@ export function StudentFormPage() {
           </div>
           <div className="mt-4">
             <FormField
-              label="Manzil"
+              label={t('common.address')}
               error={errors.address?.message}
               required
             >
@@ -260,109 +263,109 @@ export function StudentFormPage() {
         </Card>
 
         {/* Academic info */}
-        <Card title="O'quv ma'lumotlari">
+        <Card title={t('students.academicInfo')}>
           <div className="grid grid-cols-3 gap-4">
             <FormField
-              label="Fakultet"
+              label={t('students.faculty')}
               error={errors.facultyId?.message}
               required
             >
               <FormSelect
                 {...register('facultyId')}
                 options={(faculties ?? []).map((f) => ({ value: String(f.id), label: f.name }))}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.facultyId}
               />
             </FormField>
             <FormField
-              label="Kafedra"
+              label={t('students.department')}
               error={errors.departmentId?.message}
               required
             >
               <FormSelect
                 {...register('departmentId')}
                 options={(departments ?? []).map((d) => ({ value: String(d.id), label: d.name }))}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.departmentId}
               />
             </FormField>
             <FormField
-              label="Mutaxassislik"
+              label={t('students.specialty')}
               error={errors.specialtyId?.message}
               required
             >
               <FormSelect
                 {...register('specialtyId')}
                 options={(specialties ?? []).map((s) => ({ value: String(s.id), label: s.name }))}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.specialtyId}
               />
             </FormField>
             <FormField
-              label="Guruh"
+              label={t('students.group')}
               error={errors.groupId?.message}
               required
             >
               <FormSelect
                 {...register('groupId')}
                 options={(groups ?? []).map((g) => ({ value: String(g.id), label: g.name }))}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.groupId}
               />
             </FormField>
             <FormField
-              label="Ta'lim shakli"
+              label={t('students.educationForm')}
               error={errors.educationForm?.message}
               required
             >
               <FormSelect
                 {...register('educationForm')}
-                options={EDUCATION_FORM_OPTIONS}
-                placeholder="Tanlang"
+                options={educationFormOptions}
+                placeholder={t('common.select')}
                 error={!!errors.educationForm}
               />
             </FormField>
             <FormField
-              label="Ta'lim turi"
+              label={t('students.educationType')}
               error={errors.educationType?.message}
               required
             >
               <FormSelect
                 {...register('educationType')}
                 options={[
-                  { value: 'bakalavr', label: 'Bakalavriat' },
-                  { value: 'magistr', label: 'Magistratura' },
+                  { value: 'bakalavr', label: t('students.bachelor') },
+                  { value: 'magistr', label: t('students.master') },
                 ]}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.educationType}
               />
             </FormField>
             <FormField
-              label="To'lov shakli"
+              label={t('students.paymentForm')}
               error={errors.paymentForm?.message}
               required
             >
               <FormSelect
                 {...register('paymentForm')}
-                options={PAYMENT_FORM_OPTIONS}
-                placeholder="Tanlang"
+                options={paymentFormOptions}
+                placeholder={t('common.select')}
                 error={!!errors.paymentForm}
               />
             </FormField>
             <FormField
-              label="Kurs"
+              label={t('students.course')}
               error={errors.level?.message}
               required
             >
               <FormSelect
                 {...register('level')}
                 options={[
-                  { value: '1', label: '1-kurs' },
-                  { value: '2', label: '2-kurs' },
-                  { value: '3', label: '3-kurs' },
-                  { value: '4', label: '4-kurs' },
+                  { value: '1', label: t('students.course1') },
+                  { value: '2', label: t('students.course2') },
+                  { value: '3', label: t('students.course3') },
+                  { value: '4', label: t('students.course4') },
                 ]}
-                placeholder="Tanlang"
+                placeholder={t('common.select')}
                 error={!!errors.level}
               />
             </FormField>
@@ -370,8 +373,8 @@ export function StudentFormPage() {
         </Card>
 
         {/* Photo upload */}
-        <Card title="Talaba rasmi">
-          <PhotoUploadCard />
+        <Card title={t('students.photo')}>
+          <PhotoUploadCard t={t} />
         </Card>
 
         {/* Actions */}
@@ -381,14 +384,14 @@ export function StudentFormPage() {
             variant="secondary"
             onClick={() => navigate(-1)}
           >
-            Bekor qilish
+            {t('common.cancel')}
           </Button>
           <Button
             type="submit"
             leftIcon={<Save className="h-4 w-4" />}
             loading={createMutation.isPending || updateMutation.isPending}
           >
-            {isEdit ? 'Saqlash' : 'Qo\'shish'}
+            {isEdit ? t('common.save') : t('common.add')}
           </Button>
         </div>
       </form>
@@ -396,7 +399,7 @@ export function StudentFormPage() {
   );
 }
 
-function PhotoUploadCard() {
+function PhotoUploadCard({ t }: { t: (key: string) => string }) {
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleFiles = (files: File[]) => {
@@ -413,7 +416,7 @@ function PhotoUploadCard() {
           {preview ? (
             <img src={preview} alt="preview" className="h-full w-full object-cover" />
           ) : (
-            <span className="text-[11px] text-slate-400 text-center px-2">Rasm yo&apos;q</span>
+            <span className="text-[11px] text-slate-400 text-center px-2">{t('students.noPhoto')}</span>
           )}
         </div>
       </div>
@@ -424,7 +427,7 @@ function PhotoUploadCard() {
           onUpload={handleFiles}
           preview={false}
         />
-        <p className="mt-2 text-xs text-slate-400">JPG, PNG, WebP formatlar. Maks. 5 MB</p>
+        <p className="mt-2 text-xs text-slate-400">{t('students.photoFormats')}</p>
       </div>
     </div>
   );
