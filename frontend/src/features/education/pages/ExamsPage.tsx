@@ -61,6 +61,9 @@ export function ExamsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editExam, setEditExam] = useState<Exam | null>(null);
   const [deleteExam, setDeleteExam] = useState<Exam | null>(null);
+  const [filterGroupId, setFilterGroupId] = useState('');
+  const [filterSubjectId, setFilterSubjectId] = useState('');
+  const [filterSemesterId, setFilterSemesterId] = useState('');
 
   const { data: subjectsData } = useSubjects();
   const { data: groupsData } = useGroups();
@@ -106,10 +109,45 @@ export function ExamsPage() {
 
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="mt-4">
+      {(activeTab === 'calendar' || activeTab === 'vedomost') && (
+        <div className="mt-3 mb-3 flex flex-wrap gap-2.5">
+          <select
+            value={filterGroupId}
+            onChange={(e) => setFilterGroupId(e.target.value)}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Barcha guruhlar</option>
+            {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+          </select>
+          <select
+            value={filterSubjectId}
+            onChange={(e) => setFilterSubjectId(e.target.value)}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Barcha fanlar</option>
+            {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+          <select
+            value={filterSemesterId}
+            onChange={(e) => setFilterSemesterId(e.target.value)}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Barcha semestrlar</option>
+            <option value="1">2025-2026 - 2-semester</option>
+            <option value="2">2025-2026 - 1-semester</option>
+          </select>
+        </div>
+      )}
+
+      <div className="mt-0">
         {activeTab === 'sessions' && <SessionsTab />}
         {activeTab === 'calendar' && (
           <CalendarTab
+            params={{
+              groupId: filterGroupId ? Number(filterGroupId) : undefined,
+              subjectId: filterSubjectId ? Number(filterSubjectId) : undefined,
+              semesterId: filterSemesterId ? Number(filterSemesterId) : undefined,
+            }}
             onEdit={(exam) => setEditExam(exam)}
             onDelete={(exam) => setDeleteExam(exam)}
           />
@@ -195,8 +233,8 @@ function SessionsTab() {
   );
 }
 
-function CalendarTab({ onEdit, onDelete }: { onEdit: (exam: Exam) => void; onDelete: (exam: Exam) => void }) {
-  const { data, isLoading } = useExamsList();
+function CalendarTab({ params, onEdit, onDelete }: { params?: { groupId?: number; subjectId?: number; semesterId?: number }; onEdit: (exam: Exam) => void; onDelete: (exam: Exam) => void }) {
+  const { data, isLoading } = useExamsList(params);
   const exams = data?.data ?? [];
 
   const examColumns: Column<Exam>[] = [
