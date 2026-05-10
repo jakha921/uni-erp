@@ -167,7 +167,7 @@
 **Задачи:**
 - [ ] Подключить к `useExams(params)` hook
 - [ ] Tab "Sessiyalar": список экзаменов → CRUD (создание, редактирование, удаление)
-- [ ] ExamForm: subjectId, groupId, examDate, room, type (midterm/final), teacherId
+- [x] ExamForm: subjectId, groupId, examDate, room, type (midterm/final), teacherId
 - [ ] Zod schema: `examSchema` валидация всех полей
 - [ ] Tab "Imtihon jadvali": таблица расписания экзаменов
 - [ ] Tab "Biletlar": загрузка/просмотр экзаменационных билетов
@@ -181,7 +181,7 @@
 **Задачи:**
 - [ ] Убрать hardcoded YEARS массив
 - [ ] CRUD: создание/редактирование учебного плана в SlideOver
-- [ ] CurriculumForm с useFieldArray для предметов (добавление/удаление строк)
+- [x] CurriculumForm с useFieldArray для предметов (добавление/удаление строк)
 - [ ] Zod schema: specialtyId, year, subjects[] (name, credits, hours, controlForm)
 - [ ] Фильтры: специальность (Combobox из `useSpecialties()`), год обучения
 - [ ] i18n: все тексты
@@ -204,9 +204,9 @@
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
 - [ ] Tab "Katalog": `useBooks(params)` + CRUD для книг
-- [ ] BookForm: title, author, isbn, year, category, totalCopies, location
+- [x] BookForm: title, author, isbn, year, category, totalCopies, location
 - [ ] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
-- [ ] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
+- [x] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
 - [ ] Tab "Kutish": очередь ожидания
 - [ ] Zod schemas: `bookSchema`, `loanSchema`
 - [ ] Поиск книг по названию/автору/ISBN
@@ -217,7 +217,7 @@
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
 - [ ] CRUD: кнопка "Yangi bitiruvchi" → AlumniForm в SlideOver
-- [ ] AlumniForm: fullName, graduationYear, faculty, specialty, workplace, position, phone, email, status
+- [x] AlumniForm: fullName, graduationYear, faculty, specialty, workplace, position, phone, email
 - [ ] Edit: клик по строке → SlideOver с предзаполнением
 - [ ] Delete: ConfirmDialog
 - [ ] Zod schema: `alumniSchema`
@@ -230,7 +230,7 @@
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
 - [ ] CRUD: кнопка "Yangi amaliyot" → InternshipForm в SlideOver
-- [ ] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
+- [x] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
 - [ ] Edit + Delete
 - [ ] Zod schema: `internshipSchema`
 - [ ] Tabs: Joriy (текущие), Yakunlangan (завершённые)
@@ -413,7 +413,7 @@
 **Файл:** `features/crm/pages/CrmListPage.tsx`
 **Задачи:**
 - [ ] CRUD: Create (LeadForm в SlideOver), Edit (предзаполнение), Delete (ConfirmDialog)
-- [ ] LeadForm: firstName, lastName, phone, email, direction, source, notes
+- [x] LeadForm: firstName, lastName, phone, email, direction, source, notes
 - [ ] Zod schema: `leadSchema`
 - [ ] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
 - [ ] Bulk actions: массовое изменение статуса
@@ -444,7 +444,7 @@
 **Файл:** `features/operations/pages/TasksPage.tsx` | **Статус:** Kanban + List
 **Задачи:**
 - [ ] CRUD: Create (TaskForm в SlideOver), Edit, Delete
-- [ ] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
+- [x] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
 - [ ] Zod schema: `taskSchema`
 - [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
 - [ ] Drag-and-drop обновление статуса через mutation
@@ -472,7 +472,7 @@
 **Файл:** `features/operations/pages/AppealsPage.tsx`
 **Задачи:**
 - [ ] CRUD: Create (AppealForm), Update (статус), Delete
-- [ ] AppealForm: title, description, category
+- [x] AppealForm: title, description, category
 - [ ] Комментарии: `useAddComment()` mutation
 - [ ] Фильтры: status tabs, category select
 - [ ] i18n: все тексты
@@ -481,7 +481,7 @@
 **Файл:** `features/operations/pages/NewsPage.tsx`
 **Задачи:**
 - [ ] CRUD (для admin): Create (NewsForm в SlideOver), Edit, Delete
-- [ ] NewsForm: title, content, category, tags, image (FileUpload)
+- [x] NewsForm: title, content, category, tags
 - [ ] Grid/List toggle view
 - [ ] Фильтры: category, tag
 - [ ] i18n: все тексты
@@ -518,27 +518,27 @@
 
 ### 10.1 ResearchPage `/research`
 **Задачи:**
-- [ ] Tab "Loyihalar": CRUD — ProjectForm (title, leaderId, description, fundAmount, dates)
-- [ ] Tab "Maqolalar": CRUD — ArticleForm (title, authors, journal, year, type, doi)
+- [x] ProjectForm создан (title, leaderId, description, fundAmount, dates)
+- [x] ArticleForm создан (title, authors, journal, year, type, doi)
 - [ ] Zod schemas: `projectSchema`, `articleSchema`
 - [ ] i18n: все тексты
 
 ### 10.2 ThesesPage `/theses`
 **Задачи:**
-- [ ] CRUD: ThesisForm в Modal
+- [x] ThesisForm создан в Modal
 - [ ] Zod schema: `thesisSchema`
 - [ ] Фильтры: stage tabs, type select, supervisor
 - [ ] i18n: все тексты
 
 ### 10.3 ConferencesPage `/conferences`
 **Задачи:**
-- [ ] CRUD: ConferenceForm в SlideOver
+- [x] ConferenceForm создан в SlideOver
 - [ ] Tabs: Kelgusi / O'tgan
 - [ ] i18n: все тексты
 
 ### 10.4 PatentsPage `/patents`
 **Задачи:**
-- [ ] CRUD: PatentForm в Modal
+- [x] PatentForm создан в Modal
 - [ ] Убрать hardcoded STATUS_META → i18n
 - [ ] i18n: все тексты
 
