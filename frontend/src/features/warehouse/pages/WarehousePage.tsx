@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Package, Warehouse, AlertTriangle, ShoppingCart, Plus, Pencil, Trash2, ArrowRightLeft } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { ConfirmDialog } from '@/components/overlays';
 import { useWarehouseItems, useWarehouseStats, useCreateWarehouseItem, useUpdateWarehouseItem, useDeleteWarehouseItem, useCreateMovement } from '@/api/hooks/useWarehouse';
@@ -153,6 +153,28 @@ export function WarehousePage() {
         <StatCard label="Kam qolgan" value={lowCount} icon={<AlertTriangle className="h-5 w-5" />} iconBg="bg-amber-500" sub="diqqat talab etadi" />
         <StatCard label="Buyurtma kerak" value={outCount} icon={<ShoppingCart className="h-5 w-5" />} iconBg="bg-red-500" sub="tugagan mahsulotlar" />
       </div>
+
+      {(lowCount > 0 || outCount > 0) && (
+        <div className="mb-4">
+          {outCount > 0 && (
+            <AlertBanner
+              variant="error"
+              title={`${outCount} ta mahsulot tugagan`}
+              message="Ushbu mahsulotlarni zudlik bilan buyurtma qiling."
+              dismissible
+              className="mb-2"
+            />
+          )}
+          {lowCount > 0 && (
+            <AlertBanner
+              variant="warning"
+              title={`${lowCount} ta mahsulot kam qolgan`}
+              message="Minimal miqdordan past mahsulotlarni to'ldiring."
+              dismissible
+            />
+          )}
+        </div>
+      )}
 
       <ItemForm
         open={itemFormOpen}

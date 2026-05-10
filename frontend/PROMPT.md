@@ -221,7 +221,7 @@
 - [x] Edit: клик по строке → SlideOver с предзаполнением
 - [x] Delete: ConfirmDialog
 - [x] Zod schema: `alumniSchema`
-- [ ] Фильтры: год выпуска, факультет, статус трудоустройства
+- [x] Фильтры: год выпуска, факультет, статус трудоустройства
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты
 
@@ -233,7 +233,7 @@
 - [x] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
 - [x] Edit + Delete
 - [x] Zod schema: `internshipSchema`
-- [ ] Tabs: Joriy (текущие), Yakunlangan (завершённые)
+- [x] Tabs: Joriy (текущие), Yakunlangan (завершённые)
 - [ ] i18n: все тексты
 
 ### 4.10 MyStudentsPage `/my-students`
@@ -330,7 +330,7 @@
 **Статус:** Read через hooks
 **Задачи:**
 - [ ] Кнопка "Excel eksport" → подключить к реальному endpoint
-- [ ] Кнопка "Hisoblash" (Рассчитать) → `useProcessPayroll()` mutation
+- [x] Кнопка "Hisoblash" (Рассчитать) → `useProcessPayroll()` mutation
 - [x] Убрать hardcoded month/year options
 - [ ] i18n: все тексты
 
@@ -626,7 +626,7 @@
 **Задачи:**
 - [ ] CRUD: ItemForm в SlideOver
 - [ ] Tab "Harakatlar": MovementForm в Modal (itemId, type, quantity, note)
-- [ ] AlertBanner для товаров ниже минимума
+- [x] AlertBanner для товаров ниже минимума
 - [ ] Убрать hardcoded CATEGORIES, STATUS_CONFIG
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты

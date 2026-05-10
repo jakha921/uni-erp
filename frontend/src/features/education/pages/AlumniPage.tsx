@@ -24,13 +24,21 @@ const STATUS_VARIANT: Record<string, 'success' | 'info' | 'warning' | 'default'>
   unknown: 'warning',
 };
 
+const YEARS = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
+
 export function AlumniPage() {
-  const [params] = useState({ page: 1, pageSize: 50 });
+  const [yearFilter, setYearFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editAlumni, setEditAlumni] = useState<Alumni | null>(null);
   const [deleteAlumni, setDeleteAlumni] = useState<Alumni | null>(null);
 
-  const { data, isLoading } = useAlumniList(params);
+  const { data, isLoading } = useAlumniList({
+    page: 1,
+    pageSize: 50,
+    graduationYear: yearFilter ? Number(yearFilter) : undefined,
+    status: statusFilter || undefined,
+  });
   const createAlumni = useCreateAlumni();
   const updateAlumni = useUpdateAlumni();
   const deleteAlumniMutation = useDeleteAlumni();
@@ -95,6 +103,37 @@ export function AlumniPage() {
       </div>
 
       <Card noPadding>
+        <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="h-8 rounded-lg border border-border px-2 text-[13px] text-slate-700"
+          >
+            <option value="">Barcha yillar</option>
+            {YEARS.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-8 rounded-lg border border-border px-2 text-[13px] text-slate-700"
+          >
+            <option value="">Barcha holatlar</option>
+            <option value="employed">Ishlamoqda</option>
+            <option value="unemployed">Ish qidiryapti</option>
+            <option value="studying">Magistraturada</option>
+            <option value="unknown">Noma&apos;lum</option>
+          </select>
+          {(yearFilter || statusFilter) && (
+            <button
+              onClick={() => { setYearFilter(''); setStatusFilter(''); }}
+              className="text-xs text-slate-400 hover:text-slate-600 underline"
+            >
+              Tozalash
+            </button>
+          )}
+        </div>
         {isLoading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : (

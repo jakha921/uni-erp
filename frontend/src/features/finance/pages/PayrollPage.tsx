@@ -5,7 +5,7 @@ import { DataTable, FilterBar, type Column } from '@/components/table';
 import { Button, Badge, Spinner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
-import { usePayroll, usePayrollSummary } from '@/api/hooks/usePayroll';
+import { usePayroll, usePayrollSummary, useProcessPayroll } from '@/api/hooks/usePayroll';
 import type { PayrollEmployee } from '@/types/finance';
 
 const MONTHS = [
@@ -47,6 +47,7 @@ export function PayrollPage() {
   });
 
   const { data: summary, isLoading: isLoadingSummary } = usePayrollSummary(month, year);
+  const processPayroll = useProcessPayroll();
 
   const employees = payrollData?.data ?? [];
   const totalCount = payrollData?.total ?? 0;
@@ -152,7 +153,13 @@ export function PayrollPage() {
             <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
               Excel
             </Button>
-            <Button leftIcon={<Calculator className="h-4 w-4" />}>Hisoblash</Button>
+            <Button
+              leftIcon={<Calculator className="h-4 w-4" />}
+              loading={processPayroll.isPending}
+              onClick={() => processPayroll.mutate({ month, year })}
+            >
+              Hisoblash
+            </Button>
           </div>
         }
       />
