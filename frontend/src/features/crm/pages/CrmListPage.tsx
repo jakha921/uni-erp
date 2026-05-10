@@ -103,7 +103,7 @@ export function CrmListPage() {
           <Avatar name={`${row.lastName} ${row.firstName}`} size="sm" />
           <div>
             <div className="font-medium text-slate-900">
-              {row.lastName} {row.firstName[0]}.
+              {row.lastName} {row.firstName?.[0] ?? ''}.
             </div>
             <div className="text-xs text-muted">{row.phone}</div>
           </div>

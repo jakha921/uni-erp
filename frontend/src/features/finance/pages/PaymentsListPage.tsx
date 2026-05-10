@@ -135,7 +135,7 @@ export function PaymentsListPage() {
     });
   }, [payments, faculty, dateFrom, dateTo]);
 
-  const totalSum = filtered.reduce((s, p) => s + p.amount, 0);
+  const totalSum = filtered.reduce((s, p) => s + Number(p.amount), 0);
 
   const grouped = useMemo(() => {
     const g: Record<string, typeof filtered> = {};
@@ -247,7 +247,7 @@ export function PaymentsListPage() {
       {grouped.map(([date, list]) => (
         <div key={date} className="mb-4">
           <p className="text-xs font-semibold text-muted uppercase tracking-[0.05em] mb-2">
-            {formatDate(date)} &middot; {list.length} {t('common.count')} &middot; {formatMoney(list.reduce((s, p) => s + p.amount, 0))}
+            {formatDate(date)} &middot; {list.length} {t('common.count')} &middot; {formatMoney(list.reduce((s, p) => s + Number(p.amount), 0))}
           </p>
           <Card noPadding className="overflow-hidden">
             {list.map((p, i) => {
