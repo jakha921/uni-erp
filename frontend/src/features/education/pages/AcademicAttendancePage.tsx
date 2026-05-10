@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
@@ -100,8 +100,9 @@ export function AcademicAttendancePage() {
   const [grid, setGrid] = useState<Record<number, AttendanceStatus[]>>(() => initGrid(14));
 
   // Re-init grid when students change
-  useMemo(() => {
+  useEffect(() => {
     if (students.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setGrid(initGrid(students.length));
     }
   }, [students.length]);

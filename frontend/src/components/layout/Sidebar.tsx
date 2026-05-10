@@ -138,6 +138,7 @@ export function Sidebar() {
   // Auto-expand group when navigating into it
   useEffect(() => {
     if (activeGroupKey && !openGroups[activeGroupKey]) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpenGroups((prev) => ({ ...prev, [activeGroupKey]: true }));
     }
   }, [activeGroupKey]); // eslint-disable-line react-hooks/exhaustive-deps

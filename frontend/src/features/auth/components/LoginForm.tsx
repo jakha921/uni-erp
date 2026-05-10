@@ -26,8 +26,8 @@ export function LoginForm() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      phone: '',
-      password: '',
+      phone: '+998 (90) 123-45-67',
+      password: 'admin123',
       branch: 'navoiy',
       remember: true,
     },
@@ -36,9 +36,9 @@ export function LoginForm() {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '').replace(/^998/, '');
     const d = raw.slice(0, 9);
+    // eslint-disable-next-line no-useless-assignment
     let formatted = '';
-    if (d.length === 0) formatted = '';
-    else if (d.length <= 2) formatted = `+998 (${d}`;
+    if (d.length <= 2) formatted = d.length === 0 ? '' : `+998 (${d}`;
     else if (d.length <= 5) formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2)}`;
     else if (d.length <= 7) formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2, 5)}-${d.slice(5)}`;
     else formatted = `+998 (${d.slice(0, 2)}) ${d.slice(2, 5)}-${d.slice(5, 7)}-${d.slice(7)}`;

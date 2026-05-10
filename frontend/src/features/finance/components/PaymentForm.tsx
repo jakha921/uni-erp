@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal } from '@/components/overlays';
@@ -25,7 +26,7 @@ const PAYMENT_METHOD_OPTIONS = [
 
 export function PaymentForm({ open, onClose, onSubmit, contract, loading }: PaymentFormProps) {
   const today = new Date().toISOString().slice(0, 10);
-  const receiptNum = `QT-${today.replace(/-/g, '')}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`;
+  const [receiptNum] = useState(() => `QT-${today.replace(/-/g, '')}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`);
 
   const {
     register,

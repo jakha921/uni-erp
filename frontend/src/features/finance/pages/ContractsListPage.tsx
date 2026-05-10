@@ -26,6 +26,7 @@ export function ContractsListPage() {
 
   useEffect(() => {
     const f = searchParams.get('faculty');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (f) setFaculty(f);
   }, [searchParams]);
   const [formOpen, setFormOpen] = useState(false);

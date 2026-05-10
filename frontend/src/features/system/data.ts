@@ -262,7 +262,7 @@ export const PERM_MATRIX = buildPermMatrix();
 
 // ============== USERS ==============
 
-const USER_STATUSES = ['Faol', 'Bloklangan', 'Taklif yuborilgan', 'Pauza'] as const;
+const _USER_STATUSES = ['Faol', 'Bloklangan', 'Taklif yuborilgan', 'Pauza'] as const;
 const USER_BRANCHES = ['Navoiy (bosh)', 'Zarafshon filiali', 'Uchquduq filiali', 'Qiziltepa filiali'];
 const USER_DEPARTMENTS = [
   'Dasturiy injiniring kafedrasi',
@@ -273,7 +273,7 @@ const USER_DEPARTMENTS = [
   'Pedagogika va psixologiya kafedrasi',
 ];
 
-export type UserStatus = (typeof USER_STATUSES)[number];
+export type UserStatus = (typeof _USER_STATUSES)[number];
 
 export interface SystemUser {
   id: string;

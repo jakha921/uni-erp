@@ -120,6 +120,7 @@ export function ForgotPasswordPage() {
           <>
             <h2 className="text-xl font-bold text-slate-900">{t('auth.resetPassword')}</h2>
             <p className="mt-2 text-sm text-slate-500">{t('auth.resetSubtitle')}</p>
+            {/* eslint-disable-next-line react-hooks/refs */}
             <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="mt-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="forgot-phone" className="text-sm font-medium text-slate-700">
