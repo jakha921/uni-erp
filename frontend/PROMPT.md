@@ -330,7 +330,7 @@
 **Файл:** `features/finance/pages/PayrollPage.tsx`
 **Статус:** Read через hooks
 **Задачи:**
-- [ ] Кнопка "Excel eksport" → подключить к реальному endpoint
+- [x] Кнопка "Excel eksport" → подключить к реальному endpoint
 - [x] Кнопка "Hisoblash" (Рассчитать) → `useProcessPayroll()` mutation
 - [x] Убрать hardcoded month/year options
 - [ ] i18n: все тексты

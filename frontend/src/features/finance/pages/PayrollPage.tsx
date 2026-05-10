@@ -150,7 +150,18 @@ export function PayrollPage() {
         ]}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
+            <Button
+              variant="secondary"
+              leftIcon={<Download className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = `/api/v1/hr/payroll/export/?month=${month}&year=${year}`;
+                a.download = `maosh-${year}-${month}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
               Excel
             </Button>
             <Button
