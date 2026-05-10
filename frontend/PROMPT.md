@@ -275,7 +275,7 @@
 - [x] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
 - [ ] Кнопка "Excel eksport" → `/finance/contracts/export/`
 - [ ] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
-- [ ] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
+- [x] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
 - [ ] i18n: все тексты (TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`)
 
 ### 5.3 ContractDetailPage `/finance/contracts/:id`

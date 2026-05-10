@@ -1,10 +1,73 @@
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2, FileDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, type Column } from '@/components/table';
 import { Badge } from '@/components/ui';
 import { DropdownMenu } from '@/components/overlays';
-import { formatMoney } from '@/lib/utils';
+import { formatMoney, formatDate } from '@/lib/utils';
 import type { Contract, ContractType, ContractStatus } from '@/types/finance';
+
+const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
+  bazoviy: 'Bazoviy',
+  tabaqalashtirilgan: 'Tabaqalashtirilgan',
+  grant: 'Grant',
+  xorijiy: 'Xorijiy',
+};
+
+function printContract(c: Contract) {
+  const win = window.open('', '_blank', 'width=794,height=1123');
+  if (!win) return;
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = `
+    body { font-family: 'Times New Roman', serif; margin: 0; padding: 50px 70px; color: #000; }
+    h1 { text-align: center; font-size: 16px; text-transform: uppercase; margin-bottom: 4px; }
+    h2 { text-align: center; font-size: 13px; margin-bottom: 20px; }
+    .ct { text-align: center; font-size: 20px; font-weight: bold; margin: 20px 0 4px; }
+    .cn { text-align: center; font-size: 13px; color: #555; margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    td { padding: 7px 10px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+    td:first-child { color: #64748b; width: 45%; }
+    td:last-child { font-weight: 600; }
+    .amt { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center; }
+    .amt-v { font-size: 24px; font-weight: bold; color: #16a34a; }
+    .sigs { display: flex; justify-content: space-between; margin-top: 60px; font-size: 12px; }
+    @media print { @page { margin: 0; } body { padding: 50px 70px; } }
+  `;
+  d.head.appendChild(style);
+  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+  const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
+  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const ct = d.createElement('div'); ct.className = 'ct'; ct.textContent = "TA'LIM SHARTNOMASI"; d.body.appendChild(ct);
+  const cn = d.createElement('div'); cn.className = 'cn'; cn.textContent = `№ ${c.contractNumber} | Sana: ${formatDate(c.contractDate)}`; d.body.appendChild(cn);
+  const rows: [string, string][] = [
+    ['Talaba', c.studentName],
+    ['Talaba ID', c.studentIdNumber],
+    ['Fakultet', c.facultyName],
+    ['Mutaxassislik', c.specialty],
+    ['Guruh', c.groupName],
+    ['Kurs', c.level],
+    ["O'quv yili", c.educationYear],
+    ["Turi", CONTRACT_TYPE_LABELS[c.contractType]],
+  ];
+  const table = d.createElement('table');
+  rows.forEach(([l, v]) => {
+    const tr = d.createElement('tr');
+    const t1 = d.createElement('td'); t1.textContent = l;
+    const t2 = d.createElement('td'); t2.textContent = v || '—';
+    tr.appendChild(t1); tr.appendChild(t2); table.appendChild(tr);
+  });
+  d.body.appendChild(table);
+  const amt = d.createElement('div'); amt.className = 'amt';
+  const al = d.createElement('div'); al.textContent = 'Shartnoma summasi'; al.style.fontSize = '12px'; al.style.color = '#64748b';
+  const av = d.createElement('div'); av.className = 'amt-v'; av.textContent = formatMoney(c.contractAmount);
+  amt.appendChild(al); amt.appendChild(av); d.body.appendChild(amt);
+  const sigs = d.createElement('div'); sigs.className = 'sigs';
+  const sb = (lines: string[]) => { const div = d.createElement('div'); lines.forEach(t => { const p = d.createElement('p'); p.textContent = t; p.style.margin = '4px 0'; div.appendChild(p); }); return div; };
+  sigs.appendChild(sb(['Universitet nomidan:', 'Rektor: _______________________', `Sana: ${today}`]));
+  sigs.appendChild(sb(['Talaba:', c.studentName, 'Imzo: _______________________']));
+  d.body.appendChild(sigs);
+  d.close(); win.focus(); setTimeout(() => { win.print(); win.close(); }, 250);
+}
 
 const CONTRACT_TYPE_CONFIG: Record<ContractType, { variant: 'info' | 'warning' | 'success' | 'default'; label: string }> = {
   bazoviy: { variant: 'info', label: 'Bazoviy' },
@@ -165,6 +228,11 @@ export function ContractTable({
               label: 'Tafsilotlar',
               icon: <Eye className="h-4 w-4" />,
               onClick: () => navigate(`/finance/contracts/${row.id}`),
+            },
+            {
+              label: 'Shartnoma PDF',
+              icon: <FileDown className="h-4 w-4" />,
+              onClick: () => printContract(row),
             },
             ...(onEdit
               ? [
