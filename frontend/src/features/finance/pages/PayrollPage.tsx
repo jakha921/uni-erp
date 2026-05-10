@@ -23,15 +23,19 @@ const MONTHS = [
   { value: 12, label: 'Dekabr' },
 ];
 
-const YEARS = [
-  { value: 2024, label: '2024' },
-  { value: 2025, label: '2025' },
-  { value: 2026, label: '2026' },
-];
+function generateYears(count = 4): { value: number; label: string }[] {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: count }, (_, i) => {
+    const y = currentYear - i;
+    return { value: y, label: String(y) };
+  });
+}
 
 export function PayrollPage() {
-  const [month, setMonth] = useState(4);
-  const [year, setYear] = useState(2026);
+  const currentYear = new Date().getFullYear();
+  const YEARS = generateYears();
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(currentYear);
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
 

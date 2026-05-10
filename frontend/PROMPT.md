@@ -392,7 +392,7 @@
 ### 6.6 AttendancePage `/hr/attendance`
 **Файл:** `features/hr/pages/AttendancePage.tsx` | **Статус:** Read
 **Задачи:**
-- [ ] Убрать hardcoded MONTH_NAMES, department options
+- [x] Убрать hardcoded MONTH_NAMES, department options
 - [ ] Кнопка "Excel eksport" — подключить к endpoint
 - [ ] Bulk-отметка (выходной для всех)
 - [ ] i18n: все тексты
