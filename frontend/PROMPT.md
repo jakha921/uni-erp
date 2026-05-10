@@ -356,9 +356,9 @@
 ### 6.2 EmployeesListPage `/hr/employees`
 **Файл:** `features/hr/pages/EmployeesListPage.tsx` | **Статус:** C✓ R✓, нет U/D
 **Задачи:**
-- [ ] Update: редактирование xodim в Modal/SlideOver
-- [ ] Delete: soft delete через ConfirmDialog
-- [ ] Убрать hardcoded position list (строки 122-127) → из API
+- [x] Update: редактирование xodim в Modal/SlideOver
+- [x] Delete: soft delete через ConfirmDialog
+- [x] Убрать hardcoded position list (строки 122-127) → из API
 - [ ] Bulk actions: массовый экспорт
 - [ ] Кнопка "Excel eksport" → `/hr/employees/export/`
 - [ ] i18n: все тексты
@@ -369,7 +369,7 @@
 - [ ] Tab "Hujjatlar": FileUpload для загрузки документов
 - [ ] Tab "Maosh": реальные данные зарплаты из API (сейчас hardcoded)
 - [ ] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
-- [ ] Кнопка "Tahrirlash" → navigate к форме редактирования
+- [x] Кнопка "Tahrirlash" → navigate к форме редактирования
 - [ ] Печать карточки сотрудника → PDF
 - [ ] i18n: все тексты
 

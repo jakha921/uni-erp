@@ -6,8 +6,10 @@ import { Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { Card } from '@/components/data-display';
 import { EmployeeProfileHeader } from '../components/EmployeeProfileHeader';
-import { useEmployee } from '@/api/hooks/useHr';
+import { EmployeeForm } from '../components/EmployeeForm';
+import { useEmployee, useUpdateEmployee, useDepartments } from '@/api/hooks/useHr';
 import { formatDate, formatMoney, formatPhone } from '@/lib/utils';
+import type { EmployeeFormData } from '../schemas/employee.schema';
 
 const CAREER_EVENTS = [
   { date: '01.09.2018', event: 'Ishga qabul qilindi', detail: "Informatika kafedrasi — O'qituvchi", color: '#2DB976', Icon: Plus },
@@ -38,8 +40,11 @@ export function EmployeeProfilePage() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('info');
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: employee, isLoading } = useEmployee(employeeId);
+  const updateMutation = useUpdateEmployee();
+  const { data: departments = [] } = useDepartments();
 
   if (isLoading || !employee) {
     return (
@@ -61,7 +66,7 @@ export function EmployeeProfilePage() {
         Orqaga
       </button>
 
-      <EmployeeProfileHeader employee={employee} />
+      <EmployeeProfileHeader employee={employee} onEdit={() => setEditOpen(true)} />
 
       <div className="mt-6">
         <Tabs tabs={TABS_CONFIG} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -73,6 +78,40 @@ export function EmployeeProfilePage() {
           {activeTab === 'docs' && <DocsTab />}
         </div>
       </div>
+
+      <EmployeeForm
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        onSubmit={(formData: EmployeeFormData) => {
+          updateMutation.mutate(
+            {
+              id: employeeId,
+              dto: {
+                firstName: formData.firstName,
+                secondName: formData.secondName,
+                thirdName: formData.thirdName,
+                gender: formData.gender,
+                birthDate: formData.birthDate,
+                departmentId: Number(formData.departmentId),
+                positionCode: formData.positionCode,
+                academicDegree: formData.academicDegree,
+                academicRank: formData.academicRank,
+                employmentForm: formData.employmentForm,
+                hireDate: formData.hireDate,
+                phone: formData.phone,
+                email: formData.email,
+                passport: formData.passport,
+                pinfl: formData.pinfl,
+                salary: Number(formData.salary),
+              },
+            },
+            { onSuccess: () => setEditOpen(false) },
+          );
+        }}
+        employee={employee}
+        departments={departments}
+        loading={updateMutation.isPending}
+      />
     </PageContent>
   );
 }
