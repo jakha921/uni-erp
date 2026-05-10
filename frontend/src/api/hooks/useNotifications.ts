@@ -34,3 +34,13 @@ export function useMarkAllNotificationsRead() {
     },
   });
 }
+
+export function useDeleteNotification() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => notificationService.deleteNotification(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: notifKeys.lists() });
+    },
+  });
+}

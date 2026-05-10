@@ -5,16 +5,21 @@ import {
   CheckCircle2,
   Settings,
   AlertTriangle,
+  Check,
+  Trash2,
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation/Tabs';
-import { useNotificationsList, useMarkAllNotificationsRead } from '@/api/hooks/useNotifications';
+import {
+  useNotificationsList,
+  useMarkAllNotificationsRead,
+  useMarkNotificationRead,
+  useDeleteNotification,
+} from '@/api/hooks/useNotifications';
 import type { Notification, NotificationType } from '@/types/operations';
 import type { ReactNode } from 'react';
-
-// --- Icon & color mapping ---
 
 const TYPE_ICON: Record<NotificationType, ReactNode> = {
   info: <Bell className="h-[17px] w-[17px]" />,
@@ -39,9 +44,10 @@ export function NotificationsPage() {
 
   const { data: notifData, isLoading } = useNotificationsList({ page: 1, pageSize: 50 });
   const markAllRead = useMarkAllNotificationsRead();
+  const markRead = useMarkNotificationRead();
+  const deleteNotif = useDeleteNotification();
 
   const items = notifData?.data ?? [];
-
   const unreadCount = useMemo(() => items.filter((n) => !n.isRead).length, [items]);
 
   const tabs = useMemo(
@@ -63,10 +69,6 @@ export function NotificationsPage() {
     return items.filter((n) => n.type === 'warning' || n.type === 'info');
   }, [items, filter]);
 
-  const handleMarkAllRead = () => {
-    markAllRead.mutate();
-  };
-
   return (
     <PageContent>
       <PageHeader
@@ -75,7 +77,7 @@ export function NotificationsPage() {
         breadcrumbs={[{ label: 'Operatsiyalar' }, { label: 'Bildirishnomalar' }]}
         actions={
           <button
-            onClick={handleMarkAllRead}
+            onClick={() => markAllRead.mutate()}
             className="text-[13px] font-semibold text-primary-600 hover:text-primary-700 transition-colors"
           >
             Hammasini o{"'"}qilgan
@@ -105,7 +107,13 @@ export function NotificationsPage() {
               </div>
             )}
             {filtered.map((n, i) => (
-              <NotificationRow key={n.id} notification={n} isFirst={i === 0} />
+              <NotificationRow
+                key={n.id}
+                notification={n}
+                isFirst={i === 0}
+                onMarkRead={() => markRead.mutate(n.id)}
+                onDelete={() => deleteNotif.mutate(n.id)}
+              />
             ))}
           </Card>
         </div>
@@ -114,11 +122,17 @@ export function NotificationsPage() {
   );
 }
 
-function NotificationRow({ notification: n, isFirst }: { notification: Notification; isFirst: boolean }) {
+interface NotificationRowProps {
+  notification: Notification;
+  isFirst: boolean;
+  onMarkRead: () => void;
+  onDelete: () => void;
+}
+
+function NotificationRow({ notification: n, isFirst, onMarkRead, onDelete }: NotificationRowProps) {
   const color = TYPE_COLOR[n.type] ?? '#64748B';
   const icon = TYPE_ICON[n.type] ?? <Bell className="h-[17px] w-[17px]" />;
 
-  // Compute relative time from createdAt
   const timeAgo = useMemo(() => {
     const date = new Date(n.createdAt);
     const now = new Date();
@@ -133,34 +147,26 @@ function NotificationRow({ notification: n, isFirst }: { notification: Notificat
 
   return (
     <div
-      className="relative flex gap-3.5 px-[18px] py-4"
+      className="group relative flex gap-3.5 px-[18px] py-4"
       style={{
         borderTop: !isFirst ? '1px solid #F1F5F9' : 'none',
         background: n.isRead ? '#fff' : 'linear-gradient(90deg,#F0FDF5 0%,#fff 80%)',
       }}
     >
-      {/* Unread dot */}
       {!n.isRead && (
         <span className="absolute left-1.5 top-6 h-1.5 w-1.5 rounded-full bg-primary-500" />
       )}
 
-      {/* Icon */}
       <div
         className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px]"
-        style={{
-          background: color + '20',
-          color: color,
-        }}
+        style={{ background: color + '20', color }}
       >
         {icon}
       </div>
 
-      {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2.5">
-          <p
-            className={`text-[13.5px] ${n.isRead ? 'font-medium' : 'font-semibold'} text-slate-900`}
-          >
+          <p className={`text-[13.5px] ${n.isRead ? 'font-medium' : 'font-semibold'} text-slate-900`}>
             {n.title}
           </p>
           <span className="ml-auto shrink-0 whitespace-nowrap text-[11px] text-slate-400">
@@ -168,6 +174,26 @@ function NotificationRow({ notification: n, isFirst }: { notification: Notificat
           </span>
         </div>
         <p className="mt-0.5 text-[12.5px] leading-[1.45] text-slate-500">{n.message}</p>
+      </div>
+
+      {/* Action buttons — visible on hover */}
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        {!n.isRead && (
+          <button
+            onClick={onMarkRead}
+            className="h-7 w-7 rounded-md hover:bg-green-50 text-slate-400 hover:text-green-600 inline-flex items-center justify-center transition-colors"
+            title="O'qilgan deb belgilash"
+          >
+            <Check className="h-3.5 w-3.5" />
+          </button>
+        )}
+        <button
+          onClick={onDelete}
+          className="h-7 w-7 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 inline-flex items-center justify-center transition-colors"
+          title="O'chirish"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       </div>
     </div>
   );

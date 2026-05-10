@@ -11,6 +11,7 @@ export interface INotificationService {
   getList(params: NotificationListParams): Promise<PaginatedResponse<Notification>>;
   markRead(id: number): Promise<void>;
   markAllRead(): Promise<void>;
+  deleteNotification(id: number): Promise<void>;
 }
 
 class NotificationApiService implements INotificationService {
@@ -34,6 +35,10 @@ class NotificationApiService implements INotificationService {
 
   async markAllRead(): Promise<void> {
     await apiClient.post(ENDPOINTS.operations.markRead, { all: true });
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    await apiClient.delete(`${ENDPOINTS.operations.notifications}${id}/`);
   }
 }
 

@@ -91,4 +91,9 @@ export class NotificationMockService implements INotificationService {
     await delay(200);
     allNotifications = allNotifications.map((n) => ({ ...n, isRead: true }));
   }
+
+  async deleteNotification(id: number): Promise<void> {
+    await delay(150);
+    allNotifications = allNotifications.filter((n) => n.id !== id);
+  }
 }
