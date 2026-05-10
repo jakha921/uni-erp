@@ -331,7 +331,7 @@
 **Задачи:**
 - [ ] Кнопка "Excel eksport" → подключить к реальному endpoint
 - [ ] Кнопка "Hisoblash" (Рассчитать) → `useProcessPayroll()` mutation
-- [ ] Убрать hardcoded month/year options
+- [x] Убрать hardcoded month/year options
 - [ ] i18n: все тексты
 
 ### 5.9 BudgetPage `/finance/budget`
@@ -453,9 +453,9 @@
 ### 8.2 NotificationsPage `/notifications`
 **Файл:** `features/operations/pages/NotificationsPage.tsx`
 **Задачи:**
-- [ ] "O'qilgan deb belgilash" → `useMarkNotificationRead()` mutation
-- [ ] "Barchasini o'qilgan" → `useMarkAllRead()` mutation
-- [ ] Delete: удаление bildirishnoma
+- [x] "O'qilgan deb belgilash" → `useMarkNotificationRead()` mutation
+- [x] "Barchasini o'qilgan" → `useMarkAllRead()` mutation
+- [x] Delete: удаление bildirishnoma
 - [ ] Tabs по типам (info, warning, success, system)
 - [ ] i18n: все тексты
 
@@ -471,7 +471,7 @@
 ### 8.4 AppealsPage `/appeals`
 **Файл:** `features/operations/pages/AppealsPage.tsx`
 **Задачи:**
-- [ ] CRUD: Create (AppealForm), Update (статус), Delete
+- [x] CRUD: Create (AppealForm), Update (статус), Delete
 - [x] AppealForm: title, description, category
 - [ ] Комментарии: `useAddComment()` mutation
 - [ ] Фильтры: status tabs, category select
@@ -548,8 +548,8 @@
 
 ### 11.1 UsersListPage `/system/users`
 **Задачи:**
-- [ ] UserForm: полная форма (firstName, lastName, phone, email, password, roles[])
-- [ ] Edit + Block/Unblock + Reset password
+- [x] UserForm: полная форма (firstName, lastName, phone, email, password, roles[])
+- [x] Edit + Block/Unblock + Reset password
 - [ ] i18n: все тексты
 
 ### 11.2 RolesPage `/system/roles`

@@ -1,15 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Plus, LayoutGrid, List } from 'lucide-react';
+import { Plus, LayoutGrid, List, Pencil, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Badge, Button, Spinner } from '@/components/ui';
-import { useNewsList, useCreateNews, useDeleteNews } from '@/api/hooks/useNews';
+import { useNewsList, useCreateNews, useUpdateNews, useDeleteNews } from '@/api/hooks/useNews';
 import { ConfirmDialog } from '@/components/overlays';
 import { NewsForm } from '../components/NewsForm';
 import type { NewsArticle } from '@/types/operations';
 import type { NewsFormData } from '../schemas/news.schema';
 import { cn } from '@/lib/utils';
 
-// --- Color palette for gradient headers ---
 const TAG_COLORS: Record<string, string> = {
   Universitet: '#2DB976',
   Akademik: '#3B82F6',
@@ -28,8 +27,10 @@ export function NewsPage() {
   const [tagFilter, setTagFilter] = useState('all');
   const [view, setView] = useState<ViewMode>('grid');
   const [formOpen, setFormOpen] = useState(false);
+  const [editNews, setEditNews] = useState<NewsArticle | null>(null);
   const [deleteNews, setDeleteNews] = useState<NewsArticle | null>(null);
   const createNews = useCreateNews();
+  const updateNewsMutation = useUpdateNews();
   const deleteNewsMutation = useDeleteNews();
 
   const { data: newsData, isLoading } = useNewsList({
@@ -101,27 +102,24 @@ export function NewsPage() {
         </div>
       </div>
 
-      {/* Loading */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <Spinner size="lg" />
         </div>
       )}
 
-      {/* Grid View */}
       {!isLoading && view === 'grid' && (
         <div className="grid grid-cols-3 gap-4">
           {filtered.map((n) => (
-            <NewsGridCard key={n.id} item={n} />
+            <NewsGridCard key={n.id} item={n} onEdit={setEditNews} onDelete={setDeleteNews} />
           ))}
         </div>
       )}
 
-      {/* List View */}
       {!isLoading && view === 'list' && (
         <div className="overflow-hidden rounded-2xl bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
           {filtered.map((n, i) => (
-            <NewsListRow key={n.id} item={n} isLast={i === filtered.length - 1} />
+            <NewsListRow key={n.id} item={n} isLast={i === filtered.length - 1} onEdit={setEditNews} onDelete={setDeleteNews} />
           ))}
         </div>
       )}
@@ -132,6 +130,7 @@ export function NewsPage() {
           <p className="text-xs text-slate-400">Filtrlarni o{"'"}zgartirib ko{"'"}ring</p>
         </div>
       )}
+
       <NewsForm
         open={formOpen}
         onClose={() => setFormOpen(false)}
@@ -139,6 +138,17 @@ export function NewsPage() {
           createNews.mutate(data, { onSuccess: () => setFormOpen(false) });
         }}
         loading={createNews.isPending}
+      />
+
+      <NewsForm
+        open={!!editNews}
+        onClose={() => setEditNews(null)}
+        onSubmit={(data: NewsFormData) => {
+          if (!editNews) return;
+          updateNewsMutation.mutate({ id: editNews.id, data }, { onSuccess: () => setEditNews(null) });
+        }}
+        news={editNews}
+        loading={updateNewsMutation.isPending}
       />
 
       <ConfirmDialog
@@ -158,12 +168,16 @@ export function NewsPage() {
   );
 }
 
-function NewsGridCard({ item: n }: { item: NewsArticle }) {
+interface CardActions {
+  onEdit: (n: NewsArticle) => void;
+  onDelete: (n: NewsArticle) => void;
+}
+
+function NewsGridCard({ item: n, onEdit, onDelete }: { item: NewsArticle } & CardActions) {
   const color = getColor(n.category);
 
   return (
-    <div className="cursor-pointer overflow-hidden rounded-2xl bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md">
-      {/* Gradient header */}
+    <div className="group cursor-pointer overflow-hidden rounded-2xl bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md">
       <div
         className="relative h-[140px]"
         style={{ background: `linear-gradient(135deg, ${color}, ${color}aa)` }}
@@ -174,9 +188,17 @@ function NewsGridCard({ item: n }: { item: NewsArticle }) {
         <span className="absolute bottom-3 left-4 text-[13px] font-bold tracking-tight text-white">
           {n.publishedAt}
         </span>
+        {/* Action buttons */}
+        <div className="absolute right-2 top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={(e) => { e.stopPropagation(); onEdit(n); }} className="h-7 w-7 rounded-md bg-white/90 hover:bg-white inline-flex items-center justify-center transition-colors text-slate-600" title="Tahrirlash">
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); onDelete(n); }} className="h-7 w-7 rounded-md bg-white/90 hover:bg-white inline-flex items-center justify-center transition-colors text-red-500" title="O'chirish">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
-      {/* Content */}
       <div className="p-4">
         <h3 className="mb-2 text-base font-bold leading-tight text-slate-900">{n.title}</h3>
         <p className="mb-3.5 text-[13px] leading-relaxed text-slate-500">{n.excerpt}</p>
@@ -188,12 +210,12 @@ function NewsGridCard({ item: n }: { item: NewsArticle }) {
   );
 }
 
-function NewsListRow({ item: n, isLast }: { item: NewsArticle; isLast: boolean }) {
+function NewsListRow({ item: n, isLast, onEdit, onDelete }: { item: NewsArticle; isLast: boolean } & CardActions) {
   const color = getColor(n.category);
 
   return (
     <div
-      className="flex cursor-pointer gap-4 p-4"
+      className="group flex cursor-pointer gap-4 p-4"
       style={{ borderBottom: !isLast ? '1px solid #F1F5F9' : 'none' }}
     >
       <div
@@ -207,6 +229,14 @@ function NewsListRow({ item: n, isLast }: { item: NewsArticle; isLast: boolean }
         </div>
         <h3 className="mb-1 text-base font-bold text-slate-900">{n.title}</h3>
         <p className="text-[13px] text-slate-500">{n.excerpt}</p>
+      </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(n); }} className="h-7 w-7 rounded-md hover:bg-slate-100 inline-flex items-center justify-center transition-colors text-slate-400 hover:text-slate-600" title="Tahrirlash">
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); onDelete(n); }} className="h-7 w-7 rounded-md hover:bg-red-50 inline-flex items-center justify-center transition-colors text-slate-400 hover:text-red-600" title="O'chirish">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       </div>
     </div>
   );
