@@ -10,10 +10,12 @@ Uni ERP — университетская ERP-система (BITU). Full-stack
 
 | Layer | Tech |
 |-------|------|
-| **Frontend** | React 19, TypeScript 6 strict, Vite 8 (port 3000), Tailwind CSS 4, Zustand 5, TanStack Query 5, React Hook Form + Zod 4, Recharts 3, Lucide React, i18next |
-| **Backend** | Django 5.1, DRF 3.15, SimpleJWT, django-filter, django-cors-headers, Unfold Admin |
+| **Frontend** | React 19, TypeScript 6 strict, Vite 8 (port 3000), Tailwind CSS 4, Zustand 5, TanStack Query 5, React Hook Form + Zod 4, Recharts 3, Lucide React, i18next, Vitest |
+| **Backend** | Django 5.1, DRF 3.15, SimpleJWT, django-filter, django-cors-headers, Unfold Admin, openpyxl, reportlab |
 | **Database** | SQLite (dev) / PostgreSQL 16 (prod) |
-| **Infra** | Docker, Nginx, Gunicorn, Coolify, Let's Encrypt SSL |
+| **Payments** | Payme (JSON-RPC webhook), Click (callback webhook) |
+| **SMS** | Eskiz API (eskiz.uz) |
+| **Infra** | Docker, Nginx, Gunicorn, Coolify, Let's Encrypt SSL, GitHub Actions CI/CD |
 | **Package Managers** | `uv` (Python), `npm` (JS) |
 
 ## Commands
@@ -24,6 +26,9 @@ cd frontend
 npm run dev              # Dev server :3000, proxy /api → :8000
 npm run build            # TypeScript check + Vite build
 npm run lint             # ESLint
+npm test                 # Vitest (34 tests)
+npm run test:run         # Vitest single run
+npm run test:coverage    # Vitest with coverage
 
 # Backend
 cd backend
@@ -34,12 +39,17 @@ uv run pytest -k test_name           # Single test
 uv run ruff check --fix .            # Linter
 uv run python manage.py makemigrations && uv run python manage.py migrate
 
-# Seed data (in order)
+# Seed data (in order, all 10 commands)
 uv run python manage.py seed_core
 uv run python manage.py seed_students
 uv run python manage.py seed_education
 uv run python manage.py seed_finance
 uv run python manage.py seed_hr
+uv run python manage.py seed_crm
+uv run python manage.py seed_operations
+uv run python manage.py seed_science
+uv run python manage.py seed_infrastructure
+uv run python manage.py seed_warehouse
 
 # Docker
 docker compose up                              # Dev
@@ -108,7 +118,7 @@ Each app: `models.py`, `serializers.py`, `views.py`, `urls.py`, `filters.py`, `a
 - **`features/`** — 17 feature modules: auth, students, finance, hr, crm, education, dashboard, operations, admin, system, profile, cabinets, science, infrastructure, warehouse, legacy, teachers
 - **`components/`** — 17 shared UI components: `ui/` (Button, Badge, Avatar, Spinner, ProgressBar, Accordion, AlertBanner, Stepper, etc.), `form/` (FormField, FormInput, FormSelect, DateRangePicker, Combobox, FileUpload, SearchInput, etc.), `table/` (DataTable, Pagination, FilterBar), `layout/` (AppShell, Sidebar, Topbar, PageHeader, PageContent), `overlays/` (Modal, SlideOver, ConfirmDialog, DropdownMenu, ToastContainer), `data-display/` (Card, StatCard, ChartCard, DonutChart, BarChartSimple, LineChartSimple, EmptyState, StatusBadge), `navigation/` (Tabs, Breadcrumb)
 - **`api/`** — full service layer architecture:
-  - `client.ts` — ApiClient with ApiError class, retry logic, auto-logout on 401
+  - `client.ts` — ApiClient with ApiError class, retry logic, JWT token refresh on 401 (singleton pattern)
   - `services/` — 31 service files (Interface + ApiService + MockService + USE_MOCK toggle)
   - `mock/` — 30 mock files with generated data using shared-data.ts generators
   - `hooks/` — 30 React Query hook files with KEYS factory pattern
@@ -117,7 +127,8 @@ Each app: `models.py`, `serializers.py`, `views.py`, `urls.py`, `filters.py`, `a
 - **`types/`** — 22 TypeScript type files per domain
 - **`hooks/`** — shared hooks: `useListFilters.ts` (generic filter/pagination state management)
 - **`lib/`** — `utils.ts` (cn, formatMoney, formatDate, formatPhone), `permissions.ts`, `validators.ts`
-- **`i18n/`** — uz.json, ru.json, en.json (default: uz)
+- **`i18n/`** — uz.json, ru.json, en.json (default: uz) — 317 keys × 3 languages, 16 sections covering all 17 modules
+- **`test/`** — Vitest setup (`setup.ts`) — 34 tests across utils, auth store, API client
 
 **Service layer pattern (all 66 pages use this):**
 ```typescript
@@ -178,9 +189,16 @@ Access matrix in `config/roles.ts` (MODULE_ACCESS). Backend mirrors this with pe
 
 `AppShell` = Sidebar (collapsible 240px→72px) + Topbar + Outlet. `router.tsx` — 68 routes, lazy loading via `<Lazy>` wrapper. Auth guards: `AuthGuard`, `GuestGuard`, `RoleGuard`.
 
-### Design Tokens
+### Design Tokens & Dark Mode
 
 Tailwind v4 via `@theme` in `globals.css`. Primary: `#2DB976` (emerald green). Font: Inter. Card: `rounded-2xl`, shadow `0 1px 3px rgba(0,0,0,0.08)`.
+
+Dark mode: CSS variables in `.dark` + `dark:` Tailwind variants on shared components. Toggle in Settings page via `useAppStore`. Key dark surfaces: `#0F172A` (background), `#1E293B` (surface), `#334155` (border).
+
+### Error Handling
+
+- `ErrorBoundary` — global React error boundary wrapping `<App>`, shows Uzbek error UI with retry/home buttons and dev stack trace
+- JWT token refresh — on 401, tries `/auth/token/refresh/` before logout (singleton pattern prevents multiple concurrent refreshes)
 
 ## Conventions
 
@@ -193,6 +211,9 @@ Tailwind v4 via `@theme` in `globals.css`. Primary: `#2DB976` (emerald green). F
 - Backend serializers match frontend TypeScript interfaces in `types/`
 - Seed data matches frontend mock data for visual consistency
 - All pages use service layer hooks (zero inline mock data in page components)
+- Excel export: `@action(url_path="export")` on ViewSets → `export_to_excel()` utility
+- PDF export: `@action(url_path="export-pdf")` / `@action(url_path="pdf")` → `generate_table_pdf()` / `generate_contract_pdf()`
+- i18n: `useTranslation()` hook, keys organized by module (`t('students.fullName')`)
 
 ## Deployment
 
@@ -224,9 +245,13 @@ Host nginx (`/etc/nginx/sites-available/erp.niuedu.uz`):
 - **Admin login:** +998901234567 / admin123
 - **Django admin:** https://erp.niuedu.uz/admin/ (same credentials)
 
+### CI/CD
+- `.github/workflows/deploy.yml` — on push to `main` → curl Coolify API to restart backend + frontend
+- GitHub Secrets: `COOLIFY_URL`, `COOLIFY_TOKEN`, `BACKEND_UUID`, `FRONTEND_UUID`
+
 ### Deploy flow
-1. Push to `main` branch
-2. In Coolify dashboard or API: restart backend/frontend applications
+1. Push to `main` branch → GitHub Actions auto-triggers
+2. CI/CD calls Coolify API to restart backend + frontend containers
 3. Backend `entrypoint.sh` auto-runs: migrate → collectstatic → seed (if empty) → gunicorn
 
 ### Key files
