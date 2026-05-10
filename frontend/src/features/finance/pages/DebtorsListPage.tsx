@@ -7,6 +7,7 @@ import { Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useContracts } from '@/api/hooks/useFinance';
+import { useFaculties } from '@/api/hooks/useCore';
 import { formatMoney } from '@/lib/utils';
 import type { Contract } from '@/types/finance';
 
@@ -17,16 +18,6 @@ interface DebtorRow extends Contract {
   tier: 'critical' | 'medium' | 'light';
 }
 
-const FACULTIES_FILTER = [
-  'Kompyuter injiniringi',
-  'Iqtisodiyot',
-  'Pedagogika',
-  'Filologiya',
-  'Tabiiy fanlar',
-  'Huquqshunoslik',
-  'San\'at va dizayn',
-  'Tibbiyot',
-];
 
 export function DebtorsListPage() {
   const navigate = useNavigate();
@@ -39,6 +30,7 @@ export function DebtorsListPage() {
   const [smsTarget, setSmsTarget] = useState<DebtorRow | null>(null);
   const pageSize = 20;
 
+  const { data: faculties } = useFaculties();
   const { data, isLoading } = useContracts({
     page: 1,
     pageSize: 500,
@@ -187,8 +179,8 @@ export function DebtorsListPage() {
           className="h-9 px-3 rounded-lg border border-border text-sm bg-white dark:bg-slate-800 min-w-[180px]"
         >
           <option value="all">Barcha fakultetlar</option>
-          {FACULTIES_FILTER.map((f) => (
-            <option key={f} value={f}>{f}</option>
+          {(faculties ?? []).map((f) => (
+            <option key={f.id} value={f.name}>{f.name}</option>
           ))}
         </select>
         <select
