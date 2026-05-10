@@ -48,6 +48,8 @@ const FILTER_TABS = [
 
 export function ThesesPage() {
   const [filter, setFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [supervisorFilter, setSupervisorFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [deleteThesis, setDeleteThesis] = useState<Thesis | null>(null);
 
@@ -58,7 +60,12 @@ export function ThesesPage() {
   const deleteThesisMutation = useDeleteThesis();
 
   const theses = thesesData?.data ?? [];
-  const filtered = useMemo(() => filter === 'all' ? theses : theses.filter((t) => t.stage === filter), [filter, theses]);
+  const filtered = useMemo(() => theses.filter((t) => {
+    if (filter !== 'all' && t.stage !== filter) return false;
+    if (typeFilter && t.type !== typeFilter) return false;
+    if (supervisorFilter && !t.supervisorName.toLowerCase().includes(supervisorFilter.toLowerCase())) return false;
+    return true;
+  }), [filter, typeFilter, supervisorFilter, theses]);
   const students = (studentsData?.data ?? []).map((s) => ({ id: s.id, fullName: s.fullName }));
   const supervisors = (teachersData?.data ?? []).map((t) => ({ id: t.id, fullName: t.fullName }));
 
@@ -96,6 +103,24 @@ export function ThesesPage() {
               {tab.label}
             </button>
           ))}
+        </div>
+        <div className="flex gap-2.5">
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Barcha turlar</option>
+            <option value="bakalavr">Bakalavr</option>
+            <option value="magistr">Magistr</option>
+          </select>
+          <input
+            type="text"
+            value={supervisorFilter}
+            onChange={(e) => setSupervisorFilter(e.target.value)}
+            placeholder="Ilmiy rahbar..."
+            className="h-9 rounded-lg border border-border px-3 text-sm w-40 outline-none focus:border-primary-400"
+          />
         </div>
       </div>
 

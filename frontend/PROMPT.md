@@ -527,13 +527,13 @@
 **Задачи:**
 - [x] ThesisForm создан в Modal
 - [x] Zod schema: `thesisSchema`
-- [ ] Фильтры: stage tabs, type select, supervisor
+- [x] Фильтры: stage tabs, type select, supervisor
 - [ ] i18n: все тексты
 
 ### 10.3 ConferencesPage `/conferences`
 **Задачи:**
 - [x] ConferenceForm создан в SlideOver
-- [ ] Tabs: Kelgusi / O'tgan
+- [x] Tabs: Kelgusi / O'tgan
 - [ ] i18n: все тексты
 
 ### 10.4 PatentsPage `/patents`
