@@ -14,6 +14,7 @@ jobs:
           host: 213.230.69.57
           username: jakha
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 1892
           timeout: 600s
           script: |
             bash ~/deploy-erp.sh all 2>&1
