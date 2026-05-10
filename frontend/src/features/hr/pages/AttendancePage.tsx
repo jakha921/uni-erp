@@ -5,20 +5,22 @@ import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { AttendanceCalendar } from '../components/AttendanceCalendar';
-import { useAttendance } from '@/api/hooks/useHr';
+import { useAttendance, useDepartments } from '@/api/hooks/useHr';
+
+const MONTH_NAMES = [
+  'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
+  'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr',
+];
 
 export function AttendancePage() {
   const today = new Date();
   const [year] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
+  const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
 
   const monthStr = `${year}-${String(month).padStart(2, '0')}`;
-  const { data: rows, isLoading } = useAttendance();
-
-  const MONTH_NAMES = [
-    'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
-    'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr',
-  ];
+  const { data: rows, isLoading } = useAttendance(departmentId);
+  const { data: departments } = useDepartments();
 
   return (
     <PageContent className="space-y-4">
@@ -48,11 +50,15 @@ export function AttendancePage() {
               <option key={i} value={String(i)}>{m}</option>
             ))}
           </select>
-          <select className="h-9 rounded-lg border border-border px-3 text-sm">
-            <option value="">Bo&apos;lim</option>
-            <option value="informatika">Informatika</option>
-            <option value="iqtisodiyot">Iqtisodiyot</option>
-            <option value="buxgalteriya">Buxgalteriya</option>
+          <select
+            value={departmentId ?? ''}
+            onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : undefined)}
+            className="h-9 rounded-lg border border-border px-3 text-sm"
+          >
+            <option value="">Barcha bo&apos;limlar</option>
+            {(departments ?? []).map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
           </select>
           <div className="flex-1" />
           <div className="flex items-center gap-3.5 text-xs">

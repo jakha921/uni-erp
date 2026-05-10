@@ -91,8 +91,8 @@
 - [ ] Bulk actions: чекбоксы для массового удаления/экспорта
 - [ ] Кнопка "Excel eksport" → вызов `/students/export/`
 - [ ] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
-- [ ] Фильтры факультет/группа: заменить hardcoded массивы на данные из `useFaculties()`, `useGroups()`
-- [ ] Кнопка "Yangi talaba" → навигация на `/students/new`
+- [x] Фильтры факультет/группа: заменить hardcoded массивы на данные из `useFaculties()`, `useGroups()`
+- [x] Кнопка "Yangi talaba" → навигация на `/students/new`
 
 ### 3.3 StudentFormPage `/students/new` и `/students/:id/edit`
 **Файл:** `features/students/pages/StudentFormPage.tsx`
@@ -272,7 +272,7 @@
 **Статус:** C✓ R✓ D✓, нет Update
 **Задачи:**
 - [ ] Update: редактирование контракта (тип, сумма) в Modal
-- [ ] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
+- [x] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
 - [ ] Кнопка "Excel eksport" → `/finance/contracts/export/`
 - [ ] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
 - [ ] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
@@ -312,7 +312,7 @@
 **Файл:** `features/finance/pages/ScholarshipsPage.tsx`
 **Статус:** C✓ R✓ D✓, нет Update
 **Задачи:**
-- [ ] Update: редактирование стипендии в Modal
+- [x] Update: редактирование стипендии в Modal
 - [ ] Убрать hardcoded TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`
 - [ ] Массовое назначение стипендии (bulk create)
 - [ ] i18n: все тексты
