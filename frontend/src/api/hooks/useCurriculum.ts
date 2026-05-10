@@ -46,9 +46,15 @@ export function useUpdateCurriculum() {
       curriculumService.updateCurriculum(id, data),
     onSuccess: (_result, variables) => {
       void queryClient.invalidateQueries({ queryKey: KEYS.lists() });
-      void queryClient.invalidateQueries({
-        queryKey: KEYS.detail(variables.id),
-      });
+      void queryClient.invalidateQueries({ queryKey: KEYS.detail(variables.id) });
     },
+  });
+}
+
+export function useDeleteCurriculum() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => curriculumService.deleteCurriculum(id),
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: KEYS.lists() }); },
   });
 }

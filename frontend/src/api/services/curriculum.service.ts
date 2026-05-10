@@ -13,6 +13,7 @@ export interface ICurriculumService {
   getCurriculumById(id: number): Promise<Curriculum>;
   createCurriculum(data: CreateCurriculumDto): Promise<Curriculum>;
   updateCurriculum(id: number, data: UpdateCurriculumDto): Promise<Curriculum>;
+  deleteCurriculum(id: number): Promise<void>;
 }
 
 class CurriculumApiService implements ICurriculumService {
@@ -35,6 +36,9 @@ class CurriculumApiService implements ICurriculumService {
 
   async updateCurriculum(id: number, data: UpdateCurriculumDto): Promise<Curriculum> {
     return apiClient.patch<Curriculum>(ENDPOINTS.curriculum.detail(id), data);
+  }
+  async deleteCurriculum(id: number): Promise<void> {
+    return apiClient.delete<void>(ENDPOINTS.curriculum.detail(id));
   }
 }
 

@@ -2,15 +2,14 @@ import { useState, useMemo } from 'react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
-import { Upload, Plus } from 'lucide-react';
-import { useCurriculumList, useCreateCurriculum } from '@/api/hooks/useCurriculum';
-import { useSpecialties } from '@/api/hooks/useCore';
+import { ConfirmDialog } from '@/components/overlays';
+import { Upload, Plus, Trash2 } from 'lucide-react';
+import { useCurriculumList, useCreateCurriculum, useDeleteCurriculum } from '@/api/hooks/useCurriculum';
+import { useSpecialties, useAcademicYears } from '@/api/hooks/useCore';
 import { useSubjects } from '@/api/hooks/useEducation';
 import { CurriculumForm } from '../components/CurriculumForm';
-import type { CurriculumSubject, ControlForm } from '@/types/education';
+import type { Curriculum, CurriculumSubject, ControlForm } from '@/types/education';
 import type { CreateCurriculumFormData } from '../schemas/curriculum.schema';
-
-// --- Config ---
 
 const CONTROL_LABELS: Record<ControlForm, string> = {
   exam: 'Imtihon',
@@ -24,19 +23,27 @@ const TYPE_BADGE_MAP: Record<string, 'success' | 'info' | 'warning'> = {
   practice: 'warning',
 };
 
-const YEARS = ['2024-2025', '2023-2024', '2022-2023'];
-
 // --- Component ---
 
 export function CurriculumPage() {
   const { data: specialties, isLoading: specialtiesLoading } = useSpecialties();
+  const { data: academicYears } = useAcademicYears();
   const { data: subjectsData } = useSubjects();
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<number | undefined>(undefined);
-  const [selectedYear, setSelectedYear] = useState(YEARS[0]);
+  const [selectedYear, setSelectedYear] = useState<string>('');
   const [formOpen, setFormOpen] = useState(false);
+  const [deleteCurriculumItem, setDeleteCurriculumItem] = useState<Curriculum | null>(null);
   const createCurriculum = useCreateCurriculum();
+  const deleteCurriculumMutation = useDeleteCurriculum();
 
-  const yearNum = selectedYear ? parseInt(selectedYear.split('-')[0]!, 10) : undefined;
+  // Derive year options from academic years API, fallback to static
+  const yearOptions = academicYears && academicYears.length > 0
+    ? academicYears.map((y) => y.name)
+    : ['2024-2025', '2023-2024', '2022-2023'];
+
+  const effectiveYear = selectedYear || yearOptions[0] || '2024-2025';
+
+  const yearNum = effectiveYear ? parseInt(effectiveYear.split('-')[0]!, 10) : undefined;
 
   const { data: curriculums, isLoading: curriculumLoading } = useCurriculumList({
     specialtyId: selectedSpecialtyId,
@@ -95,16 +102,21 @@ export function CurriculumPage() {
             ))}
           </select>
           <select
-            value={selectedYear}
+            value={effectiveYear}
             onChange={(e) => setSelectedYear(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            {YEARS.map((y) => (
+            {yearOptions.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>
         <div className="flex gap-2">
+          {curriculum && (
+            <Button variant="ghost" size="sm" leftIcon={<Trash2 className="h-3.5 w-3.5 text-red-500" />} onClick={() => setDeleteCurriculumItem(curriculum)}>
+              O&apos;chirish
+            </Button>
+          )}
           <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
             Eksport PDF
           </Button>
@@ -202,6 +214,19 @@ export function CurriculumPage() {
           )}
         </>
       )}
+      <ConfirmDialog
+        open={!!deleteCurriculumItem}
+        onClose={() => setDeleteCurriculumItem(null)}
+        onConfirm={() => {
+          if (!deleteCurriculumItem) return;
+          deleteCurriculumMutation.mutate(deleteCurriculumItem.id, { onSuccess: () => setDeleteCurriculumItem(null) });
+        }}
+        title="O'quv rejani o'chirish"
+        message={`"${deleteCurriculumItem?.specialtyName}" o'quv rejasini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteCurriculumMutation.isPending}
+      />
       <CurriculumForm
         open={formOpen}
         onClose={() => setFormOpen(false)}

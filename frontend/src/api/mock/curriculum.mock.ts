@@ -136,4 +136,10 @@ export class CurriculumMockService implements ICurriculumService {
     this.curriculums[idx] = updated;
     return updated;
   }
+
+  async deleteCurriculum(id: number): Promise<void> {
+    await delay(200);
+    const idx = this.curriculums.findIndex((c) => c.id === id);
+    if (idx !== -1) this.curriculums.splice(idx, 1);
+  }
 }
