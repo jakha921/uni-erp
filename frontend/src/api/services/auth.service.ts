@@ -1,4 +1,10 @@
 import type { User, LoginRequest, LoginResponse } from '@/types/auth';
+
+export interface UpdateProfileDto {
+  name: string;
+  email: string;
+  phone: string;
+}
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
 import { apiClient } from '../client';
 import { AuthMockService } from '../mock/auth.mock';
@@ -8,6 +14,8 @@ export interface IAuthService {
   logout(): Promise<void>;
   me(): Promise<User>;
   forgotPassword(phone: string): Promise<void>;
+  changePassword(currentPassword: string, newPassword: string): Promise<void>;
+  updateProfile(dto: UpdateProfileDto): Promise<User>;
   getDemoUsers(): User[];
 }
 
@@ -35,6 +43,14 @@ class AuthApiService implements IAuthService {
 
   async forgotPassword(phone: string): Promise<void> {
     await apiClient.post<void>(ENDPOINTS.auth.forgotPassword, { phone });
+  }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await apiClient.post<void>('/auth/change-password', { currentPassword, newPassword });
+  }
+
+  async updateProfile(dto: UpdateProfileDto): Promise<User> {
+    return apiClient.patch<User>(ENDPOINTS.auth.me, dto);
   }
 
   getDemoUsers(): User[] {

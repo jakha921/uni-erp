@@ -142,7 +142,7 @@
 **Файл:** `features/education/pages/AcademicAttendancePage.tsx`
 **Статус:** Grid UI есть, mutation неполная
 **Задачи:**
-- [ ] Подключить grid к `useBulkAttendance()` mutation — сохранение отметок
+- [x] Подключить grid к `useBulkAttendance()` mutation — сохранение отметок
 - [ ] Фильтры: группа, предмет, дата — через API
 - [ ] Убрать hardcoded данные, если есть
 - [ ] Кнопка "Saqlash" должна отправлять bulk attendance на бэкенд
@@ -153,7 +153,7 @@
 **Файл:** `features/education/pages/GradingPage.tsx`
 **Статус:** Grid UI есть, mutation неполная
 **Задачи:**
-- [ ] Подключить к `useBulkGrades()` mutation — сохранение оценок
+- [x] Подключить к `useBulkGrades()` mutation — сохранение оценок
 - [ ] Фильтры: группа, предмет, семестр — через API
 - [ ] Inline editing оценок в таблице
 - [ ] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
@@ -284,7 +284,7 @@
 **Задачи:**
 - [ ] Кнопка "Onlayn to'lov" → показать Payme/Click ссылки из `/contracts/{id}/payment-link/`
 - [ ] Кнопка "Shartnomani yuklab olish" → PDF download
-- [ ] Кнопка "Nazad" → navigate('/finance/contracts')
+- [x] Кнопка "Nazad" → navigate('/finance/contracts')
 - [ ] i18n: все тексты (убрать hardcoded status labels)
 - [ ] PaymentTimeline: подключить к реальной истории платежей
 
@@ -292,7 +292,7 @@
 **Файл:** `features/finance/pages/DebtorsListPage.tsx`
 **Статус:** Read работает
 **Задачи:**
-- [ ] Убрать hardcoded FACULTIES массив → `useFaculties()`
+- [x] Убрать hardcoded FACULTIES массив → `useFaculties()`
 - [ ] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
 - [ ] Bulk SMS: массовая рассылка выбранным должникам
 - [ ] Экспорт списка должников в Excel
@@ -560,7 +560,7 @@
 
 ### 11.3 PermissionMatrixPage `/system/permissions`
 **Задачи:**
-- [ ] Click → toggle permission → `useUpdateRolePermissions()` mutation
+- [x] Click → toggle permission → `useUpdateRolePermissions()` mutation
 - [ ] Убрать hardcoded verbs/modules
 - [ ] i18n: все тексты
 
@@ -671,13 +671,13 @@
 ### 17.1 ProfilePage `/profile`
 **Задачи:**
 - [ ] FileUpload для фото
-- [ ] `useUpdateProfile()` mutation
-- [ ] Форма: firstName, lastName, phone, email
+- [x] `useUpdateProfile()` mutation
+- [x] Форма: firstName, lastName, phone, email
 - [ ] i18n: все тексты
 
 ### 17.2 SettingsPage `/settings`
 **Задачи:**
-- [ ] Смена пароля: `useChangePassword()` с Zod валидацией
+- [x] Смена пароля: `useChangePassword()` с Zod валидацией
 - [ ] Notification settings → API persistence
 - [ ] i18n: все тексты
 

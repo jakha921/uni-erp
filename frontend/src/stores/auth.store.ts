@@ -12,6 +12,7 @@ interface AuthState {
   logout: () => void;
   switchRole: (role: RoleKey) => void;
   setToken: (token: string) => void;
+  patchCurrentUser: (patch: Partial<User>) => void;
   can: (routeId: string) => boolean;
 }
 
@@ -31,6 +32,10 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       setToken: (token) => set({ token }),
+      patchCurrentUser: (patch) => {
+        const user = get().currentUser;
+        if (user) set({ currentUser: { ...user, ...patch } });
+      },
       can: (routeId) => {
         const user = get().currentUser;
         if (!user) return false;

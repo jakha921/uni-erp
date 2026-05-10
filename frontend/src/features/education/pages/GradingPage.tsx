@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Button, Avatar, Spinner } from '@/components/ui';
-import { useSubjects, useGrades } from '@/api/hooks/useEducation';
+import { useSubjects, useGrades, useBulkGrades } from '@/api/hooks/useEducation';
 import { useGroups } from '@/api/hooks/useCore';
 import type { Grade } from '@/types/education';
 
@@ -125,6 +125,40 @@ export function GradingPage() {
     return result;
   }, [effectiveGrades, students]);
 
+  const bulkGrades = useBulkGrades();
+
+  const GRADE_TYPE_MAP: Record<GradeKey, 'coursework' | 'midterm' | 'final'> = {
+    a1: 'coursework',
+    a2: 'coursework',
+    mid: 'midterm',
+    final: 'final',
+  };
+
+  const handleSave = async () => {
+    const subjectId = Number(selectedSubjectId) || 1;
+    const semesterId = 1;
+
+    const gradeTypeSets = (['a1', 'a2', 'mid', 'final'] as GradeKey[]).filter(
+      (k, idx, arr) => arr.indexOf(k) === idx,
+    );
+
+    await Promise.all(
+      gradeTypeSets.map((k) =>
+        bulkGrades.mutateAsync({
+          subjectId,
+          semesterId,
+          gradeType: GRADE_TYPE_MAP[k],
+          maxScore: '100',
+          records: students.map((s) => ({
+            studentId: s.id,
+            score: String(effectiveGrades[s.id]?.[k] ?? 0),
+          })),
+        }),
+      ),
+    );
+    setGrades({});
+  };
+
   if (isLoading) {
     return (
       <PageContent>
@@ -195,7 +229,12 @@ export function GradingPage() {
           <div className="text-xs text-muted">
             Og&apos;irlik: A1 10% &middot; A2 10% &middot; Oraliq 30% &middot; Yakuniy 50%
           </div>
-          <Button size="sm" leftIcon={<Check className="h-4 w-4" />}>
+          <Button
+            size="sm"
+            leftIcon={<Check className="h-4 w-4" />}
+            onClick={() => void handleSave()}
+            loading={bulkGrades.isPending}
+          >
             Saqlash
           </Button>
         </div>

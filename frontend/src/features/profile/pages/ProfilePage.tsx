@@ -1,23 +1,53 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Pencil, Mail, Phone, MapPin, Calendar, GraduationCap, Briefcase } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/overlays';
 import { useAuthStore } from '@/stores/auth.store';
 import { formatDate } from '@/lib/utils';
+import { useUpdateProfile } from '@/api/hooks/useProfile';
+import { profileSchema, type ProfileFormData } from '../schemas/settings.schema';
+import type { Resolver } from 'react-hook-form';
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Administrator',
+  buxgalter: 'Buxgalter',
+  dekan: 'Dekan',
+  oqituvchi: "Professor-o'qituvchi",
+  talaba: 'Talaba',
+};
 
 export function ProfilePage() {
   const currentUser = useAuthStore((s) => s.currentUser);
+  const patchCurrentUser = useAuthStore((s) => s.patchCurrentUser);
+  const [editOpen, setEditOpen] = useState(false);
+  const updateProfile = useUpdateProfile();
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema) as unknown as Resolver<ProfileFormData>,
+  });
+
+  const handleEdit = () => {
+    if (currentUser) {
+      reset({ name: currentUser.name, email: currentUser.email, phone: currentUser.phone });
+    }
+    setEditOpen(true);
+  };
+
+  const onSubmit = (data: ProfileFormData) => {
+    updateProfile.mutate(data, {
+      onSuccess: (updated) => {
+        patchCurrentUser({ name: updated.name, email: updated.email, phone: updated.phone });
+        setEditOpen(false);
+      },
+    });
+  };
 
   if (!currentUser) return null;
-
-  const ROLE_LABELS: Record<string, string> = {
-    admin: 'Administrator',
-    buxgalter: 'Buxgalter',
-    dekan: 'Dekan',
-    oqituvchi: "Professor-o'qituvchi",
-    talaba: 'Talaba',
-  };
 
   const roleLabel = ROLE_LABELS[currentUser.role] ?? currentUser.role;
 
@@ -27,7 +57,7 @@ export function ProfilePage() {
         title="Profil"
         breadcrumbs={[{ label: 'Profil' }]}
         actions={
-          <Button leftIcon={<Pencil className="h-4 w-4" />} variant="secondary">
+          <Button leftIcon={<Pencil className="h-4 w-4" />} variant="secondary" onClick={handleEdit}>
             Tahrirlash
           </Button>
         }
@@ -133,6 +163,60 @@ export function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      <Modal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Profilni tahrirlash"
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditOpen(false)}>
+              Bekor qilish
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              loading={updateProfile.isPending}
+              onClick={handleSubmit(onSubmit)}
+            >
+              Saqlash
+            </Button>
+          </div>
+        }
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">F.I.Sh.</label>
+            <input
+              {...register('name')}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none"
+              placeholder="To'liq ism"
+            />
+            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Email</label>
+            <input
+              type="email"
+              {...register('email')}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none"
+              placeholder="email@bitu.uz"
+            />
+            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Telefon</label>
+            <input
+              type="tel"
+              {...register('phone')}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none"
+              placeholder="+998 90 000-00-00"
+            />
+            {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
+          </div>
+        </form>
+      </Modal>
     </PageContent>
   );
 }

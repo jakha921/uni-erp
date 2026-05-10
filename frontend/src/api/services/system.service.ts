@@ -19,6 +19,7 @@ export interface ISystemService {
   getRoleById(id: string): Promise<Role>;
   createRole(data: CreateRoleDto): Promise<Role>;
   updateRole(id: string, data: CreateRoleDto): Promise<Role>;
+  updateRolePermissions(roleId: string, moduleId: string, verb: string, granted: boolean): Promise<void>;
   getAuditLog(params: AuditLogParams): Promise<PaginatedResponse<AuditLogEntry>>;
 }
 
@@ -39,6 +40,9 @@ class SystemApiService implements ISystemService {
   async getRoleById(id: string) { return apiClient.get<Role>(ENDPOINTS.system.roleDetail(id)); }
   async createRole(data: CreateRoleDto) { return apiClient.post<Role>(ENDPOINTS.system.roles, data); }
   async updateRole(id: string, data: CreateRoleDto) { return apiClient.patch<Role>(ENDPOINTS.system.roleDetail(id), data); }
+  async updateRolePermissions(roleId: string, moduleId: string, verb: string, granted: boolean) {
+    await apiClient.patch<void>(`${ENDPOINTS.system.roles}${roleId}/permissions/`, { moduleId, verb, granted });
+  }
   async getAuditLog(params: AuditLogParams) {
     const page = params.page ?? 1;
     const pageSize = params.pageSize ?? 20;

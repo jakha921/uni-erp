@@ -1,6 +1,6 @@
 import { delay } from './delay';
 import type { User, LoginRequest, LoginResponse } from '@/types/auth';
-import type { IAuthService } from '../services/auth.service';
+import type { IAuthService, UpdateProfileDto } from '../services/auth.service';
 
 const DEMO_USERS: User[] = [
   {
@@ -92,6 +92,17 @@ export class AuthMockService implements IAuthService {
 
   async forgotPassword(_phone: string): Promise<void> {
     await delay(500);
+  }
+
+  async changePassword(_currentPassword: string, _newPassword: string): Promise<void> {
+    await delay(600);
+  }
+
+  async updateProfile(dto: UpdateProfileDto): Promise<User> {
+    await delay(500);
+    const first = DEMO_USERS[0];
+    if (!first) throw new Error('No demo users');
+    return { ...first, ...dto };
   }
 
   getDemoUsers(): User[] {

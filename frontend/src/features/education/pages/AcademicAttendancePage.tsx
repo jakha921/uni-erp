@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Avatar, Spinner } from '@/components/ui';
-import { useSchedules, useSubjects } from '@/api/hooks/useEducation';
+import { useSchedules, useSubjects, useBulkAttendance } from '@/api/hooks/useEducation';
 import { useGroups } from '@/api/hooks/useCore';
 import type { Schedule } from '@/types/education';
 
@@ -100,6 +100,28 @@ export function AcademicAttendancePage() {
     });
   }, []);
 
+  const bulkAttendance = useBulkAttendance();
+
+  const STATUS_MAP: Record<AttendanceStatus, 'present' | 'absent' | 'excused'> = {
+    P: 'present',
+    N: 'absent',
+    U: 'excused',
+  };
+
+  const handleSave = () => {
+    const scheduleId = schedules[0]?.id ?? 1;
+    const today = new Date().toISOString().slice(0, 10);
+    bulkAttendance.mutate({
+      scheduleId,
+      date: today,
+      records: students.map((s) => {
+        const row = grid[s.id] ?? [];
+        const lastStatus = row[row.length - 1] ?? 'P';
+        return { studentId: s.id, status: STATUS_MAP[lastStatus] };
+      }),
+    });
+  };
+
   if (isLoading) {
     return (
       <PageContent>
@@ -187,7 +209,12 @@ export function AcademicAttendancePage() {
               Uzrli
             </span>
           </div>
-          <Button size="sm" leftIcon={<Check className="h-4 w-4" />}>
+          <Button
+            size="sm"
+            leftIcon={<Check className="h-4 w-4" />}
+            onClick={handleSave}
+            loading={bulkAttendance.isPending}
+          >
             Saqlash
           </Button>
         </div>

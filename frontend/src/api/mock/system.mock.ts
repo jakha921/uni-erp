@@ -80,6 +80,7 @@ export class SystemMockService implements ISystemService {
   async getRoleById(id: string) { await delay(200); const r = ROLES.find((r) => r.id === id); if (!r) throw new Error('Not found'); return r; }
   async createRole(data: CreateRoleDto) { await delay(300); return { ...data, id: `custom-${Date.now()}`, isSystem: false, userCount: 0 }; }
   async updateRole(id: string, data: CreateRoleDto) { await delay(300); return { ...data, id, isSystem: false, userCount: 0 }; }
+  async updateRolePermissions(_roleId: string, _moduleId: string, _verb: string, _granted: boolean) { await delay(200); }
   async getAuditLog(params: AuditLogParams): Promise<PaginatedResponse<AuditLogEntry>> {
     await delay(300);
     let data = [...AUDIT_LOG];

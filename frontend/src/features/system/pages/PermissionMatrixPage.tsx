@@ -5,23 +5,47 @@ import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button } from '@/components/ui';
 import { ROLES, PERM_MATRIX, MODULE_GROUPS, PERM_VERBS, ALL_MODULES } from '../data';
+import { useUpdateRolePermissions } from '@/api/hooks/useSystem';
 
 export function PermissionMatrixPage() {
   const navigate = useNavigate();
   const [activeVerb, setActiveVerb] = useState('view');
   const [highlightRole, setHighlightRole] = useState<string | null>(null);
   const [highlightMod, setHighlightMod] = useState<string | null>(null);
+  const [localMatrix, setLocalMatrix] = useState<Record<string, Record<string, string[]>>>(() => {
+    const copy: Record<string, Record<string, string[]>> = {};
+    for (const [role, mods] of Object.entries(PERM_MATRIX)) {
+      copy[role] = {};
+      for (const [mod, verbs] of Object.entries(mods)) {
+        copy[role][mod] = [...verbs];
+      }
+    }
+    return copy;
+  });
+
+  const updatePermissions = useUpdateRolePermissions();
+
+  const handleToggle = (roleId: string, modId: string) => {
+    const currentVerbs = localMatrix[roleId]?.[modId] ?? [];
+    const has = currentVerbs.includes(activeVerb);
+    const newVerbs = has ? currentVerbs.filter((v) => v !== activeVerb) : [...currentVerbs, activeVerb];
+    setLocalMatrix((prev) => ({
+      ...prev,
+      [roleId]: { ...(prev[roleId] ?? {}), [modId]: newVerbs },
+    }));
+    updatePermissions.mutate({ roleId, moduleId: modId, verb: activeVerb, granted: !has });
+  };
 
   const activeVerbObj = PERM_VERBS.find((v) => v.id === activeVerb);
 
   const { grantedCells, totalCells } = useMemo(() => {
     const total = ROLES.length * ALL_MODULES.length;
     const granted = ROLES.reduce((s, r) => {
-      const m = PERM_MATRIX[r.id] ?? {};
+      const m = localMatrix[r.id] ?? {};
       return s + Object.values(m).filter((verbs) => verbs.includes(activeVerb)).length;
     }, 0);
     return { grantedCells: granted, totalCells: total };
-  }, [activeVerb]);
+  }, [activeVerb, localMatrix]);
 
   const coveragePercent = totalCells > 0 ? Math.round((grantedCells / totalCells) * 100) : 0;
 
@@ -155,7 +179,7 @@ export function PermissionMatrixPage() {
                         <div className="mt-0.5 text-[11.5px] leading-snug text-muted">{mod.desc}</div>
                       </td>
                       {ROLES.map((r) => {
-                        const verbs = (PERM_MATRIX[r.id] ?? {})[mod.id] ?? [];
+                        const verbs = (localMatrix[r.id] ?? {})[mod.id] ?? [];
                         const has = verbs.includes(activeVerb);
                         const allVerbCount = verbs.length;
                         const isHL = highlightRole === r.id || highlightMod === mod.id;
@@ -163,7 +187,7 @@ export function PermissionMatrixPage() {
                         return (
                           <td
                             key={r.id}
-                            className="border-b border-slate-100 px-1.5 py-2 text-center transition-colors"
+                            className="border-b border-slate-100 px-1.5 py-2 text-center transition-colors cursor-pointer"
                             style={{
                               backgroundColor: has
                                 ? (activeVerbObj?.color ?? '#64748B') + (isHL ? '22' : '12')
@@ -171,6 +195,8 @@ export function PermissionMatrixPage() {
                                   ? '#F8FAFC'
                                   : '#fff',
                             }}
+                            onClick={() => handleToggle(r.id, mod.id)}
+                            title={has ? `${activeVerbObj?.label} ruxsatini olib tashlash` : `${activeVerbObj?.label} ruxsatini berish`}
                           >
                             {has ? (
                               <span
@@ -183,7 +209,7 @@ export function PermissionMatrixPage() {
                                 )}
                               </span>
                             ) : (
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-200" />
+                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-200 group-hover:bg-slate-300" />
                             )}
                           </td>
                         );

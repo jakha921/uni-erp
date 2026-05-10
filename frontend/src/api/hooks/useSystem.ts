@@ -54,6 +54,13 @@ export function useUpdateRole() {
   return useMutation({ mutationFn: ({ id, data }: { id: string; data: CreateRoleDto }) => systemService.updateRole(id, data), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.roles() }); } });
 }
 
+export function useUpdateRolePermissions() {
+  return useMutation({
+    mutationFn: ({ roleId, moduleId, verb, granted }: { roleId: string; moduleId: string; verb: string; granted: boolean }) =>
+      systemService.updateRolePermissions(roleId, moduleId, verb, granted),
+  });
+}
+
 export function useAuditLog(params: AuditLogParams) {
   return useQuery({ queryKey: KEYS.auditLogList(params), queryFn: () => systemService.getAuditLog(params) });
 }
