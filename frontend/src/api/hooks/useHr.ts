@@ -4,10 +4,13 @@ import type {
   EmployeeListParams,
   CreateEmployeeDto,
   UpdateEmployeeDto,
+  HrDepartment,
   CreateOrderDto,
   CreateLeaveDto,
   Leave,
 } from '@/types/hr';
+
+type DepartmentDto = Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>;
 
 const hrKeys = {
   all: ['hr'] as const,
@@ -70,6 +73,30 @@ export function useDepartments() {
   return useQuery({
     queryKey: hrKeys.departments(),
     queryFn: () => hrService.getDepartments(),
+  });
+}
+
+export function useCreateDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: DepartmentDto) => hrService.createDepartment(dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: hrKeys.departments() }),
+  });
+}
+
+export function useUpdateDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dto }: { id: number; dto: DepartmentDto }) => hrService.updateDepartment(id, dto),
+    onSuccess: () => qc.invalidateQueries({ queryKey: hrKeys.departments() }),
+  });
+}
+
+export function useDeleteDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => hrService.deleteDepartment(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: hrKeys.departments() }),
   });
 }
 

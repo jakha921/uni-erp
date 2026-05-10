@@ -168,7 +168,7 @@
 - [ ] Подключить к `useExams(params)` hook
 - [ ] Tab "Sessiyalar": список экзаменов → CRUD (создание, редактирование, удаление)
 - [x] ExamForm: subjectId, groupId, examDate, room, type (midterm/final), teacherId
-- [ ] Zod schema: `examSchema` валидация всех полей
+- [x] Zod schema: `examSchema` валидация всех полей
 - [ ] Tab "Imtihon jadvali": таблица расписания экзаменов
 - [ ] Tab "Biletlar": загрузка/просмотр экзаменационных билетов
 - [ ] Tab "Vedomost": ведомость оценок (подключить к Grades API)
@@ -208,7 +208,7 @@
 - [ ] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
 - [x] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
 - [ ] Tab "Kutish": очередь ожидания
-- [ ] Zod schemas: `bookSchema`, `loanSchema`
+- [x] Zod schemas: `bookSchema`, `loanSchema`
 - [ ] Поиск книг по названию/автору/ISBN
 - [ ] i18n: все тексты
 
@@ -220,7 +220,7 @@
 - [x] AlumniForm: fullName, graduationYear, faculty, specialty, workplace, position, phone, email
 - [ ] Edit: клик по строке → SlideOver с предзаполнением
 - [ ] Delete: ConfirmDialog
-- [ ] Zod schema: `alumniSchema`
+- [x] Zod schema: `alumniSchema`
 - [ ] Фильтры: год выпуска, факультет, статус трудоустройства
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты
@@ -232,7 +232,7 @@
 - [x] CRUD: кнопка "Yangi amaliyot" → InternshipForm в SlideOver
 - [x] InternshipForm: studentId, companyName, supervisorName, startDate, endDate, type (production/pre_diploma)
 - [ ] Edit + Delete
-- [ ] Zod schema: `internshipSchema`
+- [x] Zod schema: `internshipSchema`
 - [ ] Tabs: Joriy (текущие), Yakunlangan (завершённые)
 - [ ] i18n: все тексты
 
@@ -376,9 +376,9 @@
 ### 6.4 DepartmentsPage `/hr/departments`
 **Файл:** `features/hr/pages/DepartmentsPage.tsx` | **Статус:** Read, нет CRUD
 **Задачи:**
-- [ ] CRUD: создание/редактирование bo'lim в Modal
-- [ ] DepartmentForm: name, code, facultyId, headId (Combobox из employees)
-- [ ] Delete: ConfirmDialog
+- [x] CRUD: создание/редактирование bo'lim в Modal
+- [x] DepartmentForm: name, code, facultyId, headId (Combobox из employees)
+- [x] Delete: ConfirmDialog
 - [ ] i18n: все тексты
 
 ### 6.5 OrdersPage `/hr/orders`
@@ -414,7 +414,7 @@
 **Задачи:**
 - [x] CRUD: Create (LeadForm в SlideOver), Delete (ConfirmDialog)
 - [x] LeadForm: firstName, lastName, phone, email, direction, source, notes
-- [ ] Zod schema: `leadSchema`
+- [x] Zod schema: `leadSchema`
 - [ ] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
 - [ ] Bulk actions: массовое изменение статуса
 - [ ] Кнопка "Excel eksport" → `/crm/leads/export/`
@@ -445,7 +445,7 @@
 **Задачи:**
 - [x] CRUD: Create (TaskForm в SlideOver)
 - [x] TaskForm: title, description, assigneeId (Combobox), priority, dueDate, tags
-- [ ] Zod schema: `taskSchema`
+- [x] Zod schema: `taskSchema`
 - [ ] Убрать hardcoded PRIORITY_LABELS, STATUS_LABELS, KANBAN_COLUMNS → i18n
 - [ ] Drag-and-drop обновление статуса через mutation
 - [ ] i18n: все тексты
@@ -520,13 +520,13 @@
 **Задачи:**
 - [x] ProjectForm создан (title, leaderId, description, fundAmount, dates)
 - [x] ArticleForm создан (title, authors, journal, year, type, doi)
-- [ ] Zod schemas: `projectSchema`, `articleSchema`
+- [x] Zod schemas: `projectSchema`, `articleSchema`
 - [ ] i18n: все тексты
 
 ### 10.2 ThesesPage `/theses`
 **Задачи:**
 - [x] ThesisForm создан в Modal
-- [ ] Zod schema: `thesisSchema`
+- [x] Zod schema: `thesisSchema`
 - [ ] Фильтры: stage tabs, type select, supervisor
 - [ ] i18n: все тексты
 

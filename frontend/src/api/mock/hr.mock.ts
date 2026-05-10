@@ -512,6 +512,30 @@ export class HrMockService implements IHrService {
     return [...allDepartments];
   }
 
+  async createDepartment(dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment> {
+    await delay(300);
+    const dept: HrDepartment = { ...dto, id: allDepartments.length + 100, headName: null, employeeCount: 0 };
+    allDepartments.push(dept);
+    return dept;
+  }
+
+  async updateDepartment(id: number, dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment> {
+    await delay(300);
+    const idx = allDepartments.findIndex((d) => d.id === id);
+    if (idx !== -1) {
+      const updated = { ...allDepartments[idx]!, ...dto };
+      allDepartments[idx] = updated;
+      return updated;
+    }
+    return { ...dto, id, headName: null, employeeCount: 0 };
+  }
+
+  async deleteDepartment(id: number): Promise<void> {
+    await delay(300);
+    const idx = allDepartments.findIndex((d) => d.id === id);
+    if (idx !== -1) allDepartments.splice(idx, 1);
+  }
+
   async getOrders(): Promise<HrOrder[]> {
     await delay(200);
     return [...allOrders];

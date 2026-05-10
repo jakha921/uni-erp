@@ -1,5 +1,5 @@
 import { useState, useMemo, Fragment } from 'react';
-import { ChevronDown, ChevronRight, Building2, BookOpen, Briefcase } from 'lucide-react';
+import { ChevronDown, ChevronRight, Building2, BookOpen, Briefcase, Pencil, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui';
 import { Card } from '@/components/data-display';
 import { cn } from '@/lib/utils';
@@ -7,6 +7,8 @@ import type { HrDepartment, DepartmentType } from '@/types/hr';
 
 interface DepartmentTreeProps {
   departments: HrDepartment[];
+  onEdit?: (dept: HrDepartment) => void;
+  onDelete?: (dept: HrDepartment) => void;
 }
 
 const ICON_MAP: Record<DepartmentType, typeof Building2> = {
@@ -16,7 +18,7 @@ const ICON_MAP: Record<DepartmentType, typeof Building2> = {
   bolim: Briefcase,
 };
 
-export function DepartmentTree({ departments }: DepartmentTreeProps) {
+export function DepartmentTree({ departments, onEdit, onDelete }: DepartmentTreeProps) {
   const rootDepts = useMemo(
     () => departments.filter((d) => d.parentId === null),
     [departments],
@@ -75,6 +77,26 @@ export function DepartmentTree({ departments }: DepartmentTreeProps) {
             <div className="text-xs text-muted mt-0.5">{dept.code}</div>
           </div>
           <Badge>{dept.employeeCount} xodim</Badge>
+          {(onEdit || onDelete) && (
+            <div className="flex gap-1 ml-2">
+              {onEdit && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onEdit(dept); }}
+                  className="rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(dept); }}
+                  className="rounded p-1 text-slate-400 hover:bg-red-100 hover:text-red-500"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
         {isOpen && kids.map((k) => renderNode(k, level + 1))}
       </Fragment>

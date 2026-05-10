@@ -24,6 +24,9 @@ export interface IHrService {
   updateEmployee(id: number, dto: UpdateEmployeeDto): Promise<Employee>;
   deleteEmployee(id: number): Promise<void>;
   getDepartments(): Promise<HrDepartment[]>;
+  createDepartment(dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment>;
+  updateDepartment(id: number, dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment>;
+  deleteDepartment(id: number): Promise<void>;
   getOrders(): Promise<HrOrder[]>;
   createOrder(dto: CreateOrderDto): Promise<HrOrder>;
   getLeaves(): Promise<Leave[]>;
@@ -68,6 +71,18 @@ class HrApiService implements IHrService {
 
   async getDepartments(): Promise<HrDepartment[]> {
     return apiClient.get<HrDepartment[]>(ENDPOINTS.hr.departments);
+  }
+
+  async createDepartment(dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment> {
+    return apiClient.post<HrDepartment>(ENDPOINTS.hr.departments, dto);
+  }
+
+  async updateDepartment(id: number, dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment> {
+    return apiClient.patch<HrDepartment>(`${ENDPOINTS.hr.departments}${id}/`, dto);
+  }
+
+  async deleteDepartment(id: number): Promise<void> {
+    await apiClient.delete(`${ENDPOINTS.hr.departments}${id}/`);
   }
 
   async getOrders(): Promise<HrOrder[]> {
