@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, CalendarX2 } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { Modal } from '@/components/overlays';
 import { AttendanceCalendar } from '../components/AttendanceCalendar';
 import { useAttendance, useDepartments } from '@/api/hooks/useHr';
 
@@ -17,6 +18,9 @@ export function AttendancePage() {
   const [year] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [holidayModalOpen, setHolidayModalOpen] = useState(false);
+  const [holidayDay, setHolidayDay] = useState('');
+  const [holidayApplied, setHolidayApplied] = useState(false);
 
   const monthStr = `${year}-${String(month).padStart(2, '0')}`;
   const { data: rows, isLoading } = useAttendance(departmentId);
@@ -32,9 +36,18 @@ export function AttendancePage() {
           { label: 'Davomat' },
         ]}
         actions={
-          <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
-            Excel ga eksport
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              leftIcon={<CalendarX2 className="h-4 w-4" />}
+              onClick={() => setHolidayModalOpen(true)}
+            >
+              Dam olish kuni
+            </Button>
+            <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
+              Excel ga eksport
+            </Button>
+          </div>
         }
       />
 
@@ -91,6 +104,45 @@ export function AttendancePage() {
           </div>
         )}
       </Card>
+      <Modal
+        open={holidayModalOpen}
+        onClose={() => setHolidayModalOpen(false)}
+        title="Dam olish kunini belgilash"
+        size="sm"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setHolidayModalOpen(false)}>Bekor qilish</Button>
+            <Button
+              disabled={!holidayDay}
+              onClick={() => {
+                setHolidayApplied(true);
+                setHolidayModalOpen(false);
+                setHolidayDay('');
+              }}
+            >
+              Barcha xodimlarga qo&apos;llash
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-muted">
+            Tanlangan kun barcha xodimlar uchun dam olish kuni sifatida belgilanadi.
+          </p>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-700">Sana</label>
+            <input
+              type="date"
+              value={holidayDay}
+              onChange={(e) => setHolidayDay(e.target.value)}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
+            />
+          </div>
+          {holidayApplied && (
+            <p className="text-xs text-green-600">✓ Dam olish kuni muvaffaqiyatli belgilandi</p>
+          )}
+        </div>
+      </Modal>
     </PageContent>
   );
 }

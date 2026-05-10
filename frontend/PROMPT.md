@@ -394,7 +394,7 @@
 **Задачи:**
 - [x] Убрать hardcoded MONTH_NAMES, department options
 - [ ] Кнопка "Excel eksport" — подключить к endpoint
-- [ ] Bulk-отметка (выходной для всех)
+- [x] Bulk-отметка (выходной для всех)
 - [ ] i18n: все тексты
 
 ### 6.7 LeavesPage `/hr/leaves`
