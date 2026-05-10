@@ -665,7 +665,22 @@
     "grantSponsor": "Sponsor",
     "defenseDate": "Defense date",
     "patentNumber": "Patent number",
-    "inventors": "Inventors"
+    "inventors": "Inventors",
+    "patentsTitle": "Patents",
+    "patentsSubtitle": "Intellectual property and patents management",
+    "newPatent": "New patent",
+    "totalPatents": "Total patents",
+    "approvedPatents": "Approved",
+    "patented": "Patented",
+    "deletePatentTitle": "Delete patent",
+    "deletePatentConfirm": "Confirm deleting patent \"{{title}}\"?",
+    "patentStatusFiled": "Filed",
+    "patentStatusUnderReview": "Under review",
+    "patentStatusGranted": "Granted",
+    "patentStatusRejected": "Rejected",
+    "patentAuthor": "Author",
+    "patentCategory": "Category",
+    "patentDate": "Date"
   },
   "infrastructure": {
     "title": "Infrastructure",

@@ -540,7 +540,7 @@
 ### 10.4 PatentsPage `/patents`
 **Задачи:**
 - [x] PatentForm создан в Modal
-- [ ] Убрать hardcoded STATUS_META → i18n
+- [x] Убрать hardcoded STATUS_META → i18n
 - [x] i18n: все тексты
 
 ---

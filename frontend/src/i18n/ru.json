@@ -665,7 +665,22 @@
     "grantSponsor": "Спонсор",
     "defenseDate": "Дата защиты",
     "patentNumber": "Номер патента",
-    "inventors": "Изобретатели"
+    "inventors": "Изобретатели",
+    "patentsTitle": "Патенты",
+    "patentsSubtitle": "Управление интеллектуальной собственностью и патентами",
+    "newPatent": "Новый патент",
+    "totalPatents": "Всего патентов",
+    "approvedPatents": "Одобренных",
+    "patented": "Запатентовано",
+    "deletePatentTitle": "Удалить патент",
+    "deletePatentConfirm": "Подтвердите удаление патента \"{{title}}\"?",
+    "patentStatusFiled": "Подан",
+    "patentStatusUnderReview": "На рассмотрении",
+    "patentStatusGranted": "Зарегистрирован",
+    "patentStatusRejected": "Отклонён",
+    "patentAuthor": "Автор",
+    "patentCategory": "Категория",
+    "patentDate": "Дата"
   },
   "infrastructure": {
     "title": "Инфраструктура",

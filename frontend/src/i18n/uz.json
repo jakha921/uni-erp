@@ -673,7 +673,22 @@
     "grantSponsor": "Homiy",
     "defenseDate": "Himoya sanasi",
     "patentNumber": "Patent raqami",
-    "inventors": "Ixtirochilar"
+    "inventors": "Ixtirochilar",
+    "patentsTitle": "Patentlar",
+    "patentsSubtitle": "Intellektual mulk va patentlar boshqaruvi",
+    "newPatent": "Yangi patent",
+    "totalPatents": "Jami patentlar",
+    "approvedPatents": "Tasdiqlangan",
+    "patented": "Patentli",
+    "deletePatentTitle": "Patentni o'chirish",
+    "deletePatentConfirm": "\"{{title}}\" patentini o'chirishni tasdiqlaysizmi?",
+    "patentStatusFiled": "Topshirilgan",
+    "patentStatusUnderReview": "Ko'rib chiqilmoqda",
+    "patentStatusGranted": "Ro'yxatdan o'tgan",
+    "patentStatusRejected": "Rad etilgan",
+    "patentAuthor": "Muallif",
+    "patentCategory": "Kategoriya",
+    "patentDate": "Sana"
   },
   "infrastructure": {
     "title": "Infratuzilma",
