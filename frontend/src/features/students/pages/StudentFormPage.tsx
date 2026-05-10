@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import { FormInput } from '@/components/form/FormInput';
 import { FormSelect } from '@/components/form/FormSelect';
 import { FormDatePicker } from '@/components/form/FormDatePicker';
 import { FormPhoneInput } from '@/components/form/FormPhoneInput';
+import { FileUpload } from '@/components/form/FileUpload';
 import {
   createStudentSchema,
   type CreateStudentFormData,
@@ -368,6 +369,11 @@ export function StudentFormPage() {
           </div>
         </Card>
 
+        {/* Photo upload */}
+        <Card title="Talaba rasmi">
+          <PhotoUploadCard />
+        </Card>
+
         {/* Actions */}
         <div className="flex items-center justify-end gap-3">
           <Button
@@ -387,5 +393,39 @@ export function StudentFormPage() {
         </div>
       </form>
     </PageContent>
+  );
+}
+
+function PhotoUploadCard() {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const handleFiles = (files: File[]) => {
+    const file = files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+  };
+
+  return (
+    <div className="flex items-start gap-6">
+      <div className="shrink-0">
+        <div className="h-24 w-24 rounded-full overflow-hidden bg-slate-100 border-2 border-dashed border-border flex items-center justify-center">
+          {preview ? (
+            <img src={preview} alt="preview" className="h-full w-full object-cover" />
+          ) : (
+            <span className="text-[11px] text-slate-400 text-center px-2">Rasm yo&apos;q</span>
+          )}
+        </div>
+      </div>
+      <div className="flex-1">
+        <FileUpload
+          accept="image/jpeg,image/png,image/webp"
+          maxSize={5 * 1024 * 1024}
+          onUpload={handleFiles}
+          preview={false}
+        />
+        <p className="mt-2 text-xs text-slate-400">JPG, PNG, WebP formatlar. Maks. 5 MB</p>
+      </div>
+    </div>
   );
 }

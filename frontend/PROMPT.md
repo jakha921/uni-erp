@@ -101,7 +101,7 @@
 - [ ] i18n: все лейблы формы через `t()`
 - [x] Убрать hardcoded FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS массивы → загружать через `useFaculties()`, `useDepartments()`, `useSpecialties()`, `useGroups()`
 - [x] Cascading selects: Faculty → Department → Specialty → Group (фильтрация зависимых)
-- [ ] FileUpload: загрузка фото студента
+- [x] FileUpload: загрузка фото студента
 - [x] При Edit mode: предзаполнение формы данными из `useStudent(id)`
 - [x] Кнопка "Назад" → navigate('/students')
 - [x] Success toast после сохранения → redirect на profile
@@ -112,7 +112,7 @@
 **Задачи:**
 - [ ] i18n: все тексты
 - [x] Убрать hardcoded `STUDENT_DOCS` массив (строка 527) → загружать из API
-- [ ] Tab "Hujjatlar" (Документы): FileUpload для загрузки сканов
+- [x] Tab "Hujjatlar" (Документы): FileUpload для загрузки сканов
 - [x] Tab "Kontrakt": ссылки на контракты студента из Finance API
 - [x] Tab "Davomat": реальные данные посещаемости за семестр
 - [x] Tab "O'zlashtirish": реальные оценки из API

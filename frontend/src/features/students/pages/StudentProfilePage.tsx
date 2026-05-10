@@ -23,6 +23,7 @@ import { useContracts } from '@/api/hooks/useFinance';
 import { formatMoney } from '@/lib/utils';
 import { formatDate } from '@/lib/utils';
 import { useStudentDocuments } from '@/api/hooks/useStudents';
+import { FileUpload } from '@/components/form/FileUpload';
 import type { StudentGrade, StudentAttendance, StudentDocument } from '@/types/student';
 
 // ---------- Detail row ----------
@@ -530,19 +531,27 @@ function StudentDocsTab({ studentId }: { studentId: number }) {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {docs.map((d) => (
-        <div
-          key={d.id}
-          className="p-4 border border-slate-100 rounded-xl cursor-pointer text-center hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
-        >
-          <div className="w-10 h-10 rounded-[10px] bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5">
-            <FileText className="h-[18px] w-[18px]" />
+    <div className="space-y-4">
+      <FileUpload
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        maxSize={10 * 1024 * 1024}
+        multiple
+        onUpload={(_files) => {}}
+      />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {docs.map((d) => (
+          <div
+            key={d.id}
+            className="p-4 border border-slate-100 rounded-xl cursor-pointer text-center hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-[10px] bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5">
+              <FileText className="h-[18px] w-[18px]" />
+            </div>
+            <p className="text-[13px] font-medium text-slate-900">{d.name}</p>
+            <p className="text-[11px] text-slate-400 mt-1">{d.uploadedAt}</p>
           </div>
-          <p className="text-[13px] font-medium text-slate-900">{d.name}</p>
-          <p className="text-[11px] text-slate-400 mt-1">{d.uploadedAt}</p>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
