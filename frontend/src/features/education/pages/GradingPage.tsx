@@ -76,8 +76,15 @@ function initGradesFromData(grades: Grade[]): { students: { id: number; name: st
 }
 
 export function GradingPage() {
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+  const [selectedSemesterId, setSelectedSemesterId] = useState<string>('');
+
   const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
-  const { data: gradesData, isLoading: gradesLoading } = useGrades();
+  const { data: gradesData, isLoading: gradesLoading } = useGrades({
+    subjectId: selectedSubjectId ? Number(selectedSubjectId) : undefined,
+    semesterId: selectedSemesterId ? Number(selectedSemesterId) : undefined,
+  });
   const { data: groupsData, isLoading: groupsLoading } = useGroups();
 
   const subjects = subjectsData?.data ?? [];
@@ -85,9 +92,6 @@ export function GradingPage() {
   const groups = groupsData ?? [];
 
   const isLoading = subjectsLoading || gradesLoading || groupsLoading;
-
-  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
 
   const { students, gradeMap: initialGradeMap } = useMemo(
     () => initGradesFromData(apiGrades),
@@ -219,10 +223,15 @@ export function GradingPage() {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-muted">Semester</label>
-            <select className="h-9 rounded-lg border border-border px-3 text-sm">
-              <option>2025-2026 - 2-semester</option>
-              <option>2025-2026 - 1-semester</option>
-              <option>2024-2025 - 2-semester</option>
+            <select
+              value={selectedSemesterId}
+              onChange={(e) => setSelectedSemesterId(e.target.value)}
+              className="h-9 rounded-lg border border-border px-3 text-sm"
+            >
+              <option value="">Barcha semestrlar</option>
+              <option value="1">2025-2026 - 2-semester</option>
+              <option value="2">2025-2026 - 1-semester</option>
+              <option value="3">2024-2025 - 2-semester</option>
             </select>
           </div>
           <div className="flex-1" />

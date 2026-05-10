@@ -154,7 +154,7 @@
 **Статус:** Grid UI есть, mutation неполная
 **Задачи:**
 - [x] Подключить к `useBulkGrades()` mutation — сохранение оценок
-- [ ] Фильтры: группа, предмет, семестр — через API
+- [x] Фильтры: группа, предмет, семестр — через API
 - [x] Inline editing оценок в таблице
 - [x] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
 - [x] Кнопка "Saqlash" — bulk save
