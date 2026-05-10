@@ -8,6 +8,7 @@ import { DropdownMenu, ConfirmDialog } from '@/components/overlays';
 import {
   useScholarships,
   useCreateScholarship,
+  useUpdateScholarship,
   useDeleteScholarship,
 } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
@@ -45,6 +46,7 @@ export function ScholarshipsPage() {
   const [typeFilter, setTypeFilter] = useState<ScholarshipType | ''>('');
   const [statusFilter, setStatusFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Scholarship | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Scholarship | null>(null);
 
   const { data: scholarships, isLoading } = useScholarships({
@@ -52,6 +54,7 @@ export function ScholarshipsPage() {
   });
 
   const createMutation = useCreateScholarship();
+  const updateMutation = useUpdateScholarship();
   const deleteMutation = useDeleteScholarship();
 
   const handleCreate = useCallback(
@@ -69,6 +72,17 @@ export function ScholarshipsPage() {
       );
     },
     [createMutation],
+  );
+
+  const handleEdit = useCallback(
+    (formData: ScholarshipFormData) => {
+      if (!editTarget) return;
+      updateMutation.mutate(
+        { id: editTarget.id, patch: { type: formData.type, amount: formData.amount, startDate: formData.startDate, endDate: formData.endDate, basis: formData.basis } },
+        { onSuccess: () => setEditTarget(null) },
+      );
+    },
+    [editTarget, updateMutation],
   );
 
   const handleDelete = useCallback(() => {
@@ -236,6 +250,7 @@ export function ScholarshipsPage() {
               actions={(row) => (
                 <DropdownMenu
                   items={[
+                    { label: 'Tahrirlash', onClick: () => setEditTarget(row) },
                     { label: 'Faol qilish', onClick: () => {} },
                     { label: "To'xtatish", onClick: () => {} },
                     { label: "O'chirish", onClick: () => setDeleteTarget(row), danger: true },
@@ -260,6 +275,14 @@ export function ScholarshipsPage() {
         onClose={() => setFormOpen(false)}
         onSubmit={handleCreate}
         loading={createMutation.isPending}
+      />
+
+      <ScholarshipForm
+        open={!!editTarget}
+        onClose={() => setEditTarget(null)}
+        onSubmit={handleEdit}
+        scholarship={editTarget}
+        loading={updateMutation.isPending}
       />
 
       <ConfirmDialog

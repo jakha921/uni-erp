@@ -6,6 +6,7 @@ import { Button, Spinner } from '@/components/ui';
 import { Card } from '@/components/data-display';
 import { ConfirmDialog } from '@/components/overlays';
 import { useContracts, useCreateContract, useDeleteContract } from '@/api/hooks/useFinance';
+import { useFaculties } from '@/api/hooks/useCore';
 import { ContractTable } from '../components/ContractTable';
 import { ContractForm } from '../components/ContractForm';
 import { ContractDetailSlide } from '../components/ContractDetailSlide';
@@ -33,6 +34,7 @@ export function ContractsListPage() {
 
   const createMutation = useCreateContract();
   const deleteMutation = useDeleteContract();
+  const { data: faculties } = useFaculties();
 
   const handleCreate = useCallback(
     (formData: ContractFormData) => {
@@ -125,14 +127,9 @@ export function ContractsListPage() {
             onChange={(e) => { setFaculty(e.target.value); setPage(1); }}
           >
             <option value="">Barcha fakultetlar</option>
-            <option value="1">Kompyuter injiniringi</option>
-            <option value="2">Iqtisodiyot</option>
-            <option value="3">Pedagogika</option>
-            <option value="4">Filologiya</option>
-            <option value="5">Tabiiy fanlar</option>
-            <option value="6">Huquqshunoslik</option>
-            <option value="7">San&apos;at va dizayn</option>
-            <option value="8">Tibbiyot</option>
+            {(faculties ?? []).map((f) => (
+              <option key={f.id} value={f.name}>{f.name}</option>
+            ))}
           </select>
           <select
             value={status}

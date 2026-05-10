@@ -5,13 +5,14 @@ import { Modal } from '@/components/overlays';
 import { Button } from '@/components/ui';
 import { FormField, FormInput, FormSelect, FormMoneyInput, FormDatePicker, FormTextarea } from '@/components/form';
 import { scholarshipSchema, type ScholarshipFormData } from '../schemas/scholarship.schema';
-import type { ScholarshipType } from '@/types/finance';
+import type { Scholarship, ScholarshipType } from '@/types/finance';
 
 interface ScholarshipFormProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: ScholarshipFormData) => void;
   loading?: boolean;
+  scholarship?: Scholarship | null;
 }
 
 const SCHOLARSHIP_TYPE_OPTIONS = [
@@ -30,12 +31,13 @@ const DEFAULT_AMOUNTS: Record<ScholarshipType, number> = {
   maxsus: 1200000,
 };
 
-export function ScholarshipForm({ open, onClose, onSubmit, loading }: ScholarshipFormProps) {
+export function ScholarshipForm({ open, onClose, onSubmit, loading, scholarship }: ScholarshipFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<ScholarshipFormData>({
     resolver: zodResolver(scholarshipSchema) as unknown as Resolver<ScholarshipFormData>,
@@ -49,20 +51,39 @@ export function ScholarshipForm({ open, onClose, onSubmit, loading }: Scholarshi
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      if (scholarship) {
+        reset({
+          studentId: scholarship.studentId,
+          type: scholarship.type,
+          amount: scholarship.amount,
+          startDate: scholarship.startDate,
+          endDate: scholarship.endDate,
+          basis: scholarship.basis,
+        });
+      } else {
+        reset({ studentId: 0, type: 'davlat', amount: 920000, startDate: '2025-09-01', endDate: '2026-06-30', basis: 'GPA 86+ ball' });
+      }
+    }
+  }, [open, scholarship, reset]);
+
   const scholarshipType = watch('type');
 
   useEffect(() => {
-    const amount = DEFAULT_AMOUNTS[scholarshipType as ScholarshipType];
-    if (amount) {
-      setValue('amount', amount);
+    if (!scholarship) {
+      const amount = DEFAULT_AMOUNTS[scholarshipType as ScholarshipType];
+      if (amount) setValue('amount', amount);
     }
-  }, [scholarshipType, setValue]);
+  }, [scholarshipType, setValue, scholarship]);
+
+  const isEdit = !!scholarship;
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="Stipendiya tayinlash"
+      title={isEdit ? "Stipendiyani tahrirlash" : "Stipendiya tayinlash"}
       size="md"
       footer={
         <>
@@ -70,7 +91,7 @@ export function ScholarshipForm({ open, onClose, onSubmit, loading }: Scholarshi
             Bekor qilish
           </Button>
           <Button onClick={handleSubmit(onSubmit)} loading={loading}>
-            Tayinlash
+            {isEdit ? 'Saqlash' : 'Tayinlash'}
           </Button>
         </>
       }
