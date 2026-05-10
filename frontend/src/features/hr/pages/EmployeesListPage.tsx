@@ -102,6 +102,30 @@ export function EmployeesListPage() {
         title="Xodimlar"
         subtitle={data ? `Jami: ${data.total} ta xodim` : undefined}
         breadcrumbs={[{ label: 'Kadrlar', path: '/hr' }, { label: 'Xodimlar' }]}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/hr/employees/export/';
+                a.download = 'xodimlar.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Excel
+            </Button>
+            <Button
+              leftIcon={<Plus className="h-4 w-4" />}
+              onClick={() => { setEditEmployeeId(null); setFormOpen(true); }}
+            >
+              Yangi xodim
+            </Button>
+          </div>
+        }
       />
 
       {/* Card-toolbar */}
@@ -159,12 +183,6 @@ export function EmployeesListPage() {
               HEMIS dan yuklash
             </Button>
           )}
-          <Button
-            leftIcon={<Plus className="h-4 w-4" />}
-            onClick={() => { setEditEmployeeId(null); setFormOpen(true); }}
-          >
-            Yangi xodim
-          </Button>
         </div>
       </Card>
 

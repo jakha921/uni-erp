@@ -361,7 +361,7 @@
 - [x] Delete: soft delete через ConfirmDialog
 - [x] Убрать hardcoded position list (строки 122-127) → из API
 - [x] Bulk actions: массовый экспорт
-- [ ] Кнопка "Excel eksport" → `/hr/employees/export/`
+- [x] Кнопка "Excel eksport" → `/hr/employees/export/`
 - [ ] i18n: все тексты
 
 ### 6.3 EmployeeProfilePage `/hr/employees/:id`
@@ -394,7 +394,7 @@
 **Файл:** `features/hr/pages/AttendancePage.tsx` | **Статус:** Read
 **Задачи:**
 - [x] Убрать hardcoded MONTH_NAMES, department options
-- [ ] Кнопка "Excel eksport" — подключить к endpoint
+- [x] Кнопка "Excel eksport" — подключить к endpoint
 - [x] Bulk-отметка (выходной для всех)
 - [ ] i18n: все тексты
 
