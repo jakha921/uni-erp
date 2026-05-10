@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight, Printer, FileDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
@@ -11,10 +12,7 @@ import type { PaymentMethod, Contract, Payment } from '@/types/finance';
 import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
 import { useAppStore } from '@/stores/app.store';
 
-const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
-
-
-function buildReceiptDom(win: Window, payment: Payment, institutionName: string) {
+function buildReceiptDom(win: Window, payment: Payment, institutionName: string, methodLabel: string) {
   const d = win.document;
   const style = d.createElement('style');
   style.textContent = 'body{font-family:sans-serif;padding:24px;font-size:13px;color:#1e293b}h2{text-align:center;font-size:16px;font-weight:700;margin-bottom:16px}.rr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9}.rl{color:#64748b}.rt{background:#f0fdf4;border-radius:8px;padding:12px;text-align:center;margin:16px 0}.rf{text-align:center;font-size:11px;color:#94a3b8;margin-top:20px}';
@@ -27,7 +25,7 @@ function buildReceiptDom(win: Window, payment: Payment, institutionName: string)
     ["Sana", formatDate(payment.paymentDate)],
     ["Talaba", payment.studentName],
     ["Fakultet", payment.facultyName],
-    ["To'lov usuli", PAYMENT_METHOD_LABELS[payment.paymentMethod]?.label ?? payment.paymentMethod],
+    ["To'lov usuli", methodLabel],
   ];
   rows.forEach(([label, value]) => {
     const row = d.createElement('div');
@@ -58,13 +56,15 @@ function buildReceiptDom(win: Window, payment: Payment, institutionName: string)
 }
 
 function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const institutionName = useAppStore((s) => s.institutionName);
 
   const handlePrint = () => {
     if (!payment) return;
     const win = window.open('', '_blank', 'width=420,height=640');
     if (!win) return;
-    buildReceiptDom(win, payment, institutionName);
+    const methodLabel = t(`finance.paymentMethods.${payment.paymentMethod}`, { defaultValue: payment.paymentMethod });
+    buildReceiptDom(win, payment, institutionName, methodLabel);
     win.print();
     win.close();
   };
@@ -73,11 +73,11 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
     <Modal
       open={!!payment}
       onClose={onClose}
-      title="Kvitansiya"
+      title={t('finance.receipt')}
       footer={
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onClose}>Yopish</Button>
-          <Button leftIcon={<Printer className="h-4 w-4" />} onClick={handlePrint}>Chop etish</Button>
+          <Button variant="secondary" onClick={onClose}>{t('common.close')}</Button>
+          <Button leftIcon={<Printer className="h-4 w-4" />} onClick={handlePrint}>{t('common.print')}</Button>
         </div>
       }
     >
@@ -85,11 +85,11 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
         <div className="space-y-1">
           <h2 className="text-center text-base font-bold text-slate-900 mb-4">{institutionName}</h2>
           {[
-            { label: 'Kvitansiya №', value: payment.receiptNumber },
-            { label: 'Sana', value: formatDate(payment.paymentDate) },
-            { label: 'Talaba', value: payment.studentName },
-            { label: 'Fakultet', value: payment.facultyName },
-            { label: "To'lov usuli", value: PAYMENT_METHOD_LABELS[payment.paymentMethod]?.label ?? payment.paymentMethod },
+            { label: t('finance.receiptNo'), value: payment.receiptNumber },
+            { label: t('common.date'), value: formatDate(payment.paymentDate) },
+            { label: t('education.student'), value: payment.studentName },
+            { label: t('students.faculty'), value: payment.facultyName },
+            { label: t('finance.paymentMethodLabel'), value: t(`finance.paymentMethods.${payment.paymentMethod}`, { defaultValue: payment.paymentMethod }) },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between py-1.5 border-b border-slate-100 text-sm">
               <span className="text-slate-500">{label}</span>
@@ -97,11 +97,11 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
             </div>
           ))}
           <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-center">
-            <p className="text-xs text-emerald-700 mb-0.5">Qabul qilindi</p>
+            <p className="text-xs text-emerald-700 mb-0.5">{t('finance.accepted')}</p>
             <p className="text-2xl font-bold text-emerald-700">{formatMoney(payment.amount)}</p>
           </div>
           <p className="mt-4 text-center text-[11px] text-slate-400">
-            Ushbu kvitansiya to&apos;lovni tasdiqlaydi
+            {t('finance.receiptConfirm')}
           </p>
         </div>
       )}
@@ -110,6 +110,7 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
 }
 
 export function PaymentsListPage() {
+  const { t } = useTranslation();
   const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [faculty, setFaculty] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -155,10 +156,10 @@ export function PaymentsListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="To'lovlar"
+        title={t('nav.payments')}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: "To'lovlar" },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.payments') },
         ]}
         actions={
           <Button
@@ -181,14 +182,14 @@ export function PaymentsListPage() {
       {/* KPI */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <StatCard
-          label="To'lovlar soni"
+          label={t('finance.paymentsCount')}
           value={payments.length}
           icon={<CheckCircle className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
-          sub="Tanlangan davr"
+          sub={t('finance.selectedPeriod')}
         />
         <StatCard
-          label="Jami summa"
+          label={t('finance.totalAmount')}
           value={formatMoney(totalSum)}
           icon={<CircleDollarSign className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
@@ -201,14 +202,14 @@ export function PaymentsListPage() {
           <DateRangePicker
             from={dateFrom}
             to={dateTo}
-            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+            onChange={(f, to) => { setDateFrom(f); setDateTo(to); }}
           />
           <select
             value={faculty}
             onChange={(e) => setFaculty(e.target.value)}
             className="h-9 w-[220px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha fakultetlar</option>
+            <option value="">{t('finance.allFaculties')}</option>
             <option value="Kompyuter injiniringi">Kompyuter injiniringi</option>
             <option value="Iqtisodiyot">Iqtisodiyot</option>
             <option value="Pedagogika">Pedagogika</option>
@@ -219,22 +220,22 @@ export function PaymentsListPage() {
             onChange={(e) => setMethod(e.target.value as PaymentMethod | '')}
             className="h-9 w-[180px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha usullar</option>
-            <option value="bank">Bank</option>
-            <option value="naqd">Naqd</option>
-            <option value="click">Click</option>
-            <option value="payme">Payme</option>
-            <option value="online">Online</option>
+            <option value="">{t('finance.allMethods')}</option>
+            <option value="bank">{t('finance.paymentMethods.bank')}</option>
+            <option value="naqd">{t('finance.paymentMethods.naqd')}</option>
+            <option value="click">{t('finance.paymentMethods.click')}</option>
+            <option value="payme">{t('finance.paymentMethods.payme')}</option>
+            <option value="online">{t('finance.paymentMethods.online')}</option>
           </select>
           <div className="flex-1" />
-          <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setPaymentModalOpen(true)}>Yangi to&apos;lov</Button>
+          <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setPaymentModalOpen(true)}>{t('finance.newPayment')}</Button>
         </div>
       </Card>
 
       {/* Grouped by date */}
       {grouped.length === 0 && (
         <Card>
-          <div className="py-12 text-center text-muted">To&apos;lovlar topilmadi</div>
+          <div className="py-12 text-center text-muted">{t('finance.paymentsNotFound')}</div>
         </Card>
       )}
 
@@ -246,11 +247,11 @@ export function PaymentsListPage() {
       {grouped.map(([date, list]) => (
         <div key={date} className="mb-4">
           <p className="text-xs font-semibold text-muted uppercase tracking-[0.05em] mb-2">
-            {formatDate(date)} &middot; {list.length} ta &middot; {formatMoney(list.reduce((s, p) => s + p.amount, 0))}
+            {formatDate(date)} &middot; {list.length} {t('common.count')} &middot; {formatMoney(list.reduce((s, p) => s + p.amount, 0))}
           </p>
           <Card noPadding className="overflow-hidden">
             {list.map((p, i) => {
-              const methodCfg = PAYMENT_METHOD_LABELS[p.paymentMethod];
+              const methodCfg = PAYMENT_METHOD_STATUSES[p.paymentMethod];
               const initials = p.studentName.split(' ').map((x) => x[0]).slice(0, 2).join('');
               return (
                 <div
@@ -265,13 +266,15 @@ export function PaymentsListPage() {
                     <p className="text-[11.5px] text-muted">{p.receiptNumber}</p>
                   </div>
                   <div className="min-w-[110px]">
-                    <Badge variant={methodCfg?.variant ?? 'default'} dot>{methodCfg?.label ?? p.paymentMethod}</Badge>
+                    <Badge variant={methodCfg?.variant ?? 'default'} dot>
+                      {t(`finance.paymentMethods.${p.paymentMethod}`, { defaultValue: methodCfg?.label ?? p.paymentMethod })}
+                    </Badge>
                   </div>
                   <div className="text-[15px] font-bold text-green-700 tabular-nums min-w-[140px] text-right">
                     {formatMoney(p.amount)}
                   </div>
                   <button
-                    title="Kvitansiya chop etish"
+                    title={t('finance.printReceipt')}
                     onClick={() => setPrintPayment(p)}
                     className="ml-2 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
                   >
@@ -292,6 +295,7 @@ export function PaymentsListPage() {
 type PaymentStep = 'student' | 'contract' | 'form';
 
 function NewPaymentModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<PaymentStep>('student');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<{ name: string; group: string; id: string } | null>(null);
@@ -337,7 +341,11 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
     onClose();
   };
 
-  const stepTitle = step === 'student' ? 'Yangi to\'lov — Talaba' : step === 'contract' ? 'Kontraktni tanlang' : 'To\'lov ma\'lumotlari';
+  const stepTitles: Record<PaymentStep, string> = {
+    student: t('finance.newPaymentStep1'),
+    contract: t('finance.selectContract'),
+    form: t('finance.paymentDetails'),
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -346,7 +354,7 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{stepTitle}</h3>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{stepTitles[step]}</h3>
             <div className="flex items-center gap-1 ml-2">
               {(['student', 'contract', 'form'] as PaymentStep[]).map((s, i) => (
                 <div key={s} className="flex items-center gap-1">
@@ -366,13 +374,13 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
           {/* Step 1: Search student */}
           {step === 'student' && (
             <div>
-              <p className="text-sm text-slate-500 mb-3">Talabani qidiring (kamida 3 belgi)</p>
+              <p className="text-sm text-slate-500 mb-3">{t('finance.searchStudentHint')}</p>
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Ism yoki kontrakt raqami..."
+                  placeholder={t('finance.searchStudentPlaceholder')}
                   className="w-full h-10 pl-10 pr-3 border border-border rounded-lg text-sm"
                   autoFocus
                 />
@@ -416,7 +424,7 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="flex flex-col gap-2">
                 {studentContracts.length === 0 && (
-                  <p className="text-sm text-slate-400 text-center py-4 bg-slate-50 rounded-lg">Bu talabaga kontrakt topilmadi</p>
+                  <p className="text-sm text-slate-400 text-center py-4 bg-slate-50 rounded-lg">{t('finance.noContractForStudent')}</p>
                 )}
                 {studentContracts.map((c) => (
                   <button
@@ -431,7 +439,7 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500">
-                      {formatMoney(c.contractAmount)} · qoldiq: <strong className="text-red-600">{formatMoney(c.debtAmount)}</strong>
+                      {formatMoney(c.contractAmount)} · {t('finance.debtAmount')}: <strong className="text-red-600">{formatMoney(c.debtAmount)}</strong>
                     </p>
                   </button>
                 ))}
@@ -444,11 +452,11 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
             <div className="flex flex-col gap-4">
               <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm">
                 <p className="font-medium text-slate-900">{selectedContract.studentName}</p>
-                <p className="text-xs text-slate-500">{selectedContract.contractNumber} · Qoldiq: <strong className="text-red-600">{formatMoney(selectedContract.debtAmount)}</strong></p>
+                <p className="text-xs text-slate-500">{selectedContract.contractNumber} · {t('finance.debtAmount')}: <strong className="text-red-600">{formatMoney(selectedContract.debtAmount)}</strong></p>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Summa</label>
+                <label className="text-sm font-medium text-slate-700">{t('common.amount')}</label>
                 <input
                   type="number"
                   value={amount}
@@ -459,22 +467,22 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">To&apos;lov usuli</label>
+                <label className="text-sm font-medium text-slate-700">{t('finance.paymentMethodLabel')}</label>
                 <select
                   value={payMethod}
                   onChange={(e) => setPayMethod(e.target.value as PaymentMethod)}
                   className="h-10 px-3 border border-border rounded-lg text-sm"
                 >
-                  <option value="bank">Bank o&apos;tkazmasi</option>
-                  <option value="naqd">Naqd</option>
-                  <option value="click">Click</option>
-                  <option value="payme">Payme</option>
-                  <option value="online">Online</option>
+                  <option value="bank">{t('finance.paymentMethods.bank')}</option>
+                  <option value="naqd">{t('finance.paymentMethods.naqd')}</option>
+                  <option value="click">{t('finance.paymentMethods.click')}</option>
+                  <option value="payme">{t('finance.paymentMethods.payme')}</option>
+                  <option value="online">{t('finance.paymentMethods.online')}</option>
                 </select>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Kvitansiya raqami</label>
+                <label className="text-sm font-medium text-slate-700">{t('finance.receiptNo')}</label>
                 <input
                   value={receipt}
                   onChange={(e) => setReceipt(e.target.value)}
@@ -493,14 +501,14 @@ function NewPaymentModal({ onClose }: { onClose: () => void }) {
               onClick={() => { setSelectedContract(null); setStep('contract'); }}
               className="h-9 px-4 rounded-lg border border-border text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
             >
-              Orqaga
+              {t('common.back')}
             </button>
             <button
               onClick={handleSubmit}
               disabled={!amount}
               className="h-9 px-5 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:pointer-events-none"
             >
-              To&apos;lovni saqlash
+              {t('finance.savePayment')}
             </button>
           </div>
         )}

@@ -303,7 +303,7 @@
 **Файл:** `features/finance/pages/PaymentsListPage.tsx`
 **Статус:** Read + Create через modal
 **Задачи:**
-- [ ] Убрать hardcoded PAYMENT_METHOD_LABELS → `t('finance.paymentMethod.*')`
+- [x] Убрать hardcoded PAYMENT_METHOD_LABELS → `t('finance.paymentMethod.*')`
 - [x] DateRangePicker вместо простых пресетов
 - [x] Receipt печать: кнопка на каждом платеже
 - [x] Экспорт в Excel
