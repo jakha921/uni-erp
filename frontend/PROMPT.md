@@ -80,7 +80,7 @@
 - [ ] i18n: все тексты через `t('students.*')`
 - [ ] Добавить DateRangePicker для фильтрации по периоду
 - [ ] Добавить кнопку "Eksport PDF" → вызов `/students/export-pdf/`
-- [ ] Dark mode: проверить цвета прогресс-баров и карточек
+- [x] Dark mode: проверить цвета прогресс-баров и карточек
 
 ### 3.2 StudentsListPage `/students`
 **Файл:** `features/students/pages/StudentsListPage.tsx`
@@ -294,7 +294,7 @@
 **Задачи:**
 - [x] Убрать hardcoded FACULTIES массив → `useFaculties()`
 - [ ] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
-- [ ] Bulk SMS: массовая рассылка выбранным должникам
+- [x] Bulk SMS: массовая рассылка выбранным должникам
 - [ ] Экспорт списка должников в Excel
 - [ ] i18n: все тексты
 
