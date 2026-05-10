@@ -30,7 +30,10 @@ export interface IInfrastructureService {
 }
 
 class InfrastructureApiService implements IInfrastructureService {
-  async getBuildings() { return apiClient.get<DormBuilding[]>(ENDPOINTS.infrastructure.buildings); }
+  async getBuildings() {
+    const drf = await apiClient.get<{ count: number; results: DormBuilding[] }>(ENDPOINTS.infrastructure.buildings);
+    return drf.results ?? (drf as unknown as DormBuilding[]);
+  }
   async createRoom(data: CreateRoomDto) { return apiClient.post<DormRoom>(ENDPOINTS.infrastructure.rooms, data); }
   async updateRoom(id: number, data: Partial<CreateRoomDto>) { return apiClient.patch<DormRoom>(`${ENDPOINTS.infrastructure.rooms}${id}/`, data); }
   async deleteRoom(id: number) { return apiClient.delete<void>(`${ENDPOINTS.infrastructure.rooms}${id}/`); }

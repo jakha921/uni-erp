@@ -172,6 +172,8 @@ class CreatePaymentSerializer(serializers.Serializer):
 class ScholarshipSerializer(serializers.ModelSerializer):
     studentName = serializers.SerializerMethodField()
     semesterName = serializers.SerializerMethodField()
+    startDate = serializers.DateField(source="start_date", read_only=True)
+    endDate = serializers.DateField(source="end_date", read_only=True)
 
     class Meta:
         model = Scholarship
@@ -183,8 +185,8 @@ class ScholarshipSerializer(serializers.ModelSerializer):
             "semesterName",
             "type",
             "amount",
-            "start_date",
-            "end_date",
+            "startDate",
+            "endDate",
             "status",
             "basis",
             "created_at",

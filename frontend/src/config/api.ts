@@ -178,10 +178,10 @@ export const ENDPOINTS = {
   },
   dashboard: {
     stats: '/dashboard',
-    admin: '/dashboard/admin',
-    buxgalter: '/dashboard/buxgalter',
-    dekan: '/dashboard/dekan',
-    oqituvchi: '/dashboard/oqituvchi',
-    talaba: '/dashboard/talaba',
+    admin: '/dashboard',
+    buxgalter: '/dashboard',
+    dekan: '/dashboard',
+    oqituvchi: '/dashboard',
+    talaba: '/dashboard',
   },
 } as const;

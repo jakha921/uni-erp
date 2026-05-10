@@ -5,6 +5,12 @@ from .models import Article, Conference, Grant, Patent, ResearchProject, Thesis
 
 class ResearchProjectSerializer(serializers.ModelSerializer):
     leaderName = serializers.CharField(source="leader.get_full_name", read_only=True, default="")
+    fundAmount = serializers.DecimalField(
+        source="fund_amount", max_digits=15, decimal_places=2, read_only=True
+    )
+    startDate = serializers.DateField(source="start_date", read_only=True)
+    endDate = serializers.DateField(source="end_date", read_only=True)
+    teamSize = serializers.IntegerField(source="team_size", read_only=True)
 
     class Meta:
         model = ResearchProject
@@ -14,10 +20,10 @@ class ResearchProjectSerializer(serializers.ModelSerializer):
             "leader",
             "leaderName",
             "department",
-            "team_size",
-            "fund_amount",
-            "start_date",
-            "end_date",
+            "teamSize",
+            "fundAmount",
+            "startDate",
+            "endDate",
             "status",
             "progress",
             "description",
