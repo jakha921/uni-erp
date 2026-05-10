@@ -154,3 +154,10 @@
     --tw-ring-color: #334155;
   }
 }
+
+@media print {
+  nav, aside, header .print\:hidden, .print\:hidden { display: none !important; }
+  body { background: white !important; }
+  .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; }
+  a { text-decoration: none !important; }
+}

@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Pencil,
   FileText,
+  Printer,
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
@@ -354,6 +355,15 @@ export function StudentProfilePage() {
               className="bg-white/20 border-white/30 text-white hover:bg-white/30"
             >
               Ma&apos;lumotnoma
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Printer className="h-3.5 w-3.5" />}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 print:hidden"
+              onClick={() => window.print()}
+            >
+              Chop etish
             </Button>
           </div>
         </div>

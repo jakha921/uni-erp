@@ -118,7 +118,7 @@
 - [x] Tab "O'zlashtirish": реальные оценки из API
 - [x] Кнопка "Tahrirlash" → navigate(`/students/${id}/edit`)
 - [ ] Кнопка "Ma'lumotnoma" → генерация PDF справки
-- [ ] Кнопка "Chop etish" → print-friendly layout
+- [x] Кнопка "Chop etish" → print-friendly layout
 
 ---
 
