@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, FileText, User, Calendar, Banknote, CreditCard, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, User, Calendar, Banknote, CreditCard, ExternalLink, Download } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
@@ -9,7 +9,7 @@ import { useContract, useCreatePayment } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { PaymentTimeline } from '../components/PaymentTimeline';
 import { PaymentForm } from '../components/PaymentForm';
-import type { ContractStatus, ContractType } from '@/types/finance';
+import type { Contract, ContractStatus, ContractType } from '@/types/finance';
 import type { PaymentFormData } from '../schemas/payment.schema';
 
 const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
@@ -24,6 +24,81 @@ const CONTRACT_STATUS_CONFIG: Record<ContractStatus, { variant: 'success' | 'def
   completed: { variant: 'default', label: 'Yakunlangan' },
   cancelled: { variant: 'error', label: 'Bekor qilingan' },
 };
+
+function printContractPdf(c: Contract) {
+  const win = window.open('', '_blank', 'width=794,height=1123');
+  if (!win) return;
+  const d = win.document;
+  const style = d.createElement('style');
+  style.textContent = `
+    body { font-family: 'Times New Roman', serif; margin: 0; padding: 50px 70px; color: #000; }
+    h1 { text-align: center; font-size: 16px; text-transform: uppercase; margin-bottom: 4px; }
+    h2 { text-align: center; font-size: 13px; margin-bottom: 30px; }
+    .contract-title { text-align: center; font-size: 20px; font-weight: bold; margin: 20px 0 4px; }
+    .contract-num { text-align: center; font-size: 13px; color: #555; margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    td { padding: 7px 10px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+    td:first-child { color: #64748b; width: 45%; }
+    td:last-child { font-weight: 600; }
+    .amount-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px 20px; margin: 20px 0; text-align: center; }
+    .amount-label { font-size: 12px; color: #64748b; }
+    .amount-value { font-size: 24px; font-weight: bold; color: #16a34a; }
+    .sigs { display: flex; justify-content: space-between; margin-top: 60px; font-size: 12px; }
+    .sig-block p { margin: 4px 0; }
+    @media print { @page { margin: 0; } body { padding: 50px 70px; } }
+  `;
+  d.head.appendChild(style);
+  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
+  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const ctitle = d.createElement('div'); ctitle.className = 'contract-title'; ctitle.textContent = 'TA\'LIM SHARTNOMASI'; d.body.appendChild(ctitle);
+  const cnum = d.createElement('div'); cnum.className = 'contract-num'; cnum.textContent = `№ ${c.contractNumber} | Sana: ${formatDate(c.contractDate)}`; d.body.appendChild(cnum);
+
+  const rows: [string, string][] = [
+    ['Talaba', c.studentName],
+    ['Talaba ID', c.studentIdNumber],
+    ['Fakultet', c.facultyName],
+    ['Mutaxassislik', c.specialty],
+    ['Guruh', c.groupName],
+    ['Kurs', c.level],
+    ["O'quv yili", c.educationYear],
+    ["Shartnoma turi", CONTRACT_TYPE_LABELS[c.contractType]],
+  ];
+  const table = d.createElement('table');
+  rows.forEach(([label, value]) => {
+    const tr = d.createElement('tr');
+    const td1 = d.createElement('td'); td1.textContent = label;
+    const td2 = d.createElement('td'); td2.textContent = value || '—';
+    tr.appendChild(td1); tr.appendChild(td2);
+    table.appendChild(tr);
+  });
+  d.body.appendChild(table);
+
+  const amtBox = d.createElement('div'); amtBox.className = 'amount-box';
+  const lbl = d.createElement('div'); lbl.className = 'amount-label'; lbl.textContent = "Shartnoma summasi";
+  const val = d.createElement('div'); val.className = 'amount-value'; val.textContent = formatMoney(c.contractAmount);
+  amtBox.appendChild(lbl); amtBox.appendChild(val);
+  d.body.appendChild(amtBox);
+
+  const sigs = d.createElement('div'); sigs.className = 'sigs';
+  const univ = d.createElement('div'); univ.className = 'sig-block';
+  const up1 = d.createElement('p'); up1.textContent = 'Universitet nomidan:';
+  const up2 = d.createElement('p'); up2.textContent = 'Rektor: _______________________';
+  const up3 = d.createElement('p'); up3.textContent = `Sana: ${today}`;
+  univ.appendChild(up1); univ.appendChild(up2); univ.appendChild(up3);
+  const stud = d.createElement('div'); stud.className = 'sig-block';
+  const sp1 = d.createElement('p'); sp1.textContent = 'Talaba:';
+  const sp2 = d.createElement('p'); sp2.textContent = c.studentName;
+  const sp3 = d.createElement('p'); sp3.textContent = 'Imzo: _______________________';
+  stud.appendChild(sp1); stud.appendChild(sp2); stud.appendChild(sp3);
+  sigs.appendChild(univ); sigs.appendChild(stud);
+  d.body.appendChild(sigs);
+
+  d.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 250);
+}
 
 const ONLINE_PAYMENT_PROVIDERS = [
   { name: 'Payme', color: '#1677FF', logo: '💳', desc: 'payme.uz orqali to\'lov' },
@@ -124,6 +199,13 @@ export function ContractDetailPage() {
               onClick={() => navigate('/finance/contracts')}
             >
               Orqaga
+            </Button>
+            <Button
+              variant="secondary"
+              leftIcon={<Download className="h-4 w-4" />}
+              onClick={() => printContractPdf(contract)}
+            >
+              Yuklab olish
             </Button>
             <Button
               variant="secondary"

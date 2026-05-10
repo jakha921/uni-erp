@@ -283,7 +283,7 @@
 **Статус:** Read + Payment creation
 **Задачи:**
 - [x] Кнопка "Onlayn to'lov" → показать Payme/Click ссылки из `/contracts/{id}/payment-link/`
-- [ ] Кнопка "Shartnomani yuklab olish" → PDF download
+- [x] Кнопка "Shartnomani yuklab olish" → PDF download
 - [x] Кнопка "Nazad" → navigate('/finance/contracts')
 - [ ] i18n: все тексты (убрать hardcoded status labels)
 - [ ] PaymentTimeline: подключить к реальной истории платежей
