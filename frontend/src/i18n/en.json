@@ -388,7 +388,31 @@
       "fanlar": "Science",
       "ijtimoiy": "Social",
       "maxsus": "Special"
-    }
+    },
+    "reportTitle": "Finance Report",
+    "reportSubtitle": "Overall financial indicators and statistics",
+    "reportTypes": {
+      "general": "General",
+      "faculty": "By Faculty",
+      "level": "By Course",
+      "type": "By Contract Type",
+      "method": "By Payment Method"
+    },
+    "periodFrom": "Period (from)",
+    "periodTo": "Period (to)",
+    "reportType": "Report type",
+    "generateReport": "Generate report",
+    "reportNotGenerated": "Report not generated",
+    "reportNotGeneratedHint": "Select period and type, then click the button.",
+    "printReport": "Print",
+    "downloadExcel": "Download Excel",
+    "category": "Category",
+    "contracts": "Contracts",
+    "collectionPct": "Collection %",
+    "categoryCollection": "Collection by category",
+    "paidDebt": "Paid / Debt",
+    "collection": "Collection",
+    "total": "TOTAL"
   },
   "hr": {
     "title": "Human Resources",

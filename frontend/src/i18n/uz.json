@@ -396,7 +396,31 @@
       "fanlar": "Fanlar",
       "ijtimoiy": "Ijtimoiy",
       "maxsus": "Maxsus"
-    }
+    },
+    "reportTitle": "Moliyaviy hisobot",
+    "reportSubtitle": "Umumiy moliyaviy ko'rsatkichlar va statistika",
+    "reportTypes": {
+      "general": "Umumiy",
+      "faculty": "Fakultet bo'yicha",
+      "level": "Kurs bo'yicha",
+      "type": "Kontrakt turi bo'yicha",
+      "method": "To'lov usuli bo'yicha"
+    },
+    "periodFrom": "Davr (dan)",
+    "periodTo": "Davr (gacha)",
+    "reportType": "Hisobot turi",
+    "generateReport": "Hisobot yaratish",
+    "reportNotGenerated": "Hisobot yaratilmagan",
+    "reportNotGeneratedHint": "Davr va turini tanlang, so'ngra tugmani bosing.",
+    "printReport": "Chop etish",
+    "downloadExcel": "Excel yuklash",
+    "category": "Kategoriya",
+    "contracts": "Kontraktlar",
+    "collectionPct": "Yig'im %",
+    "categoryCollection": "Kategoriya bo'yicha yig'im",
+    "paidDebt": "To'langan / Qarz",
+    "collection": "Yig'im",
+    "total": "JAMI"
   },
   "hr": {
     "title": "Kadrlar bo'limi",

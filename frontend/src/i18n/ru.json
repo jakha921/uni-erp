@@ -388,7 +388,31 @@
       "fanlar": "Науки",
       "ijtimoiy": "Социальная",
       "maxsus": "Специальная"
-    }
+    },
+    "reportTitle": "Финансовый отчёт",
+    "reportSubtitle": "Общие финансовые показатели и статистика",
+    "reportTypes": {
+      "general": "Общий",
+      "faculty": "По факультету",
+      "level": "По курсу",
+      "type": "По типу контракта",
+      "method": "По методу оплаты"
+    },
+    "periodFrom": "Период (от)",
+    "periodTo": "Период (до)",
+    "reportType": "Тип отчёта",
+    "generateReport": "Создать отчёт",
+    "reportNotGenerated": "Отчёт не создан",
+    "reportNotGeneratedHint": "Выберите период и тип, затем нажмите кнопку.",
+    "printReport": "Печать",
+    "downloadExcel": "Скачать Excel",
+    "category": "Категория",
+    "contracts": "Контракты",
+    "collectionPct": "Сбор %",
+    "categoryCollection": "Сбор по категориям",
+    "paidDebt": "Оплачено / Долг",
+    "collection": "Сбор",
+    "total": "ИТОГО"
   },
   "hr": {
     "title": "Кадровый отдел",

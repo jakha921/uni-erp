@@ -323,7 +323,7 @@
 **Статус:** Read + CSV export работает
 **Задачи:**
 - [x] PDF export: подключить к реальному endpoint
-- [ ] Убрать hardcoded report types → из API
+- [x] Убрать hardcoded report types → из API
 - [x] i18n: все тексты
 
 ### 5.8 PayrollPage `/finance/payroll`

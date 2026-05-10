@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Printer, Download, FileText, BarChart3 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { formatMoney } from '@/lib/utils';
 import { useContracts, usePayments } from '@/api/hooks/useFinance';
@@ -16,13 +17,8 @@ interface ReportRow {
   pct: number;
 }
 
-const REPORT_TYPES: { value: ReportType; label: string }[] = [
-  { value: 'general', label: 'Umumiy' },
-  { value: 'faculty', label: "Fakultet bo'yicha" },
-  { value: 'level', label: "Kurs bo'yicha" },
-  { value: 'type', label: "Kontrakt turi bo'yicha" },
-  { value: 'method', label: "To'lov usuli bo'yicha" },
-];
+const REPORT_TYPE_KEYS: ReportType[] = ['general', 'faculty', 'level', 'type', 'method'];
+const PAY_METHOD_KEYS: PaymentMethod[] = ['bank', 'naqd', 'click', 'payme', 'online'];
 
 const FACULTIES = [
   'Kompyuter injiniringi',
@@ -31,7 +27,7 @@ const FACULTIES = [
   'Filologiya',
   'Tabiiy fanlar',
   'Huquqshunoslik',
-  'San\'at va dizayn',
+  "San'at va dizayn",
   'Tibbiyot',
 ];
 
@@ -41,15 +37,8 @@ interface MethodRow {
   sum: number;
 }
 
-const PAY_METHOD_LABELS: Record<PaymentMethod, string> = {
-  bank: "Bank o'tkazmasi",
-  naqd: 'Naqd',
-  click: 'Click',
-  payme: 'PayMe',
-  online: 'Online',
-};
-
 export function FinanceReportPage() {
+  const { t } = useTranslation();
   const { data: contracts } = useContracts();
   const { data: paymentsData } = usePayments({ pageSize: 500 });
 
@@ -85,7 +74,7 @@ export function FinanceReportPage() {
         contracts: filteredContracts.filter((c: Contract) => c.contractType === ct),
       }));
     } else {
-      groups = [{ key: 'JAMI', contracts: filteredContracts }];
+      groups = [{ key: t('finance.total'), contracts: filteredContracts }];
     }
 
     return groups.map((g) => {
@@ -100,7 +89,7 @@ export function FinanceReportPage() {
         pct: total > 0 ? Math.round((paid / total) * 100) : 0,
       };
     });
-  }, [generated, reportType, contracts, fromDate, toDate]);
+  }, [generated, reportType, contracts, fromDate, toDate, t]);
 
   const methodData = useMemo((): MethodRow[] | null => {
     if (!generated || reportType !== 'method' || !paymentsData?.data) return null;
@@ -109,12 +98,16 @@ export function FinanceReportPage() {
       if (toDate && p.paymentDate > toDate) return false;
       return true;
     });
-    return (['bank', 'naqd', 'click', 'payme', 'online'] as PaymentMethod[]).map((m) => {
+    return PAY_METHOD_KEYS.map((m) => {
       const list = payments.filter((p) => p.paymentMethod === m);
       const sum = list.reduce((s, p) => s + p.amount, 0);
-      return { method: PAY_METHOD_LABELS[m], count: list.length, sum };
+      return {
+        method: t(`finance.paymentMethods.${m}`, { defaultValue: m }),
+        count: list.length,
+        sum,
+      };
     });
-  }, [generated, reportType, paymentsData, fromDate, toDate]);
+  }, [generated, reportType, paymentsData, fromDate, toDate, t]);
 
   const totals = useMemo(() => {
     if (!reportData) return null;
@@ -131,9 +124,9 @@ export function FinanceReportPage() {
 
   const exportCSV = () => {
     if (!reportData) return;
-    const rows = [['Kategoriya', 'Kontraktlar', 'Jami', "To'langan", 'Qarz', "Yig'im %"]];
+    const rows = [[t('finance.category'), t('finance.contracts'), t('common.total'), t('finance.paidAmount'), t('finance.debtAmount'), t('finance.collectionPct')]];
     reportData.forEach((r) => rows.push([r.key, String(r.count), String(r.total), String(r.paid), String(r.debt), r.pct + '%']));
-    if (totals) rows.push(['JAMI', String(totals.count), String(totals.total), String(totals.paid), String(totals.debt), (totals.total > 0 ? Math.round((totals.paid / totals.total) * 100) : 0) + '%']);
+    if (totals) rows.push([t('finance.total'), String(totals.count), String(totals.total), String(totals.paid), String(totals.debt), (totals.total > 0 ? Math.round((totals.paid / totals.total) * 100) : 0) + '%']);
     const csv = rows.map((r) => r.join(',')).join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -147,11 +140,11 @@ export function FinanceReportPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Moliyaviy hisobot"
-        subtitle="Umumiy moliyaviy ko'rsatkichlar va statistika"
+        title={t('finance.reportTitle')}
+        subtitle={t('finance.reportSubtitle')}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Hisobot' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.report') },
         ]}
       />
 
@@ -159,7 +152,7 @@ export function FinanceReportPage() {
       <div className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_2fr_auto] gap-3 items-end">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-slate-600">Davr (dan)</label>
+            <label className="text-xs font-medium text-slate-600">{t('finance.periodFrom')}</label>
             <input
               type="date"
               value={fromDate}
@@ -168,7 +161,7 @@ export function FinanceReportPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-slate-600">Davr (gacha)</label>
+            <label className="text-xs font-medium text-slate-600">{t('finance.periodTo')}</label>
             <input
               type="date"
               value={toDate}
@@ -177,14 +170,14 @@ export function FinanceReportPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-slate-600">Hisobot turi</label>
+            <label className="text-xs font-medium text-slate-600">{t('finance.reportType')}</label>
             <select
               value={reportType}
               onChange={(e) => setReportType(e.target.value as ReportType)}
               className="h-10 px-3 rounded-lg border border-border text-sm bg-white dark:bg-slate-800"
             >
-              {REPORT_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+              {REPORT_TYPE_KEYS.map((key) => (
+                <option key={key} value={key}>{t(`finance.reportTypes.${key}`)}</option>
               ))}
             </select>
           </div>
@@ -193,7 +186,7 @@ export function FinanceReportPage() {
             className="h-10 px-5 rounded-lg bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors flex items-center gap-2"
           >
             <BarChart3 className="h-4 w-4" />
-            Hisobot yaratish
+            {t('finance.generateReport')}
           </button>
         </div>
       </div>
@@ -202,21 +195,20 @@ export function FinanceReportPage() {
       {!generated && (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
           <BarChart3 className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-700">Hisobot yaratilmagan</h3>
-          <p className="text-sm text-slate-400 mt-1">Davr va turini tanlang, so&apos;ngra tugmani bosing.</p>
+          <h3 className="text-lg font-semibold text-slate-700">{t('finance.reportNotGenerated')}</h3>
+          <p className="text-sm text-slate-400 mt-1">{t('finance.reportNotGeneratedHint')}</p>
         </div>
       )}
 
-      {/* Generated report */}
       {/* Method report type */}
       {generated && methodData && reportType === 'method' && (
         <>
           <div className="flex gap-2 mb-4 justify-end">
             <button onClick={() => window.print()} className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-              <Printer className="h-3.5 w-3.5" /> Chop etish
+              <Printer className="h-3.5 w-3.5" /> {t('finance.printReport')}
             </button>
             <button onClick={exportCSV} className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-              <Download className="h-3.5 w-3.5" /> Excel yuklash
+              <Download className="h-3.5 w-3.5" /> {t('finance.downloadExcel')}
             </button>
             <button
               onClick={() => {
@@ -236,9 +228,9 @@ export function FinanceReportPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/50">
-                  <th className="text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">To&apos;lov usuli</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">To&apos;lovlar soni</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Jami summa</th>
+                  <th className="text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.paymentMethodLabel')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.paymentsCount')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.totalAmount')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,13 +255,13 @@ export function FinanceReportPage() {
               onClick={() => window.print()}
               className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
             >
-              <Printer className="h-3.5 w-3.5" /> Chop etish
+              <Printer className="h-3.5 w-3.5" /> {t('finance.printReport')}
             </button>
             <button
               onClick={exportCSV}
               className="h-9 px-4 rounded-lg border border-border bg-surface text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
             >
-              <Download className="h-3.5 w-3.5" /> Excel yuklash
+              <Download className="h-3.5 w-3.5" /> {t('finance.downloadExcel')}
             </button>
             <button
               onClick={() => {
@@ -291,12 +283,12 @@ export function FinanceReportPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/50">
-                  <th className="text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Kategoriya</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Kontraktlar</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Jami summa</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">To&apos;langan</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Qarz</th>
-                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">Yig&apos;im %</th>
+                  <th className="text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.category')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.contracts')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.totalAmount')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.paidAmount')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.debtAmount')}</th>
+                  <th className="text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 px-4 py-3">{t('finance.collectionPct')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -312,7 +304,7 @@ export function FinanceReportPage() {
                 ))}
                 {totals && (
                   <tr className="border-t border-border bg-slate-100 dark:bg-slate-800/50 font-bold">
-                    <td className="px-4 py-2.5 text-[13px] font-bold text-slate-900">JAMI</td>
+                    <td className="px-4 py-2.5 text-[13px] font-bold text-slate-900">{t('finance.total')}</td>
                     <td className="px-4 py-2.5 text-[13px] text-right tabular-nums font-bold">{totals.count}</td>
                     <td className="px-4 py-2.5 text-[13px] text-right tabular-nums font-bold">{formatMoney(totals.total)}</td>
                     <td className="px-4 py-2.5 text-[13px] text-right tabular-nums font-bold text-emerald-700">{formatMoney(totals.paid)}</td>
@@ -329,7 +321,7 @@ export function FinanceReportPage() {
             {/* Category progress bars */}
             <div className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                Kategoriya bo&apos;yicha yig&apos;im
+                {t('finance.categoryCollection')}
               </h3>
               <div className="flex flex-col gap-3">
                 {reportData.map((r) => (
@@ -352,7 +344,7 @@ export function FinanceReportPage() {
             {/* Paid/Debt donut */}
             <div className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
-                To&apos;langan / Qarz
+                {t('finance.paidDebt')}
               </h3>
               {totals && totals.total > 0 && (
                 <div className="flex flex-col items-center">
@@ -360,15 +352,16 @@ export function FinanceReportPage() {
                     paid={totals.paid}
                     debt={totals.debt}
                     pct={Math.round((totals.paid / totals.total) * 100)}
+                    collectionLabel={t('finance.collection')}
                   />
                   <div className="flex gap-6 mt-4">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                      <span className="text-xs text-slate-600">To&apos;langan</span>
+                      <span className="text-xs text-slate-600">{t('finance.paidAmount')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500" />
-                      <span className="text-xs text-slate-600">Qarz</span>
+                      <span className="text-xs text-slate-600">{t('finance.debtAmount')}</span>
                     </div>
                   </div>
                 </div>
@@ -381,7 +374,7 @@ export function FinanceReportPage() {
   );
 }
 
-function DonutChart({ paid, debt, pct }: { paid: number; debt: number; pct: number }) {
+function DonutChart({ paid, debt, pct, collectionLabel }: { paid: number; debt: number; pct: number; collectionLabel: string }) {
   const total = paid + debt;
   const paidAngle = (paid / total) * 360;
   const radius = 60;
@@ -403,9 +396,7 @@ function DonutChart({ paid, debt, pct }: { paid: number; debt: number; pct: numb
 
   return (
     <svg width="160" height="160" viewBox="0 0 160 160">
-      {/* Debt arc (background) */}
       <circle cx={cx} cy={cy} r={radius} fill="none" stroke="#FEE2E2" strokeWidth={strokeWidth} />
-      {/* Paid arc */}
       {paidAngle > 0 && (
         <path
           d={describeArc(0, Math.min(paidAngle, 359.99))}
@@ -415,12 +406,11 @@ function DonutChart({ paid, debt, pct }: { paid: number; debt: number; pct: numb
           strokeLinecap="round"
         />
       )}
-      {/* Center text */}
       <text x={cx} y={cy - 4} textAnchor="middle" className="fill-slate-900 dark:fill-slate-100 text-xl font-bold" fontSize="22" fontWeight="700">
         {pct}%
       </text>
       <text x={cx} y={cy + 14} textAnchor="middle" className="fill-slate-400" fontSize="11">
-        Yig&apos;im
+        {collectionLabel}
       </text>
     </svg>
   );
