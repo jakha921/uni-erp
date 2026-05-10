@@ -367,7 +367,36 @@
     "searchStudentHint": "Talabani qidiring (kamida 3 belgi)",
     "searchStudentPlaceholder": "Ism yoki kontrakt raqami...",
     "noContractForStudent": "Bu talabaga kontrakt topilmadi",
-    "savePayment": "To'lovni saqlash"
+    "savePayment": "To'lovni saqlash",
+    "scholarshipsTitle": "Stipendiyalar",
+    "scholarshipsActiveMonthly": "Faol oylik summa: {{amount}}",
+    "bulkAssign": "Ommaviy tayinlash",
+    "assignScholarship": "Stipendiya tayinlash",
+    "scholarshipRecipients": "Stipendiya oluvchilar",
+    "assignTab": "Tayinlash",
+    "allTypes": "Barcha turlari",
+    "allStatuses": "Barcha holatlar",
+    "scholarshipsNotFound": "Stipendiyalar topilmadi",
+    "deleteScholarshipTitle": "Stipendiyani o'chirish",
+    "deleteScholarshipConfirm": "{{name}} stipendiyasini o'chirishni tasdiqlaysizmi?",
+    "bulkAssignTitle": "Ommaviy stipendiya tayinlash",
+    "bulkAssignHint": "Tanlangan guruh yoki barcha talabalar uchun stipendiya tayinlash.",
+    "scholarshipTypeLabel": "Stipendiya turi",
+    "groupOptional": "Guruh (ixtiyoriy)",
+    "amountSom": "Miqdor (so'm)",
+    "startDate": "Boshlanish sanasi",
+    "endDate": "Tugash sanasi",
+    "activate": "Faol qilish",
+    "pause": "To'xtatish",
+    "amountPerMonth": "Summa/oy",
+    "period": "Davr",
+    "scholarshipTypes": {
+      "davlat": "Davlat",
+      "prezident": "Prezident",
+      "fanlar": "Fanlar",
+      "ijtimoiy": "Ijtimoiy",
+      "maxsus": "Maxsus"
+    }
   },
   "hr": {
     "title": "Kadrlar bo'limi",
@@ -659,7 +688,8 @@
     "inProgress": "Jarayonda",
     "resolved": "Hal qilindi",
     "closed": "Yopildi",
-    "archived": "Arxivlangan"
+    "archived": "Arxivlangan",
+    "paused": "To'xtatilgan"
   },
   "errors": {
     "unexpected": "Kutilmagan xatolik yuz berdi",

@@ -359,7 +359,36 @@
     "searchStudentHint": "Search for a student (min 3 chars)",
     "searchStudentPlaceholder": "Name or contract number...",
     "noContractForStudent": "No contract found for this student",
-    "savePayment": "Save payment"
+    "savePayment": "Save payment",
+    "scholarshipsTitle": "Scholarships",
+    "scholarshipsActiveMonthly": "Active monthly amount: {{amount}}",
+    "bulkAssign": "Bulk assign",
+    "assignScholarship": "Assign scholarship",
+    "scholarshipRecipients": "Scholarship recipients",
+    "assignTab": "Assignment",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "scholarshipsNotFound": "No scholarships found",
+    "deleteScholarshipTitle": "Delete scholarship",
+    "deleteScholarshipConfirm": "Confirm deleting {{name}}'s scholarship?",
+    "bulkAssignTitle": "Bulk scholarship assignment",
+    "bulkAssignHint": "Assign scholarships to a selected group or all students.",
+    "scholarshipTypeLabel": "Scholarship type",
+    "groupOptional": "Group (optional)",
+    "amountSom": "Amount (UZS)",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "activate": "Activate",
+    "pause": "Pause",
+    "amountPerMonth": "Amount/month",
+    "period": "Period",
+    "scholarshipTypes": {
+      "davlat": "State",
+      "prezident": "Presidential",
+      "fanlar": "Science",
+      "ijtimoiy": "Social",
+      "maxsus": "Special"
+    }
   },
   "hr": {
     "title": "Human Resources",
@@ -651,7 +680,8 @@
     "inProgress": "In progress",
     "resolved": "Resolved",
     "closed": "Closed",
-    "archived": "Archived"
+    "archived": "Archived",
+    "paused": "Paused"
   },
   "errors": {
     "unexpected": "An unexpected error occurred",

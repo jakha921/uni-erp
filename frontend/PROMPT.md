@@ -314,7 +314,7 @@
 **Статус:** C✓ R✓ D✓, нет Update
 **Задачи:**
 - [x] Update: редактирование стипендии в Modal
-- [ ] Убрать hardcoded TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`
+- [x] Убрать hardcoded TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`
 - [x] Массовое назначение стипендии (bulk create)
 - [x] i18n: все тексты
 

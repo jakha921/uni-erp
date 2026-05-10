@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Plus, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from '@/components/overlays';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
@@ -17,32 +18,24 @@ import { ScholarshipForm } from '../components/ScholarshipForm';
 import type { Scholarship, ScholarshipType } from '@/types/finance';
 import type { ScholarshipFormData } from '../schemas/scholarship.schema';
 
-const TYPE_LABELS: Record<ScholarshipType, { variant: 'info' | 'success' | 'warning' | 'default'; label: string }> = {
-  davlat: { variant: 'info', label: 'Davlat' },
-  prezident: { variant: 'warning', label: 'Prezident' },
-  fanlar: { variant: 'success', label: 'Fanlar' },
-  ijtimoiy: { variant: 'default', label: 'Ijtimoiy' },
-  maxsus: { variant: 'info', label: 'Maxsus' },
+const TYPE_VARIANTS: Record<ScholarshipType, 'info' | 'success' | 'warning' | 'default'> = {
+  davlat: 'info',
+  prezident: 'warning',
+  fanlar: 'success',
+  ijtimoiy: 'default',
+  maxsus: 'info',
 };
 
-const STATUS_LABELS: Record<string, { variant: 'success' | 'warning' | 'default'; label: string }> = {
-  active: { variant: 'success', label: 'Faol' },
-  paused: { variant: 'warning', label: "To'xtatilgan" },
-  completed: { variant: 'default', label: 'Yakunlangan' },
+const STATUS_VARIANTS: Record<string, 'success' | 'warning' | 'default'> = {
+  active: 'success',
+  paused: 'warning',
+  completed: 'default',
 };
 
-const TYPE_FILTER_OPTIONS = [
-  { value: '', label: 'Barcha turlari' },
-  { value: 'davlat', label: 'Davlat' },
-  { value: 'prezident', label: 'Prezident' },
-  { value: 'fanlar', label: 'Fanlar' },
-  { value: 'ijtimoiy', label: 'Ijtimoiy' },
-  { value: 'maxsus', label: 'Maxsus' },
-];
-
-// PAGE_TABS is built dynamically to include scholarship count
+const SCHOLARSHIP_TYPE_KEYS: ScholarshipType[] = ['davlat', 'prezident', 'fanlar', 'ijtimoiy', 'maxsus'];
 
 export function ScholarshipsPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('list');
   const [typeFilter, setTypeFilter] = useState<ScholarshipType | ''>('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -118,7 +111,7 @@ export function ScholarshipsPage() {
     },
     {
       key: 'studentName',
-      header: 'Talaba',
+      header: t('education.student'),
       sortable: true,
       render: (row) => (
         <div>
@@ -129,12 +122,12 @@ export function ScholarshipsPage() {
     },
     {
       key: 'groupName',
-      header: 'Guruh',
+      header: t('students.group'),
       render: (row) => <span>{row.groupName}</span>,
     },
     {
       key: 'facultyName',
-      header: 'Fakultet',
+      header: t('students.faculty'),
       render: (row) => (
         <span className="text-[12.5px]">
           {row.facultyName?.split(' ').slice(0, 2).join(' ')}
@@ -143,19 +136,16 @@ export function ScholarshipsPage() {
     },
     {
       key: 'type',
-      header: 'Turi',
-      render: (row) => {
-        const cfg = TYPE_LABELS[row.type];
-        return (
-          <Badge variant={cfg.variant} dot>
-            {cfg.label}
-          </Badge>
-        );
-      },
+      header: t('common.type'),
+      render: (row) => (
+        <Badge variant={TYPE_VARIANTS[row.type] ?? 'default'} dot>
+          {t(`finance.scholarshipTypes.${row.type}`, { defaultValue: row.type })}
+        </Badge>
+      ),
     },
     {
       key: 'amount',
-      header: 'Summa/oy',
+      header: t('finance.amountPerMonth'),
       className: 'text-right',
       sortable: true,
       render: (row) => (
@@ -166,7 +156,7 @@ export function ScholarshipsPage() {
     },
     {
       key: 'startDate',
-      header: 'Davr',
+      header: t('finance.period'),
       render: (row) => (
         <span className="text-xs text-slate-600">
           {formatDate(row.startDate)} — {formatDate(row.endDate)}
@@ -175,15 +165,12 @@ export function ScholarshipsPage() {
     },
     {
       key: 'status',
-      header: 'Holat',
-      render: (row) => {
-        const cfg = STATUS_LABELS[row.status] ?? { variant: 'default' as const, label: row.status };
-        return (
-          <Badge variant={cfg.variant} dot>
-            {cfg.label}
-          </Badge>
-        );
-      },
+      header: t('common.status'),
+      render: (row) => (
+        <Badge variant={STATUS_VARIANTS[row.status] ?? 'default'} dot>
+          {t(`statuses.${row.status}`, { defaultValue: row.status })}
+        </Badge>
+      ),
     },
   ];
 
@@ -200,11 +187,11 @@ export function ScholarshipsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Stipendiyalar"
-        subtitle={`Faol oylik summa: ${formatMoney(totalMonthly)}`}
+        title={t('finance.scholarshipsTitle')}
+        subtitle={t('finance.scholarshipsActiveMonthly', { amount: formatMoney(totalMonthly) })}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Stipendiyalar' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('finance.scholarshipsTitle') },
         ]}
         actions={
           <div className="flex gap-2">
@@ -213,10 +200,10 @@ export function ScholarshipsPage() {
               leftIcon={<Users className="h-4 w-4" />}
               onClick={() => setBulkOpen(true)}
             >
-              Ommaviy tayinlash
+              {t('finance.bulkAssign')}
             </Button>
             <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-              Stipendiya tayinlash
+              {t('finance.assignScholarship')}
             </Button>
           </div>
         }
@@ -224,8 +211,8 @@ export function ScholarshipsPage() {
 
       <Tabs
         tabs={[
-          { id: 'list', label: 'Stipendiya oluvchilar', count: allScholarships.length },
-          { id: 'assign', label: 'Tayinlash' },
+          { id: 'list', label: t('finance.scholarshipRecipients'), count: allScholarships.length },
+          { id: 'assign', label: t('finance.assignTab') },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -239,10 +226,9 @@ export function ScholarshipsPage() {
               onChange={(e) => setTypeFilter(e.target.value as ScholarshipType | '')}
               className="h-9 w-[200px] rounded-lg border border-border px-3 text-sm"
             >
-              {TYPE_FILTER_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
+              <option value="">{t('finance.allTypes')}</option>
+              {SCHOLARSHIP_TYPE_KEYS.map((k) => (
+                <option key={k} value={k}>{t(`finance.scholarshipTypes.${k}`)}</option>
               ))}
             </select>
             <select
@@ -250,10 +236,10 @@ export function ScholarshipsPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="h-9 w-[180px] rounded-lg border border-border px-3 text-sm"
             >
-              <option value="">Barcha holatlar</option>
-              <option value="active">Faol</option>
-              <option value="paused">To&apos;xtatilgan</option>
-              <option value="completed">Yakunlangan</option>
+              <option value="">{t('finance.allStatuses')}</option>
+              <option value="active">{t('statuses.active')}</option>
+              <option value="paused">{t('statuses.paused')}</option>
+              <option value="completed">{t('statuses.completed')}</option>
             </select>
           </div>
 
@@ -262,14 +248,14 @@ export function ScholarshipsPage() {
               data={filtered}
               columns={columns}
               keyField="id"
-              emptyMessage="Stipendiyalar topilmadi"
+              emptyMessage={t('finance.scholarshipsNotFound')}
               actions={(row) => (
                 <DropdownMenu
                   items={[
-                    { label: 'Tahrirlash', onClick: () => setEditTarget(row) },
-                    { label: 'Faol qilish', onClick: () => {} },
-                    { label: "To'xtatish", onClick: () => {} },
-                    { label: "O'chirish", onClick: () => setDeleteTarget(row), danger: true },
+                    { label: t('common.edit'), onClick: () => setEditTarget(row) },
+                    { label: t('finance.activate'), onClick: () => {} },
+                    { label: t('finance.pause'), onClick: () => {} },
+                    { label: t('common.delete'), onClick: () => setDeleteTarget(row), danger: true },
                   ]}
                 />
               )}
@@ -281,7 +267,7 @@ export function ScholarshipsPage() {
       {activeTab === 'assign' && (
         <div className="mt-4">
           <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Stipendiya tayinlash
+            {t('finance.assignScholarship')}
           </Button>
         </div>
       )}
@@ -305,9 +291,9 @@ export function ScholarshipsPage() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Stipendiyani o'chirish"
-        message={`${deleteTarget?.studentName} stipendiyasini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('finance.deleteScholarshipTitle')}
+        message={t('finance.deleteScholarshipConfirm', { name: deleteTarget?.studentName ?? '' })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteMutation.isPending}
       />
@@ -315,37 +301,35 @@ export function ScholarshipsPage() {
       <Modal
         open={bulkOpen}
         onClose={() => setBulkOpen(false)}
-        title="Ommaviy stipendiya tayinlash"
+        title={t('finance.bulkAssignTitle')}
         footer={
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setBulkOpen(false)}>Bekor qilish</Button>
+            <Button variant="secondary" onClick={() => setBulkOpen(false)}>{t('common.cancel')}</Button>
             <Button
               disabled={!bulkAmount || !bulkStart || !bulkEnd}
               onClick={() => setBulkOpen(false)}
             >
-              Tayinlash
+              {t('finance.assignScholarship')}
             </Button>
           </div>
         }
       >
         <div className="space-y-4">
-          <p className="text-sm text-muted">
-            Tanlangan guruh yoki barcha talabalar uchun stipendiya tayinlash.
-          </p>
+          <p className="text-sm text-muted">{t('finance.bulkAssignHint')}</p>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">Stipendiya turi</label>
+            <label className="mb-1 block text-xs font-medium text-slate-700">{t('finance.scholarshipTypeLabel')}</label>
             <select
               value={bulkType}
               onChange={(e) => setBulkType(e.target.value as ScholarshipType)}
               className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
             >
-              {(Object.keys(TYPE_LABELS) as ScholarshipType[]).map((t) => (
-                <option key={t} value={t}>{TYPE_LABELS[t].label}</option>
+              {SCHOLARSHIP_TYPE_KEYS.map((k) => (
+                <option key={k} value={k}>{t(`finance.scholarshipTypes.${k}`)}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">Guruh (ixtiyoriy)</label>
+            <label className="mb-1 block text-xs font-medium text-slate-700">{t('finance.groupOptional')}</label>
             <input
               type="text"
               value={bulkGroup}
@@ -355,7 +339,7 @@ export function ScholarshipsPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">Miqdor (so&apos;m)</label>
+            <label className="mb-1 block text-xs font-medium text-slate-700">{t('finance.amountSom')}</label>
             <input
               type="number"
               value={bulkAmount}
@@ -366,7 +350,7 @@ export function ScholarshipsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-700">Boshlanish sanasi</label>
+              <label className="mb-1 block text-xs font-medium text-slate-700">{t('finance.startDate')}</label>
               <input
                 type="date"
                 value={bulkStart}
@@ -375,7 +359,7 @@ export function ScholarshipsPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-700">Tugash sanasi</label>
+              <label className="mb-1 block text-xs font-medium text-slate-700">{t('finance.endDate')}</label>
               <input
                 type="date"
                 value={bulkEnd}

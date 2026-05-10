@@ -359,7 +359,36 @@
     "searchStudentHint": "Найдите студента (мин. 3 символа)",
     "searchStudentPlaceholder": "Имя или номер контракта...",
     "noContractForStudent": "Контракт для этого студента не найден",
-    "savePayment": "Сохранить платёж"
+    "savePayment": "Сохранить платёж",
+    "scholarshipsTitle": "Стипендии",
+    "scholarshipsActiveMonthly": "Активная ежемесячная сумма: {{amount}}",
+    "bulkAssign": "Массовое назначение",
+    "assignScholarship": "Назначить стипендию",
+    "scholarshipRecipients": "Получатели стипендий",
+    "assignTab": "Назначение",
+    "allTypes": "Все типы",
+    "allStatuses": "Все статусы",
+    "scholarshipsNotFound": "Стипендии не найдены",
+    "deleteScholarshipTitle": "Удалить стипендию",
+    "deleteScholarshipConfirm": "Подтвердите удаление стипендии {{name}}?",
+    "bulkAssignTitle": "Массовое назначение стипендий",
+    "bulkAssignHint": "Назначение стипендии для выбранной группы или всех студентов.",
+    "scholarshipTypeLabel": "Тип стипендии",
+    "groupOptional": "Группа (необязательно)",
+    "amountSom": "Сумма (сум)",
+    "startDate": "Дата начала",
+    "endDate": "Дата окончания",
+    "activate": "Активировать",
+    "pause": "Приостановить",
+    "amountPerMonth": "Сумма/мес",
+    "period": "Период",
+    "scholarshipTypes": {
+      "davlat": "Государственная",
+      "prezident": "Президентская",
+      "fanlar": "Науки",
+      "ijtimoiy": "Социальная",
+      "maxsus": "Специальная"
+    }
   },
   "hr": {
     "title": "Кадровый отдел",
@@ -651,7 +680,8 @@
     "inProgress": "В процессе",
     "resolved": "Решён",
     "closed": "Закрыт",
-    "archived": "В архиве"
+    "archived": "В архиве",
+    "paused": "Приостановлен"
   },
   "errors": {
     "unexpected": "Произошла непредвиденная ошибка",
