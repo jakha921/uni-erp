@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIU — Kelajagingiz bugundan boshlanadi</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #2DB976;
+  --green-d: #1B7A4E;
+  --green-dd: #0F4229;
+  --orange: #EA580C;
+  --purple: #7C3AED;
+  --cyan: #0891B2;
+  --pink: #DB2777;
+  --yellow: #D97706;
+  --red: #DC2626;
+  --dark: #0F172A;
+  --slate: #64748B;
+}
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  font-family: 'Outfit', 'Sora', system-ui, sans-serif;
+  background: #FAFBFC;
+  color: var(--dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SLIDE ENGINE ── */
+.deck { position: relative; width: 100vw; height: 100vh; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 44px 56px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+  transform: translateX(60px);
+  overflow: hidden;
+}
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+.slide.prev   { opacity: 0; transform: translateX(-60px); }
+
+/* ── PROGRESS ── */
+.progress { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg,var(--green),var(--cyan),var(--purple)); transition: width .4s; z-index: 200; border-radius: 0 2px 0 0; }
+.slide-num { position: fixed; bottom: 16px; right: 24px; font-size: 12px; color: rgba(15,23,42,.25); font-weight: 600; z-index: 200; font-variant-numeric: tabular-nums; }
+.nav-hint { position: fixed; bottom: 16px; left: 24px; font-size: 11px; color: rgba(15,23,42,.18); z-index: 200; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(28px) } to { opacity:1; transform:translateY(0) } }
+@keyframes scaleIn { from { opacity:0; transform:scale(.85) } to { opacity:1; transform:scale(1) } }
+@keyframes bounceIn { 0%{ opacity:0; transform:scale(.3) } 50%{ transform:scale(1.05) } 70%{ transform:scale(.95) } 100%{ opacity:1; transform:scale(1) } }
+@keyframes pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(45,185,118,.35) } 50%{ box-shadow:0 0 0 14px rgba(45,185,118,0) } }
+
+.slide.active .a  { animation: fadeUp .55s ease both }
+.slide.active .ab { animation: bounceIn .65s ease both }
+.slide.active .as { animation: scaleIn .5s ease both }
+.slide.active .d1{animation-delay:.08s} .slide.active .d2{animation-delay:.16s}
+.slide.active .d3{animation-delay:.24s} .slide.active .d4{animation-delay:.32s}
+.slide.active .d5{animation-delay:.4s}  .slide.active .d6{animation-delay:.48s}
+.slide.active .d7{animation-delay:.56s} .slide.active .d8{animation-delay:.64s}
+.slide.active .d9{animation-delay:.72s} .slide.active .d10{animation-delay:.8s}
+
+/* ── BLOB ── */
+.blob { position:absolute; border-radius:50%; filter:blur(100px); opacity:.1; pointer-events:none }
+
+/* ── REUSABLE ── */
+.tag { display:inline-flex; padding:5px 14px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase }
+.ttl { font-family:'Sora',sans-serif; font-weight:800; letter-spacing:-.03em; line-height:1.12; text-align:center; color:var(--dark) }
+.sub { font-size:15px; color:var(--slate); margin-top:10px; text-align:center; line-height:1.55; max-width:660px }
+
+.cards { display:grid; gap:14px; margin-top:24px; width:100%; max-width:1020px }
+.c4{grid-template-columns:repeat(4,1fr)} .c3{grid-template-columns:repeat(3,1fr)} .c2{grid-template-columns:repeat(2,1fr)}
+.card { background:#fff; border:1px solid #E2E8F0; border-radius:16px; padding:20px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03); transition:transform .2s,box-shadow .2s }
+.card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.07) }
+
+.stat .sv { font-family:'Sora',sans-serif; font-size:28px; font-weight:800; letter-spacing:-.02em }
+.stat .sl { font-size:11px; color:var(--slate); margin-top:2px }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .slide{padding:32px 24px}
+  .ttl{font-size:28px!important}
+  .c4,.c3{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr!important;gap:20px!important}
+  .life-grid{grid-template-columns:repeat(3,1fr)!important}
+  .cal-grid{grid-template-columns:repeat(4,1fr)!important}
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ══ 1 · TITULNY ══ -->
+<div class="slide active" id="s1" style="background:radial-gradient(ellipse at 30% 20%,rgba(45,185,118,.07) 0%,transparent 50%),radial-gradient(ellipse at 75% 80%,rgba(124,58,237,.05) 0%,transparent 50%),#fff">
+  <div class="blob" style="width:480px;height:480px;background:var(--green);top:-120px;right:-80px"></div>
+  <div class="blob" style="width:360px;height:360px;background:var(--purple);bottom:-100px;left:-60px"></div>
+
+  <div class="ab" style="margin-bottom:20px">
+    <div style="width:88px;height:88px;border-radius:24px;background:linear-gradient(135deg,var(--green),var(--green-dd));display:flex;align-items:center;justify-content:center;box-shadow:0 16px 48px rgba(45,185,118,.22)">
+      <img src="assets/niu-logo-white.png" alt="NIU" style="width:64px;height:64px;object-fit:contain">
+    </div>
+  </div>
+
+  <div class="tag a d2" style="background:rgba(45,185,118,.1);color:var(--green-d)">NAVOIY INNOVATSIYALAR UNIVERSITETI</div>
+  <h1 class="ttl a d3" style="font-size:48px;margin-top:16px">Kelajagingiz bugundan boshlanadi</h1>
+  <div class="sub a d4" style="font-size:18px">3–4 yildan keyin siz kim bo'lasiz?<br>Oddiy diplom egasimi yoki talab yuqori bo'lgan mutaxassismi?</div>
+
+  <div style="display:flex;gap:28px;margin-top:28px" class="a d5">
+    <div class="stat" style="text-align:center"><div class="sv" style="color:var(--green)">3 200+</div><div class="sl">Talaba</div></div>
+    <div class="stat" style="text-align:center"><div class="sv" style="color:var(--cyan)">186</div><div class="sl">O'qituvchi</div></div>
+    <div class="stat" style="text-align:center"><div class="sv" style="color:var(--purple)">8</div><div class="sl">Fakultet</div></div>
+    <div class="stat" style="text-align:center"><div class="sv" style="color:var(--orange)">92%</div><div class="sl">Ishga joylashish</div></div>
+  </div>
+</div>
+
+<!-- ══ 2 · MUAMMO ══ -->
+<div class="slide" id="s2" style="background:radial-gradient(ellipse at 60% 20%,rgba(220,38,38,.05) 0%,transparent 50%),#FFF7F5">
+  <div class="tag a" style="background:rgba(220,38,38,.08);color:var(--red)">MUAMMO</div>
+  <h1 class="ttl a d1" style="font-size:38px;margin-top:12px">Bugungi kundagi haqiqat</h1>
+  <div class="sub a d2">Ko'pchilik bitiruvchilar diplom oladi — lekin ish topa olmaydi</div>
+
+  <div class="cards c3" style="margin-top:28px;max-width:860px">
+    <div class="card a d3" style="text-align:center;border-color:rgba(220,38,38,.15)">
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(220,38,38,.07);color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px">Nazariya ko'p</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">4 yil faqat darslik o'qish — haqiqiy hayotga tayyorlamaydi</div>
+    </div>
+    <div class="card a d4" style="text-align:center;border-color:rgba(217,119,6,.15)">
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(217,119,6,.07);color:var(--yellow);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px">Ish topish qiyin</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">Diplom bor — lekin amaliy bilim yo'q, ish beruvchi olmaydi</div>
+    </div>
+    <div class="card a d5" style="text-align:center;border-color:rgba(124,58,237,.15)">
+      <div style="width:44px;height:44px;border-radius:12px;background:rgba(124,58,237,.07);color:var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:4px">Noto'g'ri muhit</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">Motivatsiya yo'q, ustoz yo'q, yo'nalish noaniq</div>
+    </div>
+  </div>
+
+  <div class="a d6" style="margin-top:24px;padding:14px 24px;border-radius:12px;background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.1);max-width:560px;text-align:center">
+    <div style="font-size:14px;color:#475569;line-height:1.55">Faqat o'qish yetmaydi. Muhimi — <b style="color:var(--dark)">amaliy bilim</b>, <b style="color:var(--dark)">tajriba</b> va <b style="color:var(--dark)">to'g'ri muhit</b>.</div>
+  </div>
+</div>
+
+<!-- ══ 3 · NIU FARQI ══ -->
+<div class="slide" id="s3" style="background:radial-gradient(ellipse at 30% 50%,rgba(45,185,118,.06) 0%,transparent 50%),#F0FDF4">
+  <div class="tag a" style="background:rgba(45,185,118,.08);color:var(--green-d)">YECHIM</div>
+  <h1 class="ttl a d1" style="font-size:36px;margin-top:12px">NIU — bu boshqacha ta'lim</h1>
+  <div class="sub a d2">Biz bilim bermaymiz — kelajak yaratamiz</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%;max-width:900px;margin-top:24px;align-items:stretch">
+    <div class="a d3" style="padding:28px;border-radius:18px;background:#fff;border:1px solid rgba(220,38,38,.12);box-shadow:0 2px 10px rgba(0,0,0,.03)">
+      <div style="font-size:12px;font-weight:700;color:var(--red);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px">Oddiy universitet</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--slate)"><span style="color:var(--red)">&#x2717;</span> Faqat nazariy darslar</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--slate)"><span style="color:var(--red)">&#x2717;</span> Eskirgan o'quv dasturi</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--slate)"><span style="color:var(--red)">&#x2717;</span> Diplom — lekin ish yo'q</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--slate)"><span style="color:var(--red)">&#x2717;</span> Motivatsiya tushadi</div>
+      </div>
+    </div>
+    <div class="a d4" style="padding:28px;border-radius:18px;background:#F0FDF4;border:2px solid rgba(45,185,118,.25);box-shadow:0 4px 16px rgba(45,185,118,.06)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <div style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--green),var(--green-dd));display:flex;align-items:center;justify-content:center">
+          <img src="assets/niu-logo-white.png" alt="" style="width:16px;height:16px;object-fit:contain">
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--green-d);letter-spacing:.06em;text-transform:uppercase">NIU FARQI</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dark);font-weight:500"><span style="color:var(--green)">&#x2713;</span> Real loyihalarda ishlaysiz</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dark);font-weight:500"><span style="color:var(--green)">&#x2713;</span> Zamonaviy kasblarni o'rganasiz</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dark);font-weight:500"><span style="color:var(--green)">&#x2713;</span> O'qish davomida daromad qilasiz</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dark);font-weight:500"><span style="color:var(--green)">&#x2713;</span> Eng muhimi — o'zingizni topasiz</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4 · AFZALLIKLAR ══ -->
+<div class="slide" id="s4" style="background:radial-gradient(ellipse at 50% 0%,rgba(8,145,178,.05) 0%,transparent 50%),#F8FFFE">
+  <div class="tag a" style="background:rgba(8,145,178,.08);color:var(--cyan)">AFZALLIKLAR</div>
+  <h1 class="ttl a d1" style="font-size:36px;margin-top:12px">Nega aynan NIU?</h1>
+
+  <div class="cards c4" style="margin-top:28px">
+    <div class="card a d3">
+      <div style="width:42px;height:42px;border-radius:12px;background:rgba(45,185,118,.07);color:var(--green);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">Amaliy ta'lim</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">1-kursdan boshlab real loyihalarda ishlaysiz</div>
+    </div>
+    <div class="card a d4">
+      <div style="width:42px;height:42px;border-radius:12px;background:rgba(124,58,237,.07);color:var(--purple);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">Mentorlar</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">Sohada ishlagan ustozlar sizga yo'l ko'rsatadi</div>
+    </div>
+    <div class="card a d5">
+      <div style="width:42px;height:42px;border-radius:12px;background:rgba(8,145,178,.07);color:var(--cyan);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">Zamonaviy kasblar</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">IT, Sun'iy intellekt, Injiniring — kelajak kasblari</div>
+    </div>
+    <div class="card a d6">
+      <div style="width:42px;height:42px;border-radius:12px;background:rgba(217,119,6,.07);color:var(--yellow);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">Daromad imkoniyati</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.5">O'qish davomida freelance va stajyorka</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 5 · NATIJALAR ══ -->
+<div class="slide" id="s5" style="background:radial-gradient(ellipse at 40% 60%,rgba(45,185,118,.05) 0%,transparent 50%),#FAFBFC">
+  <div class="tag a" style="background:rgba(45,185,118,.08);color:var(--green-d)">NATIJALAR</div>
+  <h1 class="ttl a d1" style="font-size:36px;margin-top:12px">Bitiruvchilarimiz muvaffaqiyati</h1>
+  <div class="sub a d2">Senda ham shunday imkoniyat bor!</div>
+
+  <div class="cards c3" style="margin-top:24px;max-width:920px">
+    <div class="card a d3" style="padding:24px;text-align:center;position:relative;overflow:hidden">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff">A</div>
+      <div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Oldin</div>
+      <div style="font-size:13px;color:#475569;margin:3px 0 12px">Oddiy maktab o'quvchisi</div>
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="font-size:11px;color:var(--green-d);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Keyin</div>
+      <div style="font-size:14px;font-weight:700;margin-top:3px">IT kompaniya asoschisi</div>
+      <div style="font-size:11px;color:var(--slate);margin-top:2px">3 yilda startup ochdi</div>
+    </div>
+
+    <div class="card a d4" style="padding:24px;text-align:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff">M</div>
+      <div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Oldin</div>
+      <div style="font-size:13px;color:#475569;margin:3px 0 12px">Qishloqdan kelgan o'quvchi</div>
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="font-size:11px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Keyin</div>
+      <div style="font-size:14px;font-weight:700;margin-top:3px">Xalqaro kompaniyada injiner</div>
+      <div style="font-size:11px;color:var(--slate);margin-top:2px">Oyiga $2 000+ daromad</div>
+    </div>
+
+    <div class="card a d5" style="padding:24px;text-align:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff">S</div>
+      <div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Oldin</div>
+      <div style="font-size:13px;color:#475569;margin:3px 0 12px">Kasbini bilmagan o'quvchi</div>
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="font-size:11px;color:var(--orange);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Keyin</div>
+      <div style="font-size:14px;font-weight:700;margin-top:3px">Data Science mutaxassisi</div>
+      <div style="font-size:11px;color:var(--slate);margin-top:2px">Grant asosida o'qidi</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 6 · TALABA HAYOTI ══ -->
+<div class="slide" id="s6" style="background:radial-gradient(ellipse at 60% 40%,rgba(219,39,119,.04) 0%,transparent 50%),#FFFBFE">
+  <div class="tag a" style="background:rgba(219,39,119,.08);color:var(--pink)">TALABA HAYOTI</div>
+  <h1 class="ttl a d1" style="font-size:36px;margin-top:12px">1 kun talaba hayoti</h1>
+  <div class="sub a d2">Bu yerda faqat o'qish emas — hayot bor!</div>
+
+  <div class="life-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:860px;width:100%;margin-top:24px">
+    <div class="a d3" style="border-radius:16px;padding:18px 12px;text-align:center;background:#fff;border:1px solid rgba(45,185,118,.15);box-shadow:0 2px 8px rgba(0,0,0,.03)">
+      <div style="font-size:28px;margin-bottom:8px">&#x1F4BB;</div>
+      <div style="font-size:13px;font-weight:700">Darslar</div>
+      <div style="font-size:10.5px;color:var(--slate);margin-top:2px">Amaliy + interaktiv</div>
+    </div>
+    <div class="a d4" style="border-radius:16px;padding:18px 12px;text-align:center;background:#fff;border:1px solid rgba(8,145,178,.15);box-shadow:0 2px 8px rgba(0,0,0,.03)">
+      <div style="font-size:28px;margin-bottom:8px">&#x1F680;</div>
+      <div style="font-size:13px;font-weight:700">Loyihalar</div>
+      <div style="font-size:10.5px;color:var(--slate);margin-top:2px">Real kompaniyalar</div>
+    </div>
+    <div class="a d5" style="border-radius:16px;padding:18px 12px;text-align:center;background:#fff;border:1px solid rgba(124,58,237,.15);box-shadow:0 2px 8px rgba(0,0,0,.03)">
+      <div style="font-size:28px;margin-bottom:8px">&#x26BD;</div>
+      <div style="font-size:13px;font-weight:700">Sport</div>
+      <div style="font-size:10.5px;color:var(--slate);margin-top:2px">Futbol, basketbol</div>
+    </div>
+    <div class="a d6" style="border-radius:16px;padding:18px 12px;text-align:center;background:#fff;border:1px solid rgba(217,119,6,.15);box-shadow:0 2px 8px rgba(0,0,0,.03)">
+      <div style="font-size:28px;margin-bottom:8px">&#x1F91D;</div>
+      <div style="font-size:13px;font-weight:700">Do'stlar</div>
+      <div style="font-size:10.5px;color:var(--slate);margin-top:2px">Yangi aloqalar</div>
+    </div>
+    <div class="a d7" style="border-radius:16px;padding:18px 12px;text-align:center;background:#fff;border:1px solid rgba(234,88,12,.15);box-shadow:0 2px 8px rgba(0,0,0,.03)">
+      <div style="font-size:28px;margin-bottom:8px">&#x1F3A4;</div>
+      <div style="font-size:13px;font-weight:700">Tadbirlar</div>
+      <div style="font-size:10.5px;color:var(--slate);margin-top:2px">Hackathon, konf.</div>
+    </div>
+  </div>
+
+  <div class="a d8" style="margin-top:24px;text-align:center">
+    <div style="font-size:15px;color:#475569;font-style:italic">&laquo;Bu yerga kelishim hayotimni o'zgartirdi&raquo;</div>
+    <div style="font-size:12px;color:var(--slate);margin-top:4px">— NIU talabasi</div>
+  </div>
+</div>
+
+<!-- ══ 7 · GRANTLAR ══ -->
+<div class="slide" id="s7" style="background:radial-gradient(ellipse at 40% 80%,rgba(217,119,6,.05) 0%,transparent 50%),#FFFBF5">
+  <div class="tag a" style="background:rgba(217,119,6,.08);color:var(--yellow)">IMKONIYATLAR</div>
+  <h1 class="ttl a d1" style="font-size:36px;margin-top:12px">Grantlar va imtiyozlar</h1>
+  <div class="sub a d2">Real motivatsiya — bu imkoniyat</div>
+
+  <div class="cards c3" style="margin-top:24px;max-width:860px">
+    <div class="card a d3" style="text-align:center;padding:24px 18px">
+      <div style="font-size:40px;margin-bottom:10px">&#x1F3C6;</div>
+      <div style="font-size:16px;font-weight:700;color:var(--yellow)">Test asosida grant</div>
+      <div style="font-size:12px;color:var(--slate);margin-top:6px;line-height:1.5">Kirish testida yuqori ball — 50% gacha grant</div>
+      <div style="margin-top:12px;padding:8px 16px;border-radius:8px;background:rgba(217,119,6,.06);border:1px solid rgba(217,119,6,.12);font-size:13px;font-weight:700;color:var(--yellow)">50% gacha</div>
+    </div>
+    <div class="card a d4" style="text-align:center;padding:24px 18px">
+      <div style="font-size:40px;margin-bottom:10px">&#x1F4B0;</div>
+      <div style="font-size:16px;font-weight:700;color:var(--green)">Chegirmalar</div>
+      <div style="font-size:12px;color:var(--slate);margin-top:6px;line-height:1.5">Erta ro'yxatdan o'tganlarga maxsus narxlar</div>
+      <div style="margin-top:12px;padding:8px 16px;border-radius:8px;background:rgba(45,185,118,.06);border:1px solid rgba(45,185,118,.12);font-size:13px;font-weight:700;color:var(--green)">20% chegirma</div>
+    </div>
+    <div class="card a d5" style="text-align:center;padding:24px 18px">
+      <div style="font-size:40px;margin-bottom:10px">&#x1F3C5;</div>
+      <div style="font-size:16px;font-weight:700;color:var(--purple)">Olimpiada g'oliblari</div>
+      <div style="font-size:12px;color:var(--slate);margin-top:6px;line-height:1.5">Fan olimpiadasi g'oliblari uchun to'liq grant</div>
+      <div style="margin-top:12px;padding:8px 16px;border-radius:8px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.12);font-size:13px;font-weight:700;color:var(--purple)">100% grant</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 8 · OTA-ONALAR ══ -->
+<div class="slide" id="s8" style="background:radial-gradient(ellipse at 30% 30%,rgba(8,145,178,.05) 0%,transparent 50%),#F8FDFF">
+  <div class="tag a" style="background:rgba(8,145,178,.08);color:var(--cyan)">OTA-ONALAR UCHUN</div>
+  <h1 class="ttl a d1" style="font-size:34px;margin-top:12px">Farzandingiz xavfsiz qo'llarda</h1>
+  <div class="sub a d2">Qaror ko'pincha ota-ona tomonidan qilinadi — bu ma'lumot siz uchun</div>
+
+  <div class="cards c4" style="margin-top:24px;max-width:960px">
+    <div class="card a d3" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">&#x1F4CA;</div>
+      <div style="font-size:14px;font-weight:700">92% ishga joylashish</div>
+      <div style="font-size:11.5px;color:var(--slate);line-height:1.5;margin-top:3px">Birinchi yilda ish topadi</div>
+    </div>
+    <div class="card a d4" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">&#x1F512;</div>
+      <div style="font-size:14px;font-weight:700">Xavfsiz muhit</div>
+      <div style="font-size:11.5px;color:var(--slate);line-height:1.5;margin-top:3px">24/7 qo'riqlash, yotoqxona</div>
+    </div>
+    <div class="card a d5" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">&#x1F4DD;</div>
+      <div style="font-size:14px;font-weight:700">Shaffof kontrakt</div>
+      <div style="font-size:11.5px;color:var(--slate);line-height:1.5;margin-top:3px">Yashirin to'lovlar yo'q</div>
+    </div>
+    <div class="card a d6" style="text-align:center">
+      <div style="font-size:36px;margin-bottom:8px">&#x2B50;</div>
+      <div style="font-size:14px;font-weight:700">Sifatli ta'lim</div>
+      <div style="font-size:11.5px;color:var(--slate);line-height:1.5;margin-top:3px">Litsenziya, akkreditatsiya</div>
+    </div>
+  </div>
+
+  <div class="a d7" style="margin-top:20px;padding:12px 22px;border-radius:12px;background:rgba(8,145,178,.04);border:1px solid rgba(8,145,178,.1);text-align:center;max-width:520px">
+    <div style="font-size:13px;color:#475569">Ota-onalar uchun alohida <span style="color:var(--cyan);font-weight:700">konsultatsiya kuni</span> — har oyning 1-shanbasi</div>
+  </div>
+</div>
+
+<!-- ══ 9 · SMM PLAN ══ -->
+<div class="slide" id="s9" style="background:radial-gradient(ellipse at 70% 30%,rgba(124,58,237,.04) 0%,transparent 50%),#FAFAFE">
+  <div class="tag a" style="background:rgba(124,58,237,.08);color:var(--purple)">STRATEGIYA</div>
+  <h1 class="ttl a d1" style="font-size:34px;margin-top:12px">Ijtimoiy tarmoq kontent rejasi</h1>
+  <div class="sub a d2">7 kunlik kontent — har kuni yangi</div>
+
+  <div class="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;width:100%;max-width:820px;margin-top:22px">
+    <div class="a d3" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(45,185,118,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">1-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F3AC;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--green-d)">Talaba 1 kuni</div>
+    </div>
+    <div class="a d4" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(124,58,237,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">2-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F3A4;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--purple)">Intervyu</div>
+    </div>
+    <div class="a d5" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(8,145,178,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">3-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F4C8;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--cyan)">TOP 5 kasb</div>
+    </div>
+    <div class="a d6" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(219,39,119,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">4-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F602;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--pink)">Kulgili video</div>
+    </div>
+    <div class="a d7" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(234,88,12,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">5-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F4A1;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--orange)">Nega biz?</div>
+    </div>
+    <div class="a d8" style="padding:12px 6px;border-radius:14px;text-align:center;background:#fff;border:1px solid rgba(217,119,6,.2);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">6-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F3EB;</div>
+      <div style="font-size:10px;font-weight:700;color:var(--yellow)">Ichki vlog</div>
+    </div>
+    <div class="a d9" style="padding:12px 6px;border-radius:14px;text-align:center;background:rgba(45,185,118,.04);border:1px solid rgba(45,185,118,.3);box-shadow:0 2px 6px rgba(0,0,0,.02)">
+      <div style="font-size:10px;font-weight:700;color:var(--slate);margin-bottom:5px">7-KUN</div>
+      <div style="font-size:22px;margin-bottom:5px">&#x1F525;</div>
+      <div style="font-size:10px;font-weight:800;color:var(--green-d)">Qabul!</div>
+    </div>
+  </div>
+
+  <div class="a d10" style="margin-top:20px;display:flex;gap:12px">
+    <div style="padding:8px 16px;border-radius:10px;background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.12);display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--purple)">
+      <span style="font-size:16px">&#x1F393;</span> Talaba Ambassador
+    </div>
+    <div style="padding:8px 16px;border-radius:10px;background:rgba(219,39,119,.05);border:1px solid rgba(219,39,119,.12);display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--pink)">
+      <span style="font-size:16px">&#x1F4F1;</span> TikTok + Instagram
+    </div>
+  </div>
+</div>
+
+<!-- ══ 10 · POSTER ══ -->
+<div class="slide" id="s10" style="background:radial-gradient(ellipse at 50% 50%,rgba(234,88,12,.04) 0%,transparent 50%),#FFFAF5">
+  <div class="tag a" style="background:rgba(234,88,12,.08);color:var(--orange)">REKLAMA</div>
+  <h1 class="ttl a d1" style="font-size:34px;margin-top:12px">Poster va reklama matni</h1>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;width:100%;max-width:920px;margin-top:24px;align-items:center" class="two-col">
+    <div style="display:flex;justify-content:center">
+      <div class="as d3" style="width:320px;border-radius:20px;background:linear-gradient(145deg,var(--green-dd),#0A0E1A);border:2px solid rgba(45,185,118,.25);padding:32px 28px;text-align:center;color:#fff;position:relative;box-shadow:0 20px 48px rgba(0,0,0,.12);overflow:hidden">
+        <div class="blob" style="width:160px;height:160px;background:var(--green);top:-40px;right:-40px;opacity:.18"></div>
+        <div style="position:relative;z-index:1">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green-dd));margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+            <img src="assets/niu-logo-white.png" alt="" style="width:34px;height:34px;object-fit:contain">
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:16px">KELAJAGINGNI<br>BUGUN BOSHLANG!</div>
+          <div style="display:flex;flex-direction:column;gap:6px;text-align:left;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600"><span style="color:var(--green)">&#x2713;</span> Zamonaviy kasblar</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600"><span style="color:var(--green)">&#x2713;</span> Amaliy ta'lim</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600"><span style="color:var(--green)">&#x2713;</span> Grant va chegirmalar</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600"><span style="color:var(--green)">&#x2713;</span> Kuchli muhit</div>
+          </div>
+          <div style="padding:10px 20px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--cyan));font-size:13px;font-weight:700">QABUL BOSHLANDI!</div>
+          <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.45)">O'rinlar cheklangan!</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="a d4" style="font-size:13px;font-weight:700;color:var(--orange);letter-spacing:.04em;margin-bottom:16px">POSTER TARKIBI</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="a d5" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #E2E8F0;box-shadow:0 2px 6px rgba(0,0,0,.02)">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(45,185,118,.07);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">&#x1F3AF;</div>
+          <div><div style="font-size:13px;font-weight:600">Kuchli sarlavha</div><div style="font-size:11px;color:var(--slate)">Emosional, harakatga chorlovchi</div></div>
+        </div>
+        <div class="a d6" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #E2E8F0;box-shadow:0 2px 6px rgba(0,0,0,.02)">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(8,145,178,.07);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">&#x2705;</div>
+          <div><div style="font-size:13px;font-weight:600">4 ta asosiy afzallik</div><div style="font-size:11px;color:var(--slate)">Kasblar, ta'lim, grant, muhit</div></div>
+        </div>
+        <div class="a d7" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #E2E8F0;box-shadow:0 2px 6px rgba(0,0,0,.02)">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,.07);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">&#x23F3;</div>
+          <div><div style="font-size:13px;font-weight:600">Urgency</div><div style="font-size:11px;color:var(--slate)">"O'rinlar cheklangan" — harakatga undaydi</div></div>
+        </div>
+        <div class="a d8" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #E2E8F0;box-shadow:0 2px 6px rgba(0,0,0,.02)">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,58,237,.07);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">&#x1F4DE;</div>
+          <div><div style="font-size:13px;font-weight:600">Kontakt</div><div style="font-size:11px;color:var(--slate)">Telefon, sayt, tarmoqlar</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 11 · CTA ══ -->
+<div class="slide" id="s11" style="background:radial-gradient(ellipse at 50% 50%,rgba(45,185,118,.08) 0%,rgba(45,185,118,.02) 40%,transparent 60%),#F0FDF4">
+  <div class="ab" style="margin-bottom:20px">
+    <div style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,var(--green),var(--green-dd));display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(45,185,118,.2);animation:pulse 2s ease-in-out infinite">
+      <img src="assets/niu-logo-white.png" alt="NIU" style="width:56px;height:56px;object-fit:contain">
+    </div>
+  </div>
+
+  <h1 class="ttl a d2" style="font-size:46px">Siz tayyormisiz?</h1>
+  <div class="sub a d3" style="font-size:16px;max-width:540px;margin-top:10px">
+    Eng yaxshi imkoniyatlarni tez qaror qilganlar egallaydi.<br>
+    <span style="color:var(--orange);font-weight:600">Bugun qaror qiling!</span>
+  </div>
+
+  <div class="a d4" style="margin-top:28px">
+    <button style="display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--cyan));font-size:17px;font-weight:700;color:#fff;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 28px rgba(45,185,118,.22);animation:pulse 2s ease-in-out infinite">
+      Ro'yxatdan o'tish
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+
+  <div class="a d5" style="margin-top:28px;display:flex;gap:24px;align-items:center">
+    <div style="font-size:13px;font-weight:600;color:var(--dark)">&#x1F4DE; +998 79 223 00 00</div>
+    <div style="width:1px;height:20px;background:#E2E8F0"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--dark)">&#x1F310; niu.uz</div>
+    <div style="width:1px;height:20px;background:#E2E8F0"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--dark)">&#x1F4F1; @niu_university</div>
+  </div>
+
+  <div class="a d6" style="margin-top:20px;padding:9px 20px;border-radius:10px;background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.1)">
+    <div style="font-size:13px;font-weight:700;color:var(--red)">&#x23F3; O'rinlar cheklangan — hoziroq murojaat qiling!</div>
+  </div>
+
+  <div class="a d7" style="margin-top:24px;font-size:11px;color:var(--slate)">&copy; 2026 Navoiy innovatsiyalar universiteti</div>
+</div>
+
+</div>
+
+<!-- UI -->
+<div class="progress" id="prog"></div>
+<div class="slide-num" id="sn"></div>
+<div class="nav-hint">&#8592; &#8594; yoki bo'sh joy</div>
+
+<script>
+(function(){
+  const ss = document.querySelectorAll('.slide');
+  const N = ss.length;
+  let c = 0;
+
+  function show(n){
+    if(n<0||n>=N) return;
+    ss.forEach(s => { s.classList.remove('active','prev'); });
+    if(n > c) ss[c].classList.add('prev');
+    c = n;
+    ss[c].classList.add('active');
+    document.getElementById('prog').style.width = ((c+1)/N*100)+'%';
+    document.getElementById('sn').textContent = (c+1)+' / '+N;
+  }
+
+  show(0);
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();show(c+1)}
+    if(e.key==='ArrowLeft'){e.preventDefault();show(c-1)}
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(N-1);
+  });
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('button,a')) return;
+    if(e.clientX > window.innerWidth/2) show(c+1);
+    else show(c-1);
+  });
+
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50) dx<0?show(c+1):show(c-1);
+  });
+})();
+</script>
+</body>
+</html>

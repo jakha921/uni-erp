@@ -29,6 +29,7 @@ export interface IHrService {
   deleteDepartment(id: number): Promise<void>;
   getOrders(): Promise<HrOrder[]>;
   createOrder(dto: CreateOrderDto): Promise<HrOrder>;
+  updateOrderStatus(id: string, status: HrOrder['status']): Promise<HrOrder>;
   deleteOrder(id: string): Promise<void>;
   getLeaves(): Promise<Leave[]>;
   createLeave(dto: CreateLeaveDto): Promise<Leave>;
@@ -94,6 +95,10 @@ class HrApiService implements IHrService {
 
   async createOrder(dto: CreateOrderDto): Promise<HrOrder> {
     return apiClient.post<HrOrder>(ENDPOINTS.hr.orders, dto);
+  }
+
+  async updateOrderStatus(id: string, status: HrOrder['status']): Promise<HrOrder> {
+    return apiClient.patch<HrOrder>(`${ENDPOINTS.hr.orders}${id}/`, { status });
   }
 
   async deleteOrder(id: string): Promise<void> {

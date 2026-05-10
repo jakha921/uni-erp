@@ -1,4 +1,4 @@
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, type Column } from '@/components/table';
 import { Badge } from '@/components/ui';
@@ -23,6 +23,7 @@ interface ContractTableProps {
   data: Contract[];
   page?: number;
   pageSize?: number;
+  onEdit?: (contract: Contract) => void;
   onDelete?: (contract: Contract) => void;
   onRowClick?: (contract: Contract) => void;
 }
@@ -31,6 +32,7 @@ export function ContractTable({
   data,
   page = 1,
   pageSize = 10,
+  onEdit,
   onDelete,
   onRowClick,
 }: ContractTableProps) {
@@ -164,6 +166,15 @@ export function ContractTable({
               icon: <Eye className="h-4 w-4" />,
               onClick: () => navigate(`/finance/contracts/${row.id}`),
             },
+            ...(onEdit
+              ? [
+                  {
+                    label: 'Tahrirlash',
+                    icon: <Pencil className="h-4 w-4" />,
+                    onClick: () => onEdit(row),
+                  },
+                ]
+              : []),
             ...(onDelete
               ? [
                   {

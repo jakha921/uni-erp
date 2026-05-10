@@ -1,0 +1,522 @@
+- generic [ref=e161]:
+  - complementary [ref=e162]:
+    - generic [ref=e164]: Uni
+    - generic [ref=e165]:
+      - button "Asosiy" [ref=e492] [cursor=pointer]:
+        - img [ref=e168]
+      - generic [ref=e493]:
+        - button "Statistika" [ref=e494] [cursor=pointer]:
+          - img [ref=e495]
+        - button "Ro'yxat" [ref=e498] [cursor=pointer]:
+          - img [ref=e499]
+      - generic [ref=e504]:
+        - button "O'qituvchilar" [ref=e505] [cursor=pointer]:
+          - img [ref=e506]
+        - button "Davomat" [ref=e509] [cursor=pointer]:
+          - img [ref=e510]
+        - button "Baholash" [ref=e512] [cursor=pointer]:
+          - img [ref=e513]
+        - button "Dars jadvali" [ref=e515] [cursor=pointer]:
+          - img [ref=e516]
+        - button "Imtihonlar" [ref=e518] [cursor=pointer]:
+          - img [ref=e519]
+        - button "Bitiruvchilar" [ref=e522] [cursor=pointer]:
+          - img [ref=e523]
+        - button "Amaliyot" [ref=e526] [cursor=pointer]:
+          - img [ref=e527]
+      - generic [ref=e530]:
+        - button "O'quv rejalar" [ref=e531] [cursor=pointer]:
+          - img [ref=e532]
+        - button "Kafedralar" [ref=e535] [cursor=pointer]:
+          - img [ref=e536]
+        - button "Fanlar" [ref=e539] [cursor=pointer]:
+          - img [ref=e540]
+        - button "Kutubxona" [ref=e543] [cursor=pointer]:
+          - img [ref=e544]
+      - generic [ref=e547]:
+        - button "Arizalar" [ref=e548] [cursor=pointer]:
+          - img [ref=e549]
+        - button "Voronka" [ref=e552] [cursor=pointer]:
+          - img [ref=e553]
+        - button "CRM hisobot" [ref=e556] [cursor=pointer]:
+          - img [ref=e557]
+      - generic [ref=e560]:
+        - button "Moliyaviy panel" [ref=e561] [cursor=pointer]:
+          - img [ref=e562]
+        - button "Kontraktlar" [ref=e565] [cursor=pointer]:
+          - img [ref=e566]
+        - button "Qarzdorlar" [ref=e569] [cursor=pointer]:
+          - img [ref=e570]
+        - button "To'lovlar" [ref=e572] [cursor=pointer]:
+          - img [ref=e573]
+        - button "Stipendiya" [ref=e576] [cursor=pointer]:
+          - img [ref=e577]
+        - button "Hisobot" [ref=e580] [cursor=pointer]:
+          - img [ref=e581]
+        - button "Maosh" [ref=e584] [cursor=pointer]:
+          - img [ref=e585]
+        - button "Byudjet" [ref=e588] [cursor=pointer]:
+          - img [ref=e589]
+      - generic [ref=e592]:
+        - button "Kadrlar paneli" [active] [ref=e593] [cursor=pointer]:
+          - img [ref=e594]
+        - button "Xodimlar" [ref=e597] [cursor=pointer]:
+          - img [ref=e598]
+        - button "Bo'limlar" [ref=e603] [cursor=pointer]:
+          - img [ref=e604]
+        - button "Buyruqlar" [ref=e607] [cursor=pointer]:
+          - img [ref=e608]
+        - button "Davomad" [ref=e611] [cursor=pointer]:
+          - img [ref=e612]
+        - button "Ta'tillar va safar" [ref=e614] [cursor=pointer]:
+          - img [ref=e615]
+      - generic [ref=e618]:
+        - button "Buyruqlar (eski)" [ref=e619] [cursor=pointer]:
+          - img [ref=e620]
+        - button "Shtatlash jadvali" [ref=e623] [cursor=pointer]:
+          - img [ref=e624]
+      - generic [ref=e628]:
+        - button "TTJ (yotoqxona)" [ref=e629] [cursor=pointer]:
+          - img [ref=e630]
+        - button "Ombor" [ref=e633] [cursor=pointer]:
+          - img [ref=e634]
+        - button "Jihozlar" [ref=e636] [cursor=pointer]:
+          - img [ref=e637]
+        - button "Transport" [ref=e640] [cursor=pointer]:
+          - img [ref=e641]
+      - generic [ref=e646]:
+        - button "Ilmiy ishlar" [ref=e647] [cursor=pointer]:
+          - img [ref=e648]
+        - button "Diplom ishlari" [ref=e651] [cursor=pointer]:
+          - img [ref=e652]
+        - button "Konferensiyalar" [ref=e655] [cursor=pointer]:
+          - img [ref=e656]
+        - button "Patentlar" [ref=e658] [cursor=pointer]:
+          - img [ref=e659]
+      - generic [ref=e661]:
+        - button "Talaba kabineti" [ref=e662] [cursor=pointer]:
+          - img [ref=e663]
+        - button "O'qituvchi kabineti" [ref=e666] [cursor=pointer]:
+          - img [ref=e667]
+      - generic [ref=e670]:
+        - button "Topshiriqlar" [ref=e671] [cursor=pointer]:
+          - img [ref=e672]
+        - button "Murojaatlar" [ref=e674] [cursor=pointer]:
+          - img [ref=e675]
+        - button "Xabarlar" [ref=e678] [cursor=pointer]:
+          - img [ref=e679]
+        - button "Bildirishnomalar" [ref=e682] [cursor=pointer]:
+          - img [ref=e683]
+        - button "Yangiliklar" [ref=e686] [cursor=pointer]:
+          - img [ref=e687]
+      - generic [ref=e689]:
+        - button "Hujjat aylanishi" [ref=e690] [cursor=pointer]:
+          - img [ref=e691]
+        - button "Analytics" [ref=e693] [cursor=pointer]:
+          - img [ref=e694]
+        - button "Hisobotlar" [ref=e697] [cursor=pointer]:
+          - img [ref=e698]
+        - button "Ma'lumotnomalar" [ref=e701] [cursor=pointer]:
+          - img [ref=e702]
+      - generic [ref=e705]:
+        - button "Shaxsiy kabinet" [ref=e706] [cursor=pointer]:
+          - img [ref=e707]
+        - button "Sozlamalar" [ref=e710] [cursor=pointer]:
+          - img [ref=e711]
+      - generic [ref=e714]:
+        - button "Foydalanuvchilar" [ref=e715] [cursor=pointer]:
+          - img [ref=e716]
+        - button "Rollar" [ref=e721] [cursor=pointer]:
+          - img [ref=e722]
+        - button "Ruxsatlar" [ref=e724] [cursor=pointer]:
+          - img [ref=e725]
+        - button "Audit log" [ref=e727] [cursor=pointer]:
+          - img [ref=e728]
+  - generic [ref=e173]:
+    - generic [ref=e174]:
+      - button "Toggle sidebar" [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - generic [ref=e182]: Academic
+          - generic [ref=e731]: /
+          - generic [ref=e732]: CRM
+          - generic [ref=e1866]: /
+          - generic [ref=e1867]: Voronka
+        - heading "CRM Voronka" [level=1] [ref=e1868]
+      - generic [ref=e184]:
+        - generic:
+          - img
+        - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e185]'
+      - button "🇺🇿 uz" [ref=e187] [cursor=pointer]:
+        - generic [ref=e188]: 🇺🇿
+        - generic [ref=e189]: uz
+        - img [ref=e190]
+      - button "Theme" [ref=e192] [cursor=pointer]:
+        - img [ref=e193]
+      - button "Bildirishnomalar" [ref=e196] [cursor=pointer]:
+        - img [ref=e197]
+        - generic [ref=e200]: "3"
+      - button "AA Admin" [ref=e202] [cursor=pointer]:
+        - generic [ref=e203]: AA
+        - generic [ref=e205]: Admin
+        - img [ref=e207]
+    - main [ref=e209]:
+      - generic [ref=e1869]:
+        - generic [ref=e1870]:
+          - button "Ro'yxat" [ref=e1871] [cursor=pointer]:
+            - img [ref=e1872]
+            - text: Ro'yxat
+          - button "Voronka" [ref=e1877] [cursor=pointer]:
+            - img [ref=e1878]
+            - text: Voronka
+        - button "Filtr" [ref=e1881] [cursor=pointer]:
+          - img [ref=e1882]
+          - text: Filtr
+        - button "Yangi ariza" [ref=e1884] [cursor=pointer]:
+          - img [ref=e1885]
+          - text: Yangi ariza
+      - generic [ref=e1886]:
+        - generic [ref=e1887]:
+          - generic [ref=e1888]:
+            - generic [ref=e1889]:
+              - generic [ref=e1891]: Yangi
+              - generic [ref=e1892]: "4"
+            - button "Amallar" [ref=e1893] [cursor=pointer]:
+              - img [ref=e1894]
+          - generic [ref=e1898]:
+            - generic [ref=e1899]:
+              - generic [ref=e1900]:
+                - generic [ref=e1901]: SS
+                - generic [ref=e1902]:
+                  - generic [ref=e1903]: Saidov S.
+                  - generic [ref=e1904]: +998 93 992-52-19
+              - generic [ref=e1905]:
+                - generic [ref=e1906]: Pedagogika
+                - generic [ref=e1907]: Referral
+              - generic [ref=e1908]:
+                - generic [ref=e1909]:
+                  - img [ref=e1910]
+                  - text: 15.04.2026
+                - generic [ref=e1912]:
+                  - img [ref=e1913]
+                  - text: Nazarova M.
+            - generic [ref=e1916]:
+              - generic [ref=e1917]:
+                - generic [ref=e1918]: XM
+                - generic [ref=e1919]:
+                  - generic [ref=e1920]: Xolmatov M.
+                  - generic [ref=e1921]: +998 91 185-51-49
+              - generic [ref=e1922]:
+                - generic [ref=e1923]: Menejment
+                - generic [ref=e1924]: Referral
+              - generic [ref=e1925]:
+                - generic [ref=e1926]:
+                  - img [ref=e1927]
+                  - text: 12.04.2026
+                - generic [ref=e1929]:
+                  - img [ref=e1930]
+                  - text: Nazarova M.
+            - generic [ref=e1933]:
+              - generic [ref=e1934]:
+                - generic [ref=e1935]: YD
+                - generic [ref=e1936]:
+                  - generic [ref=e1937]: Yusupov D.
+                  - generic [ref=e1938]: +998 93 340-50-31
+              - generic [ref=e1939]:
+                - generic [ref=e1940]: Pedagogika
+                - generic [ref=e1941]: Referral
+              - generic [ref=e1942]:
+                - generic [ref=e1943]:
+                  - img [ref=e1944]
+                  - text: 14.04.2026
+                - generic [ref=e1946]:
+                  - img [ref=e1947]
+                  - text: Nazarova M.
+            - generic [ref=e1950]:
+              - generic [ref=e1951]:
+                - generic [ref=e1952]: HM
+                - generic [ref=e1953]:
+                  - generic [ref=e1954]: Hasanov M.
+                  - generic [ref=e1955]: +998 93 588-48-43
+              - generic [ref=e1956]:
+                - generic [ref=e1957]: Menejment
+                - generic [ref=e1958]: Referral
+              - generic [ref=e1959]:
+                - generic [ref=e1960]:
+                  - img [ref=e1961]
+                  - text: 13.04.2026
+                - generic [ref=e1963]:
+                  - img [ref=e1964]
+                  - text: Nazarova M.
+            - button "Ariza qo'shish" [ref=e1967] [cursor=pointer]:
+              - img [ref=e1968]
+              - text: Ariza qo'shish
+        - generic [ref=e1969]:
+          - generic [ref=e1970]:
+            - generic [ref=e1971]:
+              - generic [ref=e1973]: Qo'ng'iroq
+              - generic [ref=e1974]: "3"
+            - button "Amallar" [ref=e1975] [cursor=pointer]:
+              - img [ref=e1976]
+          - generic [ref=e1980]:
+            - generic [ref=e1981]:
+              - generic [ref=e1982]:
+                - generic [ref=e1983]: RJ
+                - generic [ref=e1984]:
+                  - generic [ref=e1985]: Rahimov J.
+                  - generic [ref=e1986]: +998 94 247-51-02
+              - generic [ref=e1987]:
+                - generic [ref=e1988]: Pedagogika
+                - generic [ref=e1989]: Website
+              - generic [ref=e1990]:
+                - generic [ref=e1991]:
+                  - img [ref=e1992]
+                  - text: 17.04.2026
+                - generic [ref=e1994]:
+                  - img [ref=e1995]
+                  - text: Nazarova M.
+            - generic [ref=e1998]:
+              - generic [ref=e1999]:
+                - generic [ref=e2000]: QG
+                - generic [ref=e2001]:
+                  - generic [ref=e2002]: Qodirov G.
+                  - generic [ref=e2003]: +998 94 402-49-84
+              - generic [ref=e2004]:
+                - generic [ref=e2005]: Tog'-kon ishi
+                - generic [ref=e2006]: Website
+              - generic [ref=e2007]:
+                - generic [ref=e2008]:
+                  - img [ref=e2009]
+                  - text: 19.04.2026
+                - generic [ref=e2011]:
+                  - img [ref=e2012]
+                  - text: Saidov R.
+            - generic [ref=e2015]:
+              - generic [ref=e2016]:
+                - generic [ref=e2017]: QK
+                - generic [ref=e2018]:
+                  - generic [ref=e2019]: Qodirov K.
+                  - generic [ref=e2020]: +998 93 495-49-13
+              - generic [ref=e2021]:
+                - generic [ref=e2022]: Pedagogika
+                - generic [ref=e2023]: Referral
+              - generic [ref=e2024]:
+                - generic [ref=e2025]:
+                  - img [ref=e2026]
+                  - text: 16.04.2026
+                - generic [ref=e2028]:
+                  - img [ref=e2029]
+                  - text: Nazarova M.
+            - button "Ariza qo'shish" [ref=e2032] [cursor=pointer]:
+              - img [ref=e2033]
+              - text: Ariza qo'shish
+        - generic [ref=e2034]:
+          - generic [ref=e2035]:
+            - generic [ref=e2036]:
+              - generic [ref=e2038]: Hujjat kutilmoqda
+              - generic [ref=e2039]: "4"
+            - button "Amallar" [ref=e2040] [cursor=pointer]:
+              - img [ref=e2041]
+          - generic [ref=e2045]:
+            - generic [ref=e2046]:
+              - generic [ref=e2047]:
+                - generic [ref=e2048]: RM
+                - generic [ref=e2049]:
+                  - generic [ref=e2050]: Rahimov M.
+                  - generic [ref=e2051]: +998 97 154-51-72
+              - generic [ref=e2052]:
+                - generic [ref=e2053]: Tog'-kon ishi
+                - generic [ref=e2054]: Website
+              - generic [ref=e2055]:
+                - generic [ref=e2056]:
+                  - img [ref=e2057]
+                  - text: 21.04.2026
+                - generic [ref=e2059]:
+                  - img [ref=e2060]
+                  - text: Saidov R.
+            - generic [ref=e2063]:
+              - generic [ref=e2064]:
+                - generic [ref=e2065]: QA
+                - generic [ref=e2066]:
+                  - generic [ref=e2067]: Qodirov A.
+                  - generic [ref=e2068]: +998 97 309-50-54
+              - generic [ref=e2069]:
+                - generic [ref=e2070]: Axborot texnologiyalari
+                - generic [ref=e2071]: Telegram
+              - generic [ref=e2072]:
+                - generic [ref=e2073]:
+                  - img [ref=e2074]
+                  - text: 23.04.2026
+                - generic [ref=e2076]:
+                  - img [ref=e2077]
+                  - text: Saidov R.
+            - generic [ref=e2080]:
+              - generic [ref=e2081]:
+                - generic [ref=e2082]: MO
+                - generic [ref=e2083]:
+                  - generic [ref=e2084]: Mirzayev O.
+                  - generic [ref=e2085]: +998 99 464-49-37
+              - generic [ref=e2086]:
+                - generic [ref=e2087]: Axborot texnologiyalari
+                - generic [ref=e2088]: Telegram
+              - generic [ref=e2089]:
+                - generic [ref=e2090]:
+                  - img [ref=e2091]
+                  - text: 2.04.2026
+                - generic [ref=e2093]:
+                  - img [ref=e2094]
+                  - text: Xolmatova D.
+            - generic [ref=e2097]:
+              - generic [ref=e2098]:
+                - generic [ref=e2099]: MD
+                - generic [ref=e2100]:
+                  - generic [ref=e2101]: Mirzayev D.
+                  - generic [ref=e2102]: +998 97 557-48-66
+              - generic [ref=e2103]:
+                - generic [ref=e2104]: Tog'-kon ishi
+                - generic [ref=e2105]: Website
+              - generic [ref=e2106]:
+                - generic [ref=e2107]:
+                  - img [ref=e2108]
+                  - text: 21.04.2026
+                - generic [ref=e2110]:
+                  - img [ref=e2111]
+                  - text: Saidov R.
+            - button "Ariza qo'shish" [ref=e2114] [cursor=pointer]:
+              - img [ref=e2115]
+              - text: Ariza qo'shish
+        - generic [ref=e2116]:
+          - generic [ref=e2117]:
+            - generic [ref=e2118]:
+              - generic [ref=e2120]: Qabul qilindi
+              - generic [ref=e2121]: "4"
+            - button "Amallar" [ref=e2122] [cursor=pointer]:
+              - img [ref=e2123]
+          - generic [ref=e2127]:
+            - generic [ref=e2128]:
+              - generic [ref=e2129]:
+                - generic [ref=e2130]: IJ
+                - generic [ref=e2131]:
+                  - generic [ref=e2132]: Ismoilov J.
+                  - generic [ref=e2133]: +998 90 123-51-96
+              - generic [ref=e2134]:
+                - generic [ref=e2135]: Iqtisodiyot
+                - generic [ref=e2136]: Instagram
+              - generic [ref=e2137]:
+                - generic [ref=e2138]:
+                  - img [ref=e2139]
+                  - text: 6.04.2026
+                - generic [ref=e2141]:
+                  - img [ref=e2142]
+                  - text: Olimov B.
+            - generic [ref=e2145]:
+              - generic [ref=e2146]:
+                - generic [ref=e2147]: IK
+                - generic [ref=e2148]:
+                  - generic [ref=e2149]: Ismoilov K.
+                  - generic [ref=e2150]: +998 99 216-51-25
+              - generic [ref=e2151]:
+                - generic [ref=e2152]: Axborot texnologiyalari
+                - generic [ref=e2153]: Telegram
+              - generic [ref=e2154]:
+                - generic [ref=e2155]:
+                  - img [ref=e2156]
+                  - text: 3.04.2026
+                - generic [ref=e2158]:
+                  - img [ref=e2159]
+                  - text: Xolmatova D.
+            - generic [ref=e2162]:
+              - generic [ref=e2163]:
+                - generic [ref=e2164]: XN
+                - generic [ref=e2165]:
+                  - generic [ref=e2166]: Xolmatov N.
+                  - generic [ref=e2167]: +998 90 371-50-07
+              - generic [ref=e2168]:
+                - generic [ref=e2169]: Iqtisodiyot
+                - generic [ref=e2170]: Telegram
+              - generic [ref=e2171]:
+                - generic [ref=e2172]:
+                  - img [ref=e2173]
+                  - text: 5.04.2026
+                - generic [ref=e2175]:
+                  - img [ref=e2176]
+                  - text: Xolmatova D.
+            - generic [ref=e2179]:
+              - generic [ref=e2180]:
+                - generic [ref=e2181]: KK
+                - generic [ref=e2182]:
+                  - generic [ref=e2183]: Karimov K.
+                  - generic [ref=e2184]: +998 99 619-48-19
+              - generic [ref=e2185]:
+                - generic [ref=e2186]: Iqtisodiyot
+                - generic [ref=e2187]: Telegram
+              - generic [ref=e2188]:
+                - generic [ref=e2189]:
+                  - img [ref=e2190]
+                  - text: 4.04.2026
+                - generic [ref=e2192]:
+                  - img [ref=e2193]
+                  - text: Xolmatova D.
+            - button "Ariza qo'shish" [ref=e2196] [cursor=pointer]:
+              - img [ref=e2197]
+              - text: Ariza qo'shish
+        - generic [ref=e2198]:
+          - generic [ref=e2199]:
+            - generic [ref=e2200]:
+              - generic [ref=e2202]: Rad etildi
+              - generic [ref=e2203]: "3"
+            - button "Amallar" [ref=e2204] [cursor=pointer]:
+              - img [ref=e2205]
+          - generic [ref=e2209]:
+            - generic [ref=e2210]:
+              - generic [ref=e2211]:
+                - generic [ref=e2212]: XO
+                - generic [ref=e2213]:
+                  - generic [ref=e2214]: Xolmatov O.
+                  - generic [ref=e2215]: +998 91 278-50-78
+              - generic [ref=e2216]:
+                - generic [ref=e2217]: Menejment
+                - generic [ref=e2218]: Instagram
+              - generic [ref=e2219]:
+                - generic [ref=e2220]:
+                  - img [ref=e2221]
+                  - text: 9.04.2026
+                - generic [ref=e2223]:
+                  - img [ref=e2224]
+                  - text: Olimov B.
+            - generic [ref=e2227]:
+              - generic [ref=e2228]:
+                - generic [ref=e2229]: YN
+                - generic [ref=e2230]:
+                  - generic [ref=e2231]: Yusupov N.
+                  - generic [ref=e2232]: +998 91 433-49-60
+              - generic [ref=e2233]:
+                - generic [ref=e2234]: Menejment
+                - generic [ref=e2235]: Instagram
+              - generic [ref=e2236]:
+                - generic [ref=e2237]:
+                  - img [ref=e2238]
+                  - text: 11.04.2026
+                - generic [ref=e2240]:
+                  - img [ref=e2241]
+                  - text: Olimov B.
+            - generic [ref=e2244]:
+              - generic [ref=e2245]:
+                - generic [ref=e2246]: YB
+                - generic [ref=e2247]:
+                  - generic [ref=e2248]: Yusupov B.
+                  - generic [ref=e2249]: +998 90 526-48-90
+              - generic [ref=e2250]:
+                - generic [ref=e2251]: Iqtisodiyot
+                - generic [ref=e2252]: Instagram
+              - generic [ref=e2253]:
+                - generic [ref=e2254]:
+                  - img [ref=e2255]
+                  - text: 7.04.2026
+                - generic [ref=e2257]:
+                  - img [ref=e2258]
+                  - text: Olimov B.
+            - button "Ariza qo'shish" [ref=e2261] [cursor=pointer]:
+              - img [ref=e2262]
+              - text: Ariza qo'shish

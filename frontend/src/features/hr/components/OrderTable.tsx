@@ -1,17 +1,28 @@
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, Trash2, ChevronRight } from 'lucide-react';
 import { DataTable, type Column } from '@/components/table';
 import { Button } from '@/components/ui';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { formatDate } from '@/lib/utils';
 import type { HrOrder } from '@/types/hr';
 
+const NEXT_STATUS: Partial<Record<HrOrder['status'], HrOrder['status']>> = {
+  draft: 'review',
+  review: 'signed',
+};
+
+const NEXT_STATUS_LABEL: Partial<Record<HrOrder['status'], string>> = {
+  draft: "Ko'rib chiqishga",
+  review: 'Imzolash',
+};
+
 interface OrderTableProps {
   data: HrOrder[];
   onView?: (order: HrOrder) => void;
+  onStatusChange?: (order: HrOrder, status: HrOrder['status']) => void;
   onDelete?: (order: HrOrder) => void;
 }
 
-export function OrderTable({ data, onView, onDelete }: OrderTableProps) {
+export function OrderTable({ data, onView, onStatusChange, onDelete }: OrderTableProps) {
   const columns: Column<HrOrder>[] = [
     {
       key: 'number',
@@ -61,27 +72,42 @@ export function OrderTable({ data, onView, onDelete }: OrderTableProps) {
       keyField="id"
       onRowClick={onView}
       emptyMessage="Buyruqlar topilmadi"
-      actions={(row) => (
-        <div className="flex items-center gap-1 justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<Eye className="h-4 w-4" />}
-            onClick={(e) => { e.stopPropagation(); onView?.(row); }}
-          >
-            Ko&apos;rish
-          </Button>
-          {onDelete && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(row); }}
-              className="h-7 w-7 rounded-md hover:bg-red-50 text-red-400 inline-flex items-center justify-center transition-colors"
-              title="O'chirish"
+      actions={(row) => {
+        const nextStatus = NEXT_STATUS[row.status];
+        const nextLabel = NEXT_STATUS_LABEL[row.status];
+        return (
+          <div className="flex items-center gap-1 justify-end">
+            {onStatusChange && nextStatus && (
+              <Button
+                variant="ghost"
+                size="sm"
+                leftIcon={<ChevronRight className="h-4 w-4" />}
+                onClick={(e) => { e.stopPropagation(); onStatusChange(row, nextStatus); }}
+                title={nextLabel}
+              >
+                {nextLabel}
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<Eye className="h-4 w-4" />}
+              onClick={(e) => { e.stopPropagation(); onView?.(row); }}
             >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
-      )}
+              Ko&apos;rish
+            </Button>
+            {onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(row); }}
+                className="h-7 w-7 rounded-md hover:bg-red-50 text-red-400 inline-flex items-center justify-center transition-colors"
+                title="O'chirish"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        );
+      }}
     />
   );
 }

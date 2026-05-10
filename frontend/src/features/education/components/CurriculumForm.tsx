@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { useForm, useFieldArray, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SlideOver } from '@/components/overlays';
 import { Button } from '@/components/ui';
 import { FormField, FormInput, FormSelect } from '@/components/form';
 import { createCurriculumSchema, type CreateCurriculumFormData } from '../schemas/curriculum.schema';
+import type { Curriculum } from '@/types/education';
 import { Plus, Trash2 } from 'lucide-react';
 
 interface CurriculumFormProps {
@@ -12,6 +14,7 @@ interface CurriculumFormProps {
   onSubmit: (data: CreateCurriculumFormData) => void;
   specialties: { id: number; name: string }[];
   subjects: { id: number; name: string }[];
+  curriculum?: Curriculum | null;
   loading?: boolean;
 }
 
@@ -31,7 +34,9 @@ const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => ({
   label: String(2025 + i),
 }));
 
-export function CurriculumForm({ open, onClose, onSubmit, specialties, subjects, loading }: CurriculumFormProps) {
+export function CurriculumForm({ open, onClose, onSubmit, specialties, subjects, curriculum, loading }: CurriculumFormProps) {
+  const isEdit = !!curriculum;
+
   const {
     register,
     handleSubmit,
@@ -49,6 +54,31 @@ export function CurriculumForm({ open, onClose, onSubmit, specialties, subjects,
 
   const { fields, append, remove } = useFieldArray({ control, name: 'subjects' });
 
+  useEffect(() => {
+    if (open) {
+      if (curriculum) {
+        reset({
+          specialtyId: curriculum.specialtyId,
+          year: curriculum.year,
+          subjects: curriculum.subjects.map((s) => ({
+            subjectId: s.subjectId,
+            semester: s.semester,
+            credits: s.credits,
+            hoursLecture: s.hoursLecture,
+            hoursPractice: s.hoursPractice,
+            hoursLab: s.hoursLab,
+            controlForm: s.controlForm,
+            isElective: s.isElective,
+          })),
+        });
+      } else {
+        reset({
+          subjects: [{ subjectId: 0, semester: 1, credits: 3, hoursLecture: 30, hoursPractice: 15, hoursLab: 0, controlForm: 'exam', isElective: false }],
+        });
+      }
+    }
+  }, [open, curriculum, reset]);
+
   const handleClose = () => { reset(); onClose(); };
 
   const subjectOptions = subjects.map((s) => ({ value: String(s.id), label: s.name }));
@@ -57,13 +87,13 @@ export function CurriculumForm({ open, onClose, onSubmit, specialties, subjects,
     <SlideOver
       open={open}
       onClose={handleClose}
-      title="Yangi o'quv reja"
+      title={isEdit ? "O'quv rejani tahrirlash" : "Yangi o'quv reja"}
       size="lg"
       footer={
         <>
           <Button variant="ghost" onClick={handleClose}>Bekor qilish</Button>
           <Button variant="primary" loading={loading} onClick={handleSubmit((d) => { onSubmit(d); reset(); })}>
-            Saqlash
+            {isEdit ? 'Yangilash' : 'Saqlash'}
           </Button>
         </>
       }

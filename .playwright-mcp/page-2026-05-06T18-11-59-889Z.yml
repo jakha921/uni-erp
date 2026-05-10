@@ -1,0 +1,255 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e97]:
+    - complementary [ref=e98]:
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]: NIU
+            - generic [ref=e103]:
+              - generic [ref=e104]: ERP
+              - generic [ref=e105]: Raqamli universitet
+          - button "NV Filial Navoiy (bosh)" [ref=e106] [cursor=pointer]:
+            - generic [ref=e107]: NV
+            - generic [ref=e108]:
+              - generic [ref=e109]: Filial
+              - generic [ref=e110]: Navoiy (bosh)
+            - img [ref=e111]
+        - navigation [ref=e113]:
+          - link "Asosiy" [ref=e115] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e116]
+            - generic [ref=e121]: Asosiy
+          - button "TALABALAR" [ref=e123] [cursor=pointer]:
+            - img [ref=e124]
+            - generic [ref=e126]: TALABALAR
+          - button "TA'LIM" [ref=e128] [cursor=pointer]:
+            - img [ref=e129]
+            - generic [ref=e131]: TA'LIM
+          - button "O'QUV JARAYONI" [ref=e133] [cursor=pointer]:
+            - img [ref=e134]
+            - generic [ref=e136]: O'QUV JARAYONI
+          - button "QABUL (CRM) 23" [ref=e138] [cursor=pointer]:
+            - img [ref=e139]
+            - generic [ref=e141]: QABUL (CRM)
+            - generic [ref=e142]: "23"
+          - button "MOLIYA" [ref=e144] [cursor=pointer]:
+            - img [ref=e145]
+            - generic [ref=e147]: MOLIYA
+          - button "KADRLAR" [ref=e149] [cursor=pointer]:
+            - img [ref=e150]
+            - generic [ref=e152]: KADRLAR
+          - button "XODIMLAR (eski)" [ref=e154] [cursor=pointer]:
+            - img [ref=e155]
+            - generic [ref=e157]: XODIMLAR (eski)
+          - button "INFRATUZILMA" [ref=e159] [cursor=pointer]:
+            - img [ref=e160]
+            - generic [ref=e162]: INFRATUZILMA
+          - button "ILMIY FAOLIYAT" [ref=e164] [cursor=pointer]:
+            - img [ref=e165]
+            - generic [ref=e167]: ILMIY FAOLIYAT
+          - button "KABINETLAR" [ref=e169] [cursor=pointer]:
+            - img [ref=e170]
+            - generic [ref=e172]: KABINETLAR
+          - button "BOSHQARUV 39" [ref=e174] [cursor=pointer]:
+            - img [ref=e175]
+            - generic [ref=e177]: BOSHQARUV
+            - generic [ref=e178]: "39"
+          - button "ADMIN" [ref=e180] [cursor=pointer]:
+            - img [ref=e181]
+            - generic [ref=e183]: ADMIN
+          - button "PROFIL" [ref=e185] [cursor=pointer]:
+            - img [ref=e186]
+            - generic [ref=e188]: PROFIL
+          - button "TIZIM 32" [ref=e190] [cursor=pointer]:
+            - img [ref=e191]
+            - generic [ref=e193]: TIZIM
+            - generic [ref=e194]: "32"
+        - button [ref=e196]:
+          - img [ref=e197]
+    - generic [ref=e199]:
+      - banner [ref=e200]:
+        - heading "Xush kelibsiz, Adminov" [level=1] [ref=e203]
+        - generic [ref=e204]:
+          - img
+          - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e205]'
+        - generic [ref=e206]:
+          - button "🇺🇿 uz" [ref=e208] [cursor=pointer]:
+            - generic [ref=e209]: 🇺🇿
+            - generic [ref=e210]: uz
+            - img [ref=e211]
+          - button [ref=e213]:
+            - img [ref=e214]
+          - button "Bildirishnomalar" [ref=e217]:
+            - img [ref=e218]
+            - generic [ref=e221]: "2"
+          - button "AA Admin" [ref=e223] [cursor=pointer]:
+            - generic [ref=e224]: AA
+            - generic [ref=e225]: Admin
+            - img [ref=e226]
+      - main [ref=e228]:
+        - generic [ref=e231]:
+          - heading "Asosiy" [level=1] [ref=e232]
+          - paragraph [ref=e233]: Uni ERP · Administrator
+        - generic [ref=e234]:
+          - generic [ref=e236]: Navoiy (bosh filial) · 2025-2026 · 2-semester
+          - generic [ref=e238]:
+            - generic [ref=e239]:
+              - img [ref=e241]
+              - paragraph [ref=e244]: Fakultetlar
+              - paragraph [ref=e245]: "8"
+            - generic [ref=e246]:
+              - img [ref=e248]
+              - paragraph [ref=e253]: Kafedralar
+              - paragraph [ref=e254]: "24"
+            - generic [ref=e255]:
+              - img [ref=e257]
+              - paragraph [ref=e261]: O'qituvchilar
+              - paragraph [ref=e262]: "312"
+            - generic [ref=e263]:
+              - img [ref=e265]
+              - paragraph [ref=e270]: Talabalar
+              - paragraph [ref=e271]: 4,856
+            - generic [ref=e272]:
+              - img [ref=e274]
+              - paragraph [ref=e277]: Xonalar
+              - paragraph [ref=e278]: "142"
+            - generic [ref=e279]:
+              - img [ref=e281]
+              - paragraph [ref=e283]: Guruhlar
+              - paragraph [ref=e284]: "89"
+          - generic [ref=e285]:
+            - generic [ref=e286]:
+              - img [ref=e288]
+              - paragraph [ref=e291]: Tushumlar
+              - paragraph [ref=e292]: 18.5 mlrdM
+            - generic [ref=e293]:
+              - img [ref=e295]
+              - paragraph [ref=e297]: Qarzdorlar
+              - paragraph [ref=e298]: "847"
+            - generic [ref=e299]:
+              - img [ref=e301]
+              - paragraph [ref=e304]: Kontraktlar
+              - paragraph [ref=e305]: 3,245
+            - generic [ref=e306]:
+              - img [ref=e308]
+              - paragraph [ref=e311]: Jami qarz
+              - paragraph [ref=e312]: 3.2 mlrdM
+            - generic [ref=e313]:
+              - img [ref=e315]
+              - paragraph [ref=e318]: Stipendiyalar
+              - paragraph [ref=e319]: "234"
+            - generic [ref=e320]:
+              - img [ref=e322]
+              - paragraph [ref=e325]: Buyruqlar
+              - paragraph [ref=e326]: "18"
+          - generic [ref=e327]:
+            - generic [ref=e328]:
+              - generic [ref=e330]:
+                - heading "Viloyatlar bo'yicha" [level=3] [ref=e331]
+                - paragraph [ref=e332]: Barcha
+              - generic [ref=e333]:
+                - application [ref=e336]
+                - generic [ref=e337]:
+                  - generic [ref=e338]:
+                    - generic [ref=e340]: Navoiy
+                    - generic [ref=e341]: 43%
+                  - generic [ref=e342]:
+                    - generic [ref=e344]: Zarafshon
+                    - generic [ref=e345]: 31%
+                  - generic [ref=e346]:
+                    - generic [ref=e348]: Uchquduq
+                    - generic [ref=e349]: 18%
+                  - generic [ref=e350]:
+                    - generic [ref=e352]: Boshqa
+                    - generic [ref=e353]: 8%
+            - generic [ref=e354]:
+              - generic [ref=e356]:
+                - heading "Jinsi bo'yicha" [level=3] [ref=e357]
+                - paragraph [ref=e358]: 2025-26
+              - generic [ref=e359]:
+                - application [ref=e362]
+                - generic [ref=e363]:
+                  - generic [ref=e364]:
+                    - generic [ref=e366]: Erkak
+                    - generic [ref=e367]: 58%
+                  - generic [ref=e368]:
+                    - generic [ref=e370]: Ayol
+                    - generic [ref=e371]: 42%
+            - generic [ref=e372]:
+              - generic [ref=e374]:
+                - heading "Yoshi bo'yicha" [level=3] [ref=e375]
+                - paragraph [ref=e376]: 2025-26
+              - generic [ref=e377]:
+                - application [ref=e380]
+                - generic [ref=e381]:
+                  - generic [ref=e382]:
+                    - generic [ref=e384]: 17-20 yosh
+                    - generic [ref=e385]: 49%
+                  - generic [ref=e386]:
+                    - generic [ref=e388]: 21-24 yosh
+                    - generic [ref=e389]: 41%
+                  - generic [ref=e390]:
+                    - generic [ref=e392]: 25+ yosh
+                    - generic [ref=e393]: 10%
+          - generic [ref=e394]:
+            - generic [ref=e395]:
+              - generic [ref=e396]:
+                - generic [ref=e397]:
+                  - heading "Talabalar dinamikasi" [level=3] [ref=e398]
+                  - paragraph [ref=e399]: 12 oy
+                - generic [ref=e400]: +8.4% YoY
+              - application [ref=e405]:
+                - generic [ref=e423]:
+                  - generic [ref=e424]:
+                    - generic [ref=e426]: Yan
+                    - generic [ref=e428]: Fev
+                    - generic [ref=e430]: Mar
+                    - generic [ref=e432]: Apr
+                    - generic [ref=e434]: May
+                    - generic [ref=e436]: Iyun
+                    - generic [ref=e438]: Iyul
+                    - generic [ref=e440]: Avg
+                    - generic [ref=e442]: Sen
+                    - generic [ref=e444]: Okt
+                    - generic [ref=e446]: Noy
+                    - generic [ref=e448]: Dek
+                  - generic [ref=e449]:
+                    - generic [ref=e451]: "0"
+                    - generic [ref=e453]: "800"
+                    - generic [ref=e455]: "1600"
+                    - generic [ref=e457]: "2400"
+                    - generic [ref=e459]: "3200"
+            - generic [ref=e460]:
+              - heading "So'nggi faoliyat" [level=3] [ref=e463]
+              - generic [ref=e465]:
+                - generic [ref=e466]:
+                  - img [ref=e468]
+                  - generic [ref=e471]:
+                    - paragraph [ref=e472]: To'lov qabul qilindi
+                    - paragraph [ref=e473]: Xolmatov A. — 2 500 000 so'm
+                  - generic [ref=e474]: 5 daqiqa oldin
+                - generic [ref=e475]:
+                  - img [ref=e477]
+                  - generic [ref=e482]:
+                    - paragraph [ref=e483]: Yangi talaba qo'shildi
+                    - paragraph [ref=e484]: Karimova N. — AT-21
+                  - generic [ref=e485]: 15 daqiqa oldin
+                - generic [ref=e486]:
+                  - img [ref=e488]
+                  - generic [ref=e491]:
+                    - paragraph [ref=e492]: Buyruq imzolandi
+                    - paragraph [ref=e493]: "#2024-156 — Ishga qabul"
+                  - generic [ref=e494]: 1 soat oldin
+                - generic [ref=e495]:
+                  - img [ref=e497]
+                  - generic [ref=e500]:
+                    - paragraph [ref=e501]: Davomat tasdiqlandi
+                    - paragraph [ref=e502]: AT-31 guruhi — Bugun
+                  - generic [ref=e503]: 2 soat oldin
+                - generic [ref=e504]:
+                  - img [ref=e506]
+                  - generic [ref=e509]:
+                    - paragraph [ref=e510]: Yangi CRM ariza
+                    - paragraph [ref=e511]: IT yo'nalishi — Telegram
+                  - generic [ref=e512]: 3 soat oldin
+  - generic [ref=e513]: "0"

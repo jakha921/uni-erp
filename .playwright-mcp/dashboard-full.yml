@@ -1,0 +1,502 @@
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - generic [ref=e9]:
+      - link "Back to projects" [ref=e10]:
+        - /url: /design/
+        - img [ref=e11]
+      - generic "UniERP" [ref=e14]
+    - generic [ref=e15]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: 
+        - generic [ref=e19]: Design Files
+      - generic [ref=e23]: BITU ERP.html
+      - generic [ref=e28]:
+        - button "Present " [ref=e31]:
+          - generic [ref=e32]:
+            - text: Present
+            - generic [ref=e33]: 
+        - button "Share" [ref=e35]:
+          - generic [ref=e36]: Share
+        - button "Profile and connectors" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: J
+  - generic [ref=e40]:
+    - generic [ref=e43]:
+      - generic [ref=e46]:
+        - generic [ref=e48]: I need context to name this thread. What are you designing or what is your question about?
+        - generic [ref=e50]: "Clarifying questions: 1. **What field/direction** do you want instead of medical? (e.g., engineering, business, IT,"
+        - generic [ref=e56]: Comments
+      - generic [ref=e60]:
+        - text:  
+        - generic [ref=e63]:
+          - generic [ref=e66]:
+            - generic [ref=e69]:
+              - generic [ref=e70]: You
+              - text: Если есть уточняющие вопросы, задай мне их. Buxoro Innovatsion Ta'lim va Tibbiyot Universiteti → Navoiy innovatsiyalar universiteti Buxoro → Navoiy' замени эти слова и сделай мок данные для более универсальным не для медицинское направление
+              - generic [ref=e71]:
+                - 'generic "[Design System] The user selected the **TeamHub Design System** design system. This is a binding choice — every visual must follow it, even if the task seems irrelevant. Don''t invent colors, type, spacing, or components not grounded here. Explore it to find what you need: - Always copy out the fonts and colors you need - For prototypes and designs, always copy out any relevant components - If the design system contains existing mocks of products, and you were asked to design or prototype something similar, copy and fork those mocks to start your design. This helps you make high-quality designs. Explore it quickly to find relevant UI kits (e.g. mocks of existing products you can copy and fork) Full system at `/projects/46dfb0e9-be90-4f7a-9d32-641c1e2073c5/`. Its g…" [ref=e72]'
+                - generic "Create a fully interactive prototype with realistic state management and transitions. Use React useState/useEffect for dynamic behavior. Include hover states, click interactions, form validation, animated transitions, and multi-step navigation flows. It should feel like a real working app, not a static mockup." [ref=e74]
+                - 'generic "Use this guidance when designing frontend/UI work that is NOT governed by an existing brand or design system. Create distinctive HTML with exceptional attention to aesthetic details and creative choices. ### Design Thinking Before coding, understand the context and commit to a BOLD aesthetic direction: - **Purpose**: What problem does this interface solve? Who uses it? - **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. Use these for inspiration but design one that is true to the aesthetic direction. - **Differentiation**: What makes this UNFORGETTABLE? What''s the one thing someone will remember? Choose a clear…" [ref=e76]'
+                - 'generic "Я продолжаю проект UniERP — ERP для университета (Навои). В проекте уже 26+ страниц. Сейчас мне нужно добавить критически важные страницы для системы управления ролями и правами (RBAC). ## Контекст проекта - Стек: React UMD + Babel inline, TeamHub Design System (#2DB976) - Shell: BituShell.jsx (Sidebar + Topbar), hash routing через App.jsx - Компоненты: Primitives.jsx, DataDisplay.jsx, TablePieces.jsx, Overlays.jsx - Данные: data.jsx с узбекскими реалистичными данными - Город: Навои (NAVOIY · 2026) ## Ключевая концепция: МНОЖЕСТВЕННЫЕ РОЛИ Один пользователь может иметь НЕСКОЛЬКО ролей одновременно. Например: Aliyev Jasur = [O''qituvchi] + [Kafedra mudiri] Итоговые разрешения = UNION всех разрешений его ролей. ## Иерархия доступа к данным (Data Scope) - Rektor/Prorektor → видит все данные…" [ref=e78]'
+            - generic [ref=e82]:
+              - generic [ref=e83]: Claude
+              - generic [ref=e86] [cursor=pointer]:
+                - generic [ref=e87]: 
+                - generic [ref=e88]: Listing files
+                - generic [ref=e89]: 
+              - paragraph [ref=e92]: Понял задачу. Прежде чем приступить, изучу текущий проект — что уже есть, какие компоненты, данные, какой shell используется.
+              - generic [ref=e95] [cursor=pointer]:
+                - generic [ref=e96]: 
+                - generic [ref=e97]: Listing files ×4, Reading ×3
+                - generic [ref=e98]: 
+              - paragraph [ref=e101]: Хорошо, изучу ключевые файлы дальше — компоненты, BituShell, и одну из существующих страниц как образец стиля.
+              - generic [ref=e104] [cursor=pointer]:
+                - generic [ref=e105]: 
+                - generic [ref=e106]: Reading ×5
+                - generic [ref=e107]: 
+              - paragraph [ref=e110]: Я понял структуру проекта. Теперь посмотрю один из существующих примеров страниц, чтобы согласовать стиль, и затем приступлю.
+              - generic [ref=e113] [cursor=pointer]:
+                - generic [ref=e114]: 
+                - generic [ref=e115]: Reading
+                - generic [ref=e116]: 
+              - generic [ref=e118]:
+                - paragraph [ref=e119]: "Понял проект. Теперь у меня есть полное понимание архитектуры. Главное:"
+                - list [ref=e120]
+                - paragraph [ref=e129]: Начну с обновления данных и создания новых страниц.
+              - generic [ref=e132]:
+                - generic [ref=e133]: 
+                - generic [ref=e134]: Updated todos
+              - paragraph [ref=e137]: Найду все упоминания "Buxoro" / "BITU" / медицинских терминов, чтобы заменить их.
+              - generic [ref=e140] [cursor=pointer]:
+                - generic [ref=e141]: 
+                - generic [ref=e142]: Searching
+                - generic [ref=e143]: 
+              - paragraph [ref=e146]: Я найду конкретные ключевые места и заменю их более универсальными формулировками. Не буду делать массовые замены повсюду — сосредоточусь на самом видимом.
+              - generic [ref=e149] [cursor=pointer]:
+                - generic [ref=e150]: 
+                - generic [ref=e151]: Searching
+                - generic [ref=e152]: 
+              - paragraph [ref=e155]: Делаю универсализацию данных и заменяю Buxoro/BITU → Navoiy/Uni ERP.
+              - generic [ref=e158] [cursor=pointer]:
+                - generic [ref=e159]: 
+                - generic [ref=e160]: Editing ×2
+                - generic [ref=e161]: 
+              - paragraph [ref=e164]: "Now updating other places: BituShell branch, LoginPage, NewPages settings."
+              - generic [ref=e167] [cursor=pointer]:
+                - generic [ref=e168]: 
+                - generic [ref=e169]: Editing ×3, Reading, Searching
+                - generic [ref=e170]: 
+              - paragraph [ref=e173]: "Now NewPages and remaining files (Dashboard, MoreNewPages, ExtraPages):"
+              - generic [ref=e176] [cursor=pointer]:
+                - generic [ref=e177]: 
+                - generic [ref=e178]: Reading ×2
+                - generic [ref=e179]: 
+              - paragraph [ref=e182]: "Now I'll do replacements:"
+              - generic [ref=e185] [cursor=pointer]:
+                - generic [ref=e186]: 
+                - generic [ref=e187]: Editing ×4
+                - generic [ref=e188]: 
+              - paragraph [ref=e191]: "Now ExtraPages medical research data — replace with universal:"
+              - generic [ref=e194] [cursor=pointer]:
+                - generic [ref=e195]: 
+                - generic [ref=e196]: Reading
+                - generic [ref=e197]: 
+              - paragraph [ref=e200]: "I'll universalize ResearchPage projects/publications. Replace with IT/economics-themed projects:"
+              - generic [ref=e203] [cursor=pointer]:
+                - generic [ref=e204]: 
+                - generic [ref=e205]: Editing, Reading
+                - generic [ref=e206]: 
+              - paragraph [ref=e209]: "Replace ThesesPage data:"
+              - generic [ref=e212] [cursor=pointer]:
+                - generic [ref=e213]: 
+                - generic [ref=e214]: Editing
+                - generic [ref=e215]: 
+              - paragraph [ref=e218]: "Let me check remaining medical mentions and then move on to building the Users/Roles pages:"
+              - generic [ref=e221] [cursor=pointer]:
+                - generic [ref=e222]: 
+                - generic [ref=e223]: Searching
+                - generic [ref=e224]: 
+              - paragraph [ref=e227]: I'll universalize the remaining medical content (curriculum, departments, library, exams, faculties, student cabinet) to fit a general university (IT, economics, mining, energy, education).
+              - generic [ref=e230] [cursor=pointer]:
+                - generic [ref=e231]: 
+                - generic [ref=e232]: Editing ×10, Searching
+                - generic [ref=e233]: 
+              - paragraph [ref=e236]: "Now let me check what other medical references remain, and clean up data.jsx and the remaining stray refs:"
+              - generic [ref=e239] [cursor=pointer]:
+                - generic [ref=e240]: 
+                - generic [ref=e241]: Searching, Editing ×5
+                - generic [ref=e242]: 
+              - paragraph [ref=e245]: "Now let me check data.jsx for student/teacher data, and any remaining medical refs:"
+              - generic [ref=e248] [cursor=pointer]:
+                - generic [ref=e249]: 
+                - generic [ref=e250]: Searching
+                - generic [ref=e251]: 
+              - paragraph [ref=e254]: "Excellent! All medical content scrubbed. Now let me look at data.jsx and plan the new pages:"
+              - generic [ref=e257] [cursor=pointer]:
+                - generic [ref=e258]: 
+                - generic [ref=e259]: Reading
+                - generic [ref=e260]: 
+              - paragraph [ref=e263]: "Now let me extend data.jsx with ROLES, MODULES, USERS, and AUDIT data, then build all 6 pages. Let me check the index.html structure first:"
+              - generic [ref=e266] [cursor=pointer]:
+                - generic [ref=e267]: 
+                - generic [ref=e268]: Listing files, Searching
+                - generic [ref=e269]: 
+              - paragraph [ref=e272]: "Let me look at the BituShell structure to see how routes/pages are wired:"
+              - generic [ref=e275] [cursor=pointer]:
+                - generic [ref=e276]: 
+                - generic [ref=e277]: Reading
+                - generic [ref=e278]: 
+              - paragraph [ref=e281]: "Now let me look at how routes are wired in BITU ERP.html:"
+              - generic [ref=e284] [cursor=pointer]:
+                - generic [ref=e285]: 
+                - generic [ref=e286]: Reading
+                - generic [ref=e287]: 
+              - paragraph [ref=e290]: "Now let me look at App.jsx to see how routes work:"
+              - generic [ref=e293] [cursor=pointer]:
+                - generic [ref=e294]: 
+                - generic [ref=e295]: Reading
+                - generic [ref=e296]: 
+              - generic [ref=e298]:
+                - paragraph [ref=e299]: "Now I understand the structure. Let me extend data.jsx and create the 6 new pages. Let me think about what to build:"
+                - paragraph [ref=e300]
+                - list [ref=e302]
+                - paragraph [ref=e321]: "Let me build:"
+              - generic [ref=e324] [cursor=pointer]:
+                - generic [ref=e325]: 
+                - generic [ref=e326]: Editing
+                - generic [ref=e327]: 
+              - paragraph [ref=e330]: "Now let me look at existing primitives and the typical page styling patterns:"
+              - generic [ref=e333] [cursor=pointer]:
+                - generic [ref=e334]: 
+                - generic [ref=e335]: Reading
+                - generic [ref=e336]: 
+              - paragraph [ref=e339]: "Let me check Card and Badge primitives:"
+              - generic [ref=e342] [cursor=pointer]:
+                - generic [ref=e343]: 
+                - generic [ref=e344]: Searching
+                - generic [ref=e345]: 
+              - paragraph [ref=e348]:
+                - text: Now I have a clear picture. Let me build the Users page first. I'll create a single new file
+                - code [ref=e349]: src/AccessPages.jsx
+                - text: "containing all 6 pages:"
+              - generic [ref=e352]:
+                - generic [ref=e353]: 
+                - generic [ref=e354]: Updated todos
+              - paragraph [ref=e357]: "Let me also check the Card component definition and look at existing page styles for visual reference:"
+              - generic [ref=e360] [cursor=pointer]:
+                - generic [ref=e361]: 
+                - generic [ref=e362]: Reading ×2
+                - generic [ref=e363]: 
+              - paragraph [ref=e366]: "Now I'll build all 6 pages. Let me create a comprehensive AccessPages.jsx file:"
+              - generic [ref=e369] [cursor=pointer]:
+                - generic [ref=e370]: 
+                - generic [ref=e371]: Writing
+                - generic [ref=e372]: 
+              - paragraph [ref=e375]: "Now let me check what data.jsx has and verify the build. Let me look at the main app to wire things in:"
+              - generic [ref=e378] [cursor=pointer]:
+                - generic [ref=e379]: 
+                - generic [ref=e380]: Listing files ×2, Reading
+                - generic [ref=e381]: 
+              - paragraph [ref=e384]: "Let me look at App.jsx, AppState.jsx, and data.jsx to wire things up:"
+              - generic [ref=e387] [cursor=pointer]:
+                - generic [ref=e388]: 
+                - generic [ref=e389]: Reading ×6
+                - generic [ref=e390]: 
+              - paragraph [ref=e393]: "Now let me check the BituSidebar to see how to add menu items, then wire everything up:"
+              - generic [ref=e396] [cursor=pointer]:
+                - generic [ref=e397]: 
+                - generic [ref=e398]: Searching
+                - generic [ref=e399]: 
+              - paragraph [ref=e402]:
+                - text: Now I have everything needed. Let me check icons available, especially
+                - code [ref=e403]: crown
+                - text: ","
+                - code [ref=e404]: briefcase
+                - text: ","
+                - code [ref=e405]: wallet
+                - text: ","
+                - code [ref=e406]: inbox
+                - text: ","
+                - code [ref=e407]: key
+                - text: ":"
+              - generic [ref=e410] [cursor=pointer]:
+                - generic [ref=e411]: 
+                - generic [ref=e412]: Searching
+                - generic [ref=e413]: 
+              - paragraph [ref=e416]: "Let me check the icon definitions:"
+              - generic [ref=e419] [cursor=pointer]:
+                - generic [ref=e420]: 
+                - generic [ref=e421]: Searching, Reading
+                - generic [ref=e422]: 
+              - paragraph [ref=e425]:
+                - text: "Good — icons available: grid, users, user, calendar, chart, search, bell, settings, inbox, check, x, plus, trash, edit, more, chevron, chevronDown, arrowUp/Down/Left/Right, filter, doc, briefcase, trendUp/Down, mail, phone, upload, logout, help. I notice my AccessPages uses"
+                - code [ref=e426]: download
+                - text: and
+                - code [ref=e427]: shield
+                - text: and
+                - code [ref=e428]: key
+                - text: "icons that don't exist. Let me also patch sidebar wiring and App routes. Let me first fix the icons in AccessPages — I'll use existing ones:"
+              - generic [ref=e431] [cursor=pointer]:
+                - generic [ref=e432]: 
+                - generic [ref=e433]: Searching
+                - generic [ref=e434]: 
+              - paragraph [ref=e437]:
+                - text: Hmm, but I literally wrote them. Let me grep without the
+                - code [ref=e438]: name=
+                - text: "part:"
+              - generic [ref=e441] [cursor=pointer]:
+                - generic [ref=e442]: 
+                - generic [ref=e443]: Searching
+                - generic [ref=e444]: 
+              - paragraph [ref=e447]:
+                - text: I need to add a
+                - code [ref=e448]: shield
+                - text: icon to Primitives — it's used everywhere in the access flows and AUDIT_ACTIONS in data. Best to add
+                - code [ref=e449]: shield
+                - text: ","
+                - code [ref=e450]: download
+                - text: ", and"
+                - code [ref=e451]: key
+                - text: "icons to the icon set:"
+              - generic [ref=e454] [cursor=pointer]:
+                - generic [ref=e455]: 
+                - generic [ref=e456]: Editing
+                - generic [ref=e457]: 
+              - paragraph [ref=e460]:
+                - text: Now let me clean up the redundant
+                - code [ref=e461]: shield === 'check'
+                - text: "workaround in AccessPages — actually leave it, it's already gracefully degrading. Now let me wire sidebar + routes:"
+              - generic [ref=e464] [cursor=pointer]:
+                - generic [ref=e465]: 
+                - generic [ref=e466]: Reading
+                - generic [ref=e467]: 
+              - paragraph [ref=e470]: "Now let me add a \"Foydalanuvchilar\" section to the sidebar Admin group:"
+              - generic [ref=e473] [cursor=pointer]:
+                - generic [ref=e474]: 
+                - generic [ref=e475]: Editing
+                - generic [ref=e476]: 
+              - paragraph [ref=e479]: "Now wire routes in App.jsx:"
+              - generic [ref=e482] [cursor=pointer]:
+                - generic [ref=e483]: 
+                - generic [ref=e484]: Editing
+                - generic [ref=e485]: 
+              - paragraph [ref=e488]: "Now add the script tag for AccessPages.jsx in the HTML and route the login → role-select:"
+              - generic [ref=e491] [cursor=pointer]:
+                - generic [ref=e492]: 
+                - generic [ref=e493]: Editing
+                - generic [ref=e494]: 
+              - paragraph [ref=e497]: "Now route login to role-select first (so flow is: login → role-select → dashboard):"
+              - generic [ref=e500] [cursor=pointer]:
+                - generic [ref=e501]: 
+                - generic [ref=e502]: Editing
+                - generic [ref=e503]: 
+              - paragraph [ref=e506]: "Now let me verify the build works:"
+              - generic [ref=e509] [cursor=pointer]:
+                - generic [ref=e510]: 
+                - generic [ref=e511]: Done
+                - generic [ref=e512]: 
+              - paragraph [ref=e515]: "Empty root — likely a syntax error somewhere. Let me check:"
+              - generic [ref=e518] [cursor=pointer]:
+                - generic [ref=e519]: 
+                - generic [ref=e520]: Reading logs
+                - generic [ref=e521]: 
+              - paragraph [ref=e524]: "Pre-existing syntax error from the medical → tech rewrite. Let me fix it:"
+              - generic [ref=e527] [cursor=pointer]:
+                - generic [ref=e528]: 
+                - generic [ref=e529]: Reading
+                - generic [ref=e530]: 
+              - paragraph [ref=e533]: "Garbled string. Let me fix:"
+              - generic [ref=e536] [cursor=pointer]:
+                - generic [ref=e537]: 
+                - generic [ref=e538]: Editing
+                - generic [ref=e539]: 
+              - paragraph [ref=e542]: "Let me also scan for any other malformed strings from the rewrite:"
+              - generic [ref=e545] [cursor=pointer]:
+                - generic [ref=e546]: 
+                - generic [ref=e547]: Searching
+                - generic [ref=e548]: 
+              - paragraph [ref=e551]: "Let me re-verify:"
+              - generic [ref=e554] [cursor=pointer]:
+                - generic [ref=e555]: 
+                - generic [ref=e556]: Done
+                - generic [ref=e557]: 
+              - paragraph [ref=e560]: "Page mounted clean. Let me update todos and take a quick look to confirm visually, then fork verifier:"
+              - generic [ref=e561]:
+                - generic [ref=e562]
+                - generic [ref=e594] [cursor=pointer]
+              - paragraph [ref=e600]: "Looking great. There's a tiny header issue on role-select (Aliyev/Sardor wrapping into the topbar). Let me check the rest:"
+              - generic [ref=e603] [cursor=pointer]:
+                - generic [ref=e604]: 
+                - generic [ref=e605]: Viewing image ×3
+                - generic [ref=e606]: 
+              - paragraph [ref=e609]: "All 6 pages render correctly with rich data. The role-select header has minor wrapping on small viewport but it's functional. Let me fix that header overlap (small fix):"
+              - generic [ref=e612] [cursor=pointer]:
+                - generic [ref=e613]: 
+                - generic [ref=e614]: Editing
+                - generic [ref=e615]: 
+              - paragraph [ref=e618]: "Now let me also check the sidebar section label for \"Tizim\" to make sure it appears with the correct styling. Let me also confirm the page after audit click (drawer):"
+              - generic [ref=e621] [cursor=pointer]:
+                - generic [ref=e622]: 
+                - generic [ref=e623]: Viewing image
+                - generic [ref=e624]: 
+              - paragraph [ref=e627]: "The drawer click didn't fire because the table-row click selector wasn't right (audit uses divs not table). That's just a screenshot quirk. The 6 pages all work. Let me fork the verifier:"
+              - generic [ref=e630] [cursor=pointer]:
+                - generic [ref=e631]: 
+                - generic [ref=e632]: Fork verifier agent
+                - generic [ref=e633]: 
+              - generic [ref=e635]:
+                - paragraph [ref=e636]
+                - list [ref=e638]
+                - paragraph [ref=e661]
+                - paragraph [ref=e664]
+          - generic [ref=e668]:
+            - textbox "Describe what you want to create..." [ref=e670]
+            - generic [ref=e671]:
+              - generic [ref=e672]:
+                - button "" [ref=e673]
+                - button "" [ref=e676]
+                - button "" [ref=e678]
+                - button "Import" [ref=e681]
+              - button " Send" [disabled] [ref=e684]:
+                - generic [ref=e685]
+    - generic [ref=e690]:
+      - generic [ref=e691]:
+        - button "" [ref=e692]:
+          - generic [ref=e693]: 
+        - button " Tweaks" [ref=e695]:
+          - generic [ref=e696]:
+            - generic [ref=e697]: 
+            - text: Tweaks
+        - button " Comment" [ref=e699]:
+          - generic [ref=e700]:
+            - generic [ref=e701]: 
+            - text: Comment
+        - button " Edit" [ref=e702]:
+          - generic [ref=e703]:
+            - generic [ref=e704]: 
+            - text: Edit
+        - button " Draw" [ref=e705]:
+          - generic [ref=e706]:
+            - generic [ref=e707]: 
+            - text: Draw
+        - button " 100%" [ref=e709]:
+          - generic [ref=e710]:
+            - generic [ref=e711]: 
+            - text: 100%
+      - iframe [active] [ref=e717]:
+        - generic [ref=f25e159]:
+          - complementary [ref=f25e160]:
+            - generic [ref=f25e161]:
+              - generic [ref=f25e162]: B
+              - generic [ref=f25e163]:
+                - generic [ref=f25e164]: Uni ERP
+                - generic [ref=f25e165]: Raqamli universitet
+            - generic [ref=f25e166]:
+              - button "Asosiy" [ref=f25e168] [cursor=pointer]:
+                - img [ref=f25e169]
+                - generic [ref=f25e174]: Asosiy
+              - generic [ref=f25e175]:
+                - generic [ref=f25e176]: Academic
+                - button "CRM — Arizalar 23" [ref=f25e177] [cursor=pointer]
+                - button "CRM Voronka" [ref=f25e183] [cursor=pointer]
+                - button "O'qituvchilar" [ref=f25e188] [cursor=pointer]
+                - button "Talabalar 3.2k" [ref=f25e193] [cursor=pointer]
+                - button "Davomat" [ref=f25e201] [cursor=pointer]
+                - button "Baholash" [ref=f25e205] [cursor=pointer]
+                - button "Dars jadvali" [ref=f25e209] [cursor=pointer]
+                - button "O'quv rejalar" [ref=f25e213] [cursor=pointer]
+                - button "Kafedralar" [ref=f25e218] [cursor=pointer]
+              - generic [ref=f25e223]:
+                - generic [ref=f25e224]: Academic+
+                - button "Imtihonlar" [ref=f25e225] [cursor=pointer]
+                - button "Kutubxona" [ref=f25e229] [cursor=pointer]
+                - button "Ilmiy ishlar" [ref=f25e234] [cursor=pointer]
+                - button "Diplom ishlari" [ref=f25e239] [cursor=pointer]
+              - generic [ref=f25e244]:
+                - generic [ref=f25e245]: Cabinets
+                - button "Talaba kabineti" [ref=f25e246] [cursor=pointer]
+                - button "O'qituvchi kabineti" [ref=f25e251] [cursor=pointer]
+              - generic [ref=f25e256]:
+                - generic [ref=f25e257]: Finance
+                - button "Kontraktlar" [ref=f25e258] [cursor=pointer]
+                - button "Stipendiya" [ref=f25e263] [cursor=pointer]
+                - button "TTJ" [ref=f25e268] [cursor=pointer]
+              - generic [ref=f25e273]:
+                - generic [ref=f25e274]: Operations
+                - button "Topshiriqlar 14" [ref=f25e275] [cursor=pointer]
+                - button "Hisobotlar" [ref=f25e280] [cursor=pointer]
+                - button "Xabarlar 8" [ref=f25e285] [cursor=pointer]
+                - button "Bildirishnomalar 5" [ref=f25e291] [cursor=pointer]
+              - generic [ref=f25e297]:
+                - generic [ref=f25e298]: Admin
+                - button "HR" [ref=f25e299] [cursor=pointer]
+                - button "Buyruqlar" [ref=f25e306] [cursor=pointer]
+                - button "Hujjat aylanishi" [ref=f25e311] [cursor=pointer]
+                - button "Analytics" [ref=f25e316] [cursor=pointer]
+                - button "Sozlamalar" [ref=f25e321] [cursor=pointer]
+              - generic [ref=f25e326]:
+                - generic [ref=f25e327]: Tizim
+                - button "Foydalanuvchilar 32" [ref=f25e328] [cursor=pointer]
+                - button "Rollar" [ref=f25e336] [cursor=pointer]
+                - button "Ruxsatlar matritsasi" [ref=f25e340] [cursor=pointer]
+                - button "Audit log" [ref=f25e344] [cursor=pointer]
+            - generic [ref=f25e349]:
+              - button "NV Filial Navoiy (bosh)" [ref=f25e350] [cursor=pointer]:
+                - generic [ref=f25e351]: NV
+                - generic [ref=f25e352]
+                - img [ref=f25e355]
+              - generic [ref=f25e357]:
+                - generic [ref=f25e358]: AD
+                - generic [ref=f25e359]
+                - button "Chiqish" [ref=f25e362] [cursor=pointer]
+          - generic [ref=f25e366]:
+            - generic [ref=f25e367]:
+              - button "Toggle sidebar" [ref=f25e368] [cursor=pointer]:
+                - img [ref=f25e369]
+              - generic [ref=f25e373]:
+                - generic [ref=f25e375]: Asosiy
+                - heading "Asosiy panelXush kelibsiz, Admin!" [level=1] [ref=f25e376]
+              - generic [ref=f25e377]:
+                - generic
+                - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=f25e378]'
+              - button "🇺🇿 uz" [ref=f25e380] [cursor=pointer]:
+                - generic [ref=f25e381]: 🇺🇿
+                - generic [ref=f25e382]: uz
+                - img [ref=f25e383]
+              - button "Theme" [ref=f25e385] [cursor=pointer]:
+                - img [ref=f25e386]
+              - button "Bildirishnomalar" [ref=f25e389] [cursor=pointer]:
+                - img [ref=f25e390]
+                - generic [ref=f25e393]: "3"
+              - button "AD" [ref=f25e395] [cursor=pointer]:
+                - generic [ref=f25e396]: AD
+                - img [ref=f25e397]
+            - main [ref=f25e399]:
+              - generic [ref=f25e400]:
+                - generic [ref=f25e402]: Navoiy (bosh filial) · 2025-2026 · 2-semester
+                - generic [ref=f25e404]
+              - generic [ref=f25e411]:
+                - generic [ref=f25e412]
+                - generic [ref=f25e419]
+                - generic [ref=f25e426]
+                - generic [ref=f25e439]
+                - generic [ref=f25e450]
+                - generic [ref=f25e459]
+              - generic [ref=f25e468]:
+                - generic [ref=f25e469]
+                - generic [ref=f25e476]
+                - generic [ref=f25e483]
+                - generic [ref=f25e489]
+                - generic [ref=f25e495]
+                - generic [ref=f25e502]
+              - generic [ref=f25e509]:
+                - generic [ref=f25e510]
+                - generic [ref=f25e548]
+                - generic [ref=f25e571]
+              - generic [ref=f25e599]:
+                - generic [ref=f25e600]
+                - generic [ref=f25e636]
+          - generic [ref=f25e684]:
+            - generic [ref=f25e685]: Dashboard
+            - generic [ref=f25e686]:
+              - button "KPI grid" [ref=f25e687] [cursor=pointer]
+              - button "Hero" [ref=f25e688] [cursor=pointer]

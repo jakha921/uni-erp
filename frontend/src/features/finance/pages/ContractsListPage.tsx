@@ -5,13 +5,14 @@ import { Pagination } from '@/components/table';
 import { Button, Spinner } from '@/components/ui';
 import { Card } from '@/components/data-display';
 import { ConfirmDialog } from '@/components/overlays';
-import { useContracts, useCreateContract, useDeleteContract } from '@/api/hooks/useFinance';
+import { useContracts, useCreateContract, useUpdateContract, useDeleteContract } from '@/api/hooks/useFinance';
 import { useFaculties } from '@/api/hooks/useCore';
 import { ContractTable } from '../components/ContractTable';
 import { ContractForm } from '../components/ContractForm';
+import { ContractEditModal } from '../components/ContractEditModal';
 import { ContractDetailSlide } from '../components/ContractDetailSlide';
 import type { Contract, ContractStatus, ContractType } from '@/types/finance';
-import type { ContractFormData } from '../schemas/contract.schema';
+import type { ContractFormData, ContractEditFormData } from '../schemas/contract.schema';
 
 export function ContractsListPage() {
   const [page, setPage] = useState(1);
@@ -21,6 +22,7 @@ export function ContractsListPage() {
   const [fYear, setFYear] = useState('');
   const [faculty, setFaculty] = useState('');
   const [formOpen, setFormOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Contract | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Contract | null>(null);
   const [slideContract, setSlideContract] = useState<Contract | null>(null);
 
@@ -33,6 +35,7 @@ export function ContractsListPage() {
   });
 
   const createMutation = useCreateContract();
+  const updateMutation = useUpdateContract();
   const deleteMutation = useDeleteContract();
   const { data: faculties } = useFaculties();
 
@@ -154,6 +157,7 @@ export function ContractsListPage() {
           data={contracts}
           page={page}
           pageSize={10}
+          onEdit={(contract) => setEditTarget(contract)}
           onDelete={(contract) => setDeleteTarget(contract)}
           onRowClick={(contract) => setSlideContract(contract)}
         />
@@ -173,6 +177,20 @@ export function ContractsListPage() {
         onClose={() => setFormOpen(false)}
         onSubmit={handleCreate}
         loading={createMutation.isPending}
+      />
+
+      <ContractEditModal
+        open={!!editTarget}
+        onClose={() => setEditTarget(null)}
+        onSubmit={(data: ContractEditFormData) => {
+          if (!editTarget) return;
+          updateMutation.mutate(
+            { id: editTarget.id, patch: { contractType: data.contractType, contractAmount: data.contractAmount } },
+            { onSuccess: () => setEditTarget(null) },
+          );
+        }}
+        contract={editTarget}
+        loading={updateMutation.isPending}
       />
 
       <ConfirmDialog

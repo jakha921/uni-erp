@@ -1,0 +1,341 @@
+- generic [ref=e161]:
+  - complementary [ref=e162]:
+    - generic [ref=e164]: Uni
+    - generic [ref=e165]:
+      - button "Asosiy" [ref=e492] [cursor=pointer]:
+        - img [ref=e168]
+      - generic [ref=e493]:
+        - button "Statistika" [ref=e494] [cursor=pointer]:
+          - img [ref=e495]
+        - button "Ro'yxat" [ref=e498] [cursor=pointer]:
+          - img [ref=e499]
+      - generic [ref=e504]:
+        - button "O'qituvchilar" [ref=e505] [cursor=pointer]:
+          - img [ref=e506]
+        - button "Davomat" [ref=e509] [cursor=pointer]:
+          - img [ref=e510]
+        - button "Baholash" [ref=e512] [cursor=pointer]:
+          - img [ref=e513]
+        - button "Dars jadvali" [ref=e515] [cursor=pointer]:
+          - img [ref=e516]
+        - button "Imtihonlar" [ref=e518] [cursor=pointer]:
+          - img [ref=e519]
+        - button "Bitiruvchilar" [ref=e522] [cursor=pointer]:
+          - img [ref=e523]
+        - button "Amaliyot" [ref=e526] [cursor=pointer]:
+          - img [ref=e527]
+      - generic [ref=e530]:
+        - button "O'quv rejalar" [ref=e531] [cursor=pointer]:
+          - img [ref=e532]
+        - button "Kafedralar" [ref=e535] [cursor=pointer]:
+          - img [ref=e536]
+        - button "Fanlar" [ref=e539] [cursor=pointer]:
+          - img [ref=e540]
+        - button "Kutubxona" [ref=e543] [cursor=pointer]:
+          - img [ref=e544]
+      - generic [ref=e547]:
+        - button "Arizalar" [ref=e548] [cursor=pointer]:
+          - img [ref=e549]
+        - button "Voronka" [ref=e552] [cursor=pointer]:
+          - img [ref=e553]
+        - button "CRM hisobot" [ref=e556] [cursor=pointer]:
+          - img [ref=e557]
+      - generic [ref=e560]:
+        - button "Moliyaviy panel" [ref=e561] [cursor=pointer]:
+          - img [ref=e562]
+        - button "Kontraktlar" [ref=e565] [cursor=pointer]:
+          - img [ref=e566]
+        - button "Qarzdorlar" [ref=e569] [cursor=pointer]:
+          - img [ref=e570]
+        - button "To'lovlar" [ref=e572] [cursor=pointer]:
+          - img [ref=e573]
+        - button "Stipendiya" [ref=e576] [cursor=pointer]:
+          - img [ref=e577]
+        - button "Hisobot" [ref=e580] [cursor=pointer]:
+          - img [ref=e581]
+        - button "Maosh" [ref=e584] [cursor=pointer]:
+          - img [ref=e585]
+        - button "Byudjet" [ref=e588] [cursor=pointer]:
+          - img [ref=e589]
+      - generic [ref=e592]:
+        - button "Kadrlar paneli" [ref=e593] [cursor=pointer]:
+          - img [ref=e594]
+        - button "Xodimlar" [ref=e597] [cursor=pointer]:
+          - img [ref=e598]
+        - button "Bo'limlar" [ref=e603] [cursor=pointer]:
+          - img [ref=e604]
+        - button "Buyruqlar" [ref=e607] [cursor=pointer]:
+          - img [ref=e608]
+        - button "Davomad" [ref=e611] [cursor=pointer]:
+          - img [ref=e612]
+        - button "Ta'tillar va safar" [ref=e614] [cursor=pointer]:
+          - img [ref=e615]
+      - generic [ref=e618]:
+        - button "Buyruqlar (eski)" [ref=e619] [cursor=pointer]:
+          - img [ref=e620]
+        - button "Shtatlash jadvali" [ref=e623] [cursor=pointer]:
+          - img [ref=e624]
+      - generic [ref=e628]:
+        - button "TTJ (yotoqxona)" [ref=e629] [cursor=pointer]:
+          - img [ref=e630]
+        - button "Ombor" [ref=e633] [cursor=pointer]:
+          - img [ref=e634]
+        - button "Jihozlar" [ref=e636] [cursor=pointer]:
+          - img [ref=e637]
+        - button "Transport" [ref=e640] [cursor=pointer]:
+          - img [ref=e641]
+      - generic [ref=e646]:
+        - button "Ilmiy ishlar" [ref=e647] [cursor=pointer]:
+          - img [ref=e648]
+        - button "Diplom ishlari" [ref=e651] [cursor=pointer]:
+          - img [ref=e652]
+        - button "Konferensiyalar" [ref=e655] [cursor=pointer]:
+          - img [ref=e656]
+        - button "Patentlar" [ref=e658] [cursor=pointer]:
+          - img [ref=e659]
+      - generic [ref=e661]:
+        - button "Talaba kabineti" [ref=e662] [cursor=pointer]:
+          - img [ref=e663]
+        - button "O'qituvchi kabineti" [ref=e666] [cursor=pointer]:
+          - img [ref=e667]
+      - generic [ref=e670]:
+        - button "Topshiriqlar" [ref=e671] [cursor=pointer]:
+          - img [ref=e672]
+        - button "Murojaatlar" [ref=e674] [cursor=pointer]:
+          - img [ref=e675]
+        - button "Xabarlar" [ref=e678] [cursor=pointer]:
+          - img [ref=e679]
+        - button "Bildirishnomalar" [ref=e682] [cursor=pointer]:
+          - img [ref=e683]
+        - button "Yangiliklar" [ref=e686] [cursor=pointer]:
+          - img [ref=e687]
+      - generic [ref=e689]:
+        - button "Hujjat aylanishi" [ref=e690] [cursor=pointer]:
+          - img [ref=e691]
+        - button "Analytics" [ref=e693] [cursor=pointer]:
+          - img [ref=e694]
+        - button "Hisobotlar" [ref=e697] [cursor=pointer]:
+          - img [ref=e698]
+        - button "Ma'lumotnomalar" [ref=e701] [cursor=pointer]:
+          - img [ref=e702]
+      - generic [ref=e705]:
+        - button "Shaxsiy kabinet" [ref=e706] [cursor=pointer]:
+          - img [ref=e707]
+        - button "Sozlamalar" [ref=e710] [cursor=pointer]:
+          - img [ref=e711]
+      - generic [ref=e714]:
+        - button "Foydalanuvchilar" [ref=e715] [cursor=pointer]:
+          - img [ref=e716]
+        - button "Rollar" [ref=e721] [cursor=pointer]:
+          - img [ref=e722]
+        - button "Ruxsatlar" [ref=e724] [cursor=pointer]:
+          - img [ref=e725]
+        - button "Audit log" [ref=e727] [cursor=pointer]:
+          - img [ref=e728]
+  - generic [ref=e173]:
+    - generic [ref=e174]:
+      - button "Toggle sidebar" [active] [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+      - generic [ref=e180]:
+        - generic [ref=e182]: Asosiy
+        - heading "Asosiy panelXush kelibsiz, Admin!" [level=1] [ref=e183]
+      - generic [ref=e184]:
+        - generic:
+          - img
+        - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e185]'
+      - button "🇺🇿 uz" [ref=e187] [cursor=pointer]:
+        - generic [ref=e188]: 🇺🇿
+        - generic [ref=e189]: uz
+        - img [ref=e190]
+      - button "Theme" [ref=e192] [cursor=pointer]:
+        - img [ref=e193]
+      - button "Bildirishnomalar" [ref=e196] [cursor=pointer]:
+        - img [ref=e197]
+        - generic [ref=e200]: "3"
+      - button "AA Admin" [ref=e202] [cursor=pointer]:
+        - generic [ref=e203]: AA
+        - generic [ref=e205]: Admin
+        - img [ref=e207]
+    - main [ref=e209]:
+      - generic [ref=e210]:
+        - generic [ref=e212]: Navoiy (bosh filial) · 2025-2026 · 2-semester
+        - generic [ref=e214]:
+          - button "Eksport" [ref=e215] [cursor=pointer]:
+            - img [ref=e216]
+            - text: Eksport
+          - button "Tezkor amal" [ref=e219] [cursor=pointer]:
+            - img [ref=e220]
+            - text: Tezkor amal
+      - generic [ref=e221]:
+        - generic [ref=e222]:
+          - img [ref=e224]
+          - generic [ref=e227]: Fakultetlar
+          - generic [ref=e228]: "8"
+        - generic [ref=e229]:
+          - img [ref=e231]
+          - generic [ref=e234]: Kafedralar
+          - generic [ref=e235]: "4"
+        - generic [ref=e236]:
+          - img [ref=e238]
+          - generic [ref=e243]: O'qituvchilar
+          - generic [ref=e244]: "50"
+        - generic [ref=e245]:
+          - img [ref=e247]
+          - generic [ref=e250]: Talabalar
+          - generic [ref=e251]: "200"
+        - generic [ref=e252]:
+          - img [ref=e254]
+          - generic [ref=e259]: Xonalar
+          - generic [ref=e260]: "142"
+        - generic [ref=e261]:
+          - img [ref=e263]
+          - generic [ref=e268]: Guruhlar
+          - generic [ref=e269]: "8"
+      - generic [ref=e270]:
+        - generic [ref=e271]:
+          - img [ref=e273]
+          - generic [ref=e276]: Tushumlar
+          - generic [ref=e277]: 263M
+        - generic [ref=e278]:
+          - img [ref=e280]
+          - generic [ref=e282]: Qarzdorlar
+          - generic [ref=e283]: "24"
+        - generic [ref=e284]:
+          - img [ref=e286]
+          - generic [ref=e289]: Kontraktlar
+          - generic [ref=e290]: "30"
+        - generic [ref=e291]:
+          - img [ref=e293]
+          - generic [ref=e296]: Jami qarz
+          - generic [ref=e297]: 185M
+        - generic [ref=e298]:
+          - img [ref=e300]
+          - generic [ref=e303]: Stipendiyalar
+          - generic [ref=e304]: "10"
+        - generic [ref=e305]:
+          - img [ref=e307]
+          - generic [ref=e309]: Buyruqlar
+          - generic [ref=e310]: "18"
+      - generic [ref=e311]:
+        - generic [ref=e312]:
+          - generic [ref=e313]:
+            - heading "Viloyatlar bo'yicha" [level=3] [ref=e314]
+            - generic [ref=e316]: Barcha
+          - generic [ref=e317]:
+            - generic [ref=e318]:
+              - img [ref=e319]
+              - generic [ref=e326]:
+                - generic [ref=e327]: "200"
+                - generic [ref=e328]: Talaba
+            - generic [ref=e329]:
+              - generic [ref=e330]:
+                - generic [ref=e332]: Navoiy
+                - generic [ref=e333]: "1240"
+              - generic [ref=e334]:
+                - generic [ref=e336]: Zarafshon
+                - generic [ref=e337]: "520"
+              - generic [ref=e338]:
+                - generic [ref=e340]: Uchquduq
+                - generic [ref=e341]: "480"
+              - generic [ref=e342]:
+                - generic [ref=e344]: Qashqadaryo
+                - generic [ref=e345]: "410"
+              - generic [ref=e346]:
+                - generic [ref=e348]: Boshqa
+                - generic [ref=e349]: "597"
+        - generic [ref=e350]:
+          - generic [ref=e351]:
+            - heading "Jinsi bo'yicha" [level=3] [ref=e352]
+            - generic [ref=e354]: 2025-26
+          - generic [ref=e355]:
+            - generic [ref=e356]:
+              - img [ref=e357]
+              - generic [ref=e361]:
+                - generic [ref=e362]: 56%
+                - generic [ref=e363]: Ayol
+            - generic [ref=e364]:
+              - generic [ref=e365]:
+                - generic [ref=e367]: Ayol
+                - generic [ref=e368]: "1818"
+              - generic [ref=e369]:
+                - generic [ref=e371]: Erkak
+                - generic [ref=e372]: "1429"
+        - generic [ref=e373]:
+          - generic [ref=e374]:
+            - heading "Yoshi bo'yicha" [level=3] [ref=e375]
+            - generic [ref=e377]: 2025-26
+          - generic [ref=e378]:
+            - generic [ref=e379]:
+              - img [ref=e380]
+              - generic [ref=e385]:
+                - generic [ref=e386]: "21.4"
+                - generic [ref=e387]: O'rtacha
+            - generic [ref=e388]:
+              - generic [ref=e389]:
+                - generic [ref=e391]: 17-20 yosh
+                - generic [ref=e392]: "1580"
+              - generic [ref=e393]:
+                - generic [ref=e395]: 21-24 yosh
+                - generic [ref=e396]: "1340"
+              - generic [ref=e397]:
+                - generic [ref=e399]: 25+ yosh
+                - generic [ref=e400]: "327"
+      - generic [ref=e401]:
+        - generic [ref=e402]:
+          - generic [ref=e403]:
+            - heading "Talabalar dinamikasi" [level=3] [ref=e404]
+            - generic [ref=e405]:
+              - generic [ref=e406]: 12 oy
+              - generic [ref=e407]: +8.4% YoY
+          - img [ref=e409]
+          - generic [ref=e425]:
+            - generic [ref=e426]: May
+            - generic [ref=e427]: Iyn
+            - generic [ref=e428]: Iyl
+            - generic [ref=e429]: Avg
+            - generic [ref=e430]: Sen
+            - generic [ref=e431]: Okt
+            - generic [ref=e432]: Noy
+            - generic [ref=e433]: Dek
+            - generic [ref=e434]: Yan
+            - generic [ref=e435]: Fev
+            - generic [ref=e436]: Mar
+            - generic [ref=e437]: Apr
+        - generic [ref=e438]:
+          - heading "So'nggi faoliyat" [level=3] [ref=e440]
+          - generic [ref=e441]:
+            - generic [ref=e442]:
+              - img [ref=e444]
+              - generic [ref=e447]:
+                - generic [ref=e448]: "To'lov: 3,800,000 so'm"
+                - generic [ref=e449]: TOSHMATOV BEKZOD RUSTAM O'G'LI · undefined
+              - generic [ref=e450]: 12 daq.
+            - generic [ref=e451]:
+              - img [ref=e453]
+              - generic [ref=e456]:
+                - generic [ref=e457]: "To'lov: 3,800,000 so'm"
+                - generic [ref=e458]: TOSHMATOV BEKZOD RUSTAM O'G'LI · undefined
+              - generic [ref=e459]: 34 daq.
+            - generic [ref=e460]:
+              - img [ref=e462]
+              - generic [ref=e465]:
+                - generic [ref=e466]: "To'lov: 8,200,000 so'm"
+                - generic [ref=e467]: XOLMATOVA MADINA AKMAL QIZI · undefined
+              - generic [ref=e468]: 1 soat
+            - generic [ref=e469]:
+              - img [ref=e471]
+              - generic [ref=e474]:
+                - generic [ref=e475]: "To'lov: 5,800,000 so'm"
+                - generic [ref=e476]: YUSUPOVA DILNOZA SANJAR QIZI · undefined
+              - generic [ref=e477]: 2 soat
+            - generic [ref=e478]:
+              - img [ref=e480]
+              - generic [ref=e483]:
+                - generic [ref=e484]: "To'lov: 3,100,000 so'm"
+                - generic [ref=e485]: MIRZAYEV OTABEK NODIR O'G'LI · undefined
+              - generic [ref=e486]: 3 soat
+  - generic [ref=e487]:
+    - generic [ref=e488]: Dashboard
+    - generic [ref=e489]:
+      - button "KPI grid" [ref=e490] [cursor=pointer]
+      - button "Hero" [ref=e491] [cursor=pointer]

@@ -1,0 +1,263 @@
+- generic [ref=e161]:
+  - complementary [ref=e162]:
+    - generic [ref=e164]: Uni
+    - generic [ref=e165]:
+      - button "Asosiy" [ref=e492] [cursor=pointer]:
+        - img [ref=e168]
+      - generic [ref=e493]:
+        - button "Statistika" [ref=e494] [cursor=pointer]:
+          - img [ref=e495]
+        - button "Ro'yxat" [ref=e498] [cursor=pointer]:
+          - img [ref=e499]
+      - generic [ref=e504]:
+        - button "O'qituvchilar" [ref=e505] [cursor=pointer]:
+          - img [ref=e506]
+        - button "Davomat" [ref=e509] [cursor=pointer]:
+          - img [ref=e510]
+        - button "Baholash" [ref=e512] [cursor=pointer]:
+          - img [ref=e513]
+        - button "Dars jadvali" [ref=e515] [cursor=pointer]:
+          - img [ref=e516]
+        - button "Imtihonlar" [ref=e518] [cursor=pointer]:
+          - img [ref=e519]
+        - button "Bitiruvchilar" [ref=e522] [cursor=pointer]:
+          - img [ref=e523]
+        - button "Amaliyot" [ref=e526] [cursor=pointer]:
+          - img [ref=e527]
+      - generic [ref=e530]:
+        - button "O'quv rejalar" [ref=e531] [cursor=pointer]:
+          - img [ref=e532]
+        - button "Kafedralar" [ref=e535] [cursor=pointer]:
+          - img [ref=e536]
+        - button "Fanlar" [ref=e539] [cursor=pointer]:
+          - img [ref=e540]
+        - button "Kutubxona" [ref=e543] [cursor=pointer]:
+          - img [ref=e544]
+      - generic [ref=e547]:
+        - button "Arizalar" [ref=e548] [cursor=pointer]:
+          - img [ref=e549]
+        - button "Voronka" [ref=e552] [cursor=pointer]:
+          - img [ref=e553]
+        - button "CRM hisobot" [ref=e556] [cursor=pointer]:
+          - img [ref=e557]
+      - generic [ref=e560]:
+        - button "Moliyaviy panel" [ref=e561] [cursor=pointer]:
+          - img [ref=e562]
+        - button "Kontraktlar" [ref=e565] [cursor=pointer]:
+          - img [ref=e566]
+        - button "Qarzdorlar" [ref=e569] [cursor=pointer]:
+          - img [ref=e570]
+        - button "To'lovlar" [ref=e572] [cursor=pointer]:
+          - img [ref=e573]
+        - button "Stipendiya" [ref=e576] [cursor=pointer]:
+          - img [ref=e577]
+        - button "Hisobot" [ref=e580] [cursor=pointer]:
+          - img [ref=e581]
+        - button "Maosh" [ref=e584] [cursor=pointer]:
+          - img [ref=e585]
+        - button "Byudjet" [ref=e588] [cursor=pointer]:
+          - img [ref=e589]
+      - generic [ref=e592]:
+        - button "Kadrlar paneli" [active] [ref=e593] [cursor=pointer]:
+          - img [ref=e594]
+        - button "Xodimlar" [ref=e597] [cursor=pointer]:
+          - img [ref=e598]
+        - button "Bo'limlar" [ref=e603] [cursor=pointer]:
+          - img [ref=e604]
+        - button "Buyruqlar" [ref=e607] [cursor=pointer]:
+          - img [ref=e608]
+        - button "Davomad" [ref=e611] [cursor=pointer]:
+          - img [ref=e612]
+        - button "Ta'tillar va safar" [ref=e614] [cursor=pointer]:
+          - img [ref=e615]
+      - generic [ref=e618]:
+        - button "Buyruqlar (eski)" [ref=e619] [cursor=pointer]:
+          - img [ref=e620]
+        - button "Shtatlash jadvali" [ref=e623] [cursor=pointer]:
+          - img [ref=e624]
+      - generic [ref=e628]:
+        - button "TTJ (yotoqxona)" [ref=e629] [cursor=pointer]:
+          - img [ref=e630]
+        - button "Ombor" [ref=e633] [cursor=pointer]:
+          - img [ref=e634]
+        - button "Jihozlar" [ref=e636] [cursor=pointer]:
+          - img [ref=e637]
+        - button "Transport" [ref=e640] [cursor=pointer]:
+          - img [ref=e641]
+      - generic [ref=e646]:
+        - button "Ilmiy ishlar" [ref=e647] [cursor=pointer]:
+          - img [ref=e648]
+        - button "Diplom ishlari" [ref=e651] [cursor=pointer]:
+          - img [ref=e652]
+        - button "Konferensiyalar" [ref=e655] [cursor=pointer]:
+          - img [ref=e656]
+        - button "Patentlar" [ref=e658] [cursor=pointer]:
+          - img [ref=e659]
+      - generic [ref=e661]:
+        - button "Talaba kabineti" [ref=e662] [cursor=pointer]:
+          - img [ref=e663]
+        - button "O'qituvchi kabineti" [ref=e666] [cursor=pointer]:
+          - img [ref=e667]
+      - generic [ref=e670]:
+        - button "Topshiriqlar" [ref=e671] [cursor=pointer]:
+          - img [ref=e672]
+        - button "Murojaatlar" [ref=e674] [cursor=pointer]:
+          - img [ref=e675]
+        - button "Xabarlar" [ref=e678] [cursor=pointer]:
+          - img [ref=e679]
+        - button "Bildirishnomalar" [ref=e682] [cursor=pointer]:
+          - img [ref=e683]
+        - button "Yangiliklar" [ref=e686] [cursor=pointer]:
+          - img [ref=e687]
+      - generic [ref=e689]:
+        - button "Hujjat aylanishi" [ref=e690] [cursor=pointer]:
+          - img [ref=e691]
+        - button "Analytics" [ref=e693] [cursor=pointer]:
+          - img [ref=e694]
+        - button "Hisobotlar" [ref=e697] [cursor=pointer]:
+          - img [ref=e698]
+        - button "Ma'lumotnomalar" [ref=e701] [cursor=pointer]:
+          - img [ref=e702]
+      - generic [ref=e705]:
+        - button "Shaxsiy kabinet" [ref=e706] [cursor=pointer]:
+          - img [ref=e707]
+        - button "Sozlamalar" [ref=e710] [cursor=pointer]:
+          - img [ref=e711]
+      - generic [ref=e714]:
+        - button "Foydalanuvchilar" [ref=e715] [cursor=pointer]:
+          - img [ref=e716]
+        - button "Rollar" [ref=e721] [cursor=pointer]:
+          - img [ref=e722]
+        - button "Ruxsatlar" [ref=e724] [cursor=pointer]:
+          - img [ref=e725]
+        - button "Audit log" [ref=e727] [cursor=pointer]:
+          - img [ref=e728]
+  - generic [ref=e173]:
+    - generic [ref=e174]:
+      - button "Toggle sidebar" [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - generic [ref=e182]: Academic
+          - generic [ref=e731]: /
+          - generic [ref=e732]: Dars jadvali
+        - heading "Dars jadvali" [level=1] [ref=e1723]
+      - generic [ref=e184]:
+        - generic:
+          - img
+        - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e185]'
+      - button "🇺🇿 uz" [ref=e187] [cursor=pointer]:
+        - generic [ref=e188]: 🇺🇿
+        - generic [ref=e189]: uz
+        - img [ref=e190]
+      - button "Theme" [ref=e192] [cursor=pointer]:
+        - img [ref=e193]
+      - button "Bildirishnomalar" [ref=e196] [cursor=pointer]:
+        - img [ref=e197]
+        - generic [ref=e200]: "3"
+      - button "AA Admin" [ref=e202] [cursor=pointer]:
+        - generic [ref=e203]: AA
+        - generic [ref=e205]: Admin
+        - img [ref=e207]
+    - main [ref=e209]:
+      - generic [ref=e1725]:
+        - button "Oldingi" [ref=e1726] [cursor=pointer]:
+          - img [ref=e1727]
+          - text: Oldingi
+        - generic [ref=e1729]: 21 – 26 Aprel, 2026
+        - button "Keyingi" [ref=e1730] [cursor=pointer]:
+          - text: Keyingi
+          - img [ref=e1731]
+        - combobox [ref=e1733]:
+          - option "301-A guruhi" [selected]
+          - option "301-B guruhi"
+          - option "Karimov U.B."
+        - generic [ref=e1734]:
+          - button "Hafta" [ref=e1735] [cursor=pointer]
+          - button "Kun" [ref=e1736] [cursor=pointer]
+          - button "Oy" [ref=e1737] [cursor=pointer]
+        - button "Dars qo'shish" [ref=e1738] [cursor=pointer]:
+          - img [ref=e1739]
+          - text: Dars qo'shish
+      - generic [ref=e1740]:
+        - generic [ref=e1741]:
+          - generic [ref=e1743]:
+            - generic [ref=e1744]: Dushanba
+            - generic [ref=e1745]: "21.04"
+          - generic [ref=e1746]:
+            - generic [ref=e1747]: Seshanba
+            - generic [ref=e1748]: "22.04"
+          - generic [ref=e1749]:
+            - generic [ref=e1750]: Chorshanba
+            - generic [ref=e1751]: "23.04"
+          - generic [ref=e1752]:
+            - generic [ref=e1753]: Payshanba
+            - generic [ref=e1754]: "24.04"
+          - generic [ref=e1755]:
+            - generic [ref=e1756]: Juma
+            - generic [ref=e1757]: "25.04"
+          - generic [ref=e1758]:
+            - generic [ref=e1759]: Shanba
+            - generic [ref=e1760]: "26.04"
+        - generic [ref=e1761]:
+          - generic [ref=e1762]:
+            - generic [ref=e1763]: 08:30
+            - generic [ref=e1764]: 10:00
+            - generic [ref=e1765]: 11:30
+            - generic [ref=e1766]: 13:00
+            - generic [ref=e1767]: 14:30
+            - generic [ref=e1768]: 16:00
+            - generic [ref=e1769]: 17:30
+          - generic [ref=e1770]:
+            - generic [ref=e1778] [cursor=pointer]:
+              - generic [ref=e1779]: Maʼruza · 301
+              - generic [ref=e1780]: Algoritmlar
+              - generic [ref=e1781]: Karimov U.B.
+            - generic [ref=e1782] [cursor=pointer]:
+              - generic [ref=e1783]: Labor. · 204
+              - generic [ref=e1784]: Ma'lumotlar bazasi
+              - generic [ref=e1785]: Nazarova M.
+            - generic [ref=e1786] [cursor=pointer]:
+              - generic [ref=e1787]: Labor. · Lab-2
+              - generic [ref=e1788]: Tarmoqlar
+              - generic [ref=e1789]: Saidov R.
+          - generic [ref=e1790]:
+            - generic [ref=e1798] [cursor=pointer]:
+              - generic [ref=e1799]: Maʼruza · 112
+              - generic [ref=e1800]: Veb-dasturlash
+              - generic [ref=e1801]: Xolmatov A.
+            - generic [ref=e1802] [cursor=pointer]:
+              - generic [ref=e1803]: Seminar · 301
+              - generic [ref=e1804]: Iqtisodiyot nazariyasi
+              - generic [ref=e1805]: Yusupov J.
+          - generic [ref=e1806]:
+            - generic [ref=e1814] [cursor=pointer]:
+              - generic [ref=e1815]: Amaliy · Lab-A
+              - generic [ref=e1816]: Ishlab chiqarish amaliyoti
+              - generic [ref=e1817]: Rahimov S.
+            - generic [ref=e1818] [cursor=pointer]:
+              - generic [ref=e1819]: Maʼruza · 301
+              - generic [ref=e1820]: Algoritmlar
+              - generic [ref=e1821]: Karimov U.B.
+          - generic [ref=e1822]:
+            - generic [ref=e1830] [cursor=pointer]:
+              - generic [ref=e1831]: Maʼruza · 204
+              - generic [ref=e1832]: Ma'lumotlar bazasi
+              - generic [ref=e1833]: Nazarova M.
+            - generic [ref=e1834] [cursor=pointer]:
+              - generic [ref=e1835]: Labor. · Lab-3
+              - generic [ref=e1836]: Diskret matematika
+              - generic [ref=e1837]: Tursunova F.
+          - generic [ref=e1838]:
+            - generic [ref=e1846] [cursor=pointer]:
+              - generic [ref=e1847]: Seminar · 208
+              - generic [ref=e1848]: Operatsion tizimlar
+              - generic [ref=e1849]: Ergashev B.
+            - generic [ref=e1850] [cursor=pointer]:
+              - generic [ref=e1851]: Maʼruza · 301
+              - generic [ref=e1852]: Iqtisodiyot nazariyasi
+              - generic [ref=e1853]: Yusupov J.
+          - generic [ref=e1862] [cursor=pointer]:
+            - generic [ref=e1863]: Maʼruza · 115
+            - generic [ref=e1864]: Pedagogika
+            - generic [ref=e1865]: Hasanova D.

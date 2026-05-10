@@ -17,3 +17,12 @@ export const contractSchema = z.object({
 });
 
 export type ContractFormData = z.infer<typeof contractSchema>;
+
+export const contractEditSchema = z.object({
+  contractType: z.enum(['bazoviy', 'tabaqalashtirilgan', 'grant', 'xorijiy'], {
+    message: 'Kontrakt turini tanlang',
+  }),
+  contractAmount: z.coerce.number().positive("Summa 0 dan katta bo'lishi kerak"),
+});
+
+export type ContractEditFormData = z.infer<typeof contractEditSchema>;

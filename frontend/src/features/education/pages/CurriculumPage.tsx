@@ -3,8 +3,8 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
-import { Upload, Plus, Trash2 } from 'lucide-react';
-import { useCurriculumList, useCreateCurriculum, useDeleteCurriculum } from '@/api/hooks/useCurriculum';
+import { Upload, Plus, Trash2, Pencil } from 'lucide-react';
+import { useCurriculumList, useCreateCurriculum, useUpdateCurriculum, useDeleteCurriculum } from '@/api/hooks/useCurriculum';
 import { useSpecialties, useAcademicYears } from '@/api/hooks/useCore';
 import { useSubjects } from '@/api/hooks/useEducation';
 import { CurriculumForm } from '../components/CurriculumForm';
@@ -32,8 +32,10 @@ export function CurriculumPage() {
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<number | undefined>(undefined);
   const [selectedYear, setSelectedYear] = useState<string>('');
   const [formOpen, setFormOpen] = useState(false);
+  const [editCurriculum, setEditCurriculum] = useState<Curriculum | null>(null);
   const [deleteCurriculumItem, setDeleteCurriculumItem] = useState<Curriculum | null>(null);
   const createCurriculum = useCreateCurriculum();
+  const updateCurriculumMutation = useUpdateCurriculum();
   const deleteCurriculumMutation = useDeleteCurriculum();
 
   // Derive year options from academic years API, fallback to static
@@ -113,9 +115,14 @@ export function CurriculumPage() {
         </div>
         <div className="flex gap-2">
           {curriculum && (
-            <Button variant="ghost" size="sm" leftIcon={<Trash2 className="h-3.5 w-3.5 text-red-500" />} onClick={() => setDeleteCurriculumItem(curriculum)}>
-              O&apos;chirish
-            </Button>
+            <>
+              <Button variant="ghost" size="sm" leftIcon={<Pencil className="h-3.5 w-3.5" />} onClick={() => setEditCurriculum(curriculum)}>
+                Tahrirlash
+              </Button>
+              <Button variant="ghost" size="sm" leftIcon={<Trash2 className="h-3.5 w-3.5 text-red-500" />} onClick={() => setDeleteCurriculumItem(curriculum)}>
+                O&apos;chirish
+              </Button>
+            </>
           )}
           <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
             Eksport PDF
@@ -252,6 +259,38 @@ export function CurriculumPage() {
         specialties={(specialties ?? []).map((s) => ({ id: s.id, name: s.name }))}
         subjects={(subjectsData?.data ?? []).map((s) => ({ id: s.id, name: s.name }))}
         loading={createCurriculum.isPending}
+      />
+
+      <CurriculumForm
+        open={!!editCurriculum}
+        onClose={() => setEditCurriculum(null)}
+        onSubmit={(data: CreateCurriculumFormData) => {
+          if (!editCurriculum) return;
+          updateCurriculumMutation.mutate(
+            {
+              id: editCurriculum.id,
+              data: {
+                specialtyId: Number(data.specialtyId),
+                year: Number(data.year),
+                subjects: data.subjects.map((s) => ({
+                  subjectId: Number(s.subjectId),
+                  semester: Number(s.semester),
+                  credits: Number(s.credits),
+                  hoursLecture: Number(s.hoursLecture),
+                  hoursPractice: Number(s.hoursPractice),
+                  hoursLab: Number(s.hoursLab),
+                  controlForm: s.controlForm,
+                  isElective: s.isElective,
+                })),
+              },
+            },
+            { onSuccess: () => setEditCurriculum(null) },
+          );
+        }}
+        curriculum={editCurriculum}
+        specialties={(specialties ?? []).map((s) => ({ id: s.id, name: s.name }))}
+        subjects={(subjectsData?.data ?? []).map((s) => ({ id: s.id, name: s.name }))}
+        loading={updateCurriculumMutation.isPending}
       />
     </PageContent>
   );

@@ -1,0 +1,350 @@
+- generic [ref=e161]:
+  - complementary [ref=e162]:
+    - generic [ref=e164]: Uni
+    - generic [ref=e165]:
+      - button "Asosiy" [ref=e492] [cursor=pointer]:
+        - img [ref=e168]
+      - generic [ref=e493]:
+        - button "Statistika" [ref=e494] [cursor=pointer]:
+          - img [ref=e495]
+        - button "Ro'yxat" [ref=e498] [cursor=pointer]:
+          - img [ref=e499]
+      - generic [ref=e504]:
+        - button "O'qituvchilar" [ref=e505] [cursor=pointer]:
+          - img [ref=e506]
+        - button "Davomat" [ref=e509] [cursor=pointer]:
+          - img [ref=e510]
+        - button "Baholash" [ref=e512] [cursor=pointer]:
+          - img [ref=e513]
+        - button "Dars jadvali" [ref=e515] [cursor=pointer]:
+          - img [ref=e516]
+        - button "Imtihonlar" [ref=e518] [cursor=pointer]:
+          - img [ref=e519]
+        - button "Bitiruvchilar" [ref=e522] [cursor=pointer]:
+          - img [ref=e523]
+        - button "Amaliyot" [ref=e526] [cursor=pointer]:
+          - img [ref=e527]
+      - generic [ref=e530]:
+        - button "O'quv rejalar" [ref=e531] [cursor=pointer]:
+          - img [ref=e532]
+        - button "Kafedralar" [ref=e535] [cursor=pointer]:
+          - img [ref=e536]
+        - button "Fanlar" [ref=e539] [cursor=pointer]:
+          - img [ref=e540]
+        - button "Kutubxona" [ref=e543] [cursor=pointer]:
+          - img [ref=e544]
+      - generic [ref=e547]:
+        - button "Arizalar" [ref=e548] [cursor=pointer]:
+          - img [ref=e549]
+        - button "Voronka" [ref=e552] [cursor=pointer]:
+          - img [ref=e553]
+        - button "CRM hisobot" [ref=e556] [cursor=pointer]:
+          - img [ref=e557]
+      - generic [ref=e560]:
+        - button "Moliyaviy panel" [active] [ref=e561] [cursor=pointer]:
+          - img [ref=e562]
+        - button "Kontraktlar" [ref=e565] [cursor=pointer]:
+          - img [ref=e566]
+        - button "Qarzdorlar" [ref=e569] [cursor=pointer]:
+          - img [ref=e570]
+        - button "To'lovlar" [ref=e572] [cursor=pointer]:
+          - img [ref=e573]
+        - button "Stipendiya" [ref=e576] [cursor=pointer]:
+          - img [ref=e577]
+        - button "Hisobot" [ref=e580] [cursor=pointer]:
+          - img [ref=e581]
+        - button "Maosh" [ref=e584] [cursor=pointer]:
+          - img [ref=e585]
+        - button "Byudjet" [ref=e588] [cursor=pointer]:
+          - img [ref=e589]
+      - generic [ref=e592]:
+        - button "Kadrlar paneli" [ref=e593] [cursor=pointer]:
+          - img [ref=e594]
+        - button "Xodimlar" [ref=e597] [cursor=pointer]:
+          - img [ref=e598]
+        - button "Bo'limlar" [ref=e603] [cursor=pointer]:
+          - img [ref=e604]
+        - button "Buyruqlar" [ref=e607] [cursor=pointer]:
+          - img [ref=e608]
+        - button "Davomad" [ref=e611] [cursor=pointer]:
+          - img [ref=e612]
+        - button "Ta'tillar va safar" [ref=e614] [cursor=pointer]:
+          - img [ref=e615]
+      - generic [ref=e618]:
+        - button "Buyruqlar (eski)" [ref=e619] [cursor=pointer]:
+          - img [ref=e620]
+        - button "Shtatlash jadvali" [ref=e623] [cursor=pointer]:
+          - img [ref=e624]
+      - generic [ref=e628]:
+        - button "TTJ (yotoqxona)" [ref=e629] [cursor=pointer]:
+          - img [ref=e630]
+        - button "Ombor" [ref=e633] [cursor=pointer]:
+          - img [ref=e634]
+        - button "Jihozlar" [ref=e636] [cursor=pointer]:
+          - img [ref=e637]
+        - button "Transport" [ref=e640] [cursor=pointer]:
+          - img [ref=e641]
+      - generic [ref=e646]:
+        - button "Ilmiy ishlar" [ref=e647] [cursor=pointer]:
+          - img [ref=e648]
+        - button "Diplom ishlari" [ref=e651] [cursor=pointer]:
+          - img [ref=e652]
+        - button "Konferensiyalar" [ref=e655] [cursor=pointer]:
+          - img [ref=e656]
+        - button "Patentlar" [ref=e658] [cursor=pointer]:
+          - img [ref=e659]
+      - generic [ref=e661]:
+        - button "Talaba kabineti" [ref=e662] [cursor=pointer]:
+          - img [ref=e663]
+        - button "O'qituvchi kabineti" [ref=e666] [cursor=pointer]:
+          - img [ref=e667]
+      - generic [ref=e670]:
+        - button "Topshiriqlar" [ref=e671] [cursor=pointer]:
+          - img [ref=e672]
+        - button "Murojaatlar" [ref=e674] [cursor=pointer]:
+          - img [ref=e675]
+        - button "Xabarlar" [ref=e678] [cursor=pointer]:
+          - img [ref=e679]
+        - button "Bildirishnomalar" [ref=e682] [cursor=pointer]:
+          - img [ref=e683]
+        - button "Yangiliklar" [ref=e686] [cursor=pointer]:
+          - img [ref=e687]
+      - generic [ref=e689]:
+        - button "Hujjat aylanishi" [ref=e690] [cursor=pointer]:
+          - img [ref=e691]
+        - button "Analytics" [ref=e693] [cursor=pointer]:
+          - img [ref=e694]
+        - button "Hisobotlar" [ref=e697] [cursor=pointer]:
+          - img [ref=e698]
+        - button "Ma'lumotnomalar" [ref=e701] [cursor=pointer]:
+          - img [ref=e702]
+      - generic [ref=e705]:
+        - button "Shaxsiy kabinet" [ref=e706] [cursor=pointer]:
+          - img [ref=e707]
+        - button "Sozlamalar" [ref=e710] [cursor=pointer]:
+          - img [ref=e711]
+      - generic [ref=e714]:
+        - button "Foydalanuvchilar" [ref=e715] [cursor=pointer]:
+          - img [ref=e716]
+        - button "Rollar" [ref=e721] [cursor=pointer]:
+          - img [ref=e722]
+        - button "Ruxsatlar" [ref=e724] [cursor=pointer]:
+          - img [ref=e725]
+        - button "Audit log" [ref=e727] [cursor=pointer]:
+          - img [ref=e728]
+  - generic [ref=e173]:
+    - generic [ref=e174]:
+      - button "Toggle sidebar" [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - generic [ref=e182]: Moliya
+          - generic [ref=e731]: /
+          - generic [ref=e732]: Panel
+        - heading "Moliyaviy panel" [level=1] [ref=e1291]
+      - generic [ref=e184]:
+        - generic:
+          - img
+        - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e185]'
+      - button "🇺🇿 uz" [ref=e187] [cursor=pointer]:
+        - generic [ref=e188]: 🇺🇿
+        - generic [ref=e189]: uz
+        - img [ref=e190]
+      - button "Theme" [ref=e192] [cursor=pointer]:
+        - img [ref=e193]
+      - button "Bildirishnomalar" [ref=e196] [cursor=pointer]:
+        - img [ref=e197]
+        - generic [ref=e200]: "3"
+      - button "AA Admin" [ref=e202] [cursor=pointer]:
+        - generic [ref=e203]: AA
+        - generic [ref=e205]: Admin
+        - img [ref=e207]
+    - main [ref=e209]:
+      - generic [ref=e1292]:
+        - generic [ref=e1293]:
+          - generic [ref=e1294] [cursor=pointer]:
+            - img [ref=e1297]
+            - generic [ref=e1300]: Jami kontrakt summasi
+            - generic [ref=e1301]: 448,500,000 so'm
+            - generic [ref=e1302]: 30 ta kontrakt
+          - generic [ref=e1303] [cursor=pointer]:
+            - img [ref=e1306]
+            - generic [ref=e1308]: To'langan
+            - generic [ref=e1309]: 263,100,000 so'm
+            - generic [ref=e1310]: 58.7% yig'im
+          - generic [ref=e1311] [cursor=pointer]:
+            - img [ref=e1314]
+            - generic [ref=e1316]: Qarzdorlik
+            - generic [ref=e1317]: 185,400,000 so'm
+            - generic [ref=e1318]: 24 ta talaba
+          - generic [ref=e1319] [cursor=pointer]:
+            - img [ref=e1322]
+            - generic [ref=e1325]: Yig'im foizi
+            - generic [ref=e1326]: 58.7%
+            - generic [ref=e1327]: Joriy o'quv yili
+        - generic [ref=e1328]:
+          - generic [ref=e1329]:
+            - heading "To'lov holati" [level=3] [ref=e1331]
+            - generic [ref=e1332]:
+              - generic [ref=e1333]:
+                - img [ref=e1334]
+                - generic [ref=e1339]:
+                  - generic [ref=e1340]: "30"
+                  - generic [ref=e1341]: Kontrakt
+              - generic [ref=e1342]:
+                - generic [ref=e1343]:
+                  - generic [ref=e1345]: To'liq to'langan
+                  - generic [ref=e1346]: "6"
+                - generic [ref=e1347]:
+                  - generic [ref=e1349]: Qisman
+                  - generic [ref=e1350]: "21"
+                - generic [ref=e1351]:
+                  - generic [ref=e1353]: To'lanmagan
+                  - generic [ref=e1354]: "3"
+          - generic [ref=e1355]:
+            - heading "Fakultetlar bo'yicha yig'im" [level=3] [ref=e1357]
+            - generic [ref=e1358]:
+              - generic [ref=e1360]:
+                - generic [ref=e1361]: Filologiya va
+                - generic [ref=e1362]:
+                  - text: 56,000,000 /
+                  - strong [ref=e1363]: 45%
+              - generic [ref=e1367]:
+                - generic [ref=e1368]: Aniq, tabiiy
+                - generic [ref=e1369]:
+                  - text: 73,100,000 /
+                  - strong [ref=e1370]: 64%
+              - generic [ref=e1374]:
+                - generic [ref=e1375]: Iqtisodiyot va
+                - generic [ref=e1376]:
+                  - text: 60,100,000 /
+                  - strong [ref=e1377]: 56%
+              - generic [ref=e1381]:
+                - generic [ref=e1382]: Ijtimoiy-gumanitar
+                - generic [ref=e1383]:
+                  - text: 73,900,000 /
+                  - strong [ref=e1384]: 71%
+          - generic [ref=e1387]:
+            - heading "Oylik to'lovlar dinamikasi" [level=3] [ref=e1389]
+            - img [ref=e1390]
+            - generic [ref=e1400]:
+              - generic [ref=e1401]: Sen
+              - generic [ref=e1402]: Okt
+              - generic [ref=e1403]: Noy
+              - generic [ref=e1404]: Dek
+              - generic [ref=e1405]: Yan
+              - generic [ref=e1406]: Fev
+          - generic [ref=e1407]:
+            - heading "Kurslar bo'yicha" [level=3] [ref=e1409]
+            - generic [ref=e1410]:
+              - generic [ref=e1415]: 1-kurs
+              - generic [ref=e1420]: 2-kurs
+              - generic [ref=e1425]: 3-kurs
+              - generic [ref=e1430]: 4-kurs
+            - generic [ref=e1431]:
+              - generic [ref=e1432]: To'langan
+              - generic [ref=e1434]: Qarz
+        - generic [ref=e1436]:
+          - generic [ref=e1437]:
+            - generic [ref=e1438]: So'nggi to'lovlar
+            - table [ref=e1439]:
+              - rowgroup [ref=e1440]:
+                - row "Sana Talaba Summa Usul" [ref=e1441]:
+                  - columnheader "Sana" [ref=e1442]
+                  - columnheader "Talaba" [ref=e1443]
+                  - columnheader "Summa" [ref=e1444]
+                  - columnheader "Usul" [ref=e1445]
+              - rowgroup [ref=e1446]:
+                - row "2026-06-14 TOJIDDINOV SHOXRUX OLIM O'G'LI 3,900,000 so'm Payme" [ref=e1447]:
+                  - cell "2026-06-14" [ref=e1448]
+                  - cell "TOJIDDINOV SHOXRUX OLIM O'G'LI" [ref=e1449]
+                  - cell "3,900,000 so'm" [ref=e1450]
+                  - cell "Payme" [ref=e1451]:
+                    - generic [ref=e1452]: Payme
+                - row "2026-03-14 MIRZAYEV OTABEK NODIR O'G'LI 3,100,000 so'm Online" [ref=e1454]:
+                  - cell "2026-03-14" [ref=e1455]
+                  - cell "MIRZAYEV OTABEK NODIR O'G'LI" [ref=e1456]
+                  - cell "3,100,000 so'm" [ref=e1457]
+                  - cell "Online" [ref=e1458]:
+                    - generic [ref=e1459]: Online
+                - row "2026-03-09 ABDULLAYEV AZIZ SHAVKAT O'G'LI 4,900,000 so'm Payme" [ref=e1461]:
+                  - cell "2026-03-09" [ref=e1462]
+                  - cell "ABDULLAYEV AZIZ SHAVKAT O'G'LI" [ref=e1463]
+                  - cell "4,900,000 so'm" [ref=e1464]
+                  - cell "Payme" [ref=e1465]:
+                    - generic [ref=e1466]: Payme
+                - row "2026-03-09 PARDAYEVA LOLA DONIYOR QIZI 3,200,000 so'm Naqd" [ref=e1468]:
+                  - cell "2026-03-09" [ref=e1469]
+                  - cell "PARDAYEVA LOLA DONIYOR QIZI" [ref=e1470]
+                  - cell "3,200,000 so'm" [ref=e1471]
+                  - cell "Naqd" [ref=e1472]:
+                    - generic [ref=e1473]: Naqd
+                - row "2026-03-06 RASHIDOVA ZILOLA KOMIL QIZI 3,200,000 so'm Payme" [ref=e1475]:
+                  - cell "2026-03-06" [ref=e1476]
+                  - cell "RASHIDOVA ZILOLA KOMIL QIZI" [ref=e1477]
+                  - cell "3,200,000 so'm" [ref=e1478]
+                  - cell "Payme" [ref=e1479]:
+                    - generic [ref=e1480]: Payme
+                - row "2026-03-05 TOJIDDINOV SHOXRUX OLIM O'G'LI 3,900,000 so'm Click" [ref=e1482]:
+                  - cell "2026-03-05" [ref=e1483]
+                  - cell "TOJIDDINOV SHOXRUX OLIM O'G'LI" [ref=e1484]
+                  - cell "3,900,000 so'm" [ref=e1485]
+                  - cell "Click" [ref=e1486]:
+                    - generic [ref=e1487]: Click
+                - row "2025-12-14 XUDOYBERDIYEVA MOHIRA SALIM QIZI 5,000,000 so'm Bank o'tkazmasi" [ref=e1489]:
+                  - cell "2025-12-14" [ref=e1490]
+                  - cell "XUDOYBERDIYEVA MOHIRA SALIM QIZI" [ref=e1491]
+                  - cell "5,000,000 so'm" [ref=e1492]
+                  - cell "Bank o'tkazmasi" [ref=e1493]:
+                    - generic [ref=e1494]: Bank o'tkazmasi
+                - row "2025-12-12 SAIDOVA NILUFAR BOBUR QIZI 6,800,000 so'm Online" [ref=e1496]:
+                  - cell "2025-12-12" [ref=e1497]
+                  - cell "SAIDOVA NILUFAR BOBUR QIZI" [ref=e1498]
+                  - cell "6,800,000 so'm" [ref=e1499]
+                  - cell "Online" [ref=e1500]:
+                    - generic [ref=e1501]: Online
+                - row "2025-12-12 HASANOV DONIYOR OLIM O'G'LI 3,900,000 so'm Bank o'tkazmasi" [ref=e1503]:
+                  - cell "2025-12-12" [ref=e1504]
+                  - cell "HASANOV DONIYOR OLIM O'G'LI" [ref=e1505]
+                  - cell "3,900,000 so'm" [ref=e1506]
+                  - cell "Bank o'tkazmasi" [ref=e1507]:
+                    - generic [ref=e1508]: Bank o'tkazmasi
+                - row "2025-12-11 SALIMOVA IRODA VOHID QIZI 3,100,000 so'm Payme" [ref=e1510]:
+                  - cell "2025-12-11" [ref=e1511]
+                  - cell "SALIMOVA IRODA VOHID QIZI" [ref=e1512]
+                  - cell "3,100,000 so'm" [ref=e1513]
+                  - cell "Payme" [ref=e1514]:
+                    - generic [ref=e1515]: Payme
+          - generic [ref=e1517]:
+            - generic [ref=e1518]: Top qarzdorlar
+            - generic [ref=e1519]:
+              - generic [ref=e1520]:
+                - generic [ref=e1521]:
+                  - generic [ref=e1522]: TURSUNOV AKBAR FARXOD O'G'LI
+                  - generic [ref=e1523]: 17,000,000 so'm
+                - generic [ref=e1524]: Iqtisodiyot va axborot · ENG-1306-25
+                - generic [ref=e1527]: "Qarz: 100%"
+              - generic [ref=e1528]:
+                - generic [ref=e1529]:
+                  - generic [ref=e1530]: MAMATKULOV ASILBEK BOTIR O'G'LI
+                  - generic [ref=e1531]: 15,000,000 so'm
+                - generic [ref=e1532]: Filologiya va tillarni · ENG-1306-25
+                - generic [ref=e1535]: "Qarz: 100%"
+              - generic [ref=e1536]:
+                - generic [ref=e1537]:
+                  - generic [ref=e1538]: INOYATOVA SEVINCH JAMOL QIZI
+                  - generic [ref=e1539]: 12,100,000 so'm
+                - generic [ref=e1540]: Aniq, tabiiy va · IIT-2105-25
+                - generic [ref=e1543]: "Qarz: 75%"
+              - generic [ref=e1544]:
+                - generic [ref=e1545]:
+                  - generic [ref=e1546]: NURMATOV ELDOR QAXXOR O'G'LI
+                  - generic [ref=e1547]: 10,700,000 so'm
+                - generic [ref=e1548]: Filologiya va tillarni · TUR-1306-25
+                - generic [ref=e1551]: "Qarz: 60%"
+              - generic [ref=e1552]:
+                - generic [ref=e1553]:
+                  - generic [ref=e1554]: RAHIMOV SARDOR ANVAR O'G'LI
+                  - generic [ref=e1555]: 10,600,000 so'm
+                - generic [ref=e1556]: Aniq, tabiiy va · IIT-2105-25
+                - generic [ref=e1559]: "Qarz: 75%"

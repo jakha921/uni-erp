@@ -1,0 +1,68 @@
+- generic [ref=e2263]:
+  - generic [ref=e2264]:
+    - generic [ref=e2265]:
+      - generic [ref=e2266]: BIT
+      - generic [ref=e2267]:
+        - generic [ref=e2268]: BITU ERP
+        - generic [ref=e2269]: Navoiy innovatsiyalar universiteti
+    - generic [ref=e2270]: DEMO REJIM
+    - button "Chiqish" [ref=e2272] [cursor=pointer]:
+      - img [ref=e2273]
+      - text: Chiqish
+  - generic [ref=e2277]:
+    - generic [ref=e2278]:
+      - heading "Demo rejim — rolni tanlang" [level=1] [ref=e2279]
+      - paragraph [ref=e2280]: Har bir rolda boshqa modullar va ma'lumotlarga kirish mavjud. Tizimni ko'rish uchun rolni tanlang.
+    - generic [ref=e2281]:
+      - button "Administrator Tizim boshqaruvchisi — barcha modullarga to'liq kirish AA Adminov Abdulla Akramovich" [ref=e2282] [cursor=pointer]:
+        - img [ref=e2284]
+        - generic [ref=e2286]:
+          - generic [ref=e2287]: Administrator
+          - generic [ref=e2288]: Tizim boshqaruvchisi — barcha modullarga to'liq kirish
+        - generic [ref=e2289]:
+          - generic [ref=e2290]: AA
+          - generic [ref=e2292]: Adminov Abdulla Akramovich
+          - img [ref=e2293]
+      - button "Buxgalter Moliya bo'limi — kontraktlar, to'lovlar, hisobotlar KM Karimova Malika Baxtiyorovna" [ref=e2295] [cursor=pointer]:
+        - img [ref=e2297]
+        - generic [ref=e2300]:
+          - generic [ref=e2301]: Buxgalter
+          - generic [ref=e2302]: Moliya bo'limi — kontraktlar, to'lovlar, hisobotlar
+        - generic [ref=e2303]:
+          - generic [ref=e2304]: KM
+          - generic [ref=e2306]: Karimova Malika Baxtiyorovna
+          - img [ref=e2307]
+      - button "Dekan Fakultet dekani — talabalar va xodimlarni boshqaradi RS Rahimov Sardor Tulkinovich Filologiya va tillarni o'qitish" [ref=e2309] [cursor=pointer]:
+        - img [ref=e2311]
+        - generic [ref=e2314]:
+          - generic [ref=e2315]: Dekan
+          - generic [ref=e2316]: Fakultet dekani — talabalar va xodimlarni boshqaradi
+        - generic [ref=e2317]:
+          - generic [ref=e2318]: RS
+          - generic [ref=e2319]:
+            - generic [ref=e2320]: Rahimov Sardor Tulkinovich
+            - generic [ref=e2321]: Filologiya va tillarni o'qitish
+          - img [ref=e2322]
+      - button "Professor-o'qituvchi Dars beruvchi — guruhlar va davomat bilan ishlaydi TR Toshmatov Raximberdi Ulug'bek o'g'li Aniq, tabiiy va texnik" [ref=e2324] [cursor=pointer]:
+        - img [ref=e2326]
+        - generic [ref=e2329]:
+          - generic [ref=e2330]: Professor-o'qituvchi
+          - generic [ref=e2331]: Dars beruvchi — guruhlar va davomat bilan ishlaydi
+        - generic [ref=e2332]:
+          - generic [ref=e2333]: TR
+          - generic [ref=e2334]:
+            - generic [ref=e2335]: Toshmatov Raximberdi Ulug'bek o'g'li
+            - generic [ref=e2336]: Aniq, tabiiy va texnik
+          - img [ref=e2337]
+      - button "Talaba Shaxsiy kabinet — kontrakt, to'lovlar, stipendiya XN Xolmatova Nodira Ilxomovna Iqtisodiyot va axborot texnologiyalari" [ref=e2339] [cursor=pointer]:
+        - img [ref=e2341]
+        - generic [ref=e2344]:
+          - generic [ref=e2345]: Talaba
+          - generic [ref=e2346]: Shaxsiy kabinet — kontrakt, to'lovlar, stipendiya
+        - generic [ref=e2347]:
+          - generic [ref=e2348]: XN
+          - generic [ref=e2349]:
+            - generic [ref=e2350]: Xolmatova Nodira Ilxomovna
+            - generic [ref=e2351]: Iqtisodiyot va axborot texnologiyalari
+          - img [ref=e2352]
+    - generic [ref=e2354]: Demo rejimda barcha rollarni sinab ko'rishingiz mumkin. Xodim panelidagi "Profil" tugmasi orqali rolni o'zgartiring.

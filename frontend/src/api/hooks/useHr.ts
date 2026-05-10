@@ -117,6 +117,17 @@ export function useCreateOrder() {
   });
 }
 
+export function useUpdateOrderStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: 'draft' | 'review' | 'signed' | 'cancelled' }) =>
+      hrService.updateOrderStatus(id, status),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: hrKeys.orders() });
+    },
+  });
+}
+
 export function useDeleteOrder() {
   const qc = useQueryClient();
   return useMutation({

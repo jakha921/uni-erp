@@ -1,0 +1,151 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e8]: NIU
+          - generic [ref=e9]:
+            - generic [ref=e10]: ERP
+            - generic [ref=e11]: Raqamli universitet
+        - button "NV Filial Navoiy (bosh)" [ref=e12] [cursor=pointer]:
+          - generic [ref=e13]: NV
+          - generic [ref=e14]:
+            - generic [ref=e15]: Filial
+            - generic [ref=e16]: Navoiy (bosh)
+          - img [ref=e17]
+      - navigation [ref=e19]:
+        - link "Asosiy" [ref=e21] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e22]
+          - generic [ref=e27]: Asosiy
+        - generic [ref=e28]:
+          - button "TALABALAR" [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - generic [ref=e32]: TALABALAR
+          - link "Statistika" [ref=e33] [cursor=pointer]:
+            - /url: /students/statistics
+            - img [ref=e34]
+            - generic [ref=e37]: Statistika
+          - link "Ro'yxat" [ref=e38] [cursor=pointer]:
+            - /url: /students
+            - img [ref=e39]
+            - generic [ref=e44]: Ro'yxat
+        - button "TA'LIM" [ref=e46] [cursor=pointer]:
+          - img [ref=e47]
+          - generic [ref=e49]: TA'LIM
+        - button "O'QUV JARAYONI" [ref=e51] [cursor=pointer]:
+          - img [ref=e52]
+          - generic [ref=e54]: O'QUV JARAYONI
+        - generic [ref=e55]:
+          - button "QABUL (CRM)" [ref=e56] [cursor=pointer]:
+            - img [ref=e57]
+            - generic [ref=e59]: QABUL (CRM)
+          - link "Arizalar 23" [ref=e60] [cursor=pointer]:
+            - /url: /crm
+            - img [ref=e61]
+            - generic [ref=e64]: Arizalar
+            - generic [ref=e65]: "23"
+          - link "Voronka" [ref=e66] [cursor=pointer]:
+            - /url: /crm/kanban
+            - img [ref=e67]
+            - generic [ref=e70]: Voronka
+          - link "CRM hisobot" [ref=e71] [cursor=pointer]:
+            - /url: /crm/report
+            - img [ref=e72]
+            - generic [ref=e75]: CRM hisobot
+        - button "MOLIYA" [ref=e77] [cursor=pointer]:
+          - img [ref=e78]
+          - generic [ref=e80]: MOLIYA
+        - button "KADRLAR" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+          - generic [ref=e85]: KADRLAR
+        - button "XODIMLAR (eski)" [ref=e87] [cursor=pointer]:
+          - img [ref=e88]
+          - generic [ref=e90]: XODIMLAR (eski)
+        - generic [ref=e91]:
+          - button "INFRATUZILMA" [ref=e92] [cursor=pointer]:
+            - img [ref=e93]
+            - generic [ref=e95]: INFRATUZILMA
+          - link "TTJ (yotoqxona)" [ref=e96] [cursor=pointer]:
+            - /url: /dormitory
+            - img [ref=e97]
+            - generic [ref=e100]: TTJ (yotoqxona)
+          - link "Ombor" [ref=e101] [cursor=pointer]:
+            - /url: /warehouse
+            - img [ref=e102]
+            - generic [ref=e105]: Ombor
+          - link "Jihozlar" [ref=e106] [cursor=pointer]:
+            - /url: /equipment
+            - img [ref=e107]
+            - generic [ref=e111]: Jihozlar
+          - link "Transport" [ref=e112] [cursor=pointer]:
+            - /url: /transport
+            - img [ref=e113]
+            - generic [ref=e118]: Transport
+        - button "ILMIY FAOLIYAT" [ref=e120] [cursor=pointer]:
+          - img [ref=e121]
+          - generic [ref=e123]: ILMIY FAOLIYAT
+        - generic [ref=e124]:
+          - button "KABINETLAR" [ref=e125] [cursor=pointer]:
+            - img [ref=e126]
+            - generic [ref=e128]: KABINETLAR
+          - link "Talaba kabineti" [ref=e129] [cursor=pointer]:
+            - /url: /student-cabinet
+            - img [ref=e130]
+            - generic [ref=e133]: Talaba kabineti
+          - link "O'qituvchi kabineti" [ref=e134] [cursor=pointer]:
+            - /url: /teacher-cabinet
+            - img [ref=e135]
+            - generic [ref=e138]: O'qituvchi kabineti
+        - button "BOSHQARUV 39" [ref=e140] [cursor=pointer]:
+          - img [ref=e141]
+          - generic [ref=e143]: BOSHQARUV
+          - generic [ref=e144]: "39"
+        - button "ADMIN" [ref=e146] [cursor=pointer]:
+          - img [ref=e147]
+          - generic [ref=e149]: ADMIN
+        - button "PROFIL" [ref=e151] [cursor=pointer]:
+          - img [ref=e152]
+          - generic [ref=e154]: PROFIL
+        - generic [ref=e155]:
+          - button "TIZIM" [ref=e156] [cursor=pointer]:
+            - img [ref=e157]
+            - generic [ref=e159]: TIZIM
+          - link "Foydalanuvchilar 32" [ref=e160] [cursor=pointer]:
+            - /url: /system/users
+            - img [ref=e161]
+            - generic [ref=e166]: Foydalanuvchilar
+            - generic [ref=e167]: "32"
+          - link "Rollar" [ref=e168] [cursor=pointer]:
+            - /url: /system/roles
+            - img [ref=e169]
+            - generic [ref=e171]: Rollar
+          - link "Ruxsatlar" [ref=e172] [cursor=pointer]:
+            - /url: /system/permissions
+            - img [ref=e173]
+            - generic [ref=e177]: Ruxsatlar
+          - link "Audit log" [ref=e178] [cursor=pointer]:
+            - /url: /system/audit
+            - img [ref=e179]
+            - generic [ref=e182]: Audit log
+      - button [ref=e184]:
+        - img [ref=e185]
+  - banner [ref=e188]:
+    - heading "Xush kelibsiz, Adminov" [level=1] [ref=e191]
+    - generic [ref=e192]:
+      - img
+      - 'textbox "Qidirish: talaba, o''qituvchi, kontrakt…" [ref=e193]'
+    - generic [ref=e194]:
+      - button "🇺🇿 uz" [ref=e196] [cursor=pointer]:
+        - generic [ref=e197]: 🇺🇿
+        - generic [ref=e198]: uz
+        - img [ref=e199]
+      - button [ref=e201]:
+        - img [ref=e202]
+      - button "Bildirishnomalar" [ref=e205]:
+        - img [ref=e206]
+        - generic [ref=e209]: "2"
+      - button "AA Admin" [ref=e211] [cursor=pointer]:
+        - generic [ref=e212]: AA
+        - generic [ref=e213]: Admin
+        - img [ref=e214]

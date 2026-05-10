@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIU — Kelajagingiz bugundan boshlanadi</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #2DB976;
+  --green-d: #1B7A4E;
+  --green-dd: #0F4229;
+  --orange: #FF6B35;
+  --purple: #8B5CF6;
+  --cyan: #06B6D4;
+  --pink: #EC4899;
+  --yellow: #FBBF24;
+  --dark: #0A0E1A;
+  --dark-2: #111827;
+  --slate: #94A3B8;
+}
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  font-family: 'Outfit', 'Sora', system-ui, sans-serif;
+  background: var(--dark);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SLIDE ENGINE ─── */
+.deck { position: relative; width: 100vw; height: 100vh; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 48px 60px;
+  opacity: 0;
+  transform: translateX(40px);
+  pointer-events: none;
+  transition: opacity .5s ease, transform .5s ease;
+  will-change: opacity, transform;
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1; transform: translateX(0);
+  pointer-events: auto;
+}
+.slide.prev {
+  opacity: 0; transform: translateX(-40px);
+}
+
+/* ─── PROGRESS ─── */
+.progress-bar {
+  position: fixed; bottom: 0; left: 0; height: 4px;
+  background: linear-gradient(90deg, var(--green), var(--cyan), var(--purple));
+  transition: width .4s ease;
+  z-index: 100;
+  border-radius: 0 2px 0 0;
+}
+
+.slide-num {
+  position: fixed; bottom: 18px; right: 28px;
+  font-size: 13px; color: rgba(255,255,255,.3);
+  font-variant-numeric: tabular-nums;
+  z-index: 100; font-weight: 600;
+}
+
+.nav-hint {
+  position: fixed; bottom: 18px; left: 28px;
+  font-size: 11px; color: rgba(255,255,255,.2);
+  z-index: 100; letter-spacing: .02em;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45,185,118,.4); }
+  50% { box-shadow: 0 0 0 16px rgba(45,185,118,0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.slide.active .anim { animation: fadeUp .6s ease both; }
+.slide.active .anim-b { animation: bounceIn .7s ease both; }
+.slide.active .anim-r { animation: slideRight .6s ease both; }
+.slide.active .anim-l { animation: slideLeft .6s ease both; }
+.slide.active .anim-s { animation: scaleIn .5s ease both; }
+.slide.active .d1 { animation-delay: .1s; }
+.slide.active .d2 { animation-delay: .2s; }
+.slide.active .d3 { animation-delay: .3s; }
+.slide.active .d4 { animation-delay: .4s; }
+.slide.active .d5 { animation-delay: .5s; }
+.slide.active .d6 { animation-delay: .6s; }
+.slide.active .d7 { animation-delay: .7s; }
+.slide.active .d8 { animation-delay: .8s; }
+.slide.active .d9 { animation-delay: .9s; }
+.slide.active .d10 { animation-delay: 1s; }
+
+/* ─── BLOBS ─── */
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: .15;
+  pointer-events: none;
+}
+
+/* ─── COMMON ─── */
+.tag {
+  display: inline-flex; padding: 6px 16px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.title {
+  font-family: 'Sora', sans-serif;
+  font-size: 44px; font-weight: 800; letter-spacing: -.03em;
+  line-height: 1.1; text-align: center;
+  max-width: 900px;
+}
+.subtitle {
+  font-size: 16px; color: rgba(255,255,255,.65); margin-top: 12px;
+  text-align: center; line-height: 1.55; max-width: 700px;
+}
+
+/* cards */
+.cards { display: grid; gap: 16px; margin-top: 28px; width: 100%; max-width: 1060px; }
+.cards.c4 { grid-template-columns: repeat(4,1fr); }
+.cards.c3 { grid-template-columns: repeat(3,1fr); }
+.cards.c2 { grid-template-columns: repeat(2,1fr); }
+
+.card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px; padding: 22px 20px;
+  backdrop-filter: blur(4px);
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,.15);
+  box-shadow: 0 12px 32px rgba(0,0,0,.3);
+}
+.card-icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 12px;
+}
+.card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.card-desc { font-size: 12.5px; color: rgba(255,255,255,.55); line-height: 1.5; }
+
+/* two-col layout */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  width: 100%; max-width: 1060px; align-items: center;
+}
+
+/* before/after */
+.ba-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px; padding: 32px;
+  position: relative; overflow: hidden;
+}
+.ba-arrow {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; position: relative; z-index: 2;
+}
+
+/* calendar grid */
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 8px;
+  width: 100%; max-width: 860px; margin-top: 24px;
+}
+.cal-day {
+  padding: 12px 8px; border-radius: 14px; text-align: center;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  transition: transform .2s;
+}
+.cal-day:hover { transform: translateY(-2px); }
+.cal-day .cd-num { font-size: 10px; font-weight: 700; opacity: .5; margin-bottom: 6px; }
+.cal-day .cd-emoji { font-size: 24px; margin-bottom: 6px; }
+.cal-day .cd-text { font-size: 10.5px; font-weight: 600; line-height: 1.3; }
+
+/* poster mock */
+.poster {
+  width: 380px; border-radius: 24px; overflow: hidden;
+  background: linear-gradient(145deg, #0F4229 0%, #0A0E1A 100%);
+  border: 1px solid rgba(45,185,118,.2);
+  padding: 40px 32px; text-align: center;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0,0,0,.5);
+}
+
+/* stats */
+.stat { text-align: center; }
+.stat .sv { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+.stat .sl { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 3px; font-weight: 500; }
+
+/* life grid */
+.life-grid {
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 12px;
+  max-width: 900px; width: 100%; margin-top: 28px;
+}
+.life-card {
+  border-radius: 18px; padding: 20px 14px; text-align: center;
+  border: 1px solid rgba(255,255,255,.07);
+  transition: transform .2s;
+  position: relative; overflow: hidden;
+}
+.life-card:hover { transform: translateY(-3px) scale(1.02); }
+.life-card .lc-emoji { font-size: 30px; margin-bottom: 8px; }
+.life-card .lc-title { font-size: 13px; font-weight: 700; }
+.life-card .lc-desc { font-size: 10.5px; color: rgba(255,255,255,.5); margin-top: 3px; line-height: 1.4; }
+
+/* CTA pulse */
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 18px 42px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  font-size: 18px; font-weight: 700; color: #fff;
+  border: none; cursor: pointer;
+  animation: pulseGlow 2s ease-in-out infinite;
+  font-family: inherit; letter-spacing: -.01em;
+  box-shadow: 0 8px 32px rgba(45,185,118,.3);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .slide { padding: 40px 28px; }
+  .title { font-size: 34px; }
+  .cards.c4, .cards.c3 { grid-template-columns: repeat(2,1fr); }
+  .two-col { grid-template-columns: 1fr; gap: 24px; }
+  .life-grid { grid-template-columns: repeat(3,1fr); }
+  .cal-grid { grid-template-columns: repeat(4,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ═══════════ SLIDE 1: TITLE ═══════════ -->
+<div class="slide active" id="s1" style="background:radial-gradient(ellipse at 30% 20%, rgba(45,185,118,.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(139,92,246,.1) 0%, transparent 50%), var(--dark)">
+  <div class="blob" style="width:500px;height:500px;background:var(--green);top:-100px;right:-100px"></div>
+  <div class="blob" style="width:400px;height:400px;background:var(--purple);bottom:-100px;left:-80px"></div>
+
+  <div class="anim-b" style="margin-bottom:24px">
+    <div style="width:100px;height:100px;border-radius:28px;background:linear-gradient(135deg,var(--green),var(--green-dd));
+                display:flex;align-items:center;justify-content:center;
+                box-shadow:0 20px 60px rgba(45,185,118,.35)">
+      <img src="assets/niu-logo-white.png" alt="NIU" style="width:72px;height:72px;object-fit:contain">
+    </div>
+  </div>
+
+  <div class="tag anim d2" style="background:rgba(45,185,118,.15);color:var(--green)">NAVOIY INNOVATSIYALAR UNIVERSITETI</div>
+
+  <h1 class="title anim d3" style="margin-top:20px;font-size:54px;color:#fff">
+    Kelajagingiz bugundan boshlanadi
+  </h1>
+
+  <div class="subtitle anim d4" style="font-size:20px;color:rgba(255,255,255,.7)">
+    3–4 yildan keyin siz kim bo'lasiz?<br>
+    Oddiy diplom egasimi yoki talab yuqori bo'lgan mutaxassismi?
+  </div>
+
+  <div style="display:flex;gap:20px;margin-top:32px" class="anim d5">
+    <div class="stat"><div class="sv" style="color:var(--green)">3,200+</div><div class="sl">Talaba</div></div>
+    <div class="stat"><div class="sv" style="color:var(--cyan)">186</div><div class="sl">O'qituvchi</div></div>
+    <div class="stat"><div class="sv" style="color:var(--purple)">8</div><div class="sl">Fakultet</div></div>
+    <div class="stat"><div class="sv" style="color:var(--orange)">92%</div><div class="sl">Ishga joylashish</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 2: MUAMMO ═══════════ -->
+<div class="slide" id="s2" style="background:linear-gradient(145deg,#0A0E1A 0%,#1a0a1e 100%)">
+  <div class="blob" style="width:500px;height:500px;background:#EF4444;top:-150px;right:-100px;opacity:.08"></div>
+
+  <div class="tag anim" style="background:rgba(239,68,68,.15);color:#EF4444">MUAMMO</div>
+
+  <h1 class="title anim d1" style="font-size:38px;margin-top:12px">
+    Bugungi kundagi haqiqat
+  </h1>
+  <div class="subtitle anim d2">
+    Ko'pchilik bitiruvchilar diplom oladi — lekin ish topa olmaydi
+  </div>
+
+  <div class="cards c3 anim d3" style="margin-top:40px;max-width:900px">
+    <div class="card anim d3" style="text-align:center;border-color:rgba(239,68,68,.15)">
+      <div class="card-icon" style="background:rgba(239,68,68,.12);color:#EF4444;margin:0 auto 16px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </div>
+      <div class="card-title">Nazariya ko'p</div>
+      <div class="card-desc">4 yil faqat darslik o'qish — haqiqiy hayotga tayyorlamaydi</div>
+    </div>
+    <div class="card anim d4" style="text-align:center;border-color:rgba(245,158,11,.15)">
+      <div class="card-icon" style="background:rgba(245,158,11,.12);color:#FBBF24;margin:0 auto 16px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
+      </div>
+      <div class="card-title">Ish topish qiyin</div>
+      <div class="card-desc">Diplom bor — lekin amaliy bilim yo'q, ish beruvchi olmaydi</div>
+    </div>
+    <div class="card anim d5" style="text-align:center;border-color:rgba(139,92,246,.15)">
+      <div class="card-icon" style="background:rgba(139,92,246,.12);color:#8B5CF6;margin:0 auto 16px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <div class="card-title">Noto'g'ri muhit</div>
+      <div class="card-desc">Motivatsiya yo'q, ustoz yo'q, yo'nalish noaniq</div>
+    </div>
+  </div>
+
+  <div class="anim d6" style="margin-top:32px;padding:16px 28px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);max-width:600px;text-align:center">
+    <div style="font-size:15px;color:rgba(255,255,255,.7);line-height:1.6">
+      Faqat o'qish yetmaydi. Muhimi — <span style="color:#fff;font-weight:700">amaliy bilim</span>, <span style="color:#fff;font-weight:700">tajriba</span> va <span style="color:#fff;font-weight:700">to'g'ri muhit</span>.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 3: YECHIM — NIU FARQI ═══════════ -->
+<div class="slide" id="s3" style="background:linear-gradient(145deg,var(--green-dd) 0%,var(--dark) 70%)">
+  <div class="blob" style="width:600px;height:600px;background:var(--green);top:-200px;left:-100px;opacity:.1"></div>
+
+  <div class="tag anim" style="background:rgba(45,185,118,.15);color:var(--green)">YECHIM</div>
+
+  <h1 class="title anim d1" style="font-size:38px;margin-top:12px">
+    NIU — bu boshqacha ta'lim
+  </h1>
+  <div class="subtitle anim d2">Biz bilim bermaymiz — kelajak yaratamiz</div>
+
+  <div class="two-col anim d3" style="margin-top:28px">
+    <!-- Oddiy vuz -->
+    <div style="padding:32px;border-radius:20px;background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12)">
+      <div style="font-size:13px;font-weight:700;color:#EF4444;letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px">Oddiy universitet</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,.5)">
+          <span style="color:#EF4444">&#x2717;</span> Faqat nazariy darslar
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,.5)">
+          <span style="color:#EF4444">&#x2717;</span> Eskirgan o'quv dasturi
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,.5)">
+          <span style="color:#EF4444">&#x2717;</span> Diplom — lekin ish yo'q
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,.5)">
+          <span style="color:#EF4444">&#x2717;</span> Motivatsiya tushadi
+        </div>
+      </div>
+    </div>
+
+    <!-- NIU -->
+    <div style="padding:32px;border-radius:20px;background:rgba(45,185,118,.06);border:1px solid rgba(45,185,118,.2);box-shadow:0 0 40px rgba(45,185,118,.08)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--green-dd));display:flex;align-items:center;justify-content:center">
+          <img src="assets/niu-logo-white.png" alt="" style="width:20px;height:20px;object-fit:contain">
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase">NIU FARQI</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:#fff;font-weight:500">
+          <span style="color:var(--green)">&#x2713;</span> Real loyihalarda ishlaysiz
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:#fff;font-weight:500">
+          <span style="color:var(--green)">&#x2713;</span> Zamonaviy kasblarni o'rganasiz
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:#fff;font-weight:500">
+          <span style="color:var(--green)">&#x2713;</span> O'qish davomida daromad qilasiz
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:#fff;font-weight:500">
+          <span style="color:var(--green)">&#x2713;</span> Eng muhimi — o'zingizni topasiz
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 4: AFZALLIKLAR ═══════════ -->
+<div class="slide" id="s4" style="background:radial-gradient(ellipse at 50% 0%, rgba(6,182,212,.08) 0%, transparent 50%), var(--dark)">
+  <div class="blob" style="width:400px;height:400px;background:var(--cyan);bottom:-100px;right:-80px;opacity:.08"></div>
+
+  <div class="tag anim" style="background:rgba(6,182,212,.15);color:var(--cyan)">AFZALLIKLAR</div>
+
+  <h1 class="title anim d1" style="font-size:38px;margin-top:12px">
+    Nega aynan NIU?
+  </h1>
+
+  <div class="cards c4 anim d2" style="margin-top:40px">
+    <div class="card anim d3">
+      <div class="card-icon" style="background:rgba(45,185,118,.12);color:var(--green)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="card-title">Amaliy ta'lim</div>
+      <div class="card-desc">1-kursdan boshlab real loyihalarda ishlaysiz — nazariya + amaliyot birga</div>
+    </div>
+    <div class="card anim d4">
+      <div class="card-icon" style="background:rgba(139,92,246,.12);color:var(--purple)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="card-title">Mentorlar</div>
+      <div class="card-desc">Sohada ishlagan ustozlar — ular sizga yo'l ko'rsatadi</div>
+    </div>
+    <div class="card anim d5">
+      <div class="card-icon" style="background:rgba(6,182,212,.12);color:var(--cyan)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+      </div>
+      <div class="card-title">Zamonaviy kasblar</div>
+      <div class="card-desc">IT, Sun'iy intellekt, Dasturlash, Injiniring — kelajak kasblari</div>
+    </div>
+    <div class="card anim d6">
+      <div class="card-icon" style="background:rgba(251,191,36,.12);color:var(--yellow)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="card-title">Daromad imkoniyati</div>
+      <div class="card-desc">O'qish davomida freelance, startup, stajyorka — pul ishlaysiz</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 5: NATIJALAR — SUCCESS STORIES ═══════════ -->
+<div class="slide" id="s5" style="background:linear-gradient(145deg,#0A0E1A 0%,#0A1628 100%)">
+  <div class="blob" style="width:500px;height:500px;background:var(--green);bottom:-200px;left:-100px;opacity:.08"></div>
+
+  <div class="tag anim" style="background:rgba(45,185,118,.15);color:var(--green)">NATIJALAR</div>
+
+  <h1 class="title anim d1" style="font-size:36px;margin-top:12px">
+    Bitiruvchilarimiz muvaffaqiyati
+  </h1>
+  <div class="subtitle anim d2">Senda ham shunday imkoniyat bor!</div>
+
+  <div class="cards c3 anim d3" style="margin-top:36px;max-width:960px">
+    <!-- Story 1 -->
+    <div class="ba-card anim d3">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));
+                    margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">A</div>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Oldin</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.6);margin-top:4px">Oddiy maktab o'quvchisi</div>
+      </div>
+      <div class="ba-arrow" style="margin-bottom:16px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Keyin</div>
+        <div style="font-size:15px;color:#fff;font-weight:700;margin-top:4px">IT kompaniya asoschisi</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:4px">3 yilda startup ochdi</div>
+      </div>
+    </div>
+
+    <!-- Story 2 -->
+    <div class="ba-card anim d4">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));
+                    margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">M</div>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Oldin</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.6);margin-top:4px">Qishloqdan kelgan o'quvchi</div>
+      </div>
+      <div class="ba-arrow" style="margin-bottom:16px;background:linear-gradient(135deg,var(--purple),var(--pink))">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Keyin</div>
+        <div style="font-size:15px;color:#fff;font-weight:700;margin-top:4px">Xalqaro kompaniyada injiner</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:4px">Oyiga $2,000+ daromad</div>
+      </div>
+    </div>
+
+    <!-- Story 3 -->
+    <div class="ba-card anim d5">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));
+                    margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">S</div>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Oldin</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.6);margin-top:4px">Kasbini bilmagan o'quvchi</div>
+      </div>
+      <div class="ba-arrow" style="margin-bottom:16px;background:linear-gradient(135deg,var(--orange),var(--yellow))">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--orange);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Keyin</div>
+        <div style="font-size:15px;color:#fff;font-weight:700;margin-top:4px">Data Science mutaxassisi</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:4px">Grant asosida o'qidi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 6: TALABA HAYOTI ═══════════ -->
+<div class="slide" id="s6" style="background:radial-gradient(ellipse at 60% 40%, rgba(236,72,153,.06) 0%, transparent 50%), var(--dark)">
+  <div class="blob" style="width:400px;height:400px;background:var(--pink);top:-100px;left:-80px;opacity:.06"></div>
+
+  <div class="tag anim" style="background:rgba(236,72,153,.15);color:var(--pink)">TALABA HAYOTI</div>
+
+  <h1 class="title anim d1" style="font-size:38px;margin-top:12px">
+    1 kun talaba hayoti
+  </h1>
+  <div class="subtitle anim d2">Bu yerda faqat o'qish emas — hayot bor!</div>
+
+  <div class="life-grid anim d3">
+    <div class="life-card d3 anim" style="background:rgba(45,185,118,.06);border-color:rgba(45,185,118,.15)">
+      <div class="lc-emoji">&#x1F4BB;</div>
+      <div class="lc-title">Darslar</div>
+      <div class="lc-desc">Amaliy + interaktiv formatda</div>
+    </div>
+    <div class="life-card d4 anim" style="background:rgba(6,182,212,.06);border-color:rgba(6,182,212,.15)">
+      <div class="lc-emoji">&#x1F680;</div>
+      <div class="lc-title">Loyihalar</div>
+      <div class="lc-desc">Real kompaniyalar bilan</div>
+    </div>
+    <div class="life-card d5 anim" style="background:rgba(139,92,246,.06);border-color:rgba(139,92,246,.15)">
+      <div class="lc-emoji">&#x26BD;</div>
+      <div class="lc-title">Sport</div>
+      <div class="lc-desc">Futbol, basketbol, suzish</div>
+    </div>
+    <div class="life-card d6 anim" style="background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.15)">
+      <div class="lc-emoji">&#x1F91D;</div>
+      <div class="lc-title">Do'stlar</div>
+      <div class="lc-desc">Yangi aloqalar, jamoa</div>
+    </div>
+    <div class="life-card d7 anim" style="background:rgba(255,107,53,.06);border-color:rgba(255,107,53,.15)">
+      <div class="lc-emoji">&#x1F3A4;</div>
+      <div class="lc-title">Tadbirlar</div>
+      <div class="lc-desc">Hackathon, konferensiya</div>
+    </div>
+  </div>
+
+  <div class="anim d8" style="margin-top:32px;text-align:center">
+    <div style="font-size:16px;color:rgba(255,255,255,.6);font-style:italic">
+      &laquo;Bu yerga kelishim hayotimni o'zgartirdi&raquo;
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,.35);margin-top:6px">— NIU talabasi</div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 7: GRANTLAR ═══════════ -->
+<div class="slide" id="s7" style="background:radial-gradient(ellipse at 40% 80%, rgba(251,191,36,.08) 0%, transparent 50%), var(--dark)">
+  <div class="blob" style="width:500px;height:500px;background:var(--yellow);bottom:-200px;right:-150px;opacity:.06"></div>
+
+  <div class="tag anim" style="background:rgba(251,191,36,.15);color:var(--yellow)">IMKONIYATLAR</div>
+
+  <h1 class="title anim d1" style="font-size:38px;margin-top:12px">
+    Grantlar va imtiyozlar
+  </h1>
+  <div class="subtitle anim d2">Real motivatsiya — bu imkoniyat</div>
+
+  <div class="cards c3 anim d3" style="margin-top:40px;max-width:900px">
+    <div class="card anim d3" style="text-align:center;padding:36px 24px">
+      <div style="font-size:48px;margin-bottom:16px">&#x1F3C6;</div>
+      <div class="card-title" style="font-size:18px;color:var(--yellow)">Test asosida grant</div>
+      <div class="card-desc" style="margin-top:8px">Kirish testida yuqori ball — 50% gacha grant olish imkoniyati</div>
+      <div style="margin-top:16px;padding:10px 20px;border-radius:10px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);font-size:13px;font-weight:700;color:var(--yellow)">
+        50% gacha
+      </div>
+    </div>
+    <div class="card anim d4" style="text-align:center;padding:36px 24px">
+      <div style="font-size:48px;margin-bottom:16px">&#x1F4B0;</div>
+      <div class="card-title" style="font-size:18px;color:var(--green)">Chegirmalar</div>
+      <div class="card-desc" style="margin-top:8px">Erta ro'yxatdan o'tganlarga va ko'p bolali oilalarga maxsus narxlar</div>
+      <div style="margin-top:16px;padding:10px 20px;border-radius:10px;background:rgba(45,185,118,.1);border:1px solid rgba(45,185,118,.2);font-size:13px;font-weight:700;color:var(--green)">
+        20% chegirma
+      </div>
+    </div>
+    <div class="card anim d5" style="text-align:center;padding:36px 24px">
+      <div style="font-size:48px;margin-bottom:16px">&#x1F3C5;</div>
+      <div class="card-title" style="font-size:18px;color:var(--purple)">Olimpiada g'oliblari</div>
+      <div class="card-desc" style="margin-top:8px">Fan olimpiadasi g'oliblari uchun maxsus o'rinlar va to'liq grant</div>
+      <div style="margin-top:16px;padding:10px 20px;border-radius:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);font-size:13px;font-weight:700;color:var(--purple)">
+        100% grant
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 8: OTA-ONALAR ═══════════ -->
+<div class="slide" id="s8" style="background:linear-gradient(145deg,#0A0E1A 0%,#0F172A 100%)">
+  <div class="blob" style="width:400px;height:400px;background:var(--cyan);top:-100px;left:-80px;opacity:.06"></div>
+
+  <div class="tag anim" style="background:rgba(6,182,212,.15);color:var(--cyan)">OTA-ONALAR UCHUN</div>
+
+  <h1 class="title anim d1" style="font-size:36px;margin-top:12px">
+    Farzandingiz xavfsiz qo'llarda
+  </h1>
+  <div class="subtitle anim d2">Qaror ko'pincha ota-ona tomonidan qilinadi — bu ma'lumot siz uchun</div>
+
+  <div class="cards c4 anim d3" style="margin-top:36px;max-width:1000px">
+    <div class="card anim d3" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">&#x1F4CA;</div>
+      <div class="card-title">92% ishga joylashish</div>
+      <div class="card-desc">Bitiruvchilarimizning aksariyati birinchi yilda ish topadi</div>
+    </div>
+    <div class="card anim d4" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">&#x1F512;</div>
+      <div class="card-title">Xavfsiz muhit</div>
+      <div class="card-desc">24/7 qo'riqlash, yotoqxona, tibbiy xizmat</div>
+    </div>
+    <div class="card anim d5" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">&#x1F4DD;</div>
+      <div class="card-title">Shaffof kontrakt</div>
+      <div class="card-desc">Aniq shartlar, yashirin to'lovlar yo'q, barcha hujjatlar rasmiy</div>
+    </div>
+    <div class="card anim d6" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">&#x2B50;</div>
+      <div class="card-title">Sifatli ta'lim</div>
+      <div class="card-desc">Davlat litsenziyasi, akkreditatsiya, xalqaro standartlar</div>
+    </div>
+  </div>
+
+  <div class="anim d7" style="margin-top:28px;padding:14px 28px;border-radius:14px;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.12);text-align:center;max-width:600px">
+    <div style="font-size:14px;color:rgba(255,255,255,.6)">
+      Ota-onalar uchun alohida <span style="color:var(--cyan);font-weight:700">konsultatsiya kuni</span> — har oyning birinchi shanbasi
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 9: SMM + AMBASSADOR ═══════════ -->
+<div class="slide" id="s9" style="background:radial-gradient(ellipse at 70% 30%, rgba(139,92,246,.06) 0%, transparent 50%), var(--dark)">
+
+  <div class="tag anim" style="background:rgba(139,92,246,.15);color:var(--purple)">STRATEGIYA</div>
+
+  <h1 class="title anim d1" style="font-size:34px;margin-top:12px">
+    Ijtimoiy tarmoq kontent rejasi
+  </h1>
+  <div class="subtitle anim d2">7 kunlik kontent — har kuni yangi kontentlarimizni kuzating</div>
+
+  <div class="cal-grid anim d3">
+    <div class="cal-day anim d3" style="border-color:rgba(45,185,118,.2)">
+      <div class="cd-num">1-KUN</div>
+      <div class="cd-emoji">&#x1F3AC;</div>
+      <div class="cd-text" style="color:var(--green)">Talaba 1 kuni</div>
+    </div>
+    <div class="cal-day anim d4" style="border-color:rgba(139,92,246,.2)">
+      <div class="cd-num">2-KUN</div>
+      <div class="cd-emoji">&#x1F3A4;</div>
+      <div class="cd-text" style="color:var(--purple)">Talaba intervyu</div>
+    </div>
+    <div class="cal-day anim d5" style="border-color:rgba(6,182,212,.2)">
+      <div class="cd-num">3-KUN</div>
+      <div class="cd-emoji">&#x1F4C8;</div>
+      <div class="cd-text" style="color:var(--cyan)">TOP 5 kasb</div>
+    </div>
+    <div class="cal-day anim d6" style="border-color:rgba(236,72,153,.2)">
+      <div class="cd-num">4-KUN</div>
+      <div class="cd-emoji">&#x1F602;</div>
+      <div class="cd-text" style="color:var(--pink)">Qiziqarli video</div>
+    </div>
+    <div class="cal-day anim d7" style="border-color:rgba(255,107,53,.2)">
+      <div class="cd-num">5-KUN</div>
+      <div class="cd-emoji">&#x1F4A1;</div>
+      <div class="cd-text" style="color:var(--orange)">Nega aynan biz?</div>
+    </div>
+    <div class="cal-day anim d8" style="border-color:rgba(251,191,36,.2)">
+      <div class="cd-num">6-KUN</div>
+      <div class="cd-emoji">&#x1F3EB;</div>
+      <div class="cd-text" style="color:var(--yellow)">Ichki vlog</div>
+    </div>
+    <div class="cal-day anim d9" style="border-color:rgba(45,185,118,.3);background:rgba(45,185,118,.08)">
+      <div class="cd-num">7-KUN</div>
+      <div class="cd-emoji">&#x1F525;</div>
+      <div class="cd-text" style="color:var(--green);font-weight:800">Qabul boshlandi!</div>
+    </div>
+  </div>
+
+  <div class="anim d10" style="margin-top:28px;display:flex;gap:16px;align-items:center">
+    <div style="padding:10px 20px;border-radius:12px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+      <span style="font-size:18px">&#x1F393;</span> Talaba Ambassador dasturi
+    </div>
+    <div style="padding:10px 20px;border-radius:12px;background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.15);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+      <span style="font-size:18px">&#x1F4F1;</span> TikTok + Instagram
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 10: POSTER ═══════════ -->
+<div class="slide" id="s10" style="background:radial-gradient(ellipse at 50% 50%, rgba(45,185,118,.06) 0%, transparent 50%), var(--dark)">
+
+  <div class="tag anim" style="background:rgba(255,107,53,.15);color:var(--orange)">REKLAMA</div>
+
+  <h1 class="title anim d1" style="font-size:34px;margin-top:12px">
+    Poster va reklama matni
+  </h1>
+
+  <div class="two-col anim d2" style="margin-top:36px;align-items:center">
+    <!-- Poster mock -->
+    <div style="display:flex;justify-content:center">
+      <div class="poster anim-s d3">
+        <div class="blob" style="width:200px;height:200px;background:var(--green);top:-60px;right:-60px;opacity:.2"></div>
+        <div style="position:relative;z-index:1">
+          <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--green),var(--green-dd));
+                      margin:0 auto 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(45,185,118,.3)">
+            <img src="assets/niu-logo-white.png" alt="" style="width:40px;height:40px;object-fit:contain">
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:20px">
+            KELAJAGINGNI<br>BUGUN BOSHLANG!
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:24px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+              <span style="color:var(--green)">&#x2713;</span> Zamonaviy kasblar
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+              <span style="color:var(--green)">&#x2713;</span> Amaliy ta'lim
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+              <span style="color:var(--green)">&#x2713;</span> Grant va chegirmalar
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600">
+              <span style="color:var(--green)">&#x2713;</span> Kuchli muhit
+            </div>
+          </div>
+          <div style="padding:12px 24px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--cyan));font-size:14px;font-weight:700">
+            QABUL BOSHLANDI!
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.5)">
+            O'rinlar cheklangan!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Poster breakdown -->
+    <div>
+      <div class="anim d4" style="font-size:14px;font-weight:700;color:var(--orange);letter-spacing:.04em;margin-bottom:20px">POSTER TARKIBI</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="anim d5" style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(45,185,118,.12);display:flex;align-items:center;justify-content:center;font-size:16px">&#x1F3AF;</div>
+          <div>
+            <div style="font-size:14px;font-weight:600">Kuchli sarlavha</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">Emosional, qisqa, harakatga chorlovchi</div>
+          </div>
+        </div>
+        <div class="anim d6" style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,.12);display:flex;align-items:center;justify-content:center;font-size:16px">&#x2705;</div>
+          <div>
+            <div style="font-size:14px;font-weight:600">4 ta asosiy afzallik</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">Kasblar, ta'lim, grant, muhit</div>
+          </div>
+        </div>
+        <div class="anim d7" style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;font-size:16px">&#x23F3;</div>
+          <div>
+            <div style="font-size:14px;font-weight:600">Urgency — shoshilinchlik</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">"O'rinlar cheklangan" — harakatga undaydi</div>
+          </div>
+        </div>
+        <div class="anim d8" style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,.12);display:flex;align-items:center;justify-content:center;font-size:16px">&#x1F4DE;</div>
+          <div>
+            <div style="font-size:14px;font-weight:600">Kontakt ma'lumotlari</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">Telefon, sayt, ijtimoiy tarmoqlar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDE 11: CTA — FINAL ═══════════ -->
+<div class="slide" id="s11" style="background:radial-gradient(ellipse at 50% 50%, rgba(45,185,118,.15) 0%, rgba(45,185,118,.03) 40%, transparent 60%), var(--dark)">
+  <div class="blob" style="width:600px;height:600px;background:var(--green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06"></div>
+
+  <div class="anim-b" style="margin-bottom:24px">
+    <div style="width:88px;height:88px;border-radius:24px;background:linear-gradient(135deg,var(--green),var(--green-dd));
+                display:flex;align-items:center;justify-content:center;
+                box-shadow:0 16px 48px rgba(45,185,118,.35);animation:pulseGlow 2s ease-in-out infinite">
+      <img src="assets/niu-logo-white.png" alt="NIU" style="width:64px;height:64px;object-fit:contain">
+    </div>
+  </div>
+
+  <h1 class="title anim d2" style="font-size:48px">
+    Siz tayyormisiz?
+  </h1>
+
+  <div class="subtitle anim d3" style="font-size:18px;max-width:600px;margin-top:14px">
+    Eng yaxshi imkoniyatlarni tez qaror qilganlar egallaydi.<br>
+    <span style="color:var(--yellow);font-weight:600">Bugun qaror qiling!</span>
+  </div>
+
+  <div class="anim d4" style="margin-top:36px">
+    <button class="cta-btn">
+      Ro'yxatdan o'tish
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+
+  <div class="anim d5" style="margin-top:40px;display:flex;gap:32px;align-items:center">
+    <div style="text-align:center">
+      <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8)">&#x1F4DE; +998 79 223 00 00</div>
+    </div>
+    <div style="width:1px;height:24px;background:rgba(255,255,255,.12)"></div>
+    <div style="text-align:center">
+      <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8)">&#x1F310; niu.uz</div>
+    </div>
+    <div style="width:1px;height:24px;background:rgba(255,255,255,.12)"></div>
+    <div style="text-align:center">
+      <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8)">&#x1F4F1; @niu_university</div>
+    </div>
+  </div>
+
+  <div class="anim d6" style="margin-top:28px;padding:10px 24px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.15)">
+    <div style="font-size:14px;font-weight:700;color:#EF4444;letter-spacing:.02em">
+      &#x23F3; O'rinlar cheklangan — hoziroq murojaat qiling!
+    </div>
+  </div>
+
+  <div class="anim d7" style="margin-top:32px;font-size:12px;color:rgba(255,255,255,.3)">
+    &copy; 2026 Navoiy innovatsiyalar universiteti
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- PROGRESS & NAV -->
+<div class="progress-bar" id="progress"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="nav-hint">&larr; &rarr; yoki bo'sh joy bosing</div>
+
+<script>
+(function(){
+  const ss = document.querySelectorAll('.slide');
+  const N = ss.length;
+  let c = 0;
+
+  function show(n){
+    if(n<0||n>=N) return;
+    ss.forEach(function(s){ s.classList.remove('active','prev'); });
+    if(n > c) ss[c].classList.add('prev');
+    c = n;
+    ss[c].classList.add('active');
+    document.getElementById('progress').style.width = ((c+1)/N*100)+'%';
+    document.getElementById('slideNum').textContent = (c+1)+' / '+N;
+  }
+
+  show(0);
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();show(c+1)}
+    if(e.key==='ArrowLeft'){e.preventDefault();show(c-1)}
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(N-1);
+  });
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('button,a')) return;
+    if(e.clientX > window.innerWidth/2) show(c+1);
+    else show(c-1);
+  });
+
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50) dx<0?show(c+1):show(c-1);
+  });
+})();
+</script>
+</body>
+</html>

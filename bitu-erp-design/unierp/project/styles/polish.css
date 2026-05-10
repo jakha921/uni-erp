@@ -1,0 +1,470 @@
+/* ==========================================================================
+   BITU ERP — UI Polish Layer
+   Hover states, animations, responsive breakpoints, depth effects, skeletons.
+   Loaded AFTER tokens.css. Uses CSS custom properties from :root.
+   ========================================================================== */
+
+/* ===================== 1. KEYFRAMES ===================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(30px); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes scaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.92); }
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(2px); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(12px, -18px) scale(1.02); }
+  66%      { transform: translate(-8px, 10px) scale(0.98); }
+}
+@keyframes backdropIn {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to   { opacity: 1; backdrop-filter: blur(4px); }
+}
+
+/* ===================== 2. ANIMATION UTILITIES ===================== */
+
+.fade-in       { animation: fadeIn var(--duration-base) var(--ease-smooth) both; }
+.fade-out      { animation: fadeOut var(--duration-fast) ease both; }
+.slide-up      { animation: slideUp var(--duration-enter) var(--ease-out) both; }
+.slide-down    { animation: slideDown var(--duration-base) var(--ease-out) both; }
+.slide-in-right { animation: slideInRight 250ms var(--ease-out) both; }
+.scale-in      { animation: scaleIn var(--duration-slow) var(--ease-spring) both; }
+
+.stagger-1 { animation-delay: 40ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 120ms; }
+.stagger-4 { animation-delay: 160ms; }
+.stagger-5 { animation-delay: 200ms; }
+.stagger-6 { animation-delay: 240ms; }
+.stagger-7 { animation-delay: 280ms; }
+.stagger-8 { animation-delay: 320ms; }
+
+/* ===================== 3. HOVER UTILITIES ===================== */
+
+.hover-lift {
+  transition: transform var(--duration-base) var(--ease-smooth),
+              box-shadow var(--duration-base) var(--ease-smooth);
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+.hover-lift:active {
+  transform: translateY(-1px);
+}
+
+.hover-bg {
+  transition: background var(--duration-fast) ease;
+}
+.hover-bg:hover {
+  background: var(--surface-hover) !important;
+}
+
+.row-hover {
+  transition: background var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+}
+.row-hover:hover {
+  background: #F8FAFB !important;
+}
+.row-hover:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--primary-500);
+}
+
+.btn-press {
+  transition: transform var(--duration-fast) var(--ease-spring),
+              box-shadow var(--duration-fast) ease,
+              background var(--duration-fast) ease;
+}
+.btn-press:active {
+  transform: scale(0.96) !important;
+}
+
+.icon-btn-hover {
+  transition: background var(--duration-fast) ease,
+              color var(--duration-fast) ease;
+}
+.icon-btn-hover:hover {
+  background: var(--surface-hover) !important;
+}
+
+/* ===================== 4. DEPTH / GLASS / VISUAL ===================== */
+
+.glass {
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.card-depth {
+  transition: box-shadow var(--duration-base) var(--ease-smooth),
+              transform var(--duration-base) var(--ease-smooth);
+}
+.card-depth:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.pattern-dots {
+  background-image: radial-gradient(circle, var(--neutral-200) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.gradient-primary { background: var(--gradient-primary); }
+.gradient-hero    { background: var(--gradient-hero); }
+.gradient-subtle  { background: var(--gradient-subtle); }
+
+.backdrop-blur {
+  animation: backdropIn var(--duration-base) var(--ease-smooth) both;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* floating circles for login background */
+.float-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  animation: floatSlow 20s ease-in-out infinite;
+  pointer-events: none;
+}
+.float-circle:nth-child(2) { animation-delay: -7s; animation-duration: 25s; }
+.float-circle:nth-child(3) { animation-delay: -14s; animation-duration: 18s; }
+
+/* ===================== 5. FORM STATES ===================== */
+
+.input-error {
+  border-color: var(--input-error-border) !important;
+  background: var(--input-error-bg) !important;
+}
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+.input-success {
+  border-color: var(--input-success-border) !important;
+  background: var(--input-success-bg) !important;
+}
+.input-success:focus {
+  box-shadow: 0 0 0 3px rgba(45, 185, 118, 0.2) !important;
+}
+.input-disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+.field-shake {
+  animation: shake 0.45s ease;
+}
+
+/* inline error text */
+.field-error-msg {
+  color: var(--error);
+  font-size: 12px;
+  margin-top: 4px;
+  animation: slideDown 150ms var(--ease-out) both;
+}
+
+/* success checkmark */
+.field-success-icon {
+  color: var(--success);
+  animation: scaleIn 250ms var(--ease-spring) both;
+}
+
+/* ===================== 6. SKELETON ===================== */
+
+.skeleton {
+  background: linear-gradient(90deg, var(--neutral-100) 25%, var(--neutral-200) 50%, var(--neutral-100) 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--radius-md);
+}
+.skeleton-text {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+.skeleton-text:last-child {
+  width: 60%;
+}
+.skeleton-circle {
+  border-radius: 50%;
+}
+.skeleton-card {
+  height: 120px;
+  border-radius: var(--radius-xl);
+}
+.skeleton-chart {
+  height: 200px;
+  border-radius: var(--radius-lg);
+}
+.skeleton-row {
+  height: 52px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+}
+
+/* ===================== 7. RESPONSIVE ===================== */
+
+/* --- Tablet: 768–1279px --- */
+@media (max-width: 1279px) {
+  .grid-6 { grid-template-columns: repeat(3, 1fr) !important; }
+  .grid-5 { grid-template-columns: repeat(3, 1fr) !important; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-2-asym { grid-template-columns: 1fr !important; }
+  .grid-3-asym { grid-template-columns: 1fr 1fr !important; }
+
+  .bitu-sidebar {
+    width: 72px !important;
+  }
+  .sidebar-label,
+  .sidebar-group-label,
+  .sidebar-branch,
+  .sidebar-user-info {
+    display: none !important;
+  }
+  .sidebar-nav-text {
+    display: none !important;
+  }
+  .sidebar-nav-item {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .topbar-search {
+    max-width: 200px !important;
+  }
+
+  .bitu-page {
+    padding: 20px 20px 32px !important;
+  }
+
+  .slide-over-panel {
+    width: 420px !important;
+  }
+}
+
+/* --- Mobile: <768px --- */
+@media (max-width: 767px) {
+  .grid-6,
+  .grid-5,
+  .grid-4,
+  .grid-3,
+  .grid-2,
+  .grid-2-asym,
+  .grid-3-asym {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Sidebar: hidden off-screen, overlay when open */
+  .bitu-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -300px !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 50 !important;
+    transition: left 0.3s var(--ease-out) !important;
+    box-shadow: none !important;
+  }
+  .bitu-sidebar.mobile-open {
+    left: 0 !important;
+    box-shadow: var(--shadow-float) !important;
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    z-index: 45;
+    animation: fadeIn 200ms ease both;
+  }
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Sidebar labels visible in mobile overlay mode */
+  .bitu-sidebar.mobile-open .sidebar-label,
+  .bitu-sidebar.mobile-open .sidebar-group-label,
+  .bitu-sidebar.mobile-open .sidebar-branch,
+  .bitu-sidebar.mobile-open .sidebar-user-info,
+  .bitu-sidebar.mobile-open .sidebar-nav-text {
+    display: flex !important;
+  }
+  .bitu-sidebar.mobile-open .sidebar-nav-item {
+    justify-content: flex-start !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .topbar-search {
+    display: none !important;
+  }
+
+  .hamburger-btn {
+    display: flex !important;
+  }
+
+  .bitu-page {
+    padding: 16px 14px 24px !important;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -14px;
+    padding: 0 14px;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: flex !important;
+  }
+
+  /* Login split → vertical stack */
+  .login-split {
+    flex-direction: column !important;
+  }
+  .login-left {
+    min-height: 180px !important;
+    max-height: 220px !important;
+    flex: none !important;
+  }
+
+  /* Slide-over → full width */
+  .slide-over-panel {
+    width: 100% !important;
+  }
+
+  /* Pagination — hide page numbers on mobile */
+  .page-numbers {
+    display: none !important;
+  }
+
+  /* Tabs — horizontal scroll */
+  .tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Hamburger hidden on desktop */
+.hamburger-btn {
+  display: none !important;
+}
+
+/* Sidebar overlay hidden on desktop */
+.sidebar-overlay {
+  display: none;
+}
+
+/* ===================== 8. FOCUS & PRINT ===================== */
+
+*:focus-visible {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 1px;
+}
+
+/* Print: hide chrome */
+@media print {
+  .bitu-sidebar,
+  .bitu-topbar,
+  .sidebar-overlay,
+  .hamburger-btn {
+    display: none !important;
+  }
+  .bitu-page {
+    padding: 0 !important;
+  }
+  .app-layout {
+    display: block !important;
+  }
+}
+
+/* ===================== 9. MISC UTILITIES ===================== */
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.transition-all {
+  transition: all var(--duration-base) var(--ease-smooth);
+}

@@ -179,11 +179,11 @@
 **Файл:** `features/education/pages/CurriculumPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
-- [ ] Убрать hardcoded YEARS массив
-- [ ] CRUD: создание/редактирование учебного плана в SlideOver
+- [x] Убрать hardcoded YEARS массив
+- [x] CRUD: создание/редактирование учебного плана в SlideOver
 - [x] CurriculumForm с useFieldArray для предметов (добавление/удаление строк)
-- [ ] Zod schema: specialtyId, year, subjects[] (name, credits, hours, controlForm)
-- [ ] Фильтры: специальность (Combobox из `useSpecialties()`), год обучения
+- [x] Zod schema: specialtyId, year, subjects[] (name, credits, hours, controlForm)
+- [x] Фильтры: специальность (Combobox из `useSpecialties()`), год обучения
 - [ ] i18n: все тексты
 - [ ] Экспорт учебного плана в PDF
 
@@ -271,7 +271,7 @@
 **Файл:** `features/finance/pages/ContractsListPage.tsx`
 **Статус:** C✓ R✓ D✓, нет Update
 **Задачи:**
-- [ ] Update: редактирование контракта (тип, сумма) в Modal
+- [x] Update: редактирование контракта (тип, сумма) в Modal
 - [x] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
 - [ ] Кнопка "Excel eksport" → `/finance/contracts/export/`
 - [ ] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
@@ -384,7 +384,7 @@
 ### 6.5 OrdersPage `/hr/orders`
 **Файл:** `features/hr/pages/OrdersPage.tsx` | **Статус:** C✓ R✓, нет U/D
 **Задачи:**
-- [ ] Update: редактирование buyruq (статус: draft → review → signed)
+- [x] Update: редактирование buyruq (статус: draft → review → signed)
 - [x] Delete: ConfirmDialog
 - [ ] Генерация PDF приказа → `/hr/orders/{id}/pdf/`
 - [ ] i18n: все тексты
@@ -480,7 +480,7 @@
 ### 8.5 NewsPage `/news`
 **Файл:** `features/operations/pages/NewsPage.tsx`
 **Задачи:**
-- [ ] CRUD (для admin): Create (NewsForm в SlideOver), Edit, Delete
+- [x] CRUD (для admin): Create (NewsForm в SlideOver), Edit, Delete
 - [x] NewsForm: title, content, category, tags
 - [ ] Grid/List toggle view
 - [ ] Фильтры: category, tag

@@ -1,0 +1,262 @@
+- generic [ref=e161]:
+  - complementary [ref=e162]:
+    - generic [ref=e164]: Uni
+    - generic [ref=e165]:
+      - button [ref=e167] [cursor=pointer]:
+        - img [ref=e168]
+      - generic [ref=e173]:
+        - button [ref=e174] [cursor=pointer]:
+          - img [ref=e175]
+        - button [ref=e178] [cursor=pointer]:
+          - img [ref=e179]
+      - generic [ref=e184]:
+        - button [ref=e185] [cursor=pointer]:
+          - img [ref=e186]
+        - button [ref=e189] [cursor=pointer]:
+          - img [ref=e190]
+        - button [ref=e192] [cursor=pointer]:
+          - img [ref=e193]
+        - button [ref=e195] [cursor=pointer]:
+          - img [ref=e196]
+        - button [ref=e198] [cursor=pointer]:
+          - img [ref=e199]
+        - button [ref=e202] [cursor=pointer]:
+          - img [ref=e203]
+        - button [ref=e206] [cursor=pointer]:
+          - img [ref=e207]
+      - generic [ref=e210]:
+        - button [ref=e211] [cursor=pointer]:
+          - img [ref=e212]
+        - button [ref=e215] [cursor=pointer]:
+          - img [ref=e216]
+        - button [ref=e219] [cursor=pointer]:
+          - img [ref=e220]
+      - generic [ref=e223]:
+        - button [ref=e224] [cursor=pointer]:
+          - img [ref=e225]
+        - button [ref=e228] [cursor=pointer]:
+          - img [ref=e229]
+        - button [ref=e232] [cursor=pointer]:
+          - img [ref=e233]
+        - button [ref=e235] [cursor=pointer]:
+          - img [ref=e236]
+        - button [ref=e239] [cursor=pointer]:
+          - img [ref=e240]
+        - button [ref=e243] [cursor=pointer]:
+          - img [ref=e244]
+        - button [ref=e247] [cursor=pointer]:
+          - img [ref=e248]
+        - button [ref=e251] [cursor=pointer]:
+          - img [ref=e252]
+      - generic [ref=e255]:
+        - button [ref=e256] [cursor=pointer]:
+          - img [ref=e257]
+        - button [ref=e260] [cursor=pointer]:
+          - img [ref=e261]
+        - button [ref=e266] [cursor=pointer]:
+          - img [ref=e267]
+        - button [ref=e270] [cursor=pointer]:
+          - img [ref=e271]
+        - button [ref=e274] [cursor=pointer]:
+          - img [ref=e275]
+        - button [ref=e277] [cursor=pointer]:
+          - img [ref=e278]
+      - generic [ref=e281]:
+        - button [ref=e282] [cursor=pointer]:
+          - img [ref=e283]
+        - button [ref=e286] [cursor=pointer]:
+          - img [ref=e287]
+  - generic [ref=e290]:
+    - generic [ref=e291]:
+      - heading "Asosiy panel" [level=1] [ref=e293]
+      - button "Theme" [ref=e294] [cursor=pointer]:
+        - img [ref=e295]
+      - button "Bildirishnomalar" [ref=e298] [cursor=pointer]:
+        - img [ref=e299]
+        - generic [ref=e302]: "3"
+      - button "AA" [ref=e304] [cursor=pointer]:
+        - generic [ref=e305]: AA
+        - img [ref=e306]
+    - main [ref=e308]:
+      - generic [ref=e309]:
+        - generic [ref=e311]: Navoiy (bosh filial) · 2025-2026 · 2-semester
+        - generic [ref=e313]:
+          - button "Eksport" [ref=e314] [cursor=pointer]:
+            - img [ref=e315]
+            - text: Eksport
+          - button "Tezkor amal" [ref=e318] [cursor=pointer]:
+            - img [ref=e319]
+            - text: Tezkor amal
+      - generic [ref=e320]:
+        - generic [ref=e321]:
+          - img [ref=e323]
+          - generic [ref=e326]: Fakultetlar
+          - generic [ref=e327]: "8"
+        - generic [ref=e328]:
+          - img [ref=e330]
+          - generic [ref=e333]: Kafedralar
+          - generic [ref=e334]: "4"
+        - generic [ref=e335]:
+          - img [ref=e337]
+          - generic [ref=e342]: O'qituvchilar
+          - generic [ref=e343]: "50"
+        - generic [ref=e344]:
+          - img [ref=e346]
+          - generic [ref=e349]: Talabalar
+          - generic [ref=e350]: "200"
+        - generic [ref=e351]:
+          - img [ref=e353]
+          - generic [ref=e358]: Xonalar
+          - generic [ref=e359]: "142"
+        - generic [ref=e360]:
+          - img [ref=e362]
+          - generic [ref=e367]: Guruhlar
+          - generic [ref=e368]: "8"
+      - generic [ref=e369]:
+        - generic [ref=e370]:
+          - img [ref=e372]
+          - generic [ref=e375]: Tushumlar
+          - generic [ref=e376]: 263M
+        - generic [ref=e377]:
+          - img [ref=e379]
+          - generic [ref=e381]: Qarzdorlar
+          - generic [ref=e382]: "24"
+        - generic [ref=e383]:
+          - img [ref=e385]
+          - generic [ref=e388]: Kontraktlar
+          - generic [ref=e389]: "30"
+        - generic [ref=e390]:
+          - img [ref=e392]
+          - generic [ref=e395]: Jami qarz
+          - generic [ref=e396]: 185M
+        - generic [ref=e397]:
+          - img [ref=e399]
+          - generic [ref=e402]: Stipendiyalar
+          - generic [ref=e403]: "10"
+        - generic [ref=e404]:
+          - img [ref=e406]
+          - generic [ref=e408]: Buyruqlar
+          - generic [ref=e409]: "18"
+      - generic [ref=e410]:
+        - generic [ref=e411]:
+          - generic [ref=e412]:
+            - heading "Viloyatlar bo'yicha" [level=3] [ref=e413]
+            - generic [ref=e415]: Barcha
+          - generic [ref=e416]:
+            - generic [ref=e417]:
+              - img [ref=e418]
+              - generic [ref=e425]:
+                - generic [ref=e426]: "200"
+                - generic [ref=e427]: Talaba
+            - generic [ref=e428]:
+              - generic [ref=e429]:
+                - generic [ref=e431]: Navoiy
+                - generic [ref=e432]: "1240"
+              - generic [ref=e433]:
+                - generic [ref=e435]: Zarafshon
+                - generic [ref=e436]: "520"
+              - generic [ref=e437]:
+                - generic [ref=e439]: Uchquduq
+                - generic [ref=e440]: "480"
+              - generic [ref=e441]:
+                - generic [ref=e443]: Qashqadaryo
+                - generic [ref=e444]: "410"
+              - generic [ref=e445]:
+                - generic [ref=e447]: Boshqa
+                - generic [ref=e448]: "597"
+        - generic [ref=e449]:
+          - generic [ref=e450]:
+            - heading "Jinsi bo'yicha" [level=3] [ref=e451]
+            - generic [ref=e453]: 2025-26
+          - generic [ref=e454]:
+            - generic [ref=e455]:
+              - img [ref=e456]
+              - generic [ref=e460]:
+                - generic [ref=e461]: 56%
+                - generic [ref=e462]: Ayol
+            - generic [ref=e463]:
+              - generic [ref=e464]:
+                - generic [ref=e466]: Ayol
+                - generic [ref=e467]: "1818"
+              - generic [ref=e468]:
+                - generic [ref=e470]: Erkak
+                - generic [ref=e471]: "1429"
+        - generic [ref=e472]:
+          - generic [ref=e473]:
+            - heading "Yoshi bo'yicha" [level=3] [ref=e474]
+            - generic [ref=e476]: 2025-26
+          - generic [ref=e477]:
+            - generic [ref=e478]:
+              - img [ref=e479]
+              - generic [ref=e484]:
+                - generic [ref=e485]: "21.4"
+                - generic [ref=e486]: O'rtacha
+            - generic [ref=e487]:
+              - generic [ref=e488]:
+                - generic [ref=e490]: 17-20 yosh
+                - generic [ref=e491]: "1580"
+              - generic [ref=e492]:
+                - generic [ref=e494]: 21-24 yosh
+                - generic [ref=e495]: "1340"
+              - generic [ref=e496]:
+                - generic [ref=e498]: 25+ yosh
+                - generic [ref=e499]: "327"
+      - generic [ref=e500]:
+        - generic [ref=e501]:
+          - generic [ref=e502]:
+            - heading "Talabalar dinamikasi" [level=3] [ref=e503]
+            - generic [ref=e504]:
+              - generic [ref=e505]: 12 oy
+              - generic [ref=e506]: +8.4% YoY
+          - img [ref=e508]
+          - generic [ref=e524]:
+            - generic [ref=e525]: May
+            - generic [ref=e526]: Iyn
+            - generic [ref=e527]: Iyl
+            - generic [ref=e528]: Avg
+            - generic [ref=e529]: Sen
+            - generic [ref=e530]: Okt
+            - generic [ref=e531]: Noy
+            - generic [ref=e532]: Dek
+            - generic [ref=e533]: Yan
+            - generic [ref=e534]: Fev
+            - generic [ref=e535]: Mar
+            - generic [ref=e536]: Apr
+        - generic [ref=e537]:
+          - heading "So'nggi faoliyat" [level=3] [ref=e539]
+          - generic [ref=e540]:
+            - generic [ref=e541]:
+              - img [ref=e543]
+              - generic [ref=e546]:
+                - generic [ref=e547]: "To'lov: 3,800,000 so'm"
+                - generic [ref=e548]: TOSHMATOV BEKZOD RUSTAM O'G'LI · undefined
+              - generic [ref=e549]: 12 daq.
+            - generic [ref=e550]:
+              - img [ref=e552]
+              - generic [ref=e555]:
+                - generic [ref=e556]: "To'lov: 3,800,000 so'm"
+                - generic [ref=e557]: TOSHMATOV BEKZOD RUSTAM O'G'LI · undefined
+              - generic [ref=e558]: 34 daq.
+            - generic [ref=e559]:
+              - img [ref=e561]
+              - generic [ref=e564]:
+                - generic [ref=e565]: "To'lov: 8,200,000 so'm"
+                - generic [ref=e566]: XOLMATOVA MADINA AKMAL QIZI · undefined
+              - generic [ref=e567]: 1 soat
+            - generic [ref=e568]:
+              - img [ref=e570]
+              - generic [ref=e573]:
+                - generic [ref=e574]: "To'lov: 5,800,000 so'm"
+                - generic [ref=e575]: YUSUPOVA DILNOZA SANJAR QIZI · undefined
+              - generic [ref=e576]: 2 soat
+            - generic [ref=e577]:
+              - img [ref=e579]
+              - generic [ref=e582]:
+                - generic [ref=e583]: "To'lov: 3,100,000 so'm"
+                - generic [ref=e584]: MIRZAYEV OTABEK NODIR O'G'LI · undefined
+              - generic [ref=e585]: 3 soat
+  - generic [ref=e586]:
+    - generic [ref=e587]: Dashboard
+    - generic [ref=e588]:
+      - button "KPI grid" [ref=e589] [cursor=pointer]
+      - button "Hero" [ref=e590] [cursor=pointer]

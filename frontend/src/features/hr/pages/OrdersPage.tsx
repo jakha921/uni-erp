@@ -7,7 +7,7 @@ import { Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { OrderTable } from '../components/OrderTable';
 import { OrderForm } from '../components/OrderForm';
-import { useOrders, useCreateOrder, useDeleteOrder, useEmployees } from '@/api/hooks/useHr';
+import { useOrders, useCreateOrder, useUpdateOrderStatus, useDeleteOrder, useEmployees } from '@/api/hooks/useHr';
 import type { OrderFormData } from '../schemas/order.schema';
 import type { HrOrder, OrderType, OrderStatus } from '@/types/hr';
 
@@ -22,6 +22,7 @@ export function OrdersPage() {
   const { data: ordersData, isLoading } = useOrders();
   const { data: employeesData } = useEmployees({ pageSize: 100 });
   const createMutation = useCreateOrder();
+  const updateStatusMutation = useUpdateOrderStatus();
   const deleteMutation = useDeleteOrder();
 
   const filteredOrders = (ordersData ?? []).filter((order) => {
@@ -131,7 +132,11 @@ export function OrdersPage() {
           <div className="flex h-64 items-center justify-center"><Spinner /></div>
         ) : (
           <>
-            <OrderTable data={pagedOrders} onDelete={setDeleteOrder} />
+            <OrderTable
+              data={pagedOrders}
+              onStatusChange={(order, status) => updateStatusMutation.mutate({ id: order.id, status })}
+              onDelete={setDeleteOrder}
+            />
             {totalPages > 1 && (
               <div className="border-t border-[#F1F5F9] px-4 py-3">
                 <Pagination

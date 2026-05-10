@@ -566,6 +566,14 @@ export class HrMockService implements IHrService {
     return order;
   }
 
+  async updateOrderStatus(id: string, status: HrOrder['status']): Promise<HrOrder> {
+    await delay(200);
+    allOrders = allOrders.map((o) => o.id === id ? { ...o, status } : o);
+    const updated = allOrders.find((o) => o.id === id);
+    if (!updated) throw new Error('Order not found');
+    return updated;
+  }
+
   async deleteOrder(id: string): Promise<void> {
     await delay(200);
     allOrders = allOrders.filter((o) => o.id !== id);
