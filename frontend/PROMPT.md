@@ -464,7 +464,7 @@
 **Задачи:**
 - [x] Подключить к `useChatThreads()` и `useMessages(threadId)`
 - [x] Compose: `useSendMessage()` mutation
-- [ ] Real-time: polling каждые 10 сек
+- [x] Real-time: polling каждые 10 сек
 - [x] Split layout: треды слева, сообщения справа
 - [ ] i18n: все тексты
 

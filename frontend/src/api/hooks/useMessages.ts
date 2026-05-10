@@ -12,6 +12,7 @@ export function useThreads(params: ListParams = {}) {
   return useQuery({
     queryKey: messageKeys.threads(params),
     queryFn: () => messageService.getThreads(params),
+    refetchInterval: 10_000,
   });
 }
 
@@ -20,6 +21,7 @@ export function useMessages(threadId: number) {
     queryKey: messageKeys.messages(threadId),
     queryFn: () => messageService.getMessages(threadId),
     enabled: threadId > 0,
+    refetchInterval: threadId > 0 ? 10_000 : false,
   });
 }
 
