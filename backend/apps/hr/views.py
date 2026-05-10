@@ -5,6 +5,7 @@ from datetime import date
 
 from django.db.models import Count
 from rest_framework import status
+from rest_framework.decorators import action  # noqa: F401
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -57,6 +58,37 @@ class EmployeeViewSet(ModelViewSet):
             EmployeeDetailSerializer(employee, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
         )
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export_excel(self, request):
+        from apps.core.export import export_to_excel
+
+        qs = self.filter_queryset(self.get_queryset())
+        data = []
+        for e in qs[:1000]:
+            data.append(
+                {
+                    "id": e.id,
+                    "full_name": e.user.full_name,
+                    "employee_id": e.employee_id_number,
+                    "phone": e.user.phone,
+                    "department": e.department.name if e.department else "",
+                    "position": e.position,
+                    "status": e.get_status_display(),
+                    "hire_date": e.hire_date,
+                }
+            )
+        columns = [
+            ("id", "ID"),
+            ("full_name", "F.I.O"),
+            ("employee_id", "Xodim ID"),
+            ("phone", "Telefon"),
+            ("department", "Bo'lim"),
+            ("position", "Lavozim"),
+            ("status", "Holat"),
+            ("hire_date", "Ishga qabul sanasi"),
+        ]
+        return export_to_excel(data, columns, filename="xodimlar", sheet_name="Xodimlar")
 
 
 class HrDashboardView(APIView):

@@ -2,6 +2,7 @@
 
 from django.db.models import Count
 from rest_framework import status
+from rest_framework.decorators import action  # noqa: F811
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -59,6 +60,90 @@ class StudentViewSet(ModelViewSet):
         return Response(
             StudentDetailSerializer(student, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export_excel(self, request):
+        from apps.core.export import export_to_excel
+
+        qs = self.filter_queryset(self.get_queryset())
+        data = []
+        for s in qs[:1000]:
+            data.append(
+                {
+                    "id": s.id,
+                    "full_name": s.user.full_name,
+                    "student_id": s.student_id_number,
+                    "phone": s.user.phone,
+                    "faculty": (s.group.specialty.department.faculty.name if s.group else ""),
+                    "group": s.group.name if s.group else "",
+                    "course": s.course,
+                    "status": s.get_status_display(),
+                    "education_form": s.get_education_form_display(),
+                }
+            )
+        columns = [
+            ("id", "ID"),
+            ("full_name", "F.I.O"),
+            ("student_id", "Talaba ID"),
+            ("phone", "Telefon"),
+            ("faculty", "Fakultet"),
+            ("group", "Guruh"),
+            ("course", "Kurs"),
+            ("status", "Holat"),
+            ("education_form", "Ta'lim shakli"),
+        ]
+        return export_to_excel(data, columns, filename="talabalar", sheet_name="Talabalar")
+
+    @action(detail=False, methods=["post"], url_path="import")
+    def import_excel(self, request):
+        from apps.core.export import parse_excel
+
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"detail": "Fayl yuklanmadi"}, status=status.HTTP_400_BAD_REQUEST)
+
+        columns = [
+            ("full_name", "F.I.O"),
+            ("student_id", "Talaba ID"),
+            ("phone", "Telefon"),
+        ]
+        try:
+            rows = parse_excel(file, columns)
+        except Exception:
+            return Response(
+                {"detail": "Faylni o'qib bo'lmadi"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"parsed": len(rows), "preview": rows[:5]})
+
+    @action(detail=False, methods=["get"], url_path="export-pdf")
+    def export_pdf(self, request):
+        from apps.core.pdf import generate_table_pdf
+
+        qs = self.filter_queryset(self.get_queryset())
+        headers = ["#", "F.I.O", "Talaba ID", "Telefon", "Fakultet", "Guruh", "Kurs", "Holat"]
+        rows = []
+        for i, s in enumerate(qs[:500], 1):
+            rows.append(
+                [
+                    i,
+                    s.user.full_name,
+                    s.student_id_number,
+                    s.user.phone,
+                    s.group.specialty.department.faculty.name if s.group else "",
+                    s.group.name if s.group else "",
+                    s.course,
+                    s.get_status_display(),
+                ]
+            )
+        return generate_table_pdf(
+            title="Talabalar ro'yxati",
+            subtitle=f"Jami: {qs.count()} ta talaba",
+            headers=headers,
+            rows=rows,
+            filename="talabalar_royxati",
         )
 
 

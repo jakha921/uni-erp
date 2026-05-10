@@ -2,6 +2,7 @@
 
 from django.db.models import Count, Sum
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -61,6 +62,59 @@ class ContractViewSet(ModelViewSet):
     def perform_destroy(self, instance: Contract):
         instance.is_deleted = True
         instance.save(update_fields=["is_deleted"])
+
+    @action(detail=True, methods=["get"], url_path="pdf")
+    def download_pdf(self, request, pk=None):
+        from apps.core.pdf import generate_contract_pdf
+
+        contract = self.get_object()
+        student = contract.student
+        data = {
+            "number": contract.contract_number,
+            "student_name": student.user.full_name if student else "",
+            "faculty": (
+                student.group.specialty.department.faculty.name if student and student.group else ""
+            ),
+            "specialty": student.group.specialty.name if student and student.group else "",
+            "group": student.group.name if student and student.group else "",
+            "education_form": student.get_education_form_display() if student else "",
+            "course": student.course if student else "",
+            "contract_amount": float(contract.contract_amount),
+            "paid_amount": float(contract.paid_amount),
+            "debt_amount": float(contract.debt_amount),
+            "status": contract.get_status_display(),
+            "contract_date": (
+                contract.contract_date.strftime("%d.%m.%Y") if contract.contract_date else ""
+            ),
+        }
+        return generate_contract_pdf(data)
+
+    @action(detail=False, methods=["get"], url_path="export-pdf")
+    def export_pdf(self, request):
+        from apps.core.pdf import generate_table_pdf
+
+        qs = self.filter_queryset(self.get_queryset())
+        headers = ["#", "Raqam", "Talaba", "Umumiy summa", "To'langan", "Qarz", "Holat"]
+        rows = []
+        for i, c in enumerate(qs[:500], 1):
+            rows.append(
+                [
+                    i,
+                    c.contract_number,
+                    c.student.user.full_name if c.student else "",
+                    f"{c.contract_amount:,.0f}",
+                    f"{c.paid_amount:,.0f}",
+                    f"{c.debt_amount:,.0f}",
+                    c.get_status_display(),
+                ]
+            )
+        return generate_table_pdf(
+            title="Shartnomalar hisoboti",
+            subtitle=f"Jami: {qs.count()} ta shartnoma",
+            headers=headers,
+            rows=rows,
+            filename="shartnomalar_hisoboti",
+        )
 
 
 class PaymentViewSet(ModelViewSet):

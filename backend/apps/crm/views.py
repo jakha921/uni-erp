@@ -64,3 +64,36 @@ class LeadViewSet(ModelViewSet):
             )
         updated = Lead.objects.filter(id__in=ids, is_deleted=False).update(status=new_status)
         return Response({"updated": updated})
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export_excel(self, request):
+        from apps.core.export import export_to_excel
+
+        qs = self.filter_queryset(self.get_queryset())
+        data = []
+        for lead in qs[:1000]:
+            data.append(
+                {
+                    "id": lead.id,
+                    "name": f"{lead.first_name} {lead.last_name}",
+                    "phone": lead.phone,
+                    "email": lead.email,
+                    "direction": lead.direction,
+                    "source": lead.get_source_display(),
+                    "status": lead.get_status_display(),
+                    "score": lead.score,
+                    "created_at": lead.created_at,
+                }
+            )
+        columns = [
+            ("id", "ID"),
+            ("name", "F.I.O"),
+            ("phone", "Telefon"),
+            ("email", "Email"),
+            ("direction", "Yo'nalish"),
+            ("source", "Manba"),
+            ("status", "Holat"),
+            ("score", "Ball"),
+            ("created_at", "Yaratilgan sana"),
+        ]
+        return export_to_excel(data, columns, filename="lidlar", sheet_name="CRM Lidlar")

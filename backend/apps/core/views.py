@@ -152,3 +152,53 @@ class DashboardView(APIView):
                 "groups": groups,
             }
         )
+
+
+class SendSmsView(APIView):
+    """Send SMS notification to a phone number."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        phone = request.data.get("phone")
+        message = request.data.get("message")
+        if not phone or not message:
+            return Response(
+                {"detail": "phone and message required"},
+                status=400,
+            )
+        from apps.core.sms import send_sms
+
+        success = send_sms(phone, message)
+        return Response({"success": success})
+
+
+class SendNotificationView(APIView):
+    """Send in-app notification (optionally with SMS)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        from apps.accounts.models import User
+        from apps.core.notifications import notify_user
+
+        user_id = request.data.get("user_id")
+        title = request.data.get("title", "")
+        message = request.data.get("message", "")
+        send_sms_flag = request.data.get("send_sms", False)
+
+        if not user_id or not title:
+            return Response({"detail": "user_id and title required"}, status=400)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=404)
+
+        notification = notify_user(
+            user=user,
+            title=title,
+            message=message,
+            send_sms=send_sms_flag,
+        )
+        return Response({"id": notification.id, "status": "sent"}, status=201)

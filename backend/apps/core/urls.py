@@ -9,6 +9,8 @@ from .views import (
     FacultyViewSet,
     GroupViewSet,
     SemesterViewSet,
+    SendNotificationView,
+    SendSmsView,
     SpecialtyViewSet,
 )
 
@@ -24,4 +26,6 @@ router.register("groups", GroupViewSet, basename="group")
 
 urlpatterns = router.urls + [
     path("audit/", AuditLogListView.as_view(), name="audit-log"),
+    path("sms/send/", SendSmsView.as_view(), name="sms-send"),
+    path("notifications/send/", SendNotificationView.as_view(), name="notification-send"),
 ]
