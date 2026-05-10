@@ -105,4 +105,12 @@ export class BudgetMockService implements IBudgetService {
 
     return { totalPlanned, totalSpent, totalRemaining, byQuarter };
   }
+
+  async updateCategory(id: number, planned: number): Promise<BudgetCategory> {
+    await delay(300);
+    const cat = ALL_CATEGORIES.find((c) => c.id === id);
+    if (!cat) throw new Error('Budget category not found');
+    cat.planned = planned;
+    return { ...cat };
+  }
 }

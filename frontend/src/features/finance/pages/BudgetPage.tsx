@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Target, CheckCircle, TrendingUp, Wallet } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Target, CheckCircle, TrendingUp, Wallet, Pencil, X, Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
 import { Button, Badge, Spinner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
-import { useBudgetCategories, useBudgetSummary } from '@/api/hooks/useBudget';
+import { useBudgetCategories, useBudgetSummary, useUpdateBudgetCategory } from '@/api/hooks/useBudget';
 import type { BudgetCategory } from '@/types/finance';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -24,11 +24,27 @@ function getCategoryColor(name: string): string {
   return CATEGORY_COLORS[name] ?? DEFAULT_COLOR;
 }
 
+const QUARTERS = [
+  { value: 0, label: "Yil bo'yi" },
+  { value: 1, label: 'I chorak' },
+  { value: 2, label: 'II chorak' },
+  { value: 3, label: 'III chorak' },
+  { value: 4, label: 'IV chorak' },
+];
+
 export function BudgetPage() {
   const [year] = useState(2026);
+  const [quarter, setQuarter] = useState(0);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: categoriesData, isLoading: isLoadingCategories } = useBudgetCategories({ year });
+  const { data: categoriesData, isLoading: isLoadingCategories } = useBudgetCategories({
+    year,
+    quarter: quarter > 0 ? quarter : undefined,
+  });
   const { data: summary, isLoading: isLoadingSummary } = useBudgetSummary(year);
+  const updateCategory = useUpdateBudgetCategory();
 
   const categories = categoriesData ?? [];
 
@@ -36,6 +52,26 @@ export function BudgetPage() {
   const totalSpent = summary?.totalSpent ?? categories.reduce((s: number, c: BudgetCategory) => s + c.spent, 0);
   const totalRemaining = summary?.totalRemaining ?? (totalPlanned - totalSpent);
   const totalPercent = totalPlanned > 0 ? Math.round((totalSpent / totalPlanned) * 100) : 0;
+
+  function startEdit(row: BudgetCategory) {
+    setEditingId(row.id);
+    setEditValue(String(row.planned));
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditValue('');
+  }
+
+  function commitEdit(id: number) {
+    const planned = Number(editValue.replace(/\s/g, ''));
+    if (!isNaN(planned) && planned > 0) {
+      updateCategory.mutate({ id, planned });
+    }
+    setEditingId(null);
+    setEditValue('');
+  }
 
   const columns: Column<BudgetCategory>[] = [
     {
@@ -62,9 +98,42 @@ export function BudgetPage() {
       header: 'Rejalashtirilgan',
       className: 'text-right',
       sortable: true,
-      render: (row) => (
-        <span className="tabular-nums text-slate-600">{formatMoney(row.planned)}</span>
-      ),
+      render: (row) => {
+        if (editingId === row.id) {
+          return (
+            <div className="flex items-center justify-end gap-1">
+              <input
+                ref={inputRef}
+                type="number"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitEdit(row.id);
+                  if (e.key === 'Escape') cancelEdit();
+                }}
+                className="w-36 h-7 rounded border border-primary-500 px-2 text-right text-sm tabular-nums focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+              <button onClick={() => commitEdit(row.id)} className="text-emerald-600 hover:text-emerald-700">
+                <Check className="h-4 w-4" />
+              </button>
+              <button onClick={cancelEdit} className="text-slate-400 hover:text-slate-600">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          );
+        }
+        return (
+          <div className="group flex items-center justify-end gap-1.5">
+            <span className="tabular-nums text-slate-600">{formatMoney(row.planned)}</span>
+            <button
+              onClick={() => startEdit(row)}
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-600"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        );
+      },
     },
     {
       key: 'spent',
@@ -128,6 +197,20 @@ export function BudgetPage() {
           </div>
         }
       />
+
+      <div className="flex items-center gap-3 mb-4">
+        <select
+          value={quarter}
+          onChange={(e) => setQuarter(Number(e.target.value))}
+          className="h-9 rounded-md border border-border px-3 text-sm"
+        >
+          {QUARTERS.map((q) => (
+            <option key={q.value} value={q.value}>
+              {q.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-5">
         <StatCard

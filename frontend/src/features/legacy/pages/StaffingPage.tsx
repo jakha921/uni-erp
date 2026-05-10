@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Users, Briefcase, AlertCircle, TrendingUp } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
+import { ProgressBar } from '@/components/ui';
 
 interface Position {
   title: string;
@@ -54,11 +56,17 @@ const STAFFING: Department[] = [
 ];
 
 export function StaffingPage() {
+  const [deptFilter, setDeptFilter] = useState('');
+
   const allPositions = STAFFING.flatMap((d) => d.positions);
   const totalSlots = allPositions.reduce((s, p) => s + p.total, 0);
   const filledSlots = allPositions.reduce((s, p) => s + p.filled, 0);
   const vacantSlots = totalSlots - filledSlots;
   const fillRate = Math.round((filledSlots / totalSlots) * 100);
+
+  const filteredStaffing = deptFilter
+    ? STAFFING.filter((d) => d.name === deptFilter)
+    : STAFFING;
 
   return (
     <PageContent>
@@ -75,23 +83,44 @@ export function StaffingPage() {
         <StatCard label="Band foizi" value={`${fillRate}%`} icon={<TrendingUp className="h-5 w-5" />} trend={{ value: fillRate - 90 }} />
       </div>
 
+      <div className="mb-4">
+        <select
+          value={deptFilter}
+          onChange={(e) => setDeptFilter(e.target.value)}
+          className="h-9 rounded-md border border-border px-3 text-sm"
+        >
+          <option value="">Barcha bo'limlar</option>
+          {STAFFING.map((d) => (
+            <option key={d.name} value={d.name}>{d.name}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="space-y-4">
-        {STAFFING.map((dept) => {
+        {filteredStaffing.map((dept) => {
           const deptTotal = dept.positions.reduce((s, p) => s + p.total, 0);
           const deptFilled = dept.positions.reduce((s, p) => s + p.filled, 0);
           const deptVacant = deptTotal - deptFilled;
 
           return (
             <Card key={dept.name} title="" className="overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50">
-                <h3 className="text-[14px] font-semibold text-slate-900">{dept.name}</h3>
-                <div className="flex items-center gap-4 text-xs text-slate-500">
-                  <span>Jami: <strong className="text-slate-700">{deptTotal}</strong></span>
-                  <span>Band: <strong className="text-emerald-600">{deptFilled}</strong></span>
-                  {deptVacant > 0 && (
-                    <span>Bo'sh: <strong className="text-amber-600">{deptVacant}</strong></span>
-                  )}
+              <div className="px-4 py-3 border-b border-border bg-slate-50">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-[14px] font-semibold text-slate-900">{dept.name}</h3>
+                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <span>Jami: <strong className="text-slate-700">{deptTotal}</strong></span>
+                    <span>Band: <strong className="text-emerald-600">{deptFilled}</strong></span>
+                    {deptVacant > 0 && (
+                      <span>Bo'sh: <strong className="text-amber-600">{deptVacant}</strong></span>
+                    )}
+                    <strong className="text-slate-700">{Math.round((deptFilled / deptTotal) * 100)}%</strong>
+                  </div>
                 </div>
+                <ProgressBar
+                  value={Math.round((deptFilled / deptTotal) * 100)}
+                  color={deptVacant === 0 ? 'bg-emerald-500' : 'bg-primary-500'}
+                  size="sm"
+                />
               </div>
               <table className="w-full">
                 <thead>

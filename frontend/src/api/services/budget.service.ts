@@ -10,6 +10,7 @@ import { BudgetMockService } from '../mock/budget.mock';
 export interface IBudgetService {
   getCategories(params: BudgetListParams): Promise<BudgetCategory[]>;
   getSummary(year: number): Promise<BudgetSummary>;
+  updateCategory(id: number, planned: number): Promise<BudgetCategory>;
 }
 
 class BudgetApiService implements IBudgetService {
@@ -23,6 +24,9 @@ class BudgetApiService implements IBudgetService {
     return apiClient.get<BudgetSummary>(ENDPOINTS.budget.summary, {
       params: { year },
     });
+  }
+  async updateCategory(id: number, planned: number): Promise<BudgetCategory> {
+    return apiClient.patch<BudgetCategory>(`${ENDPOINTS.budget.categories}${id}/`, { planned });
   }
 }
 

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { BudgetListParams } from '@/types/finance';
 import { budgetService } from '../services/budget.service';
 
@@ -21,5 +21,13 @@ export function useBudgetSummary(year: number) {
   return useQuery({
     queryKey: KEYS.summary(year),
     queryFn: () => budgetService.getSummary(year),
+  });
+}
+
+export function useUpdateBudgetCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, planned }: { id: number; planned: number }) => budgetService.updateCategory(id, planned),
+    onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.categories() }); },
   });
 }

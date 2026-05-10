@@ -155,9 +155,9 @@
 **Задачи:**
 - [x] Подключить к `useBulkGrades()` mutation — сохранение оценок
 - [ ] Фильтры: группа, предмет, семестр — через API
-- [ ] Inline editing оценок в таблице
-- [ ] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
-- [ ] Кнопка "Saqlash" — bulk save
+- [x] Inline editing оценок в таблице
+- [x] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
+- [x] Кнопка "Saqlash" — bulk save
 - [ ] i18n: все тексты
 - [ ] Экспорт ведомости в Excel/PDF
 
@@ -165,8 +165,8 @@
 **Файл:** `features/education/pages/ExamsPage.tsx`
 **Статус:** Tabs с inline mock данными
 **Задачи:**
-- [ ] Подключить к `useExams(params)` hook
-- [ ] Tab "Sessiyalar": список экзаменов → CRUD (создание, редактирование, удаление)
+- [x] Подключить к `useExams(params)` hook
+- [x] Tab "Sessiyalar": список экзаменов → CRUD (создание, редактирование, удаление)
 - [x] ExamForm: subjectId, groupId, examDate, room, type (midterm/final), teacherId
 - [x] Zod schema: `examSchema` валидация всех полей
 - [ ] Tab "Imtihon jadvali": таблица расписания экзаменов
@@ -338,9 +338,9 @@
 **Файл:** `features/finance/pages/BudgetPage.tsx`
 **Статус:** Read через hooks
 **Задачи:**
-- [ ] CRUD: редактирование бюджетных категорий (плановые суммы)
+- [x] CRUD: редактирование бюджетных категорий (плановые суммы)
 - [ ] Убрать hardcoded color map → в config
-- [ ] Фильтр по кварталу
+- [x] Фильтр по кварталу
 - [ ] i18n: все тексты
 
 ---
@@ -501,16 +501,16 @@
 ### 9.1 TeachersListPage `/teachers`
 **Файл:** `features/teachers/pages/TeachersListPage.tsx`
 **Задачи:**
-- [ ] Клик по строке → `/teachers/:id` (TeacherProfilePage)
-- [ ] Фильтры: кафедра (Combobox), степень, звание, форма занятости
+- [x] Клик по строке → `/teachers/:id` (TeacherProfilePage)
+- [x] Фильтры: кафедра (Combobox), степень, звание, форма занятости
 - [ ] i18n: все тексты
 
 ### 9.2 TeacherProfilePage `/teachers/:id` — **НОВАЯ СТРАНИЦА**
 **Файл:** `features/teachers/pages/TeacherProfilePage.tsx` — СОЗДАТЬ
 **Задачи:**
-- [ ] Создать по аналогии с EmployeeProfilePage
-- [ ] Tabs: Информация, Расписание, Нагрузка, Публикации
-- [ ] Route в router.tsx
+- [x] Создать по аналогии с EmployeeProfilePage
+- [x] Tabs: Информация, Расписание, Нагрузка, Публикации
+- [x] Route в router.tsx
 
 ---
 
@@ -643,8 +643,8 @@
 
 ### 15.2 StaffingPage `/staffing`
 **Задачи:**
-- [ ] Фильтр по bo'lim
-- [ ] ProgressBar для fill rate
+- [x] Фильтр по bo'lim
+- [x] ProgressBar для fill rate
 - [ ] i18n: все тексты
 
 ---
