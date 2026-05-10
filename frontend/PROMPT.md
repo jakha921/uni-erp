@@ -432,7 +432,7 @@
 ### 7.3 CrmReportPage `/crm/report`
 **Файл:** `features/crm/pages/CrmReportPage.tsx`
 **Задачи:**
-- [ ] Подключить к `useCrmStats()` — реальные данные
+- [x] Подключить к `useCrmStats()` — реальные данные
 - [x] DateRangePicker для периода
 - [x] Графики: воронка (BarChart), источники (DonutChart), динамика (LineChart)
 - [ ] i18n: все тексты
