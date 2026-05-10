@@ -4,6 +4,7 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
 import { Modal } from '@/components/overlays';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { usePayments, useContracts } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import type { PaymentMethod, Contract, Payment } from '@/types/finance';
@@ -16,14 +17,6 @@ const PAYMENT_METHOD_LABELS: Record<PaymentMethod, { variant: 'info' | 'default'
   payme: { variant: 'warning', label: 'Payme' },
 };
 
-type PeriodFilter = 'today' | 'week' | 'month' | 'all';
-
-const PERIODS: { k: PeriodFilter; l: string }[] = [
-  { k: 'today', l: 'Bugun' },
-  { k: 'week', l: 'Bu hafta' },
-  { k: 'month', l: 'Bu oy' },
-  { k: 'all', l: 'Barchasi' },
-];
 
 function buildReceiptDom(win: Window, payment: Payment) {
   const d = win.document;
@@ -119,9 +112,10 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
 }
 
 export function PaymentsListPage() {
-  const [period, setPeriod] = useState<PeriodFilter>('all');
   const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [faculty, setFaculty] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [printPayment, setPrintPayment] = useState<Payment | null>(null);
 
@@ -129,19 +123,28 @@ export function PaymentsListPage() {
     page: 1,
     pageSize: 200,
     paymentMethod: method || undefined,
-    period: period === 'all' ? undefined : period,
   });
 
   const payments = data?.data ?? [];
-  const totalSum = payments.reduce((s, p) => s + p.amount, 0);
+
+  const filtered = useMemo(() => {
+    return payments.filter((p) => {
+      if (faculty && p.facultyName !== faculty) return false;
+      if (dateFrom && p.paymentDate < dateFrom) return false;
+      if (dateTo && p.paymentDate > dateTo) return false;
+      return true;
+    });
+  }, [payments, faculty, dateFrom, dateTo]);
+
+  const totalSum = filtered.reduce((s, p) => s + p.amount, 0);
 
   const grouped = useMemo(() => {
-    const g: Record<string, typeof payments> = {};
-    payments.forEach((p) => {
+    const g: Record<string, typeof filtered> = {};
+    filtered.forEach((p) => {
       (g[p.paymentDate] = g[p.paymentDate] || []).push(p);
     });
     return Object.entries(g).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [payments]);
+  }, [filtered]);
 
   if (isLoading) {
     return (
@@ -181,22 +184,11 @@ export function PaymentsListPage() {
       {/* Toolbar */}
       <Card className="mb-4">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Period button group */}
-          <div className="flex gap-1 rounded-[10px] bg-slate-100 p-1">
-            {PERIODS.map((p) => (
-              <button
-                key={p.k}
-                onClick={() => setPeriod(p.k)}
-                className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
-                  period === p.k
-                    ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                    : 'text-muted hover:text-slate-700'
-                }`}
-              >
-                {p.l}
-              </button>
-            ))}
-          </div>
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+          />
           <select
             value={faculty}
             onChange={(e) => setFaculty(e.target.value)}

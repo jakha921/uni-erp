@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Banknote } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge } from '@/components/ui';
 import { Spinner } from '@/components/ui';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { useFinanceDashboard } from '@/api/hooks/useFinance';
 import { usePayments } from '@/api/hooks/useFinance';
 import { useContracts } from '@/api/hooks/useFinance';
@@ -25,8 +27,10 @@ const PAYMENT_METHOD_LABELS: Record<PaymentMethod, { variant: 'info' | 'default'
 
 export function FinanceDashboardPage() {
   const navigate = useNavigate();
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const { data: stats, isLoading: statsLoading } = useFinanceDashboard();
-  const { data: paymentsData } = usePayments({ pageSize: 10 });
+  const { data: paymentsData } = usePayments({ pageSize: 200 });
   const { data: contractsData } = useContracts({ pageSize: 100 });
 
   if (statsLoading || !stats) {
@@ -39,7 +43,14 @@ export function FinanceDashboardPage() {
     );
   }
 
-  const recentPayments = paymentsData?.data.slice(0, 10) ?? [];
+  const allPayments = paymentsData?.data ?? [];
+  const recentPayments = allPayments
+    .filter((p) => {
+      if (dateFrom && p.paymentDate < dateFrom) return false;
+      if (dateTo && p.paymentDate > dateTo) return false;
+      return true;
+    })
+    .slice(0, 10);
   const topDebtors = (contractsData?.data ?? [])
     .filter((c) => c.debtAmount > 0 && c.status === 'active')
     .sort((a, b) => b.debtAmount - a.debtAmount)
@@ -51,6 +62,13 @@ export function FinanceDashboardPage() {
         title="Moliyaviy panel"
         subtitle="Kontrakt to'lovlari va moliyaviy ko'rsatkichlar"
         breadcrumbs={[{ label: 'Moliya' }]}
+        actions={
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+          />
+        }
       />
 
       {/* KPI row */}

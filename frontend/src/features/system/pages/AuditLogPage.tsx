@@ -3,6 +3,7 @@ import { Search, FileText, ShieldAlert, AlertTriangle, CheckCircle } from 'lucid
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Avatar, Spinner } from '@/components/ui';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useAuditLog } from '@/api/hooks/useSystem';
 import type { AuditLogEntry } from '@/types/system';
@@ -98,13 +99,11 @@ export function AuditLogPage() {
               placeholder="Login, IP, harakat yoki tafsilot..."
               className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm placeholder:text-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20" />
           </div>
-          <div className="flex items-center gap-1.5">
-            <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-              className="h-9 rounded-md border border-border bg-white px-2 text-sm" />
-            <span className="text-xs text-muted">&mdash;</span>
-            <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-              className="h-9 rounded-md border border-border bg-white px-2 text-sm" />
-          </div>
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            onChange={(f, t) => { setDateFrom(f); setDateTo(t); setPage(1); }}
+          />
           <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
             {SEV_OPTIONS.map((o) => (
               <button key={o.value} onClick={() => { setSevFilter(o.value); setPage(1); }}

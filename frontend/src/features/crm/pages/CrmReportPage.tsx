@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Users, TrendingUp, UserCheck, PhoneCall } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard, DonutChart, LineChartSimple } from '@/components/data-display';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 
 type Period = 'month' | 'quarter' | 'year';
 
@@ -37,6 +38,8 @@ const MONTHLY_TREND = [
 
 export function CrmReportPage() {
   const [period, setPeriod] = useState<Period>('month');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   const totalLeads = FUNNEL_DATA[0]?.value ?? 0;
   const enrolled = FUNNEL_DATA[FUNNEL_DATA.length - 1]?.value ?? 0;
@@ -49,20 +52,27 @@ export function CrmReportPage() {
         subtitle="Qabul jarayoni statistikasi va konversiya tahlili"
         breadcrumbs={[{ label: 'CRM', path: '/crm' }, { label: 'Hisobot' }]}
         actions={
-          <div className="flex gap-1 rounded-lg border border-border p-1 bg-white">
-            {(['month', 'quarter', 'year'] as Period[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                  period === p
-                    ? 'bg-primary-500 text-white font-medium'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {p === 'month' ? 'Oy' : p === 'quarter' ? 'Chorak' : 'Yil'}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <DateRangePicker
+              from={dateFrom}
+              to={dateTo}
+              onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+            />
+            <div className="flex gap-1 rounded-lg border border-border p-1 bg-white">
+              {(['month', 'quarter', 'year'] as Period[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    period === p
+                      ? 'bg-primary-500 text-white font-medium'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {p === 'month' ? 'Oy' : p === 'quarter' ? 'Chorak' : 'Yil'}
+                </button>
+              ))}
+            </div>
           </div>
         }
       />

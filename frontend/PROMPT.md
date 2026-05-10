@@ -263,7 +263,7 @@
 **Статус:** Read через hooks
 **Задачи:**
 - [ ] Подключить все графики к реальным данным (убрать hardcoded если есть)
-- [ ] DateRangePicker для фильтрации по периоду
+- [x] DateRangePicker для фильтрации по периоду
 - [x] Drill-down: клик по факультету → фильтр контрактов
 - [ ] i18n: все лейблы карточек и графиков
 
@@ -303,7 +303,7 @@
 **Статус:** Read + Create через modal
 **Задачи:**
 - [ ] Убрать hardcoded PAYMENT_METHOD_LABELS → `t('finance.paymentMethod.*')`
-- [ ] DateRangePicker вместо простых пресетов
+- [x] DateRangePicker вместо простых пресетов
 - [x] Receipt печать: кнопка на каждом платеже
 - [ ] Экспорт в Excel
 - [ ] i18n: все тексты
@@ -349,7 +349,7 @@
 
 ### 6.1 HrDashboardPage `/hr`
 **Файл:** `features/hr/pages/HrDashboardPage.tsx` | **Задачи:**
-- [ ] DateRangePicker для периода
+- [x] DateRangePicker для периода
 - [x] Drill-down по метрикам (клик → фильтр)
 - [ ] i18n: все тексты
 
@@ -432,7 +432,7 @@
 **Файл:** `features/crm/pages/CrmReportPage.tsx`
 **Задачи:**
 - [ ] Подключить к `useCrmStats()` — реальные данные
-- [ ] DateRangePicker для периода
+- [x] DateRangePicker для периода
 - [x] Графики: воронка (BarChart), источники (DonutChart), динамика (LineChart)
 - [ ] i18n: все тексты
 
@@ -566,7 +566,7 @@
 
 ### 11.4 AuditLogPage `/system/audit`
 **Задачи:**
-- [ ] DateRangePicker
+- [x] DateRangePicker
 - [ ] Экспорт логов в Excel
 - [ ] i18n: все тексты
 

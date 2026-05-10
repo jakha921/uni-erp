@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, CheckCircle, Calendar, Briefcase } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Spinner } from '@/components/ui';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { useHrDashboard, useLeaves } from '@/api/hooks/useHr';
 import type { Leave } from '@/types/hr';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
@@ -33,9 +35,18 @@ function KpiMiniRow({ label, value, accent = '#4F46E5' }: { label: string; value
 
 export function HrDashboardPage() {
   const navigate = useNavigate();
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const { data: stats, isLoading } = useHrDashboard();
   const { data: allLeaves } = useLeaves();
-  const pendingLeaves = (allLeaves ?? []).filter((l: Leave) => l.status === 'pending').slice(0, 5);
+  const pendingLeaves = (allLeaves ?? [])
+    .filter((l: Leave) => {
+      if (l.status !== 'pending') return false;
+      if (dateFrom && l.startDate < dateFrom) return false;
+      if (dateTo && l.endDate > dateTo) return false;
+      return true;
+    })
+    .slice(0, 5);
 
   if (isLoading || !stats) {
     return (
@@ -53,6 +64,13 @@ export function HrDashboardPage() {
         title="Kadrlar paneli"
         subtitle="Universitet kadrlari ma'lumoti"
         breadcrumbs={[{ label: 'Kadrlar' }]}
+        actions={
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+          />
+        }
       />
 
       {/* Stat cards */}
