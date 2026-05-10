@@ -6,10 +6,11 @@ import { PageContent } from '@/components/layout/PageContent';
 import { Card } from '@/components/data-display/Card';
 import { Pagination } from '@/components/table/Pagination';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ConfirmDialog } from '@/components/overlays';
 import { StudentTable } from '../components/StudentTable';
-import { useStudentsList } from '@/api/hooks/useStudents';
+import { useStudentsList, useDeleteStudent } from '@/api/hooks/useStudents';
 import { useAuthStore } from '@/stores/auth.store';
-import type { StudentStatus, StudentListParams } from '@/types/student';
+import type { StudentStatus, StudentListParams, StudentListItem } from '@/types/student';
 
 export function StudentsListPage() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function StudentsListPage() {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<string | undefined>();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [deleteStudent, setDeleteStudent] = useState<StudentListItem | null>(null);
   const pageSize = 25;
 
   const params = useMemo<StudentListParams>(
@@ -42,6 +44,7 @@ export function StudentsListPage() {
   );
 
   const { data, isLoading } = useStudentsList(params);
+  const deleteStudentMutation = useDeleteStudent();
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -154,6 +157,20 @@ export function StudentsListPage() {
         </div>
       </Card>
 
+      <ConfirmDialog
+        open={!!deleteStudent}
+        onClose={() => setDeleteStudent(null)}
+        onConfirm={() => {
+          if (!deleteStudent) return;
+          deleteStudentMutation.mutate(deleteStudent.id, { onSuccess: () => setDeleteStudent(null) });
+        }}
+        title="Talabani o'chirish"
+        message={`"${deleteStudent?.fullName}" talabani o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteStudentMutation.isPending}
+      />
+
       {/* Table */}
       <Card noPadding className="overflow-hidden">
         {isLoading ? (
@@ -169,6 +186,7 @@ export function StudentsListPage() {
               page={page}
               pageSize={pageSize}
               onView={handleView}
+              onDelete={setDeleteStudent}
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={handleSort}

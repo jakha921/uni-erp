@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Eye } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { DataTable, type Column } from '@/components/table/DataTable';
 import { Button } from '@/components/ui/Button';
 import { StudentStatusBadge } from './StudentStatusBadge';
@@ -10,6 +10,7 @@ interface StudentTableProps {
   page: number;
   pageSize: number;
   onView: (id: number) => void;
+  onDelete?: (student: StudentListItem) => void;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   onSort?: (key: string) => void;
@@ -20,6 +21,7 @@ export function StudentTable({
   page,
   pageSize,
   onView,
+  onDelete,
   sortBy,
   sortOrder,
   onSort,
@@ -107,14 +109,24 @@ export function StudentTable({
       onSort={onSort}
       emptyMessage="Talabalar topilmadi"
       actions={(row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          leftIcon={<Eye className="h-3.5 w-3.5" />}
-          onClick={(e) => { e.stopPropagation(); onView(row.id as number); }}
-        >
-          Ko&apos;rish
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Eye className="h-3.5 w-3.5" />}
+            onClick={(e) => { e.stopPropagation(); onView(row.id as number); }}
+          >
+            Ko&apos;rish
+          </Button>
+          {onDelete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(row); }}
+              className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       )}
     />
   );

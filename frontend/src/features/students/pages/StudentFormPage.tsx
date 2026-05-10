@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,14 +16,18 @@ import {
   type CreateStudentFormData,
 } from '../schemas/student.schema';
 import { useStudent, useCreateStudent, useUpdateStudent } from '@/api/hooks/useStudents';
-import {
-  FACULTIES,
-  DEPARTMENTS,
-  SPECIALTIES,
-  GROUPS,
-  EDUCATION_FORMS,
-  PAYMENT_FORMS,
-} from '@/api/mock/students.mock';
+import { useFaculties, useDepartments, useSpecialties, useGroups } from '@/api/hooks/useCore';
+
+const EDUCATION_FORM_OPTIONS = [
+  { value: 'kunduzgi', label: 'Kunduzgi' },
+  { value: 'sirtqi', label: 'Sirtqi' },
+  { value: 'kechki', label: 'Kechki' },
+];
+
+const PAYMENT_FORM_OPTIONS = [
+  { value: 'grant', label: 'Davlat granti' },
+  { value: 'kontrakt', label: "To'lov-shartnoma" },
+];
 
 export function StudentFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -96,34 +100,12 @@ export function StudentFormPage() {
 
   const selectedFacultyId = watch('facultyId');
   const selectedDeptId = watch('departmentId');
+  const selectedSpecialtyId = watch('specialtyId');
 
-  const filteredDepartments = useMemo(
-    () =>
-      selectedFacultyId
-        ? DEPARTMENTS.filter((d) => d.facultyId === Number(selectedFacultyId))
-        : DEPARTMENTS,
-    [selectedFacultyId],
-  );
-
-  const filteredSpecialties = useMemo(
-    () =>
-      selectedDeptId
-        ? SPECIALTIES.filter(
-            (s) => s.departmentId === Number(selectedDeptId),
-          )
-        : SPECIALTIES,
-    [selectedDeptId],
-  );
-
-  const filteredGroups = useMemo(() => {
-    if (selectedFacultyId) {
-      const fac = FACULTIES.find((f) => f.id === Number(selectedFacultyId));
-      if (fac) {
-        return GROUPS.filter((g) => g.name.startsWith(fac.code));
-      }
-    }
-    return GROUPS;
-  }, [selectedFacultyId]);
+  const { data: faculties } = useFaculties();
+  const { data: departments } = useDepartments(selectedFacultyId ? Number(selectedFacultyId) : undefined);
+  const { data: specialties } = useSpecialties(selectedDeptId ? Number(selectedDeptId) : undefined);
+  const { data: groups } = useGroups(selectedSpecialtyId ? Number(selectedSpecialtyId) : undefined);
 
   const onSubmit = (data: CreateStudentFormData) => {
     const dto = data as unknown as import('@/types/student').CreateStudentDto;
@@ -286,10 +268,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('facultyId')}
-                options={FACULTIES.map((f) => ({
-                  value: String(f.id),
-                  label: f.name,
-                }))}
+                options={(faculties ?? []).map((f) => ({ value: String(f.id), label: f.name }))}
                 placeholder="Tanlang"
                 error={!!errors.facultyId}
               />
@@ -301,10 +280,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('departmentId')}
-                options={filteredDepartments.map((d) => ({
-                  value: String(d.id),
-                  label: d.name,
-                }))}
+                options={(departments ?? []).map((d) => ({ value: String(d.id), label: d.name }))}
                 placeholder="Tanlang"
                 error={!!errors.departmentId}
               />
@@ -316,10 +292,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('specialtyId')}
-                options={filteredSpecialties.map((s) => ({
-                  value: String(s.id),
-                  label: s.name,
-                }))}
+                options={(specialties ?? []).map((s) => ({ value: String(s.id), label: s.name }))}
                 placeholder="Tanlang"
                 error={!!errors.specialtyId}
               />
@@ -331,10 +304,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('groupId')}
-                options={filteredGroups.map((g) => ({
-                  value: String(g.id),
-                  label: g.name,
-                }))}
+                options={(groups ?? []).map((g) => ({ value: String(g.id), label: g.name }))}
                 placeholder="Tanlang"
                 error={!!errors.groupId}
               />
@@ -346,10 +316,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('educationForm')}
-                options={EDUCATION_FORMS.map((f) => ({
-                  value: f.code,
-                  label: f.name,
-                }))}
+                options={EDUCATION_FORM_OPTIONS}
                 placeholder="Tanlang"
                 error={!!errors.educationForm}
               />
@@ -376,10 +343,7 @@ export function StudentFormPage() {
             >
               <FormSelect
                 {...register('paymentForm')}
-                options={PAYMENT_FORMS.map((p) => ({
-                  value: p.code,
-                  label: p.name,
-                }))}
+                options={PAYMENT_FORM_OPTIONS}
                 placeholder="Tanlang"
                 error={!!errors.paymentForm}
               />

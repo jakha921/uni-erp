@@ -87,7 +87,7 @@
 **Статус:** Read работает, нет Update/Delete
 **Задачи:**
 - [ ] i18n: все тексты (заголовки таблицы, фильтры, кнопки)
-- [ ] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
+- [x] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
 - [ ] Bulk actions: чекбоксы для массового удаления/экспорта
 - [ ] Кнопка "Excel eksport" → вызов `/students/export/`
 - [ ] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
@@ -99,8 +99,8 @@
 **Статус:** Create работает, Update частично
 **Задачи:**
 - [ ] i18n: все лейблы формы через `t()`
-- [ ] Убрать hardcoded FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS массивы → загружать через `useFaculties()`, `useDepartments()`, `useSpecialties()`, `useGroups()`
-- [ ] Cascading selects: Faculty → Department → Specialty → Group (фильтрация зависимых)
+- [x] Убрать hardcoded FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS массивы → загружать через `useFaculties()`, `useDepartments()`, `useSpecialties()`, `useGroups()`
+- [x] Cascading selects: Faculty → Department → Specialty → Group (фильтрация зависимых)
 - [ ] FileUpload: загрузка фото студента
 - [ ] При Edit mode: предзаполнение формы данными из `useStudent(id)`
 - [ ] Кнопка "Назад" → navigate('/students')
