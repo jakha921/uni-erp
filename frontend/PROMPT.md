@@ -282,7 +282,7 @@
 **Файл:** `features/finance/pages/ContractDetailPage.tsx`
 **Статус:** Read + Payment creation
 **Задачи:**
-- [ ] Кнопка "Onlayn to'lov" → показать Payme/Click ссылки из `/contracts/{id}/payment-link/`
+- [x] Кнопка "Onlayn to'lov" → показать Payme/Click ссылки из `/contracts/{id}/payment-link/`
 - [ ] Кнопка "Shartnomani yuklab olish" → PDF download
 - [x] Кнопка "Nazad" → navigate('/finance/contracts')
 - [ ] i18n: все тексты (убрать hardcoded status labels)

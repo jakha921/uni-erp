@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, FileText, User, Calendar, Banknote } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, User, Calendar, Banknote, CreditCard, ExternalLink } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
+import { Modal } from '@/components/overlays';
 import { useContract, useCreatePayment } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { PaymentTimeline } from '../components/PaymentTimeline';
@@ -24,10 +25,50 @@ const CONTRACT_STATUS_CONFIG: Record<ContractStatus, { variant: 'success' | 'def
   cancelled: { variant: 'error', label: 'Bekor qilingan' },
 };
 
+const ONLINE_PAYMENT_PROVIDERS = [
+  { name: 'Payme', color: '#1677FF', logo: '💳', desc: 'payme.uz orqali to\'lov' },
+  { name: 'Click', color: '#FF6B00', logo: '⚡', desc: 'click.uz orqali to\'lov' },
+  { name: 'Uzum', color: '#7C3AED', logo: '🛍', desc: 'uzum.uz orqali to\'lov' },
+  { name: 'EPAY', color: '#16A34A', logo: '🏦', desc: 'Milliy bank epay' },
+];
+
+function OnlinePaymentModal({ open, onClose, contractId, amount }: { open: boolean; onClose: () => void; contractId: string; amount: number }) {
+  const baseUrl = `https://uni-erp.bitu.uz/pay?contract=${contractId}&amount=${amount}&provider=`;
+  return (
+    <Modal open={open} onClose={onClose} title="Onlayn to'lov usulini tanlang">
+      <div className="space-y-3">
+        <p className="text-sm text-slate-500">
+          Kontrakt to'lovini quyidagi to'lov tizimlari orqali amalga oshiring:
+        </p>
+        {ONLINE_PAYMENT_PROVIDERS.map((p) => (
+          <a
+            key={p.name}
+            href={`${baseUrl}${p.name.toLowerCase()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-primary-300 hover:bg-slate-50 transition-colors"
+          >
+            <span className="text-2xl">{p.logo}</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-slate-900">{p.name}</p>
+              <p className="text-xs text-slate-500">{p.desc}</p>
+            </div>
+            <ExternalLink className="h-4 w-4 text-slate-400" />
+          </a>
+        ))}
+        <p className="text-center text-[11px] text-slate-400 pt-2">
+          To'lov muvaffaqiyatli amalga oshirilgandan so'ng avtomatik qayd etiladi
+        </p>
+      </div>
+    </Modal>
+  );
+}
+
 export function ContractDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
+  const [onlinePaymentOpen, setOnlinePaymentOpen] = useState(false);
 
   const { data: contract, isLoading } = useContract(id ?? '');
   const createPayment = useCreatePayment();
@@ -83,6 +124,13 @@ export function ContractDetailPage() {
               onClick={() => navigate('/finance/contracts')}
             >
               Orqaga
+            </Button>
+            <Button
+              variant="secondary"
+              leftIcon={<CreditCard className="h-4 w-4" />}
+              onClick={() => setOnlinePaymentOpen(true)}
+            >
+              Onlayn to&apos;lov
             </Button>
             <Button
               leftIcon={<Plus className="h-4 w-4" />}
@@ -198,6 +246,13 @@ export function ContractDetailPage() {
           loading={createPayment.isPending}
         />
       )}
+
+      <OnlinePaymentModal
+        open={onlinePaymentOpen}
+        onClose={() => setOnlinePaymentOpen(false)}
+        contractId={contract.id}
+        amount={contract.debtAmount}
+      />
     </PageContent>
   );
 }
