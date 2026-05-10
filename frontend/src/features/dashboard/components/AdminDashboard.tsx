@@ -183,7 +183,7 @@ export function AdminDashboard() {
         />
         <StatCard
           label={t('dashboard.avgGrade')}
-          value={adminData?.avgGrade.toFixed(1) ?? '—'}
+          value={adminData?.avgGrade?.toFixed(1) ?? '—'}
           icon={<Clock className="h-[18px] w-[18px]" />}
           iconBg="#8B5CF6"
         />

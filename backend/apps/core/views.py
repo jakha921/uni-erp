@@ -121,35 +121,65 @@ class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        from django.db.models import Sum
+        from django.db.models import Avg, Count, Sum
+        from django.utils import timezone
 
+        from apps.education.models import Grade
         from apps.finance.models import Contract, Payment
         from apps.hr.models import Employee
         from apps.students.models import Student
 
-        total_students = Student.objects.filter(is_deleted=False).count()
-        active_students = Student.objects.filter(is_deleted=False, status="active").count()
+        students_qs = Student.objects.filter(is_deleted=False)
+        total_students = students_qs.count()
+        active_students = students_qs.filter(status="active").count()
+        new_students = students_qs.filter(created_at__year=timezone.now().year).count()
+        graduated_students = students_qs.filter(status="graduated").count()
         total_employees = Employee.objects.filter(is_deleted=False).count()
-        total_contracts = Contract.objects.filter(is_deleted=False).count()
+
+        contracts_qs = Contract.objects.filter(is_deleted=False)
+        total_contracts = contracts_qs.count()
         total_revenue = Payment.objects.aggregate(s=Sum("amount"))["s"] or 0
-        total_debt = (
-            Contract.objects.filter(is_deleted=False).aggregate(s=Sum("debt_amount"))["s"] or 0
+        total_debt = contracts_qs.aggregate(s=Sum("debt_amount"))["s"] or 0
+        total_amount = contracts_qs.aggregate(s=Sum("contract_amount"))["s"] or 1
+        collection_rate = (
+            round(float(total_revenue) / float(total_amount) * 100, 1) if total_amount else 0
         )
+
         faculties = Faculty.objects.count()
         departments = Department.objects.count()
         groups = Group.objects.count()
+
+        avg_grade = Grade.objects.aggregate(a=Avg("grade"))["a"]
+
+        by_faculty = list(
+            students_qs.values("group__specialty__department__faculty__name")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:6]
+        )
 
         return Response(
             {
                 "totalStudents": total_students,
                 "activeStudents": active_students,
+                "newStudents": new_students,
+                "graduatedStudents": graduated_students,
                 "totalEmployees": total_employees,
                 "totalContracts": total_contracts,
                 "totalRevenue": str(total_revenue),
                 "totalDebt": str(total_debt),
+                "collectionRate": collection_rate,
+                "avgGrade": round(float(avg_grade), 2) if avg_grade else None,
                 "faculties": faculties,
                 "departments": departments,
                 "groups": groups,
+                "byFaculty": [
+                    {
+                        "faculty": r["group__specialty__department__faculty__name"],
+                        "count": r["count"],
+                    }
+                    for r in by_faculty
+                ],
+                "recentActivity": [],
             }
         )
 
