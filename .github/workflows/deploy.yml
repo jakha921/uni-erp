@@ -8,13 +8,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 213.230.69.57
-          username: jakha
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: 1892
-          timeout: 600s
-          script: |
-            bash ~/deploy-erp.sh all 2>&1
+      - name: Trigger Coolify redeploy (backend)
+        run: |
+          curl -s -X GET "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.BACKEND_UUID }}&force=false" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            -H "Content-Type: application/json"
+
+      - name: Trigger Coolify redeploy (frontend)
+        run: |
+          curl -s -X GET "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.FRONTEND_UUID }}&force=false" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            -H "Content-Type: application/json"
