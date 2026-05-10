@@ -16,14 +16,9 @@ import { RevenueByFaculty } from '../components/RevenueByFaculty';
 import { MonthlyTrend } from '../components/MonthlyTrend';
 import { DebtorCard } from '../components/DebtorCard';
 import type { PaymentMethod } from '@/types/finance';
+import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
 
-const PAYMENT_METHOD_LABELS: Record<PaymentMethod, { variant: 'info' | 'default' | 'success' | 'warning'; label: string }> = {
-  bank: { variant: 'info', label: "Bank o'tkazmasi" },
-  naqd: { variant: 'default', label: 'Naqd' },
-  online: { variant: 'success', label: 'Online' },
-  click: { variant: 'success', label: 'Click' },
-  payme: { variant: 'warning', label: 'Payme' },
-};
+const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
 
 export function FinanceDashboardPage() {
   const navigate = useNavigate();
@@ -178,8 +173,8 @@ export function FinanceDashboardPage() {
                         {formatMoney(p.amount)}
                       </td>
                       <td className="px-4 py-2.5">
-                        <Badge variant={methodCfg.variant} dot>
-                          {methodCfg.label}
+                        <Badge variant={methodCfg?.variant ?? 'default'} dot>
+                          {methodCfg?.label ?? p.paymentMethod}
                         </Badge>
                       </td>
                     </tr>

@@ -117,6 +117,14 @@ export const EMPLOYMENT_FORMS: Record<string, string> = {
   soatbay: 'Soatbay',
 };
 
+export const PAYMENT_METHOD_STATUSES: Record<string, StatusConfig> = {
+  payme: { label: 'Payme', variant: 'info' },
+  click: { label: 'Click', variant: 'info' },
+  bank: { label: 'Bank', variant: 'default' },
+  naqd: { label: 'Naqd', variant: 'success' },
+  uzum: { label: 'Uzum', variant: 'warning' },
+};
+
 export function getStatusConfig(configs: Record<string, StatusConfig>, status: string): StatusConfig {
   return configs[status] ?? { label: status, variant: 'default' as BadgeVariant };
 }

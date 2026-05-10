@@ -8,14 +8,9 @@ import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { usePayments, useContracts } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import type { PaymentMethod, Contract, Payment } from '@/types/finance';
+import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
 
-const PAYMENT_METHOD_LABELS: Record<PaymentMethod, { variant: 'info' | 'default' | 'success' | 'warning'; label: string }> = {
-  bank: { variant: 'info', label: "Bank o'tkazmasi" },
-  naqd: { variant: 'default', label: 'Naqd' },
-  online: { variant: 'success', label: 'Online' },
-  click: { variant: 'success', label: 'Click' },
-  payme: { variant: 'warning', label: 'Payme' },
-};
+const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
 
 
 function buildReceiptDom(win: Window, payment: Payment) {
@@ -267,7 +262,7 @@ export function PaymentsListPage() {
                     <p className="text-[11.5px] text-muted">{p.receiptNumber}</p>
                   </div>
                   <div className="min-w-[110px]">
-                    <Badge variant={methodCfg.variant} dot>{methodCfg.label}</Badge>
+                    <Badge variant={methodCfg?.variant ?? 'default'} dot>{methodCfg?.label ?? p.paymentMethod}</Badge>
                   </div>
                   <div className="text-[15px] font-bold text-green-700 tabular-nums min-w-[140px] text-right">
                     {formatMoney(p.amount)}
