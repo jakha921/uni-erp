@@ -12,3 +12,4 @@ export { ProgressBar } from './ProgressBar';
 export { Accordion } from './Accordion';
 export { AlertBanner } from './AlertBanner';
 export { Stepper } from './Stepper';
+export { ErrorBoundary } from './ErrorBoundary';

@@ -7,6 +7,7 @@ export const ENDPOINTS = {
     logout: '/auth/logout',
     me: '/auth/me',
     forgotPassword: '/auth/forgot-password',
+    refreshToken: '/auth/token/refresh',
   },
   core: {
     branches: '/core/branches',

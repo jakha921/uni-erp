@@ -17,6 +17,45 @@ interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
 }
 
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+async function tryRefreshToken(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) return refreshPromise;
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    const { refreshToken } = useAuthStore.getState();
+    if (!refreshToken) return null;
+
+    try {
+      const base = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+      const res = await fetch(`${base}/auth/token/refresh/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      const newToken = data.access;
+      useAuthStore.getState().setToken(newToken);
+      if (data.refresh) {
+        useAuthStore.setState({ refreshToken: data.refresh });
+      }
+      return newToken;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -55,10 +94,6 @@ class ApiClient {
       return res.json() as Promise<T>;
     }
 
-    if (res.status === 401) {
-      useAuthStore.getState().logout();
-    }
-
     let message = `Xatolik: ${res.status}`;
     let errors: Record<string, string[]> = {};
     try {
@@ -81,6 +116,18 @@ class ApiClient {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const res = await fetch(url, init);
+
+        if (res.status === 401 && !url.includes('/auth/token/refresh')) {
+          const newToken = await tryRefreshToken();
+          if (newToken) {
+            const retryHeaders = { ...(init.headers as Record<string, string>), Authorization: `Bearer ${newToken}` };
+            const retryRes = await fetch(url, { ...init, headers: retryHeaders });
+            return this.handleResponse<T>(retryRes);
+          }
+          useAuthStore.getState().logout();
+          throw new ApiError(401, 'Sessiya tugadi, qayta kiring');
+        }
+
         return this.handleResponse<T>(res);
       } catch (err) {
         lastError = err;

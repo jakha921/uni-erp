@@ -1,8 +1,10 @@
-"""Core read-only ViewSets for reference data + AuditLogListView."""
+"""Core read-only ViewSets for reference data + AuditLogListView + Dashboard."""
 
 import django_filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView  # noqa: F401
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .filters import DepartmentFilter, GroupFilter
@@ -91,7 +93,6 @@ class AuditLogListView(ListAPIView):
         return AuditLog.objects.select_related("user").order_by("-timestamp")
 
     def list(self, request, *args, **kwargs):
-        from rest_framework.response import Response
 
         qs = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(qs)
@@ -112,3 +113,42 @@ class AuditLogListView(ListAPIView):
         if page is not None:
             return self.get_paginated_response(data)
         return Response(data)
+
+
+class DashboardView(APIView):
+    """Aggregated dashboard stats for all roles."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from django.db.models import Sum
+
+        from apps.finance.models import Contract, Payment
+        from apps.hr.models import Employee
+        from apps.students.models import Student
+
+        total_students = Student.objects.filter(is_deleted=False).count()
+        active_students = Student.objects.filter(is_deleted=False, status="active").count()
+        total_employees = Employee.objects.filter(is_deleted=False).count()
+        total_contracts = Contract.objects.filter(is_deleted=False).count()
+        total_revenue = Payment.objects.aggregate(s=Sum("amount"))["s"] or 0
+        total_debt = (
+            Contract.objects.filter(is_deleted=False).aggregate(s=Sum("debt_amount"))["s"] or 0
+        )
+        faculties = Faculty.objects.count()
+        departments = Department.objects.count()
+        groups = Group.objects.count()
+
+        return Response(
+            {
+                "totalStudents": total_students,
+                "activeStudents": active_students,
+                "totalEmployees": total_employees,
+                "totalContracts": total_contracts,
+                "totalRevenue": str(total_revenue),
+                "totalDebt": str(total_debt),
+                "faculties": faculties,
+                "departments": departments,
+                "groups": groups,
+            }
+        )

@@ -21,6 +21,7 @@ router.register("academic-years", AcademicYearViewSet, basename="academic-year")
 router.register("semesters", SemesterViewSet, basename="semester")
 router.register("groups", GroupViewSet, basename="group")
 
+
 urlpatterns = router.urls + [
     path("audit/", AuditLogListView.as_view(), name="audit-log"),
 ]

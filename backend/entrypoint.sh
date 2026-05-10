@@ -16,6 +16,11 @@ if [ "$STUDENT_COUNT" = "0" ]; then
     uv run python manage.py seed_education || true
     uv run python manage.py seed_finance || true
     uv run python manage.py seed_hr || true
+    uv run python manage.py seed_crm || true
+    uv run python manage.py seed_operations || true
+    uv run python manage.py seed_science || true
+    uv run python manage.py seed_infrastructure || true
+    uv run python manage.py seed_warehouse || true
 
     echo "Creating admin user..."
     uv run python manage.py shell -c "
