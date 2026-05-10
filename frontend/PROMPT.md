@@ -28,19 +28,19 @@
 **Статус:** Частично работает
 **Задачи:**
 - [x] i18n: перевести все тексты через `t('auth.*')`
-- [ ] Показывать детальную ошибку API (неверный пароль, пользователь заблокирован) — сейчас показывает "Xatolik: 500"
-- [ ] Добавить rate limiting feedback (показывать таймер при 429)
-- [ ] Кнопка "Показать пароль" — проверить работу toggle
-- [ ] Загрузка (loading state на кнопке "Kirish" при отправке)
+- [x] Показывать детальную ошибку API (неверный пароль, пользователь заблокирован) — сейчас показывает "Xatolik: 500"
+- [x] Добавить rate limiting feedback (показывать таймер при 429)
+- [x] Кнопка "Показать пароль" — проверить работу toggle
+- [x] Загрузка (loading state на кнопке "Kirish" при отправке)
 - [ ] Телефон: input mask `+998 (XX) XXX-XX-XX` — сейчас plain text
 
 ### 1.2 RoleSelectPage `/role-select`
 **Файл:** `features/auth/pages/RoleSelectPage.tsx`
 **Статус:** Работает (demo mode)
 **Задачи:**
-- [ ] i18n: перевести hardcoded тексты ("Demo rejim — rolni tanlang", подписи карточек)
+- [x] i18n: перевести hardcoded тексты ("Demo rejim — rolni tanlang", подписи карточек)
 - [ ] При реальном API (USE_MOCK=false) — логин через `authService.login()` должен работать корректно (сейчас 500 из-за phone format mismatch)
-- [ ] Loading overlay на карточке при клике — проверить что спиннер показывается
+- [x] Loading overlay на карточке при клике — проверить что спиннер показывается
 
 ### 1.3 ForgotPasswordPage `/forgot-password`
 **Файл:** `features/auth/pages/ForgotPasswordPage.tsx`

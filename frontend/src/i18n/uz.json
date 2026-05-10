@@ -73,7 +73,12 @@
     "sessionExpired": "Sessiya tugadi, qayta kiring",
     "subtitle": "Telefon raqamingiz va parolingizni kiriting",
     "demoTry": "Demo rejimni sinash",
-    "selectRoleLink": "Rolni tanlang"
+    "selectRoleLink": "Rolni tanlang",
+    "systemSubtitle": "Universitet boshqaruv tizimi",
+    "demoMode": "DEMO REJIM",
+    "demoSelectTitle": "Demo rejim — rolni tanlang",
+    "demoSelectSubtitle": "Har bir rolda boshqa modullar va ma'lumotlarga kirish mavjud. Tizimni ko'rish uchun rolni tanlang.",
+    "demoFooterHint": "Demo rejimda barcha rollarni sinab ko'rishingiz mumkin. Xodim panelidagi «Profil» tugmasi orqali rolni o'zgartiring."
   },
   "nav": {
     "dashboard": "Asosiy",

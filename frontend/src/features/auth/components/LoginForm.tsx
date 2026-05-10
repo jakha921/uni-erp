@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { loginSchema, type LoginFormData } from '../schemas/auth.schema';
 import { BranchSelector } from './BranchSelector';
 import { authService } from '@/api/services/auth.service';
+import { ApiError } from '@/api/client';
 import { useAuthStore } from '@/stores/auth.store';
 
 export function LoginForm() {
@@ -15,6 +16,7 @@ export function LoginForm() {
   const login = useAuthStore((s) => s.login);
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
 
   const {
     register,
@@ -41,8 +43,26 @@ export function LoginForm() {
       login(response.user, response.token, response.refresh);
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Xatolik yuz berdi";
-      setServerError(message);
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+          setServerError(t('auth.invalidCredentials'));
+        } else if (err.status === 403) {
+          setServerError("Hisobingiz bloklangan. Administrator bilan bog'laning.");
+        } else if (err.status === 429) {
+          setRateLimitSeconds(60);
+          setServerError("Juda ko'p urinish. 60 soniya kuting.");
+          const interval = setInterval(() => {
+            setRateLimitSeconds((s) => {
+              if (s <= 1) { clearInterval(interval); return 0; }
+              return s - 1;
+            });
+          }, 1000);
+        } else {
+          setServerError(err.message);
+        }
+      } else {
+        setServerError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+      }
     }
   };
 
@@ -143,7 +163,7 @@ export function LoginForm() {
         {/* Submit */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || rateLimitSeconds > 0}
           className="mt-2 flex h-[46px] w-full items-center justify-center gap-2 rounded-xl
             bg-emerald-500 text-[15px] font-semibold text-white transition-colors
             hover:bg-emerald-600 active:bg-emerald-700
@@ -151,6 +171,8 @@ export function LoginForm() {
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
+          ) : rateLimitSeconds > 0 ? (
+            `${rateLimitSeconds}s kuting...`
           ) : (
             <>
               {t('auth.loginBtn')}

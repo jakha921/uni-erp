@@ -45,7 +45,7 @@ export function RoleSelectPage() {
           <div>
             <div className="text-sm font-bold tracking-tight text-slate-900">Uni ERP</div>
             <div className="text-[10.5px] text-slate-400">
-              Universitet boshqaruv tizimi
+              {t('auth.systemSubtitle')}
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@ export function RoleSelectPage() {
         {/* Demo badge */}
         <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11.5px] font-semibold text-amber-700">
           <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-          DEMO REJIM
+          {t('auth.demoMode')}
         </span>
 
         {/* Back to login */}
@@ -73,11 +73,10 @@ export function RoleSelectPage() {
         <div className="w-full max-w-[1080px]">
           <div className="mb-8 text-center">
             <h1 className="text-[30px] font-bold tracking-tight text-slate-900">
-              Demo rejim &mdash; rolni tanlang
+              {t('auth.demoSelectTitle')}
             </h1>
             <p className="mx-auto mt-3 max-w-[580px] text-[14.5px] leading-relaxed text-slate-500">
-              Har bir rolda boshqa modullar va ma&apos;lumotlarga kirish mavjud.
-              Tizimni ko&apos;rish uchun rolni tanlang.
+              {t('auth.demoSelectSubtitle')}
             </p>
           </div>
 
@@ -108,8 +107,7 @@ export function RoleSelectPage() {
 
           {/* Footer hint */}
           <p className="mt-8 text-center text-[12.5px] text-slate-400">
-            Demo rejimda barcha rollarni sinab ko&apos;rishingiz mumkin.
-            Xodim panelidagi &laquo;Profil&raquo; tugmasi orqali rolni o&apos;zgartiring.
+            {t('auth.demoFooterHint')}
           </p>
         </div>
       </div>
