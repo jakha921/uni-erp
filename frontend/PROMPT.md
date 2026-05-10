@@ -61,7 +61,7 @@
 **Задачи:**
 - [ ] Подключить AdminDashboard к реальному API `/api/v1/dashboard/` (сейчас hardcoded mock данные внутри sub-dashboard компонентов)
 - [ ] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
-- [ ] Добавить DateRangePicker для фильтрации по периоду
+- [x] Добавить DateRangePicker для фильтрации по периоду
 - [ ] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
 - [ ] DekanDashboard: подключить к real API
 - [ ] OqituvchiDashboard: подключить к real API
@@ -584,7 +584,7 @@
 ### 12.2 AnalyticsPage `/analytics`
 **Задачи:**
 - [ ] Подключить к `useAnalytics(params)` — реальные данные
-- [ ] DateRangePicker
+- [x] DateRangePicker
 - [x] Графики: тренды, сравнение, top groups
 - [ ] i18n: все тексты
 
@@ -638,7 +638,7 @@
 ### 15.1 LegacyOrdersPage `/orders`
 **Задачи:**
 - [x] Пагинация
-- [ ] DateRangePicker
+- [x] DateRangePicker
 - [ ] i18n: все тексты
 
 ### 15.2 StaffingPage `/staffing`

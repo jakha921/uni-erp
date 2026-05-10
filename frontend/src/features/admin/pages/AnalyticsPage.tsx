@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, ChartCard, LineChartSimple, BarChartSimple, DonutChart } from '@/components/data-display';
 import { Spinner } from '@/components/ui';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { Users, UserCog, FileText, Percent } from 'lucide-react';
 import { useAnalytics } from '@/api/hooks/useAnalytics';
 import type { AnalyticsParams } from '@/types/admin';
@@ -13,6 +14,8 @@ const PAYMENT_DONUT = [
 
 export function AnalyticsPage() {
   const [params] = useState<AnalyticsParams>({ period: 'year' });
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const { data, isLoading } = useAnalytics(params);
 
   if (isLoading || !data) {
@@ -26,7 +29,18 @@ export function AnalyticsPage() {
 
   return (
     <PageContent>
-      <PageHeader title="Analitika" subtitle="Universitet bo'yicha umumiy statistik tahlil" breadcrumbs={[{ label: 'Admin' }, { label: 'Analitika' }]} />
+      <PageHeader
+        title="Analitika"
+        subtitle="Universitet bo'yicha umumiy statistik tahlil"
+        breadcrumbs={[{ label: 'Admin' }, { label: 'Analitika' }]}
+        actions={
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+          />
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami talabalar" value={totalStudents} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#2DB976" />

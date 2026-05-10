@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FileText, UserPlus, UserMinus, Gift } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Spinner } from '@/components/ui';
+import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { Pagination } from '@/components/table';
 import { useLegacyOrders } from '@/api/hooks/useLegacy';
 
@@ -23,10 +24,17 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 
 export function LegacyOrdersPage() {
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
   const { data, isLoading } = useLegacyOrders({ page, pageSize: PAGE_SIZE, type: typeFilter || undefined });
 
-  const orders = data?.data ?? [];
+  const allOrders = data?.data ?? [];
+  const orders = useMemo(() => allOrders.filter((o) => {
+    if (dateFrom && o.date < dateFrom) return false;
+    if (dateTo && o.date > dateTo) return false;
+    return true;
+  }), [allOrders, dateFrom, dateTo]);
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
   const hires = orders.filter((o) => o.type === 'hire').length;
@@ -48,7 +56,7 @@ export function LegacyOrdersPage() {
       </div>
 
       <Card title="" className="overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+        <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-border">
           {[{ key: '', label: 'Barchasi' }, { key: 'hire', label: 'Qabul' }, { key: 'fire', label: "Bo'shatish" }, { key: 'reward', label: 'Mukofot' }, { key: 'leave', label: "Ta'til" }].map((t) => (
             <button
               key={t.key}
@@ -60,6 +68,13 @@ export function LegacyOrdersPage() {
               {t.label}
             </button>
           ))}
+          <div className="ml-auto">
+            <DateRangePicker
+              from={dateFrom}
+              to={dateTo}
+              onChange={(f, t) => { setDateFrom(f); setDateTo(t); setPage(1); }}
+            />
+          </div>
         </div>
 
         {isLoading ? (
