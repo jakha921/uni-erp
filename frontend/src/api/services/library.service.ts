@@ -6,6 +6,8 @@ import type {
   CreateBookDto,
   UpdateBookDto,
   CreateLoanDto,
+  BookQueueEntry,
+  CreateQueueEntryDto,
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
@@ -20,6 +22,9 @@ export interface ILibraryService {
   getLoans(params?: LoanListParams): Promise<PaginatedResponse<BookLoan>>;
   createLoan(data: CreateLoanDto): Promise<BookLoan>;
   returnBook(loanId: number): Promise<BookLoan>;
+  getQueue(): Promise<BookQueueEntry[]>;
+  addToQueue(data: CreateQueueEntryDto): Promise<BookQueueEntry>;
+  removeFromQueue(id: number): Promise<void>;
 }
 
 class LibraryApiService implements ILibraryService {
@@ -71,6 +76,18 @@ class LibraryApiService implements ILibraryService {
 
   async returnBook(loanId: number): Promise<BookLoan> {
     return apiClient.post<BookLoan>(ENDPOINTS.library.returnBook(loanId));
+  }
+
+  async getQueue(): Promise<BookQueueEntry[]> {
+    return apiClient.get<BookQueueEntry[]>(ENDPOINTS.library.queue);
+  }
+
+  async addToQueue(data: CreateQueueEntryDto): Promise<BookQueueEntry> {
+    return apiClient.post<BookQueueEntry>(ENDPOINTS.library.queue, data);
+  }
+
+  async removeFromQueue(id: number): Promise<void> {
+    return apiClient.delete<void>(`${ENDPOINTS.library.queue}/${id}/`);
   }
 }
 

@@ -207,7 +207,7 @@
 - [x] BookForm: title, author, isbn, year, category, totalCopies, location
 - [x] Tab "Berilganlar": `useLoans(params)` + создание выдачи + кнопка "Qaytarish" (returnBook)
 - [x] LoanForm: bookId (Combobox), studentId (Combobox), dueDate
-- [ ] Tab "Kutish": очередь ожидания
+- [x] Tab "Kutish": очередь ожидания
 - [x] Zod schemas: `bookSchema`, `loanSchema`
 - [x] Поиск книг по названию/автору/ISBN
 - [ ] i18n: все тексты

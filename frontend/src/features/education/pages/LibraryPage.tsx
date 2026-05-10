@@ -5,12 +5,12 @@ import { Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
-import { BookOpen, Inbox, Plus, Pencil, RotateCcw, Search } from 'lucide-react';
-import { useBooksList, useLoansList, useCreateBook, useUpdateBook, useCreateLoan, useReturnBook } from '@/api/hooks/useLibrary';
+import { BookOpen, Inbox, Plus, Pencil, RotateCcw, Search, Trash2, Clock } from 'lucide-react';
+import { useBooksList, useLoansList, useCreateBook, useUpdateBook, useCreateLoan, useReturnBook, useBookQueue, useAddToQueue, useRemoveFromQueue } from '@/api/hooks/useLibrary';
 import { useStudentsList } from '@/api/hooks/useStudents';
 import { BookForm } from '../components/BookForm';
 import { LoanForm } from '../components/LoanForm';
-import type { Book, BookLoan } from '@/types/education';
+import type { Book, BookLoan, BookQueueEntry } from '@/types/education';
 import type { CreateBookFormData } from '../schemas/book.schema';
 import type { CreateLoanFormData } from '../schemas/loan.schema';
 
@@ -120,7 +120,7 @@ export function LibraryPage() {
         {activeTab === 'loans' && (
           <LoansTab loans={loans} onReturn={(loan) => setReturnLoan(loan)} />
         )}
-        {activeTab === 'queue' && <QueueTab />}
+        {activeTab === 'queue' && <QueueTab books={bookOptions} students={students} />}
         {activeTab === 'readers' && <ReadersTab loans={loans} />}
       </div>
 
@@ -249,18 +249,109 @@ function LoansTab({ loans, onReturn }: { loans: BookLoan[]; onReturn: (loan: Boo
   );
 }
 
-function QueueTab() {
+function QueueTab({ books, students }: { books: { id: number; title: string }[]; students: { id: number; fullName: string }[] }) {
+  const { data: queue, isLoading } = useBookQueue();
+  const addToQueue = useAddToQueue();
+  const removeFromQueue = useRemoveFromQueue();
+  const [bookId, setBookId] = useState('');
+  const [studentId, setStudentId] = useState('');
+
+  const handleAdd = () => {
+    if (!bookId || !studentId) return;
+    addToQueue.mutate({ bookId: Number(bookId), studentId: Number(studentId) }, {
+      onSuccess: () => { setBookId(''); setStudentId(''); },
+    });
+  };
+
+  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
+
+  const entries = queue ?? [];
+
+  const queueColumns: Column<BookQueueEntry>[] = [
+    {
+      key: 'position', header: '#',
+      render: (row) => (
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-[11px] font-bold text-primary-700">
+          {row.position}
+        </span>
+      ),
+    },
+    { key: 'bookTitle', header: 'Kitob', render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
+    { key: 'studentName', header: 'Talaba', render: (row) => <span className="text-slate-700">{row.studentName}</span> },
+    { key: 'requestDate', header: 'So\'ralgan sana', render: (row) => <span className="tabular-nums text-slate-500">{row.requestDate}</span> },
+    {
+      key: 'estimatedAvailableDate', header: 'Taxminiy sana',
+      render: (row) => row.estimatedAvailableDate ? (
+        <span className="flex items-center gap-1.5 text-slate-500 tabular-nums">
+          <Clock className="h-3 w-3 text-amber-500" />{row.estimatedAvailableDate}
+        </span>
+      ) : <span className="text-slate-400">—</span>,
+    },
+    {
+      key: 'id', header: '', width: '48px',
+      render: (row) => (
+        <button
+          onClick={() => removeFromQueue.mutate(row.id)}
+          className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500"
+          title="O'chirish"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      ),
+    },
+  ];
+
   return (
-    <EmptyState
-      icon={<Inbox className="h-6 w-6" />}
-      title="Zayavkalar yo'q"
-      description="Kutishda bo'lgan kitob so'rovlari bu yerda paydo bo'ladi"
-      action={
-        <Button leftIcon={<Plus className="h-4 w-4" />}>
-          Zayavka qo&apos;shish
-        </Button>
-      }
-    />
+    <div className="space-y-4">
+      {/* Add to queue form */}
+      <Card>
+        <h4 className="text-[13px] font-semibold text-slate-900 mb-3">Navbatga qo&apos;shish</h4>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[200px]">
+            <label className="mb-1 block text-xs font-medium text-slate-600">Kitob</label>
+            <select
+              value={bookId}
+              onChange={(e) => setBookId(e.target.value)}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+            >
+              <option value="">Kitobni tanlang</option>
+              {books.map((b) => <option key={b.id} value={b.id}>{b.title}</option>)}
+            </select>
+          </div>
+          <div className="flex-1 min-w-[200px]">
+            <label className="mb-1 block text-xs font-medium text-slate-600">Talaba</label>
+            <select
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
+            >
+              <option value="">Talabani tanlang</option>
+              {students.map((s) => <option key={s.id} value={s.id}>{s.fullName}</option>)}
+            </select>
+          </div>
+          <Button
+            leftIcon={<Plus className="h-4 w-4" />}
+            disabled={!bookId || !studentId}
+            loading={addToQueue.isPending}
+            onClick={handleAdd}
+          >
+            Qo&apos;shish
+          </Button>
+        </div>
+      </Card>
+
+      {entries.length === 0 ? (
+        <EmptyState
+          icon={<Inbox className="h-6 w-6" />}
+          title="Navbat bo'sh"
+          description="Hozirda kutayotgan talabalar yo'q"
+        />
+      ) : (
+        <Card noPadding>
+          <DataTable data={entries} columns={queueColumns} keyField="id" emptyMessage="Navbat bo'sh" />
+        </Card>
+      )}
+    </div>
   );
 }
 

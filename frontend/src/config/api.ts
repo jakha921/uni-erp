@@ -77,6 +77,7 @@ export const ENDPOINTS = {
     bookDetail: (id: number) => `/education/library/books/${id}`,
     loans: '/education/library/loans',
     returnBook: (id: number) => `/education/library/loans/${id}/return`,
+    queue: '/education/library/queue',
   },
   alumni: {
     list: '/education/alumni',

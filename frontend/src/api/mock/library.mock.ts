@@ -9,6 +9,8 @@ import type {
   UpdateBookDto,
   CreateLoanDto,
   LoanStatus,
+  BookQueueEntry,
+  CreateQueueEntryDto,
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import type { ILibraryService } from '../services/library.service';
@@ -235,5 +237,39 @@ export class LibraryMockService implements ILibraryService {
       returnDate: new Date().toISOString().slice(0, 10),
     };
     return this.loans[idx]!;
+  }
+
+  private queue: BookQueueEntry[] = [
+    { id: 1, bookId: 1, bookTitle: this.books[0]?.title ?? 'Kitob', studentId: 101, studentName: 'Aliyev Bobur', requestDate: '2026-04-28', position: 1, estimatedAvailableDate: '2026-05-15' },
+    { id: 2, bookId: 1, bookTitle: this.books[0]?.title ?? 'Kitob', studentId: 102, studentName: 'Karimova Dilnoza', requestDate: '2026-04-29', position: 2, estimatedAvailableDate: '2026-05-22' },
+    { id: 3, bookId: 3, bookTitle: this.books[2]?.title ?? 'Kitob', studentId: 103, studentName: 'Toshmatov Jahongir', requestDate: '2026-05-01', position: 1, estimatedAvailableDate: '2026-05-18' },
+  ];
+
+  async getQueue(): Promise<BookQueueEntry[]> {
+    await delay(300);
+    return [...this.queue];
+  }
+
+  async addToQueue(data: CreateQueueEntryDto): Promise<BookQueueEntry> {
+    await delay(400);
+    const book = this.books.find((b) => b.id === data.bookId);
+    const name = generateName(data.studentId);
+    const sameBook = this.queue.filter((q) => q.bookId === data.bookId);
+    const entry: BookQueueEntry = {
+      id: Math.max(0, ...this.queue.map((q) => q.id)) + 1,
+      bookId: data.bookId,
+      bookTitle: book?.title ?? 'Noma\'lum kitob',
+      studentId: data.studentId,
+      studentName: name.full,
+      requestDate: new Date().toISOString().slice(0, 10),
+      position: sameBook.length + 1,
+    };
+    this.queue.push(entry);
+    return entry;
+  }
+
+  async removeFromQueue(id: number): Promise<void> {
+    await delay(300);
+    this.queue = this.queue.filter((q) => q.id !== id);
   }
 }

@@ -217,6 +217,22 @@ export interface CreateLoanDto {
   dueDate: string;
 }
 
+export interface BookQueueEntry {
+  id: number;
+  bookId: number;
+  bookTitle: string;
+  studentId: number;
+  studentName: string;
+  requestDate: string;
+  position: number;
+  estimatedAvailableDate?: string;
+}
+
+export interface CreateQueueEntryDto {
+  bookId: number;
+  studentId: number;
+}
+
 // ---------- Alumni types ----------
 
 export type AlumniStatus = 'employed' | 'unemployed' | 'studying' | 'unknown';

@@ -5,6 +5,7 @@ import type {
   CreateBookDto,
   UpdateBookDto,
   CreateLoanDto,
+  CreateQueueEntryDto,
 } from '@/types/education';
 import { libraryService } from '../services/library.service';
 
@@ -15,6 +16,7 @@ const KEYS = {
   bookDetail: (id: number) => [...KEYS.books(), 'detail', id] as const,
   loans: () => [...KEYS.all, 'loans'] as const,
   loanList: (params?: LoanListParams) => [...KEYS.loans(), 'list', params] as const,
+  queue: () => [...KEYS.all, 'queue'] as const,
 };
 
 export function useBooksList(params?: BookListParams) {
@@ -82,5 +84,28 @@ export function useReturnBook() {
       void queryClient.invalidateQueries({ queryKey: KEYS.loans() });
       void queryClient.invalidateQueries({ queryKey: KEYS.books() });
     },
+  });
+}
+
+export function useBookQueue() {
+  return useQuery({
+    queryKey: KEYS.queue(),
+    queryFn: () => libraryService.getQueue(),
+  });
+}
+
+export function useAddToQueue() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateQueueEntryDto) => libraryService.addToQueue(data),
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: KEYS.queue() }); },
+  });
+}
+
+export function useRemoveFromQueue() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => libraryService.removeFromQueue(id),
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: KEYS.queue() }); },
   });
 }
