@@ -18,3 +18,15 @@ export const THEMES = {
 } as const;
 
 export type ThemeMode = keyof typeof THEMES;
+
+export const BUDGET_CATEGORY_COLORS: Record<string, string> = {
+  'Ish haqi': '#3B82F6',
+  'Kommunal xizmatlar': '#F59E0B',
+  "Ta'mirlash": '#2DB976',
+  'Jihozlar': '#8B5CF6',
+  'Transport': '#EC4899',
+  'Stipendiya': '#06B6D4',
+  'Boshqa xarajatlar': '#94A3B8',
+};
+
+export const BUDGET_CATEGORY_DEFAULT_COLOR = '#64748B';

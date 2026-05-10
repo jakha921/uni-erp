@@ -7,21 +7,10 @@ import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
 import { useBudgetCategories, useBudgetSummary, useUpdateBudgetCategory } from '@/api/hooks/useBudget';
 import type { BudgetCategory } from '@/types/finance';
-
-const CATEGORY_COLORS: Record<string, string> = {
-  'Ish haqi': '#3B82F6',
-  'Kommunal xizmatlar': '#F59E0B',
-  "Ta'mirlash": '#2DB976',
-  'Jihozlar': '#8B5CF6',
-  'Transport': '#EC4899',
-  'Stipendiya': '#06B6D4',
-  'Boshqa xarajatlar': '#94A3B8',
-};
-
-const DEFAULT_COLOR = '#64748B';
+import { BUDGET_CATEGORY_COLORS, BUDGET_CATEGORY_DEFAULT_COLOR } from '@/config/theme';
 
 function getCategoryColor(name: string): string {
-  return CATEGORY_COLORS[name] ?? DEFAULT_COLOR;
+  return BUDGET_CATEGORY_COLORS[name] ?? BUDGET_CATEGORY_DEFAULT_COLOR;
 }
 
 const QUARTERS = [
