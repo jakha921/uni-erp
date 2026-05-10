@@ -3,10 +3,13 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table';
-import { Building2, Users, DoorOpen, FileText, Plus, Map, List } from 'lucide-react';
+import { ConfirmDialog } from '@/components/overlays';
+import { Building2, Users, DoorOpen, FileText, Plus, Map, List, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useDormBuildings, useDormRooms } from '@/api/hooks/useInfrastructure';
+import { useDormBuildings, useDormRooms, useCreateDormRoom, useUpdateDormRoom, useDeleteDormRoom } from '@/api/hooks/useInfrastructure';
+import { DormRoomForm } from '../components/DormRoomForm';
 import type { DormRoom } from '@/types/infrastructure';
+import type { DormRoomFormData } from '../schemas/dormRoom.schema';
 
 const ROOM_STYLES = {
   available: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800' },
@@ -29,21 +32,19 @@ const STATUS_VARIANTS: Record<DormRoom['status'], 'default' | 'success' | 'warni
   repair: 'error',
 };
 
-const roomColumns: Column<DormRoom>[] = [
-  { key: 'number', header: 'Xona', render: (row) => <span className="font-semibold text-slate-900 tabular-nums">{row.number}</span> },
-  { key: 'floor', header: 'Qavat', render: (row) => <span className="text-slate-600">{row.floor}-qavat</span> },
-  { key: 'capacity', header: "Sig'im", render: (row) => <span className="text-slate-600 tabular-nums">{row.capacity} o&apos;rinli</span> },
-  { key: 'occupied', header: 'Band', render: (row) => <span className="font-medium tabular-nums">{row.occupied}/{row.capacity}</span> },
-  { key: 'status', header: 'Holat', render: (row) => <Badge variant={STATUS_VARIANTS[row.status]} dot>{STATUS_LABELS[row.status]}</Badge> },
-  { key: 'supervisorName', header: 'Nazoratchi', render: (row) => <span className="text-slate-600">{row.supervisorName ?? '—'}</span> },
-];
-
 export function DormitoryPage() {
   const [view, setView] = useState<'map' | 'list'>('map');
   const [buildingId, setBuildingId] = useState<number>(1);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editRoom, setEditRoom] = useState<DormRoom | null>(null);
+  const [deleteRoom, setDeleteRoom] = useState<DormRoom | null>(null);
 
   const { data: buildings } = useDormBuildings();
   const { data: roomsData, isLoading } = useDormRooms({ buildingId, page: 1, pageSize: 100 });
+
+  const createRoom = useCreateDormRoom();
+  const updateRoom = useUpdateDormRoom();
+  const deleteRoomMutation = useDeleteDormRoom();
 
   const rooms = roomsData?.data ?? [];
   const currentBuilding = buildings?.find((b) => b.id === buildingId);
@@ -53,13 +54,50 @@ export function DormitoryPage() {
   const freeRooms = rooms.filter((r) => r.status === 'available').length;
   const repairRooms = rooms.filter((r) => r.status === 'repair').length;
 
+  const handleOpenCreate = () => { setEditRoom(null); setFormOpen(true); };
+  const handleClose = () => { setFormOpen(false); setEditRoom(null); };
+
+  const handleSubmit = (data: DormRoomFormData) => {
+    if (editRoom) {
+      updateRoom.mutate({ id: editRoom.id, data }, { onSuccess: handleClose });
+    } else {
+      createRoom.mutate(data, { onSuccess: handleClose });
+    }
+  };
+
+  const roomColumns: Column<DormRoom>[] = [
+    { key: 'number', header: 'Xona', render: (row) => <span className="font-semibold text-slate-900 tabular-nums">{row.number}</span> },
+    { key: 'floor', header: 'Qavat', render: (row) => <span className="text-slate-600">{row.floor}-qavat</span> },
+    { key: 'capacity', header: "Sig'im", render: (row) => <span className="text-slate-600 tabular-nums">{row.capacity} o&apos;rinli</span> },
+    { key: 'occupied', header: 'Band', render: (row) => <span className="font-medium tabular-nums">{row.occupied}/{row.capacity}</span> },
+    { key: 'status', header: 'Holat', render: (row) => <Badge variant={STATUS_VARIANTS[row.status]} dot>{STATUS_LABELS[row.status]}</Badge> },
+    { key: 'supervisorName', header: 'Nazoratchi', render: (row) => <span className="text-slate-600">{row.supervisorName ?? '—'}</span> },
+    {
+      key: 'id', header: '', width: '70px',
+      render: (row) => (
+        <div className="flex items-center gap-1 justify-end">
+          <button onClick={() => { setEditRoom(row); setFormOpen(true); }} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button onClick={() => setDeleteRoom(row)} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <PageContent>
       <PageHeader
         title="TTJ (yotoqxona)"
         subtitle="Talabalar turar joyi boshqaruvi"
         breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'TTJ' }]}
-        actions={<Button leftIcon={<Plus className="h-4 w-4" />}>Joylashtirish</Button>}
+        actions={
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
+            Xona qo&apos;shish
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
@@ -68,6 +106,28 @@ export function DormitoryPage() {
         <StatCard label="Bo'sh xonalar" value={freeRooms} icon={<DoorOpen className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
         <StatCard label="Ta'mirda" value={repairRooms} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#EF4444" />
       </div>
+
+      <DormRoomForm
+        open={formOpen}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        room={editRoom}
+        buildings={buildings ?? []}
+        loading={createRoom.isPending || updateRoom.isPending}
+      />
+      <ConfirmDialog
+        open={!!deleteRoom}
+        onClose={() => setDeleteRoom(null)}
+        onConfirm={() => {
+          if (!deleteRoom) return;
+          deleteRoomMutation.mutate(deleteRoom.id, { onSuccess: () => setDeleteRoom(null) });
+        }}
+        title="Xonani o'chirish"
+        message={`${deleteRoom?.number}-xonani o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteRoomMutation.isPending}
+      />
 
       <Card noPadding>
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border flex-wrap">

@@ -1,5 +1,5 @@
 import type {
-  DormBuilding, DormRoom, DormRoomListParams,
+  DormBuilding, DormRoom, DormRoomListParams, CreateRoomDto,
   Equipment, EquipmentListParams, CreateEquipmentDto,
   Vehicle, VehicleListParams, CreateVehicleDto,
 } from '@/types/infrastructure';
@@ -11,6 +11,9 @@ import { InfrastructureMockService } from '../mock/infrastructure.mock';
 export interface IInfrastructureService {
   getBuildings(): Promise<DormBuilding[]>;
   getRooms(params: DormRoomListParams): Promise<PaginatedResponse<DormRoom>>;
+  createRoom(data: CreateRoomDto): Promise<DormRoom>;
+  updateRoom(id: number, data: Partial<CreateRoomDto>): Promise<DormRoom>;
+  deleteRoom(id: number): Promise<void>;
   getEquipment(params: EquipmentListParams): Promise<PaginatedResponse<Equipment>>;
   getEquipmentById(id: number): Promise<Equipment>;
   createEquipment(data: CreateEquipmentDto): Promise<Equipment>;
@@ -19,10 +22,14 @@ export interface IInfrastructureService {
   getVehicles(params: VehicleListParams): Promise<PaginatedResponse<Vehicle>>;
   createVehicle(data: CreateVehicleDto): Promise<Vehicle>;
   updateVehicle(id: number, data: Partial<CreateVehicleDto>): Promise<Vehicle>;
+  deleteVehicle(id: number): Promise<void>;
 }
 
 class InfrastructureApiService implements IInfrastructureService {
   async getBuildings() { return apiClient.get<DormBuilding[]>(ENDPOINTS.infrastructure.buildings); }
+  async createRoom(data: CreateRoomDto) { return apiClient.post<DormRoom>(ENDPOINTS.infrastructure.rooms, data); }
+  async updateRoom(id: number, data: Partial<CreateRoomDto>) { return apiClient.patch<DormRoom>(`${ENDPOINTS.infrastructure.rooms}${id}/`, data); }
+  async deleteRoom(id: number) { return apiClient.delete<void>(`${ENDPOINTS.infrastructure.rooms}${id}/`); }
   async getRooms(params: DormRoomListParams) {
     const page = params.page ?? 1;
     const pageSize = params.pageSize ?? 20;
@@ -53,6 +60,7 @@ class InfrastructureApiService implements IInfrastructureService {
   }
   async createVehicle(data: CreateVehicleDto) { return apiClient.post<Vehicle>(ENDPOINTS.infrastructure.vehicles, data); }
   async updateVehicle(id: number, data: Partial<CreateVehicleDto>) { return apiClient.patch<Vehicle>(ENDPOINTS.infrastructure.vehicleDetail(id), data); }
+  async deleteVehicle(id: number) { return apiClient.delete<void>(ENDPOINTS.infrastructure.vehicleDetail(id)); }
 }
 
 export const infrastructureService: IInfrastructureService = USE_MOCK

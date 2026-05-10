@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { DormRoomListParams, EquipmentListParams, CreateEquipmentDto, VehicleListParams, CreateVehicleDto } from '@/types/infrastructure';
+import type { DormRoomListParams, CreateRoomDto, EquipmentListParams, CreateEquipmentDto, VehicleListParams, CreateVehicleDto } from '@/types/infrastructure';
 import { infrastructureService } from '../services/infrastructure.service';
 
 const KEYS = {
@@ -19,6 +19,21 @@ export function useDormBuildings() {
 
 export function useDormRooms(params: DormRoomListParams) {
   return useQuery({ queryKey: KEYS.rooms(params), queryFn: () => infrastructureService.getRooms(params) });
+}
+
+export function useCreateDormRoom() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data: CreateRoomDto) => infrastructureService.createRoom(data), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.all }); } });
+}
+
+export function useUpdateDormRoom() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: ({ id, data }: { id: number; data: Partial<CreateRoomDto> }) => infrastructureService.updateRoom(id, data), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.all }); } });
+}
+
+export function useDeleteDormRoom() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (id: number) => infrastructureService.deleteRoom(id), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.all }); } });
 }
 
 export function useEquipment(params: EquipmentListParams) {
@@ -56,4 +71,9 @@ export function useCreateVehicle() {
 export function useUpdateVehicle() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: ({ id, data }: { id: number; data: Partial<CreateVehicleDto> }) => infrastructureService.updateVehicle(id, data), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.vehicles() }); } });
+}
+
+export function useDeleteVehicle() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (id: number) => infrastructureService.deleteVehicle(id), onSuccess: () => { void qc.invalidateQueries({ queryKey: KEYS.vehicles() }); } });
 }

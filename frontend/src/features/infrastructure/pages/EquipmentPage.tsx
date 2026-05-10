@@ -4,9 +4,12 @@ import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form';
 import { DataTable, type Column } from '@/components/table';
-import { Monitor, CheckCircle, Wrench, XCircle, Plus } from 'lucide-react';
-import { useEquipment } from '@/api/hooks/useInfrastructure';
+import { ConfirmDialog } from '@/components/overlays';
+import { Monitor, CheckCircle, Wrench, XCircle, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useEquipment, useCreateEquipment, useUpdateEquipment, useDeleteEquipment } from '@/api/hooks/useInfrastructure';
+import { EquipmentForm } from '../components/EquipmentForm';
 import type { Equipment, EquipmentStatus } from '@/types/infrastructure';
+import type { EquipmentFormData } from '../schemas/equipment.schema';
 
 // --- Categories for filter ---
 const CATEGORIES = ['Kompyuter texnikasi', "O'quv jihozlari", 'Laboratoriya', 'Mebel', 'Boshqa'];
@@ -91,6 +94,23 @@ export function EquipmentPage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [editEquipment, setEditEquipment] = useState<Equipment | null>(null);
+  const [deleteEquipment, setDeleteEquipment] = useState<Equipment | null>(null);
+
+  const actionColumn: Column<Equipment> = {
+    key: 'id', header: '', width: '70px',
+    render: (row) => (
+      <div className="flex items-center gap-1 justify-end">
+        <button onClick={() => { setEditEquipment(row); setFormOpen(true); }} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={() => setDeleteEquipment(row)} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    ),
+  };
 
   const { data: equipmentData, isLoading } = useEquipment({
     page: 1,
@@ -100,7 +120,22 @@ export function EquipmentPage() {
     status: (statusFilter as EquipmentStatus) || undefined,
   });
 
+  const createEquipment = useCreateEquipment();
+  const updateEquipment = useUpdateEquipment();
+  const deleteEquipmentMutation = useDeleteEquipment();
+
   const items = equipmentData?.data ?? [];
+
+  const handleOpenCreate = () => { setEditEquipment(null); setFormOpen(true); };
+  const handleClose = () => { setFormOpen(false); setEditEquipment(null); };
+
+  const handleSubmit = (data: EquipmentFormData) => {
+    if (editEquipment) {
+      updateEquipment.mutate({ id: editEquipment.id, data }, { onSuccess: handleClose });
+    } else {
+      createEquipment.mutate(data, { onSuccess: handleClose });
+    }
+  };
 
   // Client-side filtering for instant response
   const filtered = useMemo(() => {
@@ -128,7 +163,7 @@ export function EquipmentPage() {
         subtitle="Asosiy vositalar va texnika"
         breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'Jihozlar' }]}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />}>Jihoz qo&apos;shish</Button>
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>Jihoz qo&apos;shish</Button>
         }
       />
 
@@ -162,6 +197,27 @@ export function EquipmentPage() {
       </div>
 
       {/* Filters + Table */}
+      <EquipmentForm
+        open={formOpen}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        equipment={editEquipment}
+        loading={createEquipment.isPending || updateEquipment.isPending}
+      />
+      <ConfirmDialog
+        open={!!deleteEquipment}
+        onClose={() => setDeleteEquipment(null)}
+        onConfirm={() => {
+          if (!deleteEquipment) return;
+          deleteEquipmentMutation.mutate(deleteEquipment.id, { onSuccess: () => setDeleteEquipment(null) });
+        }}
+        title="Jihozni o'chirish"
+        message={`"${deleteEquipment?.name}" jihozini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteEquipmentMutation.isPending}
+      />
+
       <Card noPadding>
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border flex-wrap">
           <SearchInput
@@ -200,7 +256,7 @@ export function EquipmentPage() {
         ) : (
           <DataTable
             data={filtered}
-            columns={columns}
+            columns={[...columns, actionColumn]}
             keyField="id"
             emptyMessage="Jihozlar topilmadi"
           />

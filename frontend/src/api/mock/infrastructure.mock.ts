@@ -1,7 +1,7 @@
 import { delay } from './delay';
 import { generateName, pick, rnum } from './shared-data';
 import type {
-  DormBuilding, DormRoom, DormRoomListParams,
+  DormBuilding, DormRoom, DormRoomListParams, CreateRoomDto,
   Equipment, EquipmentListParams, CreateEquipmentDto,
   Vehicle, VehicleListParams, CreateVehicleDto,
 } from '@/types/infrastructure';
@@ -57,6 +57,9 @@ const VEHICLES: Vehicle[] = Array.from({ length: 8 }, (_, i) => ({
 
 export class InfrastructureMockService implements IInfrastructureService {
   async getBuildings() { await delay(200); return BUILDINGS; }
+  async createRoom(data: CreateRoomDto) { await delay(300); return { id: ROOMS.length + 1, occupied: 0, ...data }; }
+  async updateRoom(id: number, data: Partial<CreateRoomDto>) { await delay(300); const r = ROOMS.find((r) => r.id === id); if (!r) throw new Error('Not found'); return { ...r, ...data }; }
+  async deleteRoom(_id: number) { await delay(200); }
 
   async getRooms(params: DormRoomListParams): Promise<PaginatedResponse<DormRoom>> {
     await delay(300);
@@ -97,4 +100,5 @@ export class InfrastructureMockService implements IInfrastructureService {
 
   async createVehicle(data: CreateVehicleDto) { await delay(300); return { id: VEHICLES.length + 1, ...data, status: 'available' as const, mileage: 0 }; }
   async updateVehicle(id: number, data: Partial<CreateVehicleDto>) { await delay(300); const v = VEHICLES.find((v) => v.id === id); if (!v) throw new Error('Not found'); return { ...v, ...data }; }
+  async deleteVehicle(_id: number) { await delay(200); }
 }

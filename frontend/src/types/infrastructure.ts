@@ -37,6 +37,14 @@ export interface DormRoomListParams extends ListParams {
   status?: RoomStatus;
 }
 
+export interface CreateRoomDto {
+  buildingId: number;
+  number: number;
+  floor: number;
+  capacity: number;
+  status: RoomStatus;
+}
+
 export type EquipmentStatus = 'working' | 'repair' | 'written_off' | 'storage';
 
 export interface Equipment {
