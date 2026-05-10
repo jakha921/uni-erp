@@ -27,6 +27,8 @@ class ContractListSerializer(serializers.Serializer):
     debtAmount = serializers.DecimalField(source="debt_amount", max_digits=14, decimal_places=2)
     status = serializers.CharField()
     facultyName = serializers.SerializerMethodField()
+    groupName = serializers.SerializerMethodField()
+    level = serializers.SerializerMethodField()
 
     def get_studentName(self, obj: Contract) -> str:
         return obj.student.user.full_name
@@ -35,7 +37,16 @@ class ContractListSerializer(serializers.Serializer):
         return obj.student.student_id_number
 
     def get_facultyName(self, obj: Contract) -> str:
-        return obj.student.group.specialty.department.faculty.name
+        try:
+            return obj.student.group.specialty.department.faculty.name
+        except AttributeError:
+            return ""
+
+    def get_groupName(self, obj: Contract) -> str:
+        return obj.student.group.name if obj.student.group else ""
+
+    def get_level(self, obj: Contract) -> str:
+        return obj.student.level if hasattr(obj.student, "level") else ""
 
 
 class ContractDetailSerializer(ContractListSerializer):

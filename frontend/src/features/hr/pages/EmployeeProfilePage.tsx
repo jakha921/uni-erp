@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { FileText, Plus, ArrowUp, CheckCircle, Star } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star } from 'lucide-react';
 import { PageContent } from '@/components/layout';
 import { Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
@@ -35,6 +35,7 @@ const TABS_CONFIG = [
 export function EmployeeProfilePage() {
   const { id } = useParams<{ id: string }>();
   const employeeId = Number(id);
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('info');
 
@@ -52,6 +53,14 @@ export function EmployeeProfilePage() {
 
   return (
     <PageContent>
+      <button
+        onClick={() => navigate('/hr/employees')}
+        className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-slate-700 transition-colors mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Orqaga
+      </button>
+
       <EmployeeProfileHeader employee={employee} />
 
       <div className="mt-6">

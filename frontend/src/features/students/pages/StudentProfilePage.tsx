@@ -422,7 +422,7 @@ export function StudentProfilePage() {
               { label: 'Kurs', value: `${student.course}-kurs` },
               {
                 label: "O'rtacha baho",
-                value: `${student.avgGrade.toFixed(1)} ball`,
+                value: `${(Number(student.avgGrade) || 0).toFixed(1)} ball`,
               },
             ].map((item) => (
               <div
@@ -490,7 +490,7 @@ export function StudentProfilePage() {
                 />
                 <DetailRow
                   label="O'rtacha baho"
-                  value={`${student.avgGrade.toFixed(1)} ball`}
+                  value={`${(Number(student.avgGrade) || 0).toFixed(1)} ball`}
                 />
               </div>
             </div>

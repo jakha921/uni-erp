@@ -68,7 +68,7 @@ export function ContractTable({
       key: 'facultyName',
       header: 'Fakultet',
       render: (row) => (
-        <span className="text-[12.5px]">{row.facultyName.split(' ').slice(0, 2).join(' ')}</span>
+        <span className="text-[12.5px]">{(row.facultyName ?? '').split(' ').slice(0, 2).join(' ')}</span>
       ),
     },
     {
