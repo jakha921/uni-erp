@@ -462,7 +462,7 @@
 ### 8.3 MessagesPage `/messages`
 **Файл:** `features/operations/pages/MessagesPage.tsx`
 **Задачи:**
-- [ ] Подключить к `useChatThreads()` и `useMessages(threadId)`
+- [x] Подключить к `useChatThreads()` и `useMessages(threadId)`
 - [x] Compose: `useSendMessage()` mutation
 - [ ] Real-time: polling каждые 10 сек
 - [x] Split layout: треды слева, сообщения справа
@@ -489,7 +489,7 @@
 ### 8.6 ReportsPage `/reports`
 **Файл:** `features/operations/pages/ReportsPage.tsx`
 **Задачи:**
-- [ ] Подключить к `useReportTemplates()`
+- [x] Подключить к `useReportTemplates()`
 - [ ] Генерация: `useGenerateReport()` → скачивание файла
 - [x] Параметры отчёта в Modal
 - [ ] i18n: все тексты

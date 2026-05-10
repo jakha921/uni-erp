@@ -16,6 +16,7 @@ import { PageContent, PageHeader } from '@/components/layout';
 import { Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form/SearchInput';
 import { Modal } from '@/components/overlays';
+import { useReportTemplates } from '@/api/hooks/useReports';
 import { useState, useMemo } from 'react';
 
 interface ReportItem {
@@ -189,18 +190,43 @@ function ReportParamsModal({ report, onClose }: ReportParamsModalProps) {
   );
 }
 
+const CATEGORY_CONFIG: Record<string, { color: string; icon: ReactNode }> = {
+  "Ta'lim": { color: '#2DB976', icon: <BarChart3 className="h-4 w-4" /> },
+  'Moliya': { color: '#3B82F6', icon: <Building2 className="h-4 w-4" /> },
+  'HR': { color: '#F59E0B', icon: <Users className="h-4 w-4" /> },
+  "Ma'muriy": { color: '#8B5CF6', icon: <FileText className="h-4 w-4" /> },
+};
+const DEFAULT_CONFIG = { color: '#64748B', icon: <FileText className="h-4 w-4" /> };
+
 export function ReportsPage() {
   const [search, setSearch] = useState('');
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
+  const { data: templates } = useReportTemplates();
+
+  const allGroups: ReportGroup[] = useMemo(() => {
+    if (!templates || templates.length === 0) return REPORT_GROUPS;
+    const groupMap = new Map<string, ReportGroup>();
+    templates.forEach((t) => {
+      const existing = groupMap.get(t.category);
+      const cfg = CATEGORY_CONFIG[t.category] ?? DEFAULT_CONFIG;
+      const item: ReportItem = { name: t.name, lastDate: '—' };
+      if (existing) {
+        existing.items.push(item);
+      } else {
+        groupMap.set(t.category, { label: t.category, color: cfg.color, icon: cfg.icon, items: [item] });
+      }
+    });
+    return Array.from(groupMap.values());
+  }, [templates]);
 
   const filteredGroups = useMemo(() => {
-    if (!search) return REPORT_GROUPS;
+    if (!search) return allGroups;
     const q = search.toLowerCase();
-    return REPORT_GROUPS.map((g) => ({
+    return allGroups.map((g) => ({
       ...g,
       items: g.items.filter((it) => it.name.toLowerCase().includes(q)),
     })).filter((g) => g.items.length > 0);
-  }, [search]);
+  }, [search, allGroups]);
 
   return (
     <PageContent>
