@@ -555,14 +555,14 @@
 
 ### 11.2 RolesPage `/system/roles`
 **Задачи:**
-- [ ] Убрать hardcoded MODULE_GROUPS → из API
+- [x] Убрать hardcoded MODULE_GROUPS → из API
 - [x] Кастомные роли: CRUD
 - [x] i18n: все тексты
 
 ### 11.3 PermissionMatrixPage `/system/permissions`
 **Задачи:**
 - [x] Click → toggle permission → `useUpdateRolePermissions()` mutation
-- [ ] Убрать hardcoded verbs/modules
+- [x] Убрать hardcoded verbs/modules
 - [x] i18n: все тексты
 
 ### 11.4 AuditLogPage `/system/audit`

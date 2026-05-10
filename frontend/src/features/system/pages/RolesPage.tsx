@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, LayoutGrid, Plus, Shield, ChevronDown, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Badge } from '@/components/ui';
@@ -12,6 +13,7 @@ import type { RoleFormData } from '../schemas/role.schema';
 import { ROLES, PERM_MATRIX, MODULE_GROUPS, PERM_VERBS, ALL_MODULES, type SystemRole } from '../data';
 
 function PermVerbDot({ verbId, active }: { verbId: string; active: boolean }) {
+  const { t } = useTranslation();
   const verb = PERM_VERBS.find((v) => v.id === verbId);
   if (!verb) return null;
   if (!active) return null;
@@ -19,7 +21,7 @@ function PermVerbDot({ verbId, active }: { verbId: string; active: boolean }) {
     <span
       className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-[5px] text-[10.5px] font-bold"
       style={{ backgroundColor: verb.color + '20', color: verb.color }}
-      title={verb.label}
+      title={t(verb.labelKey)}
     >
       {verb.short}
     </span>
@@ -97,15 +99,16 @@ function RoleCard({ role, selected, onClick }: { role: SystemRole; selected: boo
 }
 
 function RoleDetailPanel({ role, onDelete }: { role: SystemRole; onDelete: (role: SystemRole) => void }) {
+  const { t } = useTranslation();
   const perms = PERM_MATRIX[role.id] ?? {};
   const permCount = Object.values(perms).flat().length;
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(MODULE_GROUPS.map((g) => g.label)));
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(MODULE_GROUPS.map((g) => g.labelKey)));
 
-  const toggleGroup = (label: string) => {
+  const toggleGroup = (labelKey: string) => {
     setExpandedGroups((prev) => {
       const next = new Set(prev);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
+      if (next.has(labelKey)) next.delete(labelKey);
+      else next.add(labelKey);
       return next;
     });
   };
@@ -168,15 +171,15 @@ function RoleDetailPanel({ role, onDelete }: { role: SystemRole; onDelete: (role
         {MODULE_GROUPS.map((group) => {
           const items = group.modules.filter((m) => perms[m.id]);
           if (items.length === 0) return null;
-          const isExpanded = expandedGroups.has(group.label);
+          const isExpanded = expandedGroups.has(group.labelKey);
           return (
-            <div key={group.label} className="mb-3">
+            <div key={group.labelKey} className="mb-3">
               <button
-                onClick={() => toggleGroup(group.label)}
+                onClick={() => toggleGroup(group.labelKey)}
                 className="mb-1.5 flex w-full items-center gap-1.5 text-left text-[10.5px] font-bold uppercase tracking-[0.06em] text-slate-400 hover:text-slate-600"
               >
                 {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                {group.label}
+                {t(group.labelKey)}
               </button>
               {isExpanded &&
                 items.map((m) => (
@@ -184,7 +187,7 @@ function RoleDetailPanel({ role, onDelete }: { role: SystemRole; onDelete: (role
                     key={m.id}
                     className="flex items-center gap-2.5 border-b border-dashed border-slate-100 py-1.5"
                   >
-                    <span className="flex-1 text-[13px] text-slate-900">{m.name}</span>
+                    <span className="flex-1 text-[13px] text-slate-900">{t(m.nameKey)}</span>
                     <div className="flex gap-0.5">
                       {PERM_VERBS.map((v) => (
                         <PermVerbDot key={v.id} verbId={v.id} active={perms[m.id]?.includes(v.id) ?? false} />

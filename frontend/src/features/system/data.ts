@@ -5,75 +5,75 @@ import { generateName, generatePhone, generateEmail, seed, pick, rnum } from '@/
 
 export interface PermVerb {
   id: string;
-  label: string;
+  labelKey: string;
   short: string;
   color: string;
 }
 
 export const PERM_VERBS: PermVerb[] = [
-  { id: 'view', label: "Ko'rish", short: 'V', color: '#64748B' },
-  { id: 'edit', label: 'Tahrir', short: 'E', color: '#3B82F6' },
-  { id: 'create', label: 'Yaratish', short: 'C', color: '#2DB976' },
-  { id: 'delete', label: "O'chirish", short: 'D', color: '#EF4444' },
-  { id: 'approve', label: 'Tasdiqlash', short: 'A', color: '#8B5CF6' },
-  { id: 'export', label: 'Eksport', short: 'X', color: '#F59E0B' },
+  { id: 'view', labelKey: 'system.verbView', short: 'V', color: '#64748B' },
+  { id: 'edit', labelKey: 'system.verbEdit', short: 'E', color: '#3B82F6' },
+  { id: 'create', labelKey: 'system.verbCreate', short: 'C', color: '#2DB976' },
+  { id: 'delete', labelKey: 'system.verbDelete', short: 'D', color: '#EF4444' },
+  { id: 'approve', labelKey: 'system.verbApprove', short: 'A', color: '#8B5CF6' },
+  { id: 'export', labelKey: 'system.verbExport', short: 'X', color: '#F59E0B' },
 ];
 
 // ============== MODULES ==============
 
 export interface ModuleItem {
   id: string;
-  name: string;
-  desc: string;
+  nameKey: string;
+  descKey: string;
 }
 
 export interface ModuleGroup {
-  label: string;
+  labelKey: string;
   modules: ModuleItem[];
 }
 
 export const MODULE_GROUPS: ModuleGroup[] = [
   {
-    label: 'Akademik',
+    labelKey: 'system.groupAkademik',
     modules: [
-      { id: 'students', name: 'Talabalar', desc: "Talabalar ro'yxati, profillari, kontingent" },
-      { id: 'teachers', name: "O'qituvchilar", desc: 'PPS, yuk, ish jadvali' },
-      { id: 'attendance', name: 'Davomat', desc: 'Davomat jurnali, kelmagan kunlar' },
-      { id: 'grading', name: 'Baholash', desc: 'Joriy/oraliq/yakuniy baholar' },
-      { id: 'schedule', name: 'Dars jadvali', desc: 'Auditoriyalar, vaqtlar, jadvalni tahrir' },
-      { id: 'curriculum', name: "O'quv rejalar", desc: "Yo'nalishlar, fanlar, kreditlar" },
-      { id: 'exams', name: 'Imtihonlar', desc: 'Sessiya, biletlar, baholash protokollari' },
-      { id: 'theses', name: 'Diplom ishlari', desc: 'BMI rahbarligi, himoya, baholash' },
+      { id: 'students', nameKey: 'nav.students', descKey: 'system.moduleStudentsDesc' },
+      { id: 'teachers', nameKey: 'nav.teachers', descKey: 'system.moduleTeachersDesc' },
+      { id: 'attendance', nameKey: 'nav.attendance', descKey: 'system.moduleAttendanceDesc' },
+      { id: 'grading', nameKey: 'nav.grading', descKey: 'system.moduleGradingDesc' },
+      { id: 'schedule', nameKey: 'nav.schedule', descKey: 'system.moduleScheduleDesc' },
+      { id: 'curriculum', nameKey: 'nav.curriculum', descKey: 'system.moduleCurriculumDesc' },
+      { id: 'exams', nameKey: 'nav.exams', descKey: 'system.moduleExamsDesc' },
+      { id: 'theses', nameKey: 'nav.theses', descKey: 'system.moduleThesesDesc' },
     ],
   },
   {
-    label: 'Moliya',
+    labelKey: 'system.groupMoliya',
     modules: [
-      { id: 'contracts', name: 'Kontraktlar', desc: "To'lov-kontrakt, qarzlar" },
-      { id: 'scholarship', name: 'Stipendiya', desc: 'Stipendiya tayinlash, hisob-kitob' },
-      { id: 'payroll', name: 'Oylik maoshlar', desc: 'Xodimlar maosh hisob-kitobi' },
-      { id: 'budget', name: 'Byudjet', desc: "Universitet moliyaviy ko'rsatkichlari" },
+      { id: 'contracts', nameKey: 'nav.contracts', descKey: 'system.moduleContractsDesc' },
+      { id: 'scholarship', nameKey: 'nav.scholarships', descKey: 'system.moduleScholarshipDesc' },
+      { id: 'payroll', nameKey: 'nav.payroll', descKey: 'system.modulePayrollDesc' },
+      { id: 'budget', nameKey: 'nav.budget', descKey: 'system.moduleBudgetDesc' },
     ],
   },
   {
-    label: 'Operatsion',
+    labelKey: 'system.groupOperatsion',
     modules: [
-      { id: 'crm', name: 'CRM', desc: 'Abituriyent arizalari, voronka' },
-      { id: 'hr', name: 'HR', desc: "Xodimlar, ta'tillar, malaka oshirish" },
-      { id: 'orders', name: 'Buyruqlar', desc: 'Rektor buyruqlari, prikazlar' },
-      { id: 'dms', name: 'Hujjat aylanishi', desc: 'Kiruvchi/chiquvchi hujjatlar' },
-      { id: 'dormitory', name: 'TTJ', desc: 'Yotoqxona joylari, arizalar' },
-      { id: 'library', name: 'Kutubxona', desc: 'Kitoblar, qarzlar' },
+      { id: 'crm', nameKey: 'nav.crm', descKey: 'system.moduleCrmDesc' },
+      { id: 'hr', nameKey: 'nav.hr', descKey: 'system.moduleHrDesc' },
+      { id: 'orders', nameKey: 'nav.orders', descKey: 'system.moduleOrdersDesc' },
+      { id: 'dms', nameKey: 'nav.dms', descKey: 'system.moduleDmsDesc' },
+      { id: 'dormitory', nameKey: 'nav.dormitory', descKey: 'system.moduleDormitoryDesc' },
+      { id: 'library', nameKey: 'nav.library', descKey: 'system.moduleLibraryDesc' },
     ],
   },
   {
-    label: 'Tizim',
+    labelKey: 'system.groupTizim',
     modules: [
-      { id: 'users', name: 'Foydalanuvchilar', desc: 'User CRUD, parol reset, 2FA' },
-      { id: 'roles', name: 'Rollar', desc: 'Rol va ruxsatlarni boshqarish' },
-      { id: 'audit', name: 'Audit log', desc: "Tizimdagi barcha o'zgarishlar tarixi" },
-      { id: 'settings', name: 'Sozlamalar', desc: 'Universitet sozlamalari, integratsiyalar' },
-      { id: 'analytics', name: 'Analytics', desc: "Boshqaruv hisobotlari, KPI" },
+      { id: 'users', nameKey: 'nav.users', descKey: 'system.moduleUsersDesc' },
+      { id: 'roles', nameKey: 'nav.roles', descKey: 'system.moduleRolesDesc' },
+      { id: 'audit', nameKey: 'nav.auditLog', descKey: 'system.moduleAuditDesc' },
+      { id: 'settings', nameKey: 'nav.settings', descKey: 'system.moduleSettingsDesc' },
+      { id: 'analytics', nameKey: 'nav.analytics', descKey: 'system.moduleAnalyticsDesc' },
     ],
   },
 ];

@@ -1,6 +1,7 @@
 import { useState, useMemo, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button } from '@/components/ui';
@@ -8,6 +9,7 @@ import { ROLES, PERM_MATRIX, MODULE_GROUPS, PERM_VERBS, ALL_MODULES } from '../d
 import { useUpdateRolePermissions } from '@/api/hooks/useSystem';
 
 export function PermissionMatrixPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeVerb, setActiveVerb] = useState('view');
   const [highlightRole, setHighlightRole] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export function PermissionMatrixPage() {
             <div className="text-sm font-semibold text-slate-900">Ruxsat turi bo&apos;yicha filtrlash</div>
             <div className="mt-1 text-xs text-muted">
               <strong>{grantedCells}</strong>/{totalCells} qamrov ({coveragePercent}%) &mdash;{' '}
-              <span style={{ color: activeVerbObj?.color }}>{activeVerbObj?.label}</span>
+              <span style={{ color: activeVerbObj?.color }}>{activeVerbObj ? t(activeVerbObj.labelKey) : ''}</span>
             </div>
           </div>
           <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
@@ -101,7 +103,7 @@ export function PermissionMatrixPage() {
                 >
                   {v.short}
                 </span>
-                {v.label}
+                {t(v.labelKey)}
               </button>
             ))}
           </div>
@@ -150,7 +152,7 @@ export function PermissionMatrixPage() {
             </thead>
             <tbody>
               {MODULE_GROUPS.map((group, gi) => (
-                <Fragment key={group.label}>
+                <Fragment key={group.labelKey}>
                   {/* Group header */}
                   <tr>
                     <td
@@ -161,7 +163,7 @@ export function PermissionMatrixPage() {
                         borderBottom: '1px solid #E2E8F0',
                       }}
                     >
-                      {group.label}
+                      {t(group.labelKey)}
                     </td>
                   </tr>
                   {/* Module rows */}
@@ -175,8 +177,8 @@ export function PermissionMatrixPage() {
                         className="sticky left-0 z-[2] min-w-[280px] border-b border-r border-slate-100 px-4 py-3 transition-colors"
                         style={{ backgroundColor: highlightMod === mod.id ? '#F0FDF4' : '#fff' }}
                       >
-                        <div className="text-[13px] font-medium text-slate-900">{mod.name}</div>
-                        <div className="mt-0.5 text-[11.5px] leading-snug text-muted">{mod.desc}</div>
+                        <div className="text-[13px] font-medium text-slate-900">{t(mod.nameKey)}</div>
+                        <div className="mt-0.5 text-[11.5px] leading-snug text-muted">{t(mod.descKey)}</div>
                       </td>
                       {ROLES.map((r) => {
                         const verbs = (localMatrix[r.id] ?? {})[mod.id] ?? [];
@@ -196,7 +198,7 @@ export function PermissionMatrixPage() {
                                   : '#fff',
                             }}
                             onClick={() => handleToggle(r.id, mod.id)}
-                            title={has ? `${activeVerbObj?.label} ruxsatini olib tashlash` : `${activeVerbObj?.label} ruxsatini berish`}
+                            title={has ? `${activeVerbObj ? t(activeVerbObj.labelKey) : ''} ruxsatini olib tashlash` : `${activeVerbObj ? t(activeVerbObj.labelKey) : ''} ruxsatini berish`}
                           >
                             {has ? (
                               <span
