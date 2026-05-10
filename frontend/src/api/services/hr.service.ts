@@ -106,8 +106,13 @@ class HrApiService implements IHrService {
   }
 
   async getLeaves(): Promise<Leave[]> {
-    const res = await apiClient.get<{ results: Leave[] } | Leave[]>(ENDPOINTS.hr.leaves);
-    return drfListToArray(res as { count: number; next: null; previous: null; results: Leave[] });
+    const res = await apiClient.get<{ results: Record<string, unknown>[] } | Record<string, unknown>[]>(ENDPOINTS.hr.leaves);
+    const raw = drfListToArray(res as { count: number; next: null; previous: null; results: Record<string, unknown>[] });
+    return raw.map((r) => ({
+      ...r,
+      startDate: (r['startDate'] ?? r['start_date'] ?? '') as string,
+      endDate: (r['endDate'] ?? r['end_date'] ?? '') as string,
+    })) as Leave[];
   }
 
   async createLeave(dto: CreateLeaveDto): Promise<Leave> {

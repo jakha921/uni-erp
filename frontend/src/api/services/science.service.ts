@@ -113,10 +113,17 @@ class ScienceApiService implements IScienceService {
   async getConferences(params: ConferenceListParams): Promise<PaginatedResponse<Conference>> {
     const page = params.page ?? 1;
     const pageSize = params.pageSize ?? 20;
-    const drf = await apiClient.get<{ count: number; results: Conference[] }>(ENDPOINTS.science.conferences, {
+    const drf = await apiClient.get<{ count: number; results: Record<string, unknown>[] }>(ENDPOINTS.science.conferences, {
       params: { page, page_size: pageSize, search: params.search, status: params.status, type: params.type },
     });
-    return transformPaginated(drf, page, pageSize);
+    const paginated = transformPaginated(drf, page, pageSize);
+    return {
+      ...paginated,
+      data: paginated.data.map((c) => ({
+        ...c,
+        participantCount: (c['participantCount'] ?? c['participant_count'] ?? 0) as number,
+      })) as Conference[],
+    };
   }
   async getConferenceById(id: number): Promise<Conference> {
     return apiClient.get<Conference>(ENDPOINTS.science.conferenceDetail(id));

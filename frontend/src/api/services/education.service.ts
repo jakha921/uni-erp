@@ -63,7 +63,7 @@ class EducationApiService implements IEducationService {
   async getGrades(params?: GradeListParams): Promise<PaginatedResponse<Grade>> {
     const page = params?.page ?? 1;
     const pageSize = params?.pageSize ?? 20;
-    const drf = await apiClient.get<{ count: number; results: Grade[] }>(ENDPOINTS.education.grades, {
+    const drf = await apiClient.get<{ count: number; results: Record<string, unknown>[] }>(ENDPOINTS.education.grades, {
       params: {
         page,
         page_size: pageSize,
@@ -72,7 +72,15 @@ class EducationApiService implements IEducationService {
         grade_type: params?.gradeType,
       },
     });
-    return transformPaginated(drf, page, pageSize);
+    const paginated = transformPaginated(drf, page, pageSize);
+    return {
+      ...paginated,
+      data: paginated.data.map((g) => ({
+        ...g,
+        studentId: (g['studentId'] ?? g['student'] ?? 0) as number,
+        studentName: (g['studentName'] ?? '') as string,
+      })) as Grade[],
+    };
   }
 
   async createSubject(dto: SubjectDto): Promise<Subject> {
