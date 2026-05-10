@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus, MoreHorizontal, X } from 'lucide-react';
+import { Search, Plus, MoreHorizontal, X, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, Pagination } from '@/components/table';
 import type { Column } from '@/components/table';
@@ -154,6 +154,22 @@ export function CrmListPage() {
           { label: 'CRM', path: '/crm' },
           { label: 'Arizalar' },
         ]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = '/api/v1/crm/leads/export/';
+              a.download = 'arizalar.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            Excel
+          </Button>
+        }
       />
 
       {/* KPI Cards */}

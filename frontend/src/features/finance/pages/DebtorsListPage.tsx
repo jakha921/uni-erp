@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, AlertTriangle, CircleDollarSign, Mail, DollarSign, X, CheckCircle } from 'lucide-react';
+import { Users, AlertTriangle, CircleDollarSign, Mail, DollarSign, X, CheckCircle, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { Spinner, Button } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useContracts } from '@/api/hooks/useFinance';
@@ -133,6 +133,22 @@ export function DebtorsListPage() {
           { label: 'Moliya', path: '/finance' },
           { label: 'Qarzdorlar' },
         ]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = '/api/v1/finance/debtors/export/';
+              a.download = 'qarzdorlar.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            Excel
+          </Button>
+        }
       />
 
       {/* KPI cards */}

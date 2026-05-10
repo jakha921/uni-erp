@@ -296,7 +296,7 @@
 - [x] Убрать hardcoded FACULTIES массив → `useFaculties()`
 - [ ] SMS Modal: подключить к реальному `/core/sms/send/` endpoint
 - [x] Bulk SMS: массовая рассылка выбранным должникам
-- [ ] Экспорт списка должников в Excel
+- [x] Экспорт списка должников в Excel
 - [ ] i18n: все тексты
 
 ### 5.5 PaymentsListPage `/finance/payments`
@@ -418,7 +418,7 @@
 - [x] Zod schema: `leadSchema`
 - [x] Фильтры: статус (tabs), source (select), assignee (Combobox), DateRangePicker
 - [x] Bulk actions: массовое изменение статуса
-- [ ] Кнопка "Excel eksport" → `/crm/leads/export/`
+- [x] Кнопка "Excel eksport" → `/crm/leads/export/`
 - [ ] i18n: все тексты
 
 ### 7.2 CrmKanbanPage `/crm/kanban`
