@@ -51,8 +51,8 @@ export function Modal({
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-            <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+            <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700">
               <X className="h-5 w-5 text-muted" />
             </button>
           </div>

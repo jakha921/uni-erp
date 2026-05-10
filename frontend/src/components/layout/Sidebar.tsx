@@ -247,7 +247,7 @@ export function Sidebar() {
                               'justify-center px-0 h-10 w-10 mx-auto',
                               isActive
                                 ? 'bg-emerald-500 text-white rounded-xl shadow-sm'
-                                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700',
+                                : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200',
                             )
                           : isActive
                             ? 'bg-emerald-50 text-green-800 font-semibold dark:bg-primary-900/30 dark:text-primary-300'

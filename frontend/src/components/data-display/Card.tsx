@@ -12,11 +12,11 @@ interface CardProps {
 
 export function Card({ children, className, title, subtitle, action, noPadding }: CardProps) {
   return (
-    <div className={cn('bg-surface rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]', className)}>
+    <div className={cn('bg-surface rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.2)] dark:border dark:border-slate-700', className)}>
       {(title || action) && (
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
           <div>
-            {title && <h3 className="text-base font-semibold text-slate-900">{title}</h3>}
+            {title && <h3 className="text-base font-semibold text-slate-900 dark:text-slate-200">{title}</h3>}
             {subtitle && <p className="text-sm text-muted mt-0.5">{subtitle}</p>}
           </div>
           {action}

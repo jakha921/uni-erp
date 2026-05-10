@@ -27,7 +27,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'bg-surface rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] p-5',
+        'bg-surface rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.2)] dark:border dark:border-slate-700 p-5',
         onClick && 'cursor-pointer hover:shadow-md transition-shadow',
         className,
       )}
@@ -36,7 +36,7 @@ export function StatCard({
       {icon && (
         <div
           className={cn(
-            'flex items-center justify-center h-10 w-10 rounded-full text-white mb-3.5 shrink-0',
+            'flex items-center justify-center h-10 w-10 rounded-full text-white mb-3.5 shrink-0 dark:opacity-90',
             iconBg && !iconBg.startsWith('#') && iconBg,
           )}
           style={iconBg?.startsWith('#') ? { backgroundColor: iconBg } : undefined}
@@ -45,7 +45,7 @@ export function StatCard({
         </div>
       )}
       <p className="text-[13px] text-muted mb-1">{label}</p>
-      <p className="text-[28px] font-bold text-slate-900 leading-tight tracking-tight">
+      <p className="text-[28px] font-bold text-slate-900 dark:text-white leading-tight tracking-tight">
         {value}
       </p>
       {sub && <p className="mt-1 text-xs text-muted">{sub}</p>}
@@ -53,7 +53,7 @@ export function StatCard({
         <div
           className={cn(
             'mt-2 inline-flex items-center gap-1 text-xs font-medium',
-            trend.value >= 0 ? 'text-green-700' : 'text-red-700',
+            trend.value >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400',
           )}
         >
           {trend.value >= 0 ? (
