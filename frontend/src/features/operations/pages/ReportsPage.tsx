@@ -16,7 +16,7 @@ import { PageContent, PageHeader } from '@/components/layout';
 import { Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form/SearchInput';
 import { Modal } from '@/components/overlays';
-import { useReportTemplates } from '@/api/hooks/useReports';
+import { useReportTemplates, useGenerateReport } from '@/api/hooks/useReports';
 import { useState, useMemo } from 'react';
 
 interface ReportItem {
@@ -98,7 +98,8 @@ interface ReportParamsModalProps {
 }
 
 function ReportParamsModal({ report, onClose }: ReportParamsModalProps) {
-  const [generating, setGenerating] = useState(false);
+  const generateReport = useGenerateReport();
+  const generating = generateReport.isPending;
   const today = new Date().toISOString().slice(0, 10);
   const firstOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
 
@@ -112,12 +113,24 @@ function ReportParamsModal({ report, onClose }: ReportParamsModalProps) {
   });
 
   const onGenerate = (data: ReportParamsFormData) => {
-    setGenerating(true);
-    setTimeout(() => {
-      setGenerating(false);
-      onClose();
-    }, 1200);
-    void data;
+    generateReport.mutate(
+      { templateId: 0, params: { start_date: data.startDate, end_date: data.endDate, format: data.format, department: data.department ?? '' } },
+      {
+        onSuccess: (blob: Blob) => {
+          const ext = data.format === 'pdf' ? 'pdf' : 'xlsx';
+          const fileName = `${report?.name ?? 'hisobot'}.${ext}`;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          onClose();
+        },
+      },
+    );
   };
 
   return (

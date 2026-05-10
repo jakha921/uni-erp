@@ -490,7 +490,7 @@
 **Файл:** `features/operations/pages/ReportsPage.tsx`
 **Задачи:**
 - [x] Подключить к `useReportTemplates()`
-- [ ] Генерация: `useGenerateReport()` → скачивание файла
+- [x] Генерация: `useGenerateReport()` → скачивание файла
 - [x] Параметры отчёта в Modal
 - [ ] i18n: все тексты
 
