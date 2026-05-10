@@ -59,15 +59,15 @@
 **Файл:** `features/dashboard/pages/DashboardPage.tsx`
 **Статус:** Частично работает — 5 sub-dashboards по ролям
 **Задачи:**
-- [ ] Подключить AdminDashboard к реальному API `/api/v1/dashboard/` (сейчас hardcoded mock данные внутри sub-dashboard компонентов)
+- [x] Подключить AdminDashboard к реальному API `/api/v1/dashboard/` (сейчас hardcoded mock данные внутри sub-dashboard компонентов)
 - [ ] i18n: StatCard лейблы ("Fakultetlar", "Talabalar" и т.д.) через `t()`
 - [x] Добавить DateRangePicker для фильтрации по периоду
 - [x] BuxgalterDashboard: подключить к `/api/v1/finance/dashboard/`
 - [x] DekanDashboard: подключить к real API
 - [x] OqituvchiDashboard: подключить к real API
 - [x] TalabaDashboard: подключить к real API
-- [ ] Графики (DonutChart, BarChart, LineChart) — проверить что рендерятся с реальными данными
-- [ ] "So'nggi faoliyat" список — подключить к API (сейчас hardcoded)
+- [x] Графики (DonutChart, BarChart, LineChart) — проверить что рендерятся с реальными данными
+- [x] "So'nggi faoliyat" список — подключить к API (сейчас hardcoded)
 
 ---
 
