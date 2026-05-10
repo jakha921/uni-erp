@@ -164,6 +164,7 @@ export interface PayrollListParams extends ListParams {
   month: number;
   year: number;
   departmentId?: number;
+  employeeId?: number;
   status?: string;
 }
 

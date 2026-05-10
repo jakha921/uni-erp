@@ -263,7 +263,7 @@
 **Файл:** `features/finance/pages/FinanceDashboardPage.tsx`
 **Статус:** Read через hooks
 **Задачи:**
-- [ ] Подключить все графики к реальным данным (убрать hardcoded если есть)
+- [x] Подключить все графики к реальным данным (убрать hardcoded если есть)
 - [x] DateRangePicker для фильтрации по периоду
 - [x] Drill-down: клик по факультету → фильтр контрактов
 - [ ] i18n: все лейблы карточек и графиков
@@ -368,8 +368,8 @@
 **Файл:** `features/hr/pages/EmployeeProfilePage.tsx` | **Статус:** Read ✓
 **Задачи:**
 - [x] Tab "Hujjatlar": FileUpload для загрузки документов
-- [ ] Tab "Maosh": реальные данные зарплаты из API (сейчас hardcoded)
-- [ ] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
+- [x] Tab "Maosh": реальные данные зарплаты из API (сейчас hardcoded)
+- [x] Tab "Ish faoliyati": реальная карьерная история (сейчас hardcoded CAREER_EVENTS)
 - [x] Кнопка "Tahrirlash" → navigate к форме редактирования
 - [x] Печать карточки сотрудника → PDF
 - [ ] i18n: все тексты

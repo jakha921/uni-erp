@@ -10,7 +10,8 @@ import { Tabs } from '@/components/navigation';
 import { Card } from '@/components/data-display';
 import { EmployeeProfileHeader } from '../components/EmployeeProfileHeader';
 import { EmployeeForm } from '../components/EmployeeForm';
-import { useEmployee, useUpdateEmployee, useDepartments } from '@/api/hooks/useHr';
+import { useEmployee, useUpdateEmployee, useDepartments, useOrders } from '@/api/hooks/useHr';
+import { usePayroll } from '@/api/hooks/usePayroll';
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
 const CAREER_EVENTS = [
@@ -138,8 +139,8 @@ export function EmployeeProfilePage() {
 
         <div className="mt-4">
           {activeTab === 'info' && <InfoTab employee={employee} />}
-          {activeTab === 'career' && <CareerTab />}
-          {activeTab === 'salary' && <SalaryTab salary={employee.salary} />}
+          {activeTab === 'career' && <CareerTab employeeId={employeeId} />}
+          {activeTab === 'salary' && <SalaryTab employeeId={employeeId} salary={employee.salary} />}
           {activeTab === 'docs' && <DocsTab />}
         </div>
       </div>
@@ -234,12 +235,25 @@ function InfoTab({ employee }: { employee: NonNullable<ReturnType<typeof useEmpl
   );
 }
 
-function CareerTab() {
+function CareerTab({ employeeId }: { employeeId: number }) {
+  const { data: ordersData } = useOrders();
+  const orders = (ordersData ?? []).filter((o) => o.employeeId === employeeId);
+
+  const events = orders.length > 0
+    ? orders.map((o) => ({
+        date: o.date,
+        event: o.typeLabel,
+        detail: o.title,
+        color: o.typeColor ?? '#2DB976',
+        Icon: FileText,
+      }))
+    : CAREER_EVENTS;
+
   return (
     <Card title="Ish faoliyati tarixi">
       <div className="relative pl-7">
         <div className="absolute left-[7px] top-1.5 bottom-1.5 w-0.5 bg-slate-200" />
-        {CAREER_EVENTS.map((item, i) => (
+        {events.map((item, i) => (
           <div key={i} className="relative pb-7 last:pb-0">
             <div
               className="absolute -left-[20px] top-0.5 w-4 h-4 rounded-full flex items-center justify-center"
@@ -257,14 +271,28 @@ function CareerTab() {
   );
 }
 
-function SalaryTab({ salary }: { salary: number }) {
+function SalaryTab({ employeeId, salary }: { employeeId: number; salary: number }) {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const { data: payrollData } = usePayroll({ month: currentMonth, year: currentYear, employeeId, pageSize: 12 });
+
   const base = salary || 5200000;
-  const rows = [
-    { month: 'Yanvar 2026', base, bonus: 800000, tax: 720000, net: base + 800000 - 720000 },
-    { month: 'Dekabr 2025', base, bonus: 1200000, tax: 768000, net: base + 1200000 - 768000 },
-    { month: 'Noyabr 2025', base, bonus: 600000, tax: 696000, net: base + 600000 - 696000 },
-    { month: 'Oktabr 2025', base, bonus: 0, tax: 624000, net: base - 624000 },
-  ];
+  const payrollRows = payrollData?.data ?? [];
+
+  const rows = payrollRows.length > 0
+    ? payrollRows.map((r) => ({
+        month: `${r.employeeName} — ${currentMonth}/${currentYear}`,
+        base: r.baseSalary,
+        bonus: r.bonus,
+        tax: r.deductions,
+        net: r.netSalary,
+      }))
+    : [
+        { month: 'Yanvar 2026', base, bonus: 800000, tax: 720000, net: base + 800000 - 720000 },
+        { month: 'Dekabr 2025', base, bonus: 1200000, tax: 768000, net: base + 1200000 - 768000 },
+        { month: 'Noyabr 2025', base, bonus: 600000, tax: 696000, net: base + 600000 - 696000 },
+        { month: 'Oktabr 2025', base, bonus: 0, tax: 624000, net: base - 624000 },
+      ];
 
   return (
     <div className="space-y-4">
