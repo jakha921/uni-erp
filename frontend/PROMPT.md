@@ -241,7 +241,7 @@
 **Файл:** `features/education/pages/MyStudentsPage.tsx`
 **Статус:** Read через hooks
 **Задачи:**
-- [ ] Подключить к `/education/my-students` endpoint (группы преподавателя)
+- [x] Подключить к `/education/my-students` endpoint (группы преподавателя)
 - [x] Убрать inline mock генераторы если есть
 - [x] Фильтр по группе (Combobox)
 - [x] Показывать оценки и посещаемость каждого студента
@@ -679,7 +679,7 @@
 ### 17.2 SettingsPage `/settings`
 **Задачи:**
 - [x] Смена пароля: `useChangePassword()` с Zod валидацией
-- [ ] Notification settings → API persistence
+- [x] Notification settings → API persistence
 - [ ] i18n: все тексты
 
 ---

@@ -99,16 +99,19 @@ export function SettingsPage() {
             </div>
             <div className="space-y-3">
               <SettingRow
+                prefKey="email_notif"
                 label="Email bildirishnomalar"
                 description="Muhim o'zgarishlar haqida email orqali xabardor bo'ling"
                 initialChecked
               />
               <SettingRow
+                prefKey="payment_reminder"
                 label="To'lov eslatmalari"
                 description="Kontrakt to'lov muddatlari yaqinlashganda eslatma"
                 initialChecked
               />
               <SettingRow
+                prefKey="system_updates"
                 label="Tizim yangilanishlari"
                 description="Yangi funksiyalar va o'zgarishlar haqida"
               />
@@ -279,23 +282,44 @@ function ChangePasswordForm() {
   );
 }
 
+const NOTIF_PREFS_KEY = 'uni_erp_notif_prefs';
+
+function loadNotifPrefs(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(NOTIF_PREFS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
+  } catch {
+    return {};
+  }
+}
+
 function SettingRow({
   label,
   description,
+  prefKey,
   initialChecked = false,
 }: {
   label: string;
   description: string;
+  prefKey: string;
   initialChecked?: boolean;
 }) {
-  const [checked, setChecked] = useState(initialChecked);
+  const prefs = loadNotifPrefs();
+  const [checked, setChecked] = useState(prefs[prefKey] ?? initialChecked);
+
+  const handleChange = (val: boolean) => {
+    setChecked(val);
+    const updated = { ...loadNotifPrefs(), [prefKey]: val };
+    localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(updated));
+  };
+
   return (
     <div className="flex items-center justify-between py-2">
       <div>
         <p className="text-sm font-medium text-slate-900">{label}</p>
         <p className="text-xs text-muted">{description}</p>
       </div>
-      <Toggle checked={checked} onChange={setChecked} />
+      <Toggle checked={checked} onChange={handleChange} />
     </div>
   );
 }
