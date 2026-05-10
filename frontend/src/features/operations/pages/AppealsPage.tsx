@@ -1,14 +1,15 @@
 import { useState, useMemo } from 'react';
-import { Inbox, Bell, Clock, CheckCircle2, Plus, Edit, Users, CheckCircle } from 'lucide-react';
+import { Inbox, Bell, Clock, CheckCircle2, Plus, Edit, Users, CheckCircle, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { Avatar } from '@/components/ui/Avatar';
+import { ConfirmDialog } from '@/components/overlays';
 import { cn } from '@/lib/utils';
-import { useAppealsList, useUpdateAppealStatus, useCreateAppeal } from '@/api/hooks/useAppeals';
+import { useAppealsList, useUpdateAppealStatus, useCreateAppeal, useDeleteAppeal } from '@/api/hooks/useAppeals';
 import { AppealForm } from '../components/AppealForm';
 import type { AppealFormData } from '../schemas/appeal.schema';
-import type { AppealStatus, AppealCategory } from '@/types/operations';
+import type { Appeal, AppealStatus, AppealCategory } from '@/types/operations';
 
 const CATEGORY_LABEL: Record<AppealCategory, string> = {
   complaint: 'Shikoyat',
@@ -37,7 +38,9 @@ export function AppealsPage() {
   const [filter, setFilter] = useState<FilterId>('all');
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [deleteAppeal, setDeleteAppeal] = useState<Appeal | null>(null);
   const createAppeal = useCreateAppeal();
+  const deleteAppealMutation = useDeleteAppeal();
 
   const statusParam = filter === 'all' ? undefined : filter as AppealStatus;
 
@@ -246,6 +249,13 @@ export function AppealsPage() {
               >
                 Hal qilingan deb belgilash
               </Button>
+              <button
+                onClick={() => selected && setDeleteAppeal(selected)}
+                className="h-8 w-8 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 inline-flex items-center justify-center transition-colors"
+                title="O'chirish"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           </Card>
         ) : (
@@ -261,6 +271,20 @@ export function AppealsPage() {
           createAppeal.mutate(data, { onSuccess: () => setFormOpen(false) });
         }}
         loading={createAppeal.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!deleteAppeal}
+        onClose={() => setDeleteAppeal(null)}
+        onConfirm={() => {
+          if (!deleteAppeal) return;
+          deleteAppealMutation.mutate(deleteAppeal.id, { onSuccess: () => { setDeleteAppeal(null); setSelectedId(null); } });
+        }}
+        title="Murojaatni o'chirish"
+        message={`"${deleteAppeal?.title}" murojaatini o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteAppealMutation.isPending}
       />
     </PageContent>
   );
