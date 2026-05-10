@@ -6,6 +6,7 @@ import {
   FileText,
   Printer,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
 import { Card } from '@/components/data-display/Card';
@@ -38,16 +39,9 @@ function DetailRow({ label, value }: { label: string; value: string | undefined 
   );
 }
 
-// ---------- Grade mark ----------
-function gradeLabel(score: number): { text: string; variant: 'success' | 'info' | 'warning' | 'error' } {
-  if (score >= 86) return { text: "A'lo", variant: 'success' };
-  if (score >= 71) return { text: 'Yaxshi', variant: 'info' };
-  if (score >= 55) return { text: 'Qoniqarli', variant: 'warning' };
-  return { text: 'Qoniqarsiz', variant: 'error' };
-}
-
 // ---------- Grades tab ----------
 function GradesTab({ grades }: { grades: StudentGrade[] }) {
+  const { t } = useTranslation();
   const [selectedSemester, setSelectedSemester] = useState<number | null>(null);
 
   const finals = grades.filter((g) => g.gradeType === 'final');
@@ -58,11 +52,18 @@ function GradesTab({ grades }: { grades: StudentGrade[] }) {
   const currentGrades = finals.filter((g) => g.semester === semester);
   const currentMidterms = midterms.filter((g) => g.semester === semester);
 
+  const gradeLabel = (score: number): { text: string; variant: 'success' | 'info' | 'warning' | 'error' } => {
+    if (score >= 86) return { text: t('students.gradeLabelExcellent'), variant: 'success' };
+    if (score >= 71) return { text: t('students.gradeLabelGood'), variant: 'info' };
+    if (score >= 55) return { text: t('students.gradeLabelSatisfactory'), variant: 'warning' };
+    return { text: t('students.gradeLabelUnsatisfactory'), variant: 'error' };
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-sm font-semibold text-slate-900">
-          Baholar ({semester}-semestr)
+          {t('students.gradesSemester', { semester })}
         </h4>
         <select
           value={semester}
@@ -70,7 +71,7 @@ function GradesTab({ grades }: { grades: StudentGrade[] }) {
           className="h-8 px-2 rounded-md border border-border text-sm"
         >
           {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
-            <option key={s} value={s}>{s}-semestr</option>
+            <option key={s} value={s}>{t('students.semesterOption', { n: s })}</option>
           ))}
         </select>
       </div>
@@ -78,7 +79,15 @@ function GradesTab({ grades }: { grades: StudentGrade[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50">
-              {['Fan', "O'qituvchi", 'JN1', 'JN2', 'YN', 'Jami', 'Baho'].map((h) => (
+              {[
+                t('students.subject'),
+                t('students.teacher'),
+                t('students.midterm1'),
+                t('students.midterm2'),
+                t('students.finalScore'),
+                t('students.scoreTotal'),
+                t('students.gradeHeader'),
+              ].map((h) => (
                 <th
                   key={h}
                   className="px-3 py-2.5 text-left text-xs font-medium text-muted uppercase tracking-wider"
@@ -119,7 +128,7 @@ function GradesTab({ grades }: { grades: StudentGrade[] }) {
       </div>
       {currentGrades.length === 0 && (
         <p className="py-8 text-center text-sm text-muted">
-          Bu semestr uchun baholar topilmadi
+          {t('students.gradesNoData')}
         </p>
       )}
     </div>
@@ -128,6 +137,7 @@ function GradesTab({ grades }: { grades: StudentGrade[] }) {
 
 // ---------- Attendance tab ----------
 function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
+  const { t } = useTranslation();
   const total = attendance.length;
   const present = attendance.filter((a) => a.status === 'present').length;
   const absent = attendance.filter((a) => a.status === 'absent').length;
@@ -135,11 +145,11 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
   const excused = attendance.filter((a) => a.status === 'excused').length;
 
   const stats = [
-    { label: 'Umumiy darslar', value: total, color: 'text-slate-900' },
-    { label: 'Qatnashilgan', value: present, color: 'text-green-700' },
-    { label: 'Kechikkan', value: late, color: 'text-amber-700' },
-    { label: 'Sababli qoldirilgan', value: excused, color: 'text-blue-700' },
-    { label: 'Sababsiz qoldirilgan', value: absent, color: 'text-red-700' },
+    { label: t('students.attendanceTotal'), value: total, color: 'text-slate-900' },
+    { label: t('students.attendancePresent'), value: present, color: 'text-green-700' },
+    { label: t('students.attendanceLate'), value: late, color: 'text-amber-700' },
+    { label: t('students.attendanceExcused'), value: excused, color: 'text-blue-700' },
+    { label: t('students.attendanceAbsent'), value: absent, color: 'text-red-700' },
   ];
 
   const statusColors: Record<StudentAttendance['status'], string> = {
@@ -149,7 +159,6 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
     excused: 'bg-blue-500',
   };
 
-  // Recent absences
   const recentAbsences = attendance
     .filter((a) => a.status === 'absent' || a.status === 'late')
     .slice(-10)
@@ -170,7 +179,7 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
 
       <div>
         <h4 className="text-sm font-semibold text-slate-900 mb-3">
-          Davomat xaritasi (oxirgi 80 kun)
+          {t('students.attendanceMapTitle')}
         </h4>
         <div className="flex flex-wrap gap-1">
           {attendance.slice(-80).map((a, i) => (
@@ -183,16 +192,16 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
         </div>
         <div className="flex items-center gap-4 mt-2 text-xs text-muted">
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-sm bg-green-500" /> Qatnashdi
+            <span className="h-2.5 w-2.5 rounded-sm bg-green-500" /> {t('students.attendanceLegendPresent')}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-sm bg-red-500" /> Kelmadi
+            <span className="h-2.5 w-2.5 rounded-sm bg-red-500" /> {t('students.attendanceLegendAbsent')}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Kechikdi
+            <span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> {t('students.attendanceLegendLate')}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-sm bg-blue-500" /> Sababli
+            <span className="h-2.5 w-2.5 rounded-sm bg-blue-500" /> {t('students.attendanceLegendExcused')}
           </span>
         </div>
       </div>
@@ -200,7 +209,7 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
       {recentAbsences.length > 0 && (
         <div>
           <h4 className="text-sm font-semibold text-slate-900 mb-3">
-            Oxirgi qoldirilgan darslar
+            {t('students.attendanceRecentTitle')}
           </h4>
           <div className="space-y-2">
             {recentAbsences.map((a, i) => (
@@ -218,7 +227,7 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
                   {a.subjectName}
                 </span>
                 <span className="text-muted">
-                  {a.status === 'absent' ? 'Sababsiz' : 'Kechikdi'}
+                  {a.status === 'absent' ? t('students.attendanceStatusAbsent') : t('students.attendanceStatusLate')}
                 </span>
               </div>
             ))}
@@ -231,15 +240,16 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
 
 // ---------- Contracts tab ----------
 function ContractsTab({ studentId }: { studentId: number }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useContracts({ studentId, page: 1, pageSize: 10 });
   const contracts = data?.data ?? [];
 
   if (isLoading) {
-    return <div className="py-8 text-center text-sm text-muted">Yuklanmoqda...</div>;
+    return <div className="py-8 text-center text-sm text-muted">{t('common.loading')}</div>;
   }
 
   if (contracts.length === 0) {
-    return <div className="py-8 text-center text-sm text-muted">Kontraktlar topilmadi</div>;
+    return <div className="py-8 text-center text-sm text-muted">{t('students.contractsNotFound')}</div>;
   }
 
   return (
@@ -255,15 +265,15 @@ function ContractsTab({ studentId }: { studentId: number }) {
               <span className="text-xs text-muted">{c.educationYear}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted">Yillik summa</span>
+              <span className="text-muted">{t('students.contractAnnualAmount')}</span>
               <span className="font-semibold tabular-nums">{formatMoney(c.contractAmount)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted">To&apos;langan</span>
+              <span className="text-muted">{t('students.contractPaid')}</span>
               <span className="font-semibold text-green-700 tabular-nums">{formatMoney(paidAmount)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted">Qoldiq</span>
+              <span className="text-muted">{t('students.contractRemaining')}</span>
               <span className={`font-semibold tabular-nums ${debtAmount > 0 ? 'text-red-600' : 'text-slate-900'}`}>
                 {formatMoney(debtAmount)}
               </span>
@@ -278,15 +288,7 @@ function ContractsTab({ studentId }: { studentId: number }) {
   );
 }
 
-const STATUS_NAMES: Record<string, string> = {
-  active: "O'qimoqda",
-  academic_leave: "Akademik ta'tilda",
-  expelled: 'Chetlatilgan',
-  graduated: 'Bitirgan',
-  transferred: "Ko'chirilgan",
-};
-
-function printCertificate(student: { fullName: string; studentIdNumber: string; faculty: { name: string }; group: { name: string }; level: { name: string }; paymentForm: { name: string }; status: string }) {
+function printCertificate(student: { fullName: string; studentIdNumber: string; faculty: { name: string }; group: { name: string }; level: { name: string }; paymentForm: { name: string }; status: string }, institutionName: string) {
   const win = window.open('', '_blank', 'width=794,height=1123');
   if (!win) return;
   const d = win.document;
@@ -309,9 +311,17 @@ function printCertificate(student: { fullName: string; studentIdNumber: string; 
   const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const h1 = d.createElement('h1'); h1.textContent = "O'zbekiston Respublikasi"; d.body.appendChild(h1);
-  const h2 = d.createElement('h2'); h2.textContent = 'Buxoro innovatsion texnologiyalar universiteti'; d.body.appendChild(h2);
+  const h2 = d.createElement('h2'); h2.textContent = institutionName; d.body.appendChild(h2);
   const title = d.createElement('div'); title.className = 'title'; title.textContent = "MA'LUMOTNOMA"; d.body.appendChild(title);
   const sub = d.createElement('div'); sub.className = 'subtitle'; sub.textContent = `Talaba haqida ma'lumotnoma — ${today}`; d.body.appendChild(sub);
+
+  const statusNames: Record<string, string> = {
+    active: "O'qimoqda",
+    academic_leave: "Akademik ta'tilda",
+    expelled: 'Chetlatilgan',
+    graduated: 'Bitirgan',
+    transferred: "Ko'chirilgan",
+  };
 
   const rows: [string, string][] = [
     ['F.I.Sh.', student.fullName],
@@ -320,7 +330,7 @@ function printCertificate(student: { fullName: string; studentIdNumber: string; 
     ['Guruh', student.group.name],
     [student.level.name, 'Talabasi hisoblanadi'],
     ["To'lov shakli", student.paymentForm.name],
-    ['Holati', STATUS_NAMES[student.status] ?? student.status],
+    ['Holati', statusNames[student.status] ?? student.status],
   ];
   const table = d.createElement('table');
   rows.forEach(([label, value]) => {
@@ -348,6 +358,7 @@ function printCertificate(student: { fullName: string; studentIdNumber: string; 
 
 // ---------- Main component ----------
 export function StudentProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const studentId = Number(id);
@@ -359,13 +370,13 @@ export function StudentProfilePage() {
 
   const tabs = useMemo(
     () => [
-      { id: 'main', label: "Asosiy ma'lumotlar" },
-      { id: 'grades', label: "O'zlashtirish", count: grades?.length },
-      { id: 'attendance', label: 'Davomat' },
-      { id: 'contracts', label: 'Kontrakt' },
-      { id: 'docs', label: 'Hujjatlar' },
+      { id: 'main', label: t('students.tabMain') },
+      { id: 'grades', label: t('students.tabGrades'), count: grades?.length },
+      { id: 'attendance', label: t('students.tabAttendance') },
+      { id: 'contracts', label: t('students.tabContracts') },
+      { id: 'docs', label: t('students.tabDocs') },
     ],
-    [grades?.length],
+    [grades?.length, t],
   );
 
   if (isLoading) {
@@ -380,7 +391,7 @@ export function StudentProfilePage() {
 
   if (!student) {
     return (
-      <div className="p-12 text-center text-muted">Talaba topilmadi</div>
+      <div className="p-12 text-center text-muted">{t('students.notFound')}</div>
     );
   }
 
@@ -389,8 +400,8 @@ export function StudentProfilePage() {
       <PageHeader
         title=""
         breadcrumbs={[
-          { label: 'Bosh sahifa', path: '/' },
-          { label: 'Talabalar', path: '/students' },
+          { label: t('nav.dashboard'), path: '/' },
+          { label: t('nav.students'), path: '/students' },
           { label: student.shortName },
         ]}
         actions={
@@ -399,7 +410,7 @@ export function StudentProfilePage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-slate-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Orqaga
+            {t('common.back')}
           </button>
         }
       />
@@ -415,16 +426,16 @@ export function StudentProfilePage() {
               onClick={() => navigate(`/students/${student.id}/edit`)}
               className="bg-white/20 border-white/30 text-white hover:bg-white/30"
             >
-              Tahrirlash
+              {t('common.edit')}
             </Button>
             <Button
               variant="secondary"
               size="sm"
               leftIcon={<FileText className="h-3.5 w-3.5" />}
               className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-              onClick={() => printCertificate(student)}
+              onClick={() => printCertificate(student, t('app.institutionName', 'NIU Universiteti'))}
             >
-              Ma&apos;lumotnoma
+              {t('students.certificate')}
             </Button>
             <Button
               variant="secondary"
@@ -433,7 +444,7 @@ export function StudentProfilePage() {
               className="bg-white/20 border-white/30 text-white hover:bg-white/30 print:hidden"
               onClick={() => window.print()}
             >
-              Chop etish
+              {t('students.print')}
             </Button>
           </div>
         </div>
@@ -459,8 +470,8 @@ export function StudentProfilePage() {
                   }`}
                 >
                   {student.paymentForm.code === 'grant'
-                    ? 'Grant'
-                    : 'Kontrakt'}
+                    ? t('students.grant')
+                    : t('students.contract')}
                 </span>
               </div>
               <div className="mt-1 text-sm text-muted flex items-center gap-3 flex-wrap">
@@ -475,11 +486,11 @@ export function StudentProfilePage() {
 
           <div className="grid grid-cols-4 gap-3 mt-5">
             {[
-              { label: 'Fakultet', value: student.faculty.name },
-              { label: 'Guruh', value: student.group.name },
-              { label: 'Kurs', value: `${student.course}-kurs` },
+              { label: t('students.faculty'), value: student.faculty.name },
+              { label: t('students.group'), value: student.group.name },
+              { label: t('students.course'), value: `${student.course}-kurs` },
               {
-                label: "O'rtacha baho",
+                label: t('students.avgGrade'),
                 value: `${(Number(student.avgGrade) || 0).toFixed(1)} ball`,
               },
             ].map((item) => (
@@ -512,42 +523,42 @@ export function StudentProfilePage() {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h4 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
-                  Shaxsiy ma&apos;lumotlar
+                  {t('students.personalInfo')}
                 </h4>
-                <DetailRow label="F.I.Sh." value={student.fullName} />
-                <DetailRow label="Jinsi" value={student.gender.name} />
+                <DetailRow label={t('students.fullName')} value={student.fullName} />
+                <DetailRow label={t('students.gender')} value={student.gender.name} />
                 <DetailRow
-                  label="Tug'ilgan sana"
+                  label={t('students.birthDate')}
                   value={formatDate(student.birthDate)}
                 />
-                <DetailRow label="Pasport" value={student.passport} />
-                <DetailRow label="JSHSHIR" value={student.pinfl} />
-                <DetailRow label="Telefon" value={student.phone} />
-                <DetailRow label="Email" value={student.email} />
-                <DetailRow label="Manzil" value={student.address} />
+                <DetailRow label={t('students.passport')} value={student.passport} />
+                <DetailRow label={t('students.pinfl')} value={student.pinfl} />
+                <DetailRow label={t('common.phone')} value={student.phone} />
+                <DetailRow label={t('common.email')} value={student.email} />
+                <DetailRow label={t('common.address')} value={student.address} />
               </div>
               <div>
                 <h4 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
-                  O&apos;quv ma&apos;lumotlari
+                  {t('students.academicInfo')}
                 </h4>
-                <DetailRow label="Fakultet" value={student.faculty.name} />
+                <DetailRow label={t('students.faculty')} value={student.faculty.name} />
                 <DetailRow
-                  label="Mutaxassislik"
+                  label={t('students.specialty')}
                   value={student.specialty.name}
                 />
-                <DetailRow label="Kafedra" value={student.department.name} />
-                <DetailRow label="Guruh" value={student.group.name} />
-                <DetailRow label="Kurs" value={`${student.course}-kurs`} />
+                <DetailRow label={t('students.department')} value={student.department.name} />
+                <DetailRow label={t('students.group')} value={student.group.name} />
+                <DetailRow label={t('students.course')} value={`${student.course}-kurs`} />
                 <DetailRow
-                  label="Ta'lim shakli"
+                  label={t('students.educationForm')}
                   value={student.educationForm.name}
                 />
                 <DetailRow
-                  label="To'lov shakli"
+                  label={t('students.paymentForm')}
                   value={student.paymentForm.name}
                 />
                 <DetailRow
-                  label="O'rtacha baho"
+                  label={t('students.avgGrade')}
                   value={`${(Number(student.avgGrade) || 0).toFixed(1)} ball`}
                 />
               </div>

@@ -110,7 +110,7 @@
 **Файл:** `features/students/pages/StudentProfilePage.tsx`
 **Статус:** Read работает
 **Задачи:**
-- [ ] i18n: все тексты
+- [x] i18n: все тексты
 - [x] Убрать hardcoded `STUDENT_DOCS` массив (строка 527) → загружать из API
 - [x] Tab "Hujjatlar" (Документы): FileUpload для загрузки сканов
 - [x] Tab "Kontrakt": ссылки на контракты студента из Finance API
