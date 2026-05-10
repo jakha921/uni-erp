@@ -9,7 +9,20 @@ import type { Schedule } from '@/types/education';
 
 type AttendanceStatus = 'P' | 'N' | 'U';
 
-const dates = ['18.04', '19.04', '20.04', '21.04', '22.04', '23.04', '24.04', '25.04'];
+function getLastWeekdays(count: number): string[] {
+  const result: string[] = [];
+  const d = new Date();
+  while (result.length < count) {
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) {
+      result.unshift(`${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`);
+    }
+    d.setDate(d.getDate() - 1);
+  }
+  return result;
+}
+
+const dates = getLastWeekdays(8);
 
 function seededRandom(i: number): number {
   const x = Math.sin(i * 9301 + 49297) * 49297;
@@ -65,7 +78,12 @@ function initGrid(studentCount: number): Record<number, AttendanceStatus[]> {
 }
 
 export function AcademicAttendancePage() {
-  const { data: schedulesData, isLoading: schedulesLoading } = useSchedules();
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+
+  const { data: schedulesData, isLoading: schedulesLoading } = useSchedules({
+    groupId: selectedGroupId ? Number(selectedGroupId) : undefined,
+  });
   const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
   const { data: groupsData, isLoading: groupsLoading } = useGroups();
 
@@ -74,9 +92,6 @@ export function AcademicAttendancePage() {
   const groups = groupsData ?? [];
 
   const isLoading = schedulesLoading || subjectsLoading || groupsLoading;
-
-  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
 
   const students = useMemo(() => buildStudentRows(schedules), [schedules]);
 
