@@ -5,10 +5,11 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Pagination } from '@/components/table';
 import { Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
 import { EmployeeTable } from '../components/EmployeeTable';
 import { EmployeeForm } from '../components/EmployeeForm';
-import { useEmployees, useCreateEmployee, useDepartments } from '@/api/hooks/useHr';
-import type { EmployeeListParams, EmployeeStatus } from '@/types/hr';
+import { useEmployees, useCreateEmployee, useUpdateEmployee, useDeleteEmployee, useEmployee, useDepartments } from '@/api/hooks/useHr';
+import type { EmployeeListParams, EmployeeStatus, EmployeeListItem } from '@/types/hr';
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
 export function EmployeesListPage() {
@@ -18,11 +19,16 @@ export function EmployeesListPage() {
     search: '',
   });
   const [formOpen, setFormOpen] = useState(false);
+  const [editEmployeeId, setEditEmployeeId] = useState<number | null>(null);
+  const [deleteEmployee, setDeleteEmployee] = useState<EmployeeListItem | null>(null);
   const [position, setPosition] = useState('');
 
   const { data, isLoading } = useEmployees(params);
   const { data: departments = [] } = useDepartments();
+  const { data: editEmployeeData } = useEmployee(editEmployeeId ?? 0);
   const createMutation = useCreateEmployee();
+  const updateMutation = useUpdateEmployee();
+  const deleteEmployeeMutation = useDeleteEmployee();
 
   const handleSearch = useCallback((value: string) => {
     setParams((prev) => ({ ...prev, search: value, page: 1 }));
@@ -53,31 +59,37 @@ export function EmployeesListPage() {
     }));
   }, []);
 
-  const handleCreate = useCallback(
+  const buildDto = (formData: EmployeeFormData) => ({
+    firstName: formData.firstName,
+    secondName: formData.secondName,
+    thirdName: formData.thirdName,
+    gender: formData.gender,
+    birthDate: formData.birthDate,
+    departmentId: Number(formData.departmentId),
+    positionCode: formData.positionCode,
+    academicDegree: formData.academicDegree,
+    academicRank: formData.academicRank,
+    employmentForm: formData.employmentForm,
+    hireDate: formData.hireDate,
+    phone: formData.phone,
+    email: formData.email,
+    passport: formData.passport,
+    pinfl: formData.pinfl,
+    salary: Number(formData.salary),
+  });
+
+  const handleSubmit = useCallback(
     (formData: EmployeeFormData) => {
-      createMutation.mutate(
-        {
-          firstName: formData.firstName,
-          secondName: formData.secondName,
-          thirdName: formData.thirdName,
-          gender: formData.gender,
-          birthDate: formData.birthDate,
-          departmentId: Number(formData.departmentId),
-          positionCode: formData.positionCode,
-          academicDegree: formData.academicDegree,
-          academicRank: formData.academicRank,
-          employmentForm: formData.employmentForm,
-          hireDate: formData.hireDate,
-          phone: formData.phone,
-          email: formData.email,
-          passport: formData.passport,
-          pinfl: formData.pinfl,
-          salary: Number(formData.salary),
-        },
-        { onSuccess: () => setFormOpen(false) },
-      );
+      if (editEmployeeId) {
+        updateMutation.mutate(
+          { id: editEmployeeId, dto: buildDto(formData) },
+          { onSuccess: () => { setFormOpen(false); setEditEmployeeId(null); } },
+        );
+      } else {
+        createMutation.mutate(buildDto(formData), { onSuccess: () => setFormOpen(false) });
+      }
     },
-    [createMutation],
+    [createMutation, updateMutation, editEmployeeId],
   );
 
   return (
@@ -145,7 +157,7 @@ export function EmployeesListPage() {
           )}
           <Button
             leftIcon={<Plus className="h-4 w-4" />}
-            onClick={() => setFormOpen(true)}
+            onClick={() => { setEditEmployeeId(null); setFormOpen(true); }}
           >
             Yangi xodim
           </Button>
@@ -163,6 +175,8 @@ export function EmployeesListPage() {
               sortBy={params.sortBy}
               sortOrder={params.sortOrder}
               onSort={handleSort}
+              onEdit={(emp) => { setEditEmployeeId(emp.id); setFormOpen(true); }}
+              onDelete={setDeleteEmployee}
             />
             {data && data.totalPages > 1 && (
               <div className="border-t border-[#F1F5F9] px-4 py-3">
@@ -181,10 +195,24 @@ export function EmployeesListPage() {
 
       <EmployeeForm
         open={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSubmit={handleCreate}
+        onClose={() => { setFormOpen(false); setEditEmployeeId(null); }}
+        onSubmit={handleSubmit}
+        employee={editEmployeeId ? (editEmployeeData ?? null) : null}
         departments={departments}
-        loading={createMutation.isPending}
+        loading={createMutation.isPending || updateMutation.isPending}
+      />
+      <ConfirmDialog
+        open={!!deleteEmployee}
+        onClose={() => setDeleteEmployee(null)}
+        onConfirm={() => {
+          if (!deleteEmployee) return;
+          deleteEmployeeMutation.mutate(deleteEmployee.id, { onSuccess: () => setDeleteEmployee(null) });
+        }}
+        title="Xodimni o'chirish"
+        message={`"${deleteEmployee?.fullName}" xodimni o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteEmployeeMutation.isPending}
       />
     </PageContent>
   );

@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner } from '@/components/ui';
+import { ConfirmDialog } from '@/components/overlays';
 import {
   Inbox,
   Send,
   FileEdit,
   FileCheck,
   FolderOpen,
-  MoreHorizontal,
+  Plus,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
-import { useDocuments, useFolders } from '@/api/hooks/useDms';
+import { useDocuments, useFolders, useCreateDocument, useUpdateDocument, useDeleteDocument } from '@/api/hooks/useDms';
+import { DocumentForm } from '../components/DocumentForm';
 import type { Document, DocStatus } from '@/types/admin';
+import type { DocumentFormData } from '../schemas/document.schema';
 
 const STATUS_VARIANT: Record<DocStatus, 'info' | 'warning' | 'success' | 'default' | 'error'> = {
   draft: 'default',
@@ -45,20 +50,34 @@ const FOLDER_ICONS = {
 
 export function DmsPage() {
   const [activeFolderId, setActiveFolderId] = useState<number | undefined>(undefined);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editDocument, setEditDocument] = useState<Document | null>(null);
+  const [deleteDocument, setDeleteDocument] = useState<Document | null>(null);
 
   const { data: foldersData, isLoading: isLoadingFolders } = useFolders();
-  const { data: documentsData, isLoading: isLoadingDocs } = useDocuments({
-    folderId: activeFolderId,
-  });
+  const { data: documentsData, isLoading: isLoadingDocs } = useDocuments({ folderId: activeFolderId });
+
+  const createDocument = useCreateDocument();
+  const updateDocument = useUpdateDocument();
+  const deleteDocumentMutation = useDeleteDocument();
 
   const folders = foldersData ?? [];
   const documents = documentsData?.data ?? [];
-
-  // Compute stat counts from documents
   const totalDocs = documentsData?.total ?? 0;
   const approvedCount = documents.filter((d) => d.status === 'approved').length;
   const pendingCount = documents.filter((d) => d.status === 'pending').length;
   const draftCount = documents.filter((d) => d.status === 'draft').length;
+
+  const handleOpenCreate = () => { setEditDocument(null); setFormOpen(true); };
+  const handleClose = () => { setFormOpen(false); setEditDocument(null); };
+
+  const handleSubmit = (data: DocumentFormData) => {
+    if (editDocument) {
+      updateDocument.mutate({ id: editDocument.id, data }, { onSuccess: handleClose });
+    } else {
+      createDocument.mutate(data, { onSuccess: handleClose });
+    }
+  };
 
   return (
     <PageContent>
@@ -66,9 +85,13 @@ export function DmsPage() {
         title="Hujjat aylanishi"
         subtitle="Elektron hujjat boshqaruv tizimi"
         breadcrumbs={[{ label: 'Admin' }, { label: 'Hujjat aylanishi' }]}
+        actions={
+          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
+            Hujjat qo&apos;shish
+          </Button>
+        }
       />
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <StatCard label="Jami hujjatlar" value={totalDocs} icon={<Inbox className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
         <StatCard label="Kutilmoqda" value={pendingCount} icon={<Send className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
@@ -76,14 +99,32 @@ export function DmsPage() {
         <StatCard label="Imzolangan" value={approvedCount} icon={<FileCheck className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
       </div>
 
-      {/* 2-col layout: folder sidebar + document table */}
+      <DocumentForm
+        open={formOpen}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        document={editDocument}
+        folders={folders}
+        loading={createDocument.isPending || updateDocument.isPending}
+      />
+      <ConfirmDialog
+        open={!!deleteDocument}
+        onClose={() => setDeleteDocument(null)}
+        onConfirm={() => {
+          if (!deleteDocument) return;
+          deleteDocumentMutation.mutate(deleteDocument.id, { onSuccess: () => setDeleteDocument(null) });
+        }}
+        title="Hujjatni o'chirish"
+        message={`"${deleteDocument?.title}" hujjatni o'chirishni tasdiqlaysizmi?`}
+        confirmLabel="O'chirish"
+        variant="danger"
+        loading={deleteDocumentMutation.isPending}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-4">
-        {/* Folder Sidebar */}
         <Card className="h-fit">
           {isLoadingFolders ? (
-            <div className="flex justify-center py-6">
-              <Spinner size="sm" />
-            </div>
+            <div className="flex justify-center py-6"><Spinner size="sm" /></div>
           ) : (
             <div className="flex flex-col gap-1">
               <button
@@ -96,13 +137,7 @@ export function DmsPage() {
               >
                 <FolderOpen className="h-4 w-4 shrink-0" />
                 <span className="flex-1">Hammasi</span>
-                <span
-                  className={`rounded-full px-1.5 py-px text-[11px] font-semibold ${
-                    activeFolderId === undefined
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-slate-100 text-slate-400'
-                  }`}
-                >
+                <span className={`rounded-full px-1.5 py-px text-[11px] font-semibold ${activeFolderId === undefined ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
                   {totalDocs}
                 </span>
               </button>
@@ -122,13 +157,7 @@ export function DmsPage() {
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     <span className="flex-1">{folder.name}</span>
-                    <span
-                      className={`rounded-full px-1.5 py-px text-[11px] font-semibold ${
-                        isActive
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-slate-100 text-slate-400'
-                      }`}
-                    >
+                    <span className={`rounded-full px-1.5 py-px text-[11px] font-semibold ${isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
                       {folder.documentCount}
                     </span>
                   </button>
@@ -138,12 +167,9 @@ export function DmsPage() {
           )}
         </Card>
 
-        {/* Document Table */}
         <Card noPadding>
           {isLoadingDocs ? (
-            <div className="flex justify-center py-12">
-              <Spinner size="lg" />
-            </div>
+            <div className="flex justify-center py-12"><Spinner size="lg" /></div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -154,7 +180,7 @@ export function DmsPage() {
                     <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-[0.05em]">Mavzu</th>
                     <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-[0.05em]">Holat</th>
                     <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-muted uppercase tracking-[0.05em]">Sana</th>
-                    <th className="w-12 px-3 py-2.5" />
+                    <th className="w-20 px-3 py-2.5" />
                   </tr>
                 </thead>
                 <tbody>
@@ -181,13 +207,16 @@ export function DmsPage() {
                         <td className="px-3 py-3">
                           <Badge variant={STATUS_VARIANT[doc.status]} dot>{STATUS_LABEL[doc.status]}</Badge>
                         </td>
-                        <td className="px-3 py-3 text-[12.5px] text-slate-500 tabular-nums">
-                          {doc.createdAt}
-                        </td>
+                        <td className="px-3 py-3 text-[12.5px] text-slate-500 tabular-nums">{doc.createdAt}</td>
                         <td className="px-3 py-3 text-right">
-                          <button className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
+                          <div className="flex items-center gap-1 justify-end">
+                            <button onClick={() => { setEditDocument(doc); setFormOpen(true); }} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button onClick={() => setDeleteDocument(doc)} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

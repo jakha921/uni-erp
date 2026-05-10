@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Eye } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { DataTable, type Column } from '@/components/table';
 import { Avatar, Button } from '@/components/ui';
 import { EmployeeStatusBadge } from './EmployeeStatusBadge';
@@ -10,9 +10,11 @@ interface EmployeeTableProps {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   onSort?: (key: string) => void;
+  onEdit?: (employee: EmployeeListItem) => void;
+  onDelete?: (employee: EmployeeListItem) => void;
 }
 
-export function EmployeeTable({ data, sortBy, sortOrder, onSort }: EmployeeTableProps) {
+export function EmployeeTable({ data, sortBy, sortOrder, onSort, onEdit, onDelete }: EmployeeTableProps) {
   const navigate = useNavigate();
 
   const columns: Column<EmployeeListItem>[] = [
@@ -74,14 +76,32 @@ export function EmployeeTable({ data, sortBy, sortOrder, onSort }: EmployeeTable
       onRowClick={(row) => navigate(`/hr/employees/${row.id}`)}
       emptyMessage="Xodimlar topilmadi"
       actions={(row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          leftIcon={<Eye className="h-4 w-4" />}
-          onClick={() => navigate(`/hr/employees/${row.id}`)}
-        >
-          Ko&apos;rish
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Eye className="h-4 w-4" />}
+            onClick={(e) => { e.stopPropagation(); navigate(`/hr/employees/${row.id}`); }}
+          >
+            Ko&apos;rish
+          </Button>
+          {onEdit && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(row); }}
+              className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(row); }}
+              className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       )}
     />
   );
