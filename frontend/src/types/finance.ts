@@ -90,6 +90,7 @@ export interface PaymentListParams extends ListParams {
   dateFrom?: string;
   dateTo?: string;
   period?: 'today' | 'week' | 'month' | 'all';
+  contractId?: string;
 }
 
 export interface CreatePaymentDto {

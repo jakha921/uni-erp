@@ -287,7 +287,7 @@
 - [x] Кнопка "Shartnomani yuklab olish" → PDF download
 - [x] Кнопка "Nazad" → navigate('/finance/contracts')
 - [ ] i18n: все тексты (убрать hardcoded status labels)
-- [ ] PaymentTimeline: подключить к реальной истории платежей
+- [x] PaymentTimeline: подключить к реальной истории платежей
 
 ### 5.4 DebtorsListPage `/finance/debtors`
 **Файл:** `features/finance/pages/DebtorsListPage.tsx`

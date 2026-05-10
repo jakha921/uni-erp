@@ -5,7 +5,7 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
 import { Modal } from '@/components/overlays';
-import { useContract, useCreatePayment } from '@/api/hooks/useFinance';
+import { useContract, useCreatePayment, usePayments } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { PaymentTimeline } from '../components/PaymentTimeline';
 import { PaymentForm } from '../components/PaymentForm';
@@ -146,6 +146,7 @@ export function ContractDetailPage() {
   const [onlinePaymentOpen, setOnlinePaymentOpen] = useState(false);
 
   const { data: contract, isLoading } = useContract(id ?? '');
+  const { data: paymentsData } = usePayments({ contractId: id, pageSize: 100 });
   const createPayment = useCreatePayment();
 
   const handlePaymentSubmit = useCallback(
@@ -313,7 +314,7 @@ export function ContractDetailPage() {
               To&apos;lov jadvali mavjud emas
             </p>
           ) : (
-            <PaymentTimeline schedule={contract.paymentSchedule} />
+            <PaymentTimeline schedule={contract.paymentSchedule} actualPayments={paymentsData?.data} />
           )}
         </Card>
       </div>
