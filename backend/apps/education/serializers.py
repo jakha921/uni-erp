@@ -119,7 +119,7 @@ class GradeSerializer(serializers.ModelSerializer):
         ]
 
     def get_studentName(self, obj: Grade) -> str:
-        return obj.student.get_full_name()
+        return obj.student.user.full_name
 
     def get_teacherName(self, obj: Grade) -> str:
         return obj.graded_by.full_name
