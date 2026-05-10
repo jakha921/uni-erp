@@ -37,7 +37,7 @@ def teacher(db):
 
 @pytest.fixture
 def setup_data(db, teacher):
-    branch = Branch.objects.create(name="BITU", code="bitu-edu")
+    branch = Branch.objects.create(name="NIU", code="niu-edu")
     faculty = Faculty.objects.create(name="AT", code="AT-E", branch=branch)
     dept = Department.objects.create(name="DI", code="DI-E", faculty=faculty)
     spec = Specialty.objects.create(name="DS", code="DS-E", level="bakalavr", department=dept)

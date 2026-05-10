@@ -74,7 +74,7 @@ const CONFERENCE_NAMES = [
 ];
 
 const LOCATIONS = [
-  'Toshkent, BITU',
+  'Toshkent, NIU',
   'Samarqand, SamDU',
   'Seoul, South Korea',
   'Istanbul, Turkey',

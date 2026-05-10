@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Moon, Sun, Bell, Shield, Eye, EyeOff } from 'lucide-react';
+import { Globe, Moon, Sun, Bell, Shield, Eye, EyeOff, Building2 } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
@@ -14,7 +14,7 @@ import type { Resolver } from 'react-hook-form';
 
 export function SettingsPage() {
   const { i18n } = useTranslation();
-  const { lang, setLang, theme, setTheme } = useAppStore();
+  const { lang, setLang, theme, setTheme, institutionName, setInstitutionName } = useAppStore();
 
   const LANGUAGES = [
     { code: 'uz' as const, label: "O'zbek", flag: '🇺🇿' },
@@ -35,6 +35,26 @@ export function SettingsPage() {
       />
 
       <div className="max-w-2xl space-y-4">
+        {/* Institution name */}
+        <Card>
+          <div className="p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <Building2 className="h-5 w-5 text-primary-500" />
+              <h3 className="text-base font-semibold text-slate-900">Muassasa nomi</h3>
+            </div>
+            <p className="text-xs text-slate-500 mb-3">
+              Kvitansiyalar va rasmiy hujjatlarda ko&apos;rsatiladigan nom
+            </p>
+            <input
+              type="text"
+              value={institutionName}
+              onChange={(e) => setInstitutionName(e.target.value)}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none"
+              placeholder="Masalan: NIU Universiteti"
+            />
+          </div>
+        </Card>
+
         {/* Language */}
         <Card>
           <div className="p-5">

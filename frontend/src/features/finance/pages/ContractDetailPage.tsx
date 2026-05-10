@@ -108,7 +108,7 @@ const ONLINE_PAYMENT_PROVIDERS = [
 ];
 
 function OnlinePaymentModal({ open, onClose, contractId, amount }: { open: boolean; onClose: () => void; contractId: string; amount: number }) {
-  const baseUrl = `https://uni-erp.bitu.uz/pay?contract=${contractId}&amount=${amount}&provider=`;
+  const baseUrl = `https://erp.niuedu.uz/pay?contract=${contractId}&amount=${amount}&provider=`;
   return (
     <Modal open={open} onClose={onClose} title="Onlayn to'lov usulini tanlang">
       <div className="space-y-3">

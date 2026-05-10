@@ -22,7 +22,7 @@ def auth_client(db):
 
 @pytest.fixture
 def student(db):
-    branch = Branch.objects.create(name="BITU", code="bitu-fin")
+    branch = Branch.objects.create(name="NIU", code="niu-fin")
     faculty = Faculty.objects.create(name="AT", code="AT-F", branch=branch)
     dept = Department.objects.create(name="DI", code="DI-F", faculty=faculty)
     spec = Specialty.objects.create(name="DS", code="DS-F", level="bakalavr", department=dept)

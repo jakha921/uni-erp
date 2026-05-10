@@ -9,10 +9,12 @@ interface AppState {
   theme: Theme;
   sidebarCollapsed: boolean;
   sidebarMobileOpen: boolean;
+  institutionName: string;
   setLang: (lang: Language) => void;
   setTheme: (theme: Theme) => void;
   toggleSidebar: () => void;
   setSidebarMobileOpen: (open: boolean) => void;
+  setInstitutionName: (name: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -22,10 +24,12 @@ export const useAppStore = create<AppState>()(
       theme: 'light',
       sidebarCollapsed: false,
       sidebarMobileOpen: false,
+      institutionName: 'NIU Universiteti',
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarMobileOpen: (open) => set({ sidebarMobileOpen: open }),
+      setInstitutionName: (name) => set({ institutionName: name }),
     }),
     {
       name: 'uni-erp-app',
@@ -33,6 +37,7 @@ export const useAppStore = create<AppState>()(
         lang: state.lang,
         theme: state.theme,
         sidebarCollapsed: state.sidebarCollapsed,
+        institutionName: state.institutionName,
       }),
     },
   ),

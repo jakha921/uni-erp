@@ -10,7 +10,7 @@ from apps.core.models import Branch, Faculty
 
 @pytest.fixture
 def branch(db):
-    return Branch.objects.create(name="BITU", code="bitu")
+    return Branch.objects.create(name="NIU", code="niu")
 
 
 @pytest.fixture

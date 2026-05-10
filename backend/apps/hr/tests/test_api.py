@@ -21,7 +21,7 @@ def auth_client(db):
 
 @pytest.fixture
 def setup_data(db):
-    branch = Branch.objects.create(name="BITU", code="bitu-hr")
+    branch = Branch.objects.create(name="NIU", code="niu-hr")
     faculty = Faculty.objects.create(name="IT", code="IT-HR", branch=branch)
     dept = Department.objects.create(name="CS", code="CS-HR", faculty=faculty)
     user = User.objects.create_user(

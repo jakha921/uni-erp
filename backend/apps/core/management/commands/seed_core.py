@@ -74,9 +74,9 @@ class Command(BaseCommand):
         self.stdout.write("Seeding core data...")
 
         branch, _ = Branch.objects.get_or_create(
-            code="bitu",
+            code="niu",
             defaults={
-                "name": "BITU",
+                "name": "NIU",
                 "address": "Toshkent, Universitet ko'chasi 4",
                 "is_active": True,
             },

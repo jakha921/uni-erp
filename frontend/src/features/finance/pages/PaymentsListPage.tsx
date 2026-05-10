@@ -9,17 +9,18 @@ import { usePayments, useContracts } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
 import type { PaymentMethod, Contract, Payment } from '@/types/finance';
 import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
+import { useAppStore } from '@/stores/app.store';
 
 const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
 
 
-function buildReceiptDom(win: Window, payment: Payment) {
+function buildReceiptDom(win: Window, payment: Payment, institutionName: string) {
   const d = win.document;
   const style = d.createElement('style');
   style.textContent = 'body{font-family:sans-serif;padding:24px;font-size:13px;color:#1e293b}h2{text-align:center;font-size:16px;font-weight:700;margin-bottom:16px}.rr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9}.rl{color:#64748b}.rt{background:#f0fdf4;border-radius:8px;padding:12px;text-align:center;margin:16px 0}.rf{text-align:center;font-size:11px;color:#94a3b8;margin-top:20px}';
   d.head.appendChild(style);
   const h2 = d.createElement('h2');
-  h2.textContent = 'BITU Universiteti';
+  h2.textContent = institutionName;
   d.body.appendChild(h2);
   const rows: [string, string][] = [
     ["Kvitansiya №", payment.receiptNumber],
@@ -57,11 +58,13 @@ function buildReceiptDom(win: Window, payment: Payment) {
 }
 
 function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: () => void }) {
+  const institutionName = useAppStore((s) => s.institutionName);
+
   const handlePrint = () => {
     if (!payment) return;
     const win = window.open('', '_blank', 'width=420,height=640');
     if (!win) return;
-    buildReceiptDom(win, payment);
+    buildReceiptDom(win, payment, institutionName);
     win.print();
     win.close();
   };
@@ -80,7 +83,7 @@ function ReceiptModal({ payment, onClose }: { payment: Payment | null; onClose: 
     >
       {payment && (
         <div className="space-y-1">
-          <h2 className="text-center text-base font-bold text-slate-900 mb-4">BITU Universiteti</h2>
+          <h2 className="text-center text-base font-bold text-slate-900 mb-4">{institutionName}</h2>
           {[
             { label: 'Kvitansiya №', value: payment.receiptNumber },
             { label: 'Sana', value: formatDate(payment.paymentDate) },

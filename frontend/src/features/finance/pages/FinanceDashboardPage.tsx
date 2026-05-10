@@ -15,7 +15,6 @@ import { PaymentStatusDonut } from '../components/PaymentStatusDonut';
 import { RevenueByFaculty } from '../components/RevenueByFaculty';
 import { MonthlyTrend } from '../components/MonthlyTrend';
 import { DebtorCard } from '../components/DebtorCard';
-import type { PaymentMethod } from '@/types/finance';
 import { PAYMENT_METHOD_STATUSES } from '@/config/statuses';
 
 const PAYMENT_METHOD_LABELS = PAYMENT_METHOD_STATUSES;
