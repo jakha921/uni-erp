@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Search, FileText, ShieldAlert, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Search, FileText, ShieldAlert, AlertTriangle, CheckCircle, FileDown } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Avatar, Spinner } from '@/components/ui';
+import { Badge, Avatar, Spinner, Button } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useAuditLog } from '@/api/hooks/useSystem';
@@ -82,7 +82,27 @@ export function AuditLogPage() {
 
   return (
     <PageContent>
-      <PageHeader title="Audit log" subtitle="Tizimdagi barcha harakatlar tarixi" breadcrumbs={[{ label: 'Tizim' }, { label: 'Audit log' }]} />
+      <PageHeader
+        title="Audit log"
+        subtitle="Tizimdagi barcha harakatlar tarixi"
+        breadcrumbs={[{ label: 'Tizim' }, { label: 'Audit log' }]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = `/api/v1/system/audit/export/?dateFrom=${dateFrom}&dateTo=${dateTo}&severity=${sevFilter}&action=${actionFilter}`;
+              a.download = 'audit-log.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            Excel
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Jami yozuv" value={total} icon={<FileText className="h-5 w-5" />} iconBg="#3B82F6" />

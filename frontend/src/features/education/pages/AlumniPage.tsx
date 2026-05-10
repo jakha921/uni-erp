@@ -4,7 +4,7 @@ import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
 import { Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
-import { Users, Briefcase, GraduationCap, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Users, Briefcase, GraduationCap, Plus, Pencil, Trash2, FileDown } from 'lucide-react';
 import { useAlumniList, useCreateAlumni, useUpdateAlumni, useDeleteAlumni } from '@/api/hooks/useAlumni';
 import { AlumniForm } from '../components/AlumniForm';
 import type { Alumni } from '@/types/education';
@@ -90,9 +90,26 @@ export function AlumniPage() {
         subtitle="Universitet bitiruvchilari ma'lumotlari"
         breadcrumbs={[{ label: "Ta'lim" }, { label: 'Bitiruvchilar' }]}
         actions={
-          <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" /> Yangi bitiruvchi
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/education/alumni/export/';
+                a.download = 'bitiruvchilar.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Excel
+            </Button>
+            <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" /> Yangi bitiruvchi
+            </Button>
+          </div>
         }
       />
 

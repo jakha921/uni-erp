@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, FileDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Pagination } from '@/components/table';
@@ -93,6 +93,24 @@ export function ContractsListPage() {
           { label: 'Moliya', path: '/finance' },
           { label: 'Kontraktlar' },
         ]}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/finance/contracts/export/';
+                a.download = 'kontraktlar.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Excel
+            </Button>
+          </div>
+        }
       />
 
       {/* Toolbar */}

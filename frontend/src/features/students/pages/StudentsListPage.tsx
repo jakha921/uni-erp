@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Trash2, Download, X } from 'lucide-react';
+import { Plus, Search, Trash2, Download, X, FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
 import { Card } from '@/components/data-display/Card';
@@ -91,9 +91,25 @@ export function StudentsListPage() {
         subtitle={data ? `Jami: ${data.total} ta` : undefined}
         actions={
           role !== 'oqituvchi' && role !== 'talaba' ? (
-            <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/students/new')}>
-              Yangi talaba
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                leftIcon={<FileDown className="h-4 w-4" />}
+                onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = '/api/v1/students/export/';
+                  a.download = 'talabalar.xlsx';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }}
+              >
+                Excel
+              </Button>
+              <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => navigate('/students/new')}>
+                Yangi talaba
+              </Button>
+            </div>
           ) : undefined
         }
       />

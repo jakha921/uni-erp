@@ -5,7 +5,7 @@ import { Badge, Button, Spinner } from '@/components/ui';
 import { SearchInput } from '@/components/form';
 import { DataTable, type Column } from '@/components/table';
 import { ConfirmDialog } from '@/components/overlays';
-import { Monitor, CheckCircle, Wrench, XCircle, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Monitor, CheckCircle, Wrench, XCircle, Plus, Pencil, Trash2, FileDown } from 'lucide-react';
 import { useEquipment, useCreateEquipment, useUpdateEquipment, useDeleteEquipment } from '@/api/hooks/useInfrastructure';
 import { EquipmentForm } from '../components/EquipmentForm';
 import type { Equipment, EquipmentStatus } from '@/types/infrastructure';
@@ -163,7 +163,24 @@ export function EquipmentPage() {
         subtitle="Asosiy vositalar va texnika"
         breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'Jihozlar' }]}
         actions={
-          <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>Jihoz qo&apos;shish</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/infrastructure/equipment/export/';
+                a.download = 'jihozlar.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Excel
+            </Button>
+            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>Jihoz qo&apos;shish</Button>
+          </div>
         }
       />
 

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Check } from 'lucide-react';
+import { Check, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Button, Avatar, Spinner } from '@/components/ui';
@@ -190,6 +190,22 @@ export function GradingPage() {
           { label: "Ta'lim", path: '/grading' },
           { label: 'Baholash' },
         ]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = `/api/v1/education/grading/export/?groupId=${selectedGroupId}&subjectId=${selectedSubjectId}`;
+              a.download = 'vedomost.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            Excel
+          </Button>
+        }
       />
 
       {/* Filters toolbar */}

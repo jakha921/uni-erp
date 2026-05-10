@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Package, Warehouse, AlertTriangle, ShoppingCart, Plus, Pencil, Trash2, ArrowRightLeft } from 'lucide-react';
+import { Package, Warehouse, AlertTriangle, ShoppingCart, Plus, Pencil, Trash2, ArrowRightLeft, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
 import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
@@ -137,6 +137,21 @@ export function WarehousePage() {
         breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'Ombor' }]}
         actions={
           <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/v1/warehouse/items/export/';
+                a.download = 'ombor.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
+              Excel
+            </Button>
             <Button variant="ghost" size="sm" leftIcon={<ArrowRightLeft className="h-4 w-4" />} onClick={() => { setMovementItemId(undefined); setMovementFormOpen(true); }}>
               Harakat
             </Button>

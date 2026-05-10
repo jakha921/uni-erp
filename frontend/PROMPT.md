@@ -89,7 +89,7 @@
 - [ ] i18n: все тексты (заголовки таблицы, фильтры, кнопки)
 - [x] Delete: добавить кнопку удаления в DropdownMenu каждой строки → ConfirmDialog → `useDeleteStudent()`
 - [x] Bulk actions: чекбоксы для массового удаления/экспорта
-- [ ] Кнопка "Excel eksport" → вызов `/students/export/`
+- [x] Кнопка "Excel eksport" → вызов `/students/export/`
 - [ ] Кнопка "PDF eksport" → вызов `/students/export-pdf/`
 - [x] Фильтры факультет/группа: заменить hardcoded массивы на данные из `useFaculties()`, `useGroups()`
 - [x] Кнопка "Yangi talaba" → навигация на `/students/new`
@@ -147,7 +147,7 @@
 - [x] Убрать hardcoded данные, если есть
 - [x] Кнопка "Saqlash" должна отправлять bulk attendance на бэкенд
 - [ ] i18n: все тексты
-- [ ] Экспорт посещаемости в Excel
+- [x] Экспорт посещаемости в Excel
 
 ### 4.3 GradingPage `/grading`
 **Файл:** `features/education/pages/GradingPage.tsx`
@@ -159,7 +159,7 @@
 - [x] Auto-compute итоговой оценки (joriy + oraliq + yakuniy)
 - [x] Кнопка "Saqlash" — bulk save
 - [ ] i18n: все тексты
-- [ ] Экспорт ведомости в Excel/PDF
+- [x] Экспорт ведомости в Excel/PDF
 
 ### 4.4 ExamsPage `/exams`
 **Файл:** `features/education/pages/ExamsPage.tsx`
@@ -213,6 +213,7 @@
 - [ ] i18n: все тексты
 
 ### 4.8 AlumniPage `/alumni`
+
 **Файл:** `features/education/pages/AlumniPage.tsx`
 **Статус:** Read через hooks, нет CRUD
 **Задачи:**
@@ -222,7 +223,7 @@
 - [x] Delete: ConfirmDialog
 - [x] Zod schema: `alumniSchema`
 - [x] Фильтры: год выпуска, факультет, статус трудоустройства
-- [ ] Экспорт в Excel
+- [x] Экспорт в Excel
 - [ ] i18n: все тексты
 
 ### 4.9 InternshipPage `/internship`
@@ -273,7 +274,7 @@
 **Задачи:**
 - [x] Update: редактирование контракта (тип, сумма) в Modal
 - [x] Фильтры: загружать факультеты/годы из API (убрать hardcoded)
-- [ ] Кнопка "Excel eksport" → `/finance/contracts/export/`
+- [x] Кнопка "Excel eksport" → `/finance/contracts/export/`
 - [ ] Кнопка "PDF eksport" → `/finance/contracts/export-pdf/`
 - [x] Кнопка "Shartnoma PDF" на каждой строке → `/finance/contracts/{id}/pdf/`
 - [ ] i18n: все тексты (TYPE_LABELS, STATUS_LABELS → `t('statuses.*')`)
@@ -305,7 +306,7 @@
 - [ ] Убрать hardcoded PAYMENT_METHOD_LABELS → `t('finance.paymentMethod.*')`
 - [x] DateRangePicker вместо простых пресетов
 - [x] Receipt печать: кнопка на каждом платеже
-- [ ] Экспорт в Excel
+- [x] Экспорт в Excel
 - [ ] i18n: все тексты
 
 ### 5.6 ScholarshipsPage `/finance/scholarship`
@@ -567,7 +568,7 @@
 ### 11.4 AuditLogPage `/system/audit`
 **Задачи:**
 - [x] DateRangePicker
-- [ ] Экспорт логов в Excel
+- [x] Экспорт логов в Excel
 - [ ] i18n: все тексты
 
 ---
@@ -609,7 +610,7 @@
 **Задачи:**
 - [x] CRUD: EquipmentForm в SlideOver
 - [x] Фильтры: category, status, location
-- [ ] Экспорт в Excel
+- [x] Экспорт в Excel
 - [ ] i18n: все тексты
 
 ### 13.3 TransportPage `/transport`
@@ -628,7 +629,7 @@
 - [x] Tab "Harakatlar": MovementForm в Modal (itemId, type, quantity, note)
 - [x] AlertBanner для товаров ниже минимума
 - [ ] Убрать hardcoded CATEGORIES, STATUS_CONFIG
-- [ ] Экспорт в Excel
+- [x] Экспорт в Excel
 - [ ] i18n: все тексты
 
 ---

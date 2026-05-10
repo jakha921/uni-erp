@@ -44,7 +44,18 @@ export function AttendancePage() {
             >
               Dam olish kuni
             </Button>
-            <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
+            <Button
+              variant="secondary"
+              leftIcon={<Download className="h-4 w-4" />}
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = `/api/v1/hr/attendance/export/?year=${year}&month=${month}`;
+                a.download = `davomat-${year}-${month}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+            >
               Excel ga eksport
             </Button>
           </div>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight, Printer } from 'lucide-react';
+import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight, Printer, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
@@ -162,6 +162,22 @@ export function PaymentsListPage() {
           { label: 'Moliya', path: '/finance' },
           { label: "To'lovlar" },
         ]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<FileDown className="h-4 w-4" />}
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = '/api/v1/finance/payments/export/';
+              a.download = 'tolovlar.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            }}
+          >
+            Excel
+          </Button>
+        }
       />
 
       {/* KPI */}
