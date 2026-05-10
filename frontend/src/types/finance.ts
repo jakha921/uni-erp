@@ -55,6 +55,7 @@ export type ContractListItem = Pick<
 
 export interface ContractListParams extends ListParams {
   facultyId?: number;
+  studentId?: number;
   status?: ContractStatus;
   contractType?: ContractType;
   educationYear?: string;

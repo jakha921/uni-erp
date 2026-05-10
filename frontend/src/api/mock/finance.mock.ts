@@ -267,6 +267,9 @@ export class FinanceMockService implements IFinanceService {
     if (params?.facultyId) {
       filtered = filtered.filter((c) => c.facultyId === params.facultyId);
     }
+    if (params?.studentId) {
+      filtered = filtered.filter((c) => c.studentId === params.studentId);
+    }
     if (params?.status) {
       filtered = filtered.filter((c) => c.status === params.status);
     }

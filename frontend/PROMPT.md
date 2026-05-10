@@ -113,9 +113,9 @@
 - [ ] i18n: все тексты
 - [x] Убрать hardcoded `STUDENT_DOCS` массив (строка 527) → загружать из API
 - [ ] Tab "Hujjatlar" (Документы): FileUpload для загрузки сканов
-- [ ] Tab "Kontrakt": ссылки на контракты студента из Finance API
-- [ ] Tab "Davomat": реальные данные посещаемости за семестр
-- [ ] Tab "O'zlashtirish": реальные оценки из API
+- [x] Tab "Kontrakt": ссылки на контракты студента из Finance API
+- [x] Tab "Davomat": реальные данные посещаемости за семестр
+- [x] Tab "O'zlashtirish": реальные оценки из API
 - [x] Кнопка "Tahrirlash" → navigate(`/students/${id}/edit`)
 - [ ] Кнопка "Ma'lumotnoma" → генерация PDF справки
 - [ ] Кнопка "Chop etish" → print-friendly layout

@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Pencil,
   FileText,
-  Wallet,
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { PageContent } from '@/components/layout/PageContent';
@@ -19,6 +18,8 @@ import {
   useStudentGrades,
   useStudentAttendance,
 } from '@/api/hooks/useStudents';
+import { useContracts } from '@/api/hooks/useFinance';
+import { formatMoney } from '@/lib/utils';
 import { formatDate } from '@/lib/utils';
 import { useStudentDocuments } from '@/api/hooks/useStudents';
 import type { StudentGrade, StudentAttendance, StudentDocument } from '@/types/student';
@@ -226,75 +227,51 @@ function AttendanceTab({ attendance }: { attendance: StudentAttendance[] }) {
   );
 }
 
-// ---------- Contracts tab (placeholder) ----------
-function ContractsTab() {
+// ---------- Contracts tab ----------
+function ContractsTab({ studentId }: { studentId: number }) {
+  const { data, isLoading } = useContracts({ studentId, page: 1, pageSize: 10 });
+  const contracts = data?.data ?? [];
+
+  if (isLoading) {
+    return <div className="py-8 text-center text-sm text-muted">Yuklanmoqda...</div>;
+  }
+
+  if (contracts.length === 0) {
+    return <div className="py-8 text-center text-sm text-muted">Kontraktlar topilmadi</div>;
+  }
+
   return (
-    <div className="grid grid-cols-2 gap-5">
-      <div>
-        <h4 className="text-sm font-semibold text-slate-900 mb-3">
-          Joriy kontrakt
-        </h4>
-        <div className="p-4 bg-slate-50 rounded-lg space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">Kontrakt raqami</span>
-            <span className="font-semibold text-slate-900">
-              KNT-2025-0847
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">Yillik summa</span>
-            <span className="font-semibold text-slate-900 tabular-nums">
-              14,000,000 so&apos;m
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">To&apos;langan</span>
-            <span className="font-semibold text-green-700 tabular-nums">
-              14,000,000 so&apos;m
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">Qoldiq</span>
-            <span className="font-semibold text-slate-900">0 so&apos;m</span>
-          </div>
-          <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full w-full bg-green-500 rounded-full" />
-          </div>
-          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-            To&apos;liq to&apos;langan
-          </span>
-        </div>
-      </div>
-      <div>
-        <h4 className="text-sm font-semibold text-slate-900 mb-3">
-          To&apos;lov tarixi
-        </h4>
-        <div className="space-y-2">
-          {[
-            { date: '15.01.2026', amount: '4,500,000', method: 'Plastik karta' },
-            { date: '10.10.2025', amount: '4,500,000', method: "Bank o'tkazma" },
-            { date: '05.07.2025', amount: '5,000,000', method: 'Plastik karta' },
-          ].map((p, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"
-            >
-              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-green-50 text-green-700">
-                <Wallet className="h-4 w-4" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-slate-900 tabular-nums">
-                  {p.amount} so&apos;m
-                </div>
-                <div className="text-xs text-muted">
-                  {p.method} &middot; {p.date}
-                </div>
-              </div>
+    <div className="space-y-3">
+      {contracts.map((c) => {
+        const paidAmount = c.paymentSchedule?.reduce((sum, p) => sum + (p.status === 'paid' ? p.amount : 0), 0) ?? 0;
+        const debtAmount = c.contractAmount - paidAmount;
+        const paidPct = c.contractAmount > 0 ? Math.round((paidAmount / c.contractAmount) * 100) : 0;
+        return (
+          <div key={c.id} className="p-4 bg-slate-50 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-900">{c.contractNumber}</span>
+              <span className="text-xs text-muted">{c.educationYear}</span>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted">Yillik summa</span>
+              <span className="font-semibold tabular-nums">{formatMoney(c.contractAmount)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted">To&apos;langan</span>
+              <span className="font-semibold text-green-700 tabular-nums">{formatMoney(paidAmount)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted">Qoldiq</span>
+              <span className={`font-semibold tabular-nums ${debtAmount > 0 ? 'text-red-600' : 'text-slate-900'}`}>
+                {formatMoney(debtAmount)}
+              </span>
+            </div>
+            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${paidPct}%` }} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -517,7 +494,7 @@ export function StudentProfilePage() {
             </div>
           )}
 
-          {activeTab === 'contracts' && <ContractsTab />}
+          {activeTab === 'contracts' && <ContractsTab studentId={studentId} />}
           {activeTab === 'docs' && <StudentDocsTab studentId={studentId} />}
         </div>
       </Card>
