@@ -90,7 +90,7 @@ export function PayrollPage() {
     },
     {
       key: 'employeeName',
-      header: t('hr.employee'),
+      header: t('hr.fullName'),
       sortable: true,
       render: (row) => (
         <div>
@@ -106,7 +106,7 @@ export function PayrollPage() {
     },
     {
       key: 'baseSalary',
-      header: t('finance.baseSalary'),
+      header: t('hr.baseSalary'),
       className: 'text-right',
       render: (row) => (
         <span className="tabular-nums font-medium text-slate-900">{formatMoney(row.baseSalary)}</span>
@@ -114,7 +114,7 @@ export function PayrollPage() {
     },
     {
       key: 'bonus',
-      header: t('finance.bonus'),
+      header: t('hr.bonus'),
       className: 'text-right',
       render: (row) => (
         <span className="tabular-nums text-green-700">+{formatMoney(row.bonus)}</span>
