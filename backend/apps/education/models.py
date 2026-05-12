@@ -105,3 +105,39 @@ class Grade(models.Model):
 
     def __str__(self) -> str:
         return f"{self.student} — {self.subject} — {self.grade_type}: {self.score}"
+
+
+class Exam(models.Model):
+    EXAM_TYPE_CHOICES = [
+        ("midterm", "Oraliq imtihon"),
+        ("final", "Yakuniy imtihon"),
+        ("retake", "Qayta topshirish"),
+        ("other", "Boshqa"),
+    ]
+    STATUS_CHOICES = [
+        ("scheduled", "Rejalashtirilgan"),
+        ("in_progress", "Jarayonda"),
+        ("completed", "Yakunlangan"),
+        ("cancelled", "Bekor qilingan"),
+    ]
+
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="exams")
+    group = models.ForeignKey("core.Group", on_delete=models.CASCADE, related_name="exams")
+    teacher = models.ForeignKey("accounts.User", on_delete=models.CASCADE, related_name="exams")
+    semester = models.ForeignKey("core.Semester", on_delete=models.CASCADE)
+    exam_type = models.CharField(max_length=20, choices=EXAM_TYPE_CHOICES, default="final")
+    date = models.DateField()
+    start_time = models.TimeField()
+    duration_minutes = models.PositiveSmallIntegerField(default=90)
+    room = models.CharField(max_length=20)
+    max_score = models.DecimalField(max_digits=5, decimal_places=2, default=100)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="scheduled")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["date", "start_time"]
+
+    def __str__(self) -> str:
+        return f"{self.subject} — {self.group} — {self.date}"

@@ -1,4 +1,4 @@
-"""Education views — Subject, Schedule, Attendance, Grade."""
+"""Education views — Subject, Schedule, Attendance, Grade, Exam."""
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -7,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .models import Attendance, Grade, Schedule, Subject
+from .filters import ExamFilter
+from .models import Attendance, Exam, Grade, Schedule, Subject
 from .serializers import (
     AttendanceSerializer,
     BulkAttendanceSerializer,
     BulkGradeSerializer,
+    ExamCreateSerializer,
+    ExamSerializer,
     GradeSerializer,
     ScheduleSerializer,
     SubjectSerializer,
@@ -73,3 +76,17 @@ class BulkGradeView(APIView):
         serializer.is_valid(raise_exception=True)
         records = serializer.save()
         return Response({"created": len(records)}, status=status.HTTP_201_CREATED)
+
+
+class ExamViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filterset_class = ExamFilter
+    search_fields = ["subject__name", "group__name", "room"]
+
+    def get_queryset(self):
+        return Exam.objects.select_related("subject", "group", "teacher", "semester").all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return ExamCreateSerializer
+        return ExamSerializer

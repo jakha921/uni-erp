@@ -3,7 +3,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import Attendance, Grade, Schedule, Subject
+from .models import Attendance, Exam, Grade, Schedule, Subject
 
 
 @admin.register(Subject)
@@ -32,3 +32,19 @@ class GradeAdmin(ModelAdmin):
     list_display = ["student", "subject", "semester", "grade_type", "score", "max_score"]
     list_filter = ["grade_type", "semester"]
     search_fields = ["student__user__last_name", "subject__name"]
+
+
+@admin.register(Exam)
+class ExamAdmin(ModelAdmin):
+    list_display = [
+        "subject",
+        "group",
+        "teacher",
+        "exam_type",
+        "date",
+        "start_time",
+        "room",
+        "status",
+    ]
+    list_filter = ["exam_type", "status", "semester"]
+    search_fields = ["subject__name", "group__name", "teacher__last_name", "room"]

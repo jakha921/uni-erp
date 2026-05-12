@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import Attendance, Grade, Schedule, Subject
+from .models import Attendance, Exam, Grade, Schedule, Subject
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -157,3 +157,63 @@ class BulkGradeSerializer(serializers.Serializer):
             )
             results.append(obj)
         return results
+
+
+class ExamSerializer(serializers.ModelSerializer):
+    subjectName = serializers.CharField(source="subject.name", read_only=True)
+    groupName = serializers.CharField(source="group.name", read_only=True)
+    teacherName = serializers.SerializerMethodField()
+    examTypeLabel = serializers.SerializerMethodField()
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Exam
+        fields = [
+            "id",
+            "subject",
+            "subjectName",
+            "group",
+            "groupName",
+            "teacher",
+            "teacherName",
+            "semester",
+            "exam_type",
+            "examTypeLabel",
+            "date",
+            "start_time",
+            "duration_minutes",
+            "room",
+            "max_score",
+            "status",
+            "statusLabel",
+            "notes",
+            "created_at",
+        ]
+
+    def get_teacherName(self, obj: Exam) -> str:
+        return obj.teacher.full_name
+
+    def get_examTypeLabel(self, obj: Exam) -> str:
+        return obj.get_exam_type_display()
+
+    def get_statusLabel(self, obj: Exam) -> str:
+        return obj.get_status_display()
+
+
+class ExamCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exam
+        fields = [
+            "subject",
+            "group",
+            "teacher",
+            "semester",
+            "exam_type",
+            "date",
+            "start_time",
+            "duration_minutes",
+            "room",
+            "max_score",
+            "status",
+            "notes",
+        ]
