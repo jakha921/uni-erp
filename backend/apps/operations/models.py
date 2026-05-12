@@ -1,4 +1,4 @@
-"""Operations models — Task, Notification, Appeal, News."""
+"""Operations models — Task, Notification, Appeal, News, ChatThread, ChatMessage, ReportTemplate."""
 
 from django.db import models
 
@@ -154,3 +154,65 @@ class News(BaseModel):
 
     def __str__(self) -> str:
         return self.title
+
+
+class ChatThread(BaseModel):
+    """Guruhli yoki shaxsiy chat oqimi."""
+
+    participants = models.ManyToManyField("accounts.User", related_name="chat_threads", blank=True)
+    title = models.CharField(max_length=200, blank=True)
+    is_group = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        return self.title or f"Thread #{self.pk}"
+
+
+class ChatMessage(BaseModel):
+    """Xabar chatda."""
+
+    thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(
+        "accounts.User", on_delete=models.CASCADE, related_name="sent_messages"
+    )
+    content = models.TextField()
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.sender} → {self.thread}: {self.content[:50]}"
+
+
+class ReportTemplate(BaseModel):
+    """Hisobot shabloni."""
+
+    REPORT_TYPE_CHOICES = [
+        ("students", "Talabalar"),
+        ("finance", "Moliya"),
+        ("hr", "Kadrlar"),
+        ("attendance", "Davomat"),
+        ("grades", "Baholar"),
+        ("custom", "Maxsus"),
+    ]
+    FORMAT_CHOICES = [
+        ("xlsx", "Excel"),
+        ("pdf", "PDF"),
+        ("csv", "CSV"),
+    ]
+
+    name = models.CharField(max_length=200)
+    report_type = models.CharField(max_length=20, choices=REPORT_TYPE_CHOICES)
+    format = models.CharField(max_length=10, choices=FORMAT_CHOICES, default="xlsx")
+    parameters = models.JSONField(default=dict, blank=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
