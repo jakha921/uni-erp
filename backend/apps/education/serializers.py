@@ -1,8 +1,9 @@
-"""Education serializers — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
+"""Education serializers — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library, Alumni, Internship."""
 
 from rest_framework import serializers
 
 from .models import (
+    Alumni,
     Attendance,
     Book,
     BookLoan,
@@ -10,6 +11,7 @@ from .models import (
     CurriculumSubject,
     Exam,
     Grade,
+    Internship,
     Schedule,
     Subject,
 )
@@ -347,3 +349,84 @@ class BookLoanCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookLoan
         fields = ["book", "student", "due_date", "notes"]
+
+
+class AlumniSerializer(serializers.ModelSerializer):
+    facultyName = serializers.CharField(source="faculty.name", read_only=True)
+    specialtyName = serializers.CharField(source="specialty.name", read_only=True)
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Alumni
+        fields = [
+            "id",
+            "full_name",
+            "graduation_year",
+            "faculty",
+            "facultyName",
+            "specialty",
+            "specialtyName",
+            "workplace",
+            "position",
+            "phone",
+            "email",
+            "status",
+            "statusLabel",
+            "notes",
+            "created_at",
+        ]
+
+    def get_statusLabel(self, obj: Alumni) -> str:
+        return obj.get_status_display()
+
+
+class InternshipSerializer(serializers.ModelSerializer):
+    studentName = serializers.SerializerMethodField()
+    typeLabel = serializers.SerializerMethodField()
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Internship
+        fields = [
+            "id",
+            "student",
+            "studentName",
+            "company",
+            "supervisor",
+            "start_date",
+            "end_date",
+            "internship_type",
+            "typeLabel",
+            "status",
+            "statusLabel",
+            "report_submitted",
+            "grade",
+            "notes",
+            "created_at",
+        ]
+
+    def get_studentName(self, obj: Internship) -> str:
+        return obj.student.user.full_name
+
+    def get_typeLabel(self, obj: Internship) -> str:
+        return obj.get_internship_type_display()
+
+    def get_statusLabel(self, obj: Internship) -> str:
+        return obj.get_status_display()
+
+
+class InternshipCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Internship
+        fields = [
+            "student",
+            "company",
+            "supervisor",
+            "start_date",
+            "end_date",
+            "internship_type",
+            "status",
+            "report_submitted",
+            "grade",
+            "notes",
+        ]

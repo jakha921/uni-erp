@@ -1,4 +1,4 @@
-"""Education models — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
+"""Education models — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library, Alumni, Internship."""
 
 from django.db import models
 from django.utils import timezone
@@ -241,3 +241,73 @@ class BookLoan(models.Model):
         self.save(update_fields=["returned_date", "status"])
         self.book.copies_available = models.F("copies_available") + 1
         self.book.save(update_fields=["copies_available"])
+
+
+class Alumni(models.Model):
+    """Bitiruvchi."""
+
+    STATUS_CHOICES = [
+        ("employed", "Ishlamoqda"),
+        ("studying", "O'qimoqda"),
+        ("unemployed", "Ishlamayapti"),
+        ("unknown", "Noma'lum"),
+    ]
+
+    full_name = models.CharField(max_length=200)
+    graduation_year = models.PositiveSmallIntegerField()
+    faculty = models.ForeignKey(
+        "core.Faculty", on_delete=models.SET_NULL, null=True, related_name="alumni"
+    )
+    specialty = models.ForeignKey(
+        "core.Specialty", on_delete=models.SET_NULL, null=True, related_name="alumni"
+    )
+    workplace = models.CharField(max_length=300, blank=True)
+    position = models.CharField(max_length=200, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="unknown")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-graduation_year", "full_name"]
+        verbose_name_plural = "alumni"
+
+    def __str__(self) -> str:
+        return f"{self.full_name} ({self.graduation_year})"
+
+
+class Internship(models.Model):
+    """Amaliyot."""
+
+    TYPE_CHOICES = [
+        ("production", "Ishlab chiqarish"),
+        ("educational", "O'quv"),
+        ("pre_graduation", "Bitiruvchi"),
+    ]
+    STATUS_CHOICES = [
+        ("planned", "Rejalashtirilgan"),
+        ("active", "Jarayonda"),
+        ("completed", "Yakunlangan"),
+        ("cancelled", "Bekor qilingan"),
+    ]
+
+    student = models.ForeignKey(
+        "students.Student", on_delete=models.CASCADE, related_name="internships"
+    )
+    company = models.CharField(max_length=300)
+    supervisor = models.CharField(max_length=200, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    internship_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="production")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="planned")
+    report_submitted = models.BooleanField(default=False)
+    grade = models.PositiveSmallIntegerField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-start_date"]
+
+    def __str__(self) -> str:
+        return f"{self.student} — {self.company} ({self.start_date})"

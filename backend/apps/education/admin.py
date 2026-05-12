@@ -4,6 +4,7 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin
 
 from .models import (
+    Alumni,
     Attendance,
     Book,
     BookLoan,
@@ -11,6 +12,7 @@ from .models import (
     CurriculumSubject,
     Exam,
     Grade,
+    Internship,
     Schedule,
     Subject,
 )
@@ -94,3 +96,17 @@ class BookLoanAdmin(ModelAdmin):
     list_display = ["book", "student", "issued_date", "due_date", "returned_date", "status"]
     list_filter = ["status"]
     search_fields = ["book__title", "student__user__last_name"]
+
+
+@admin.register(Alumni)
+class AlumniAdmin(ModelAdmin):
+    list_display = ["full_name", "graduation_year", "faculty", "specialty", "workplace", "status"]
+    list_filter = ["graduation_year", "faculty", "status"]
+    search_fields = ["full_name", "workplace", "email"]
+
+
+@admin.register(Internship)
+class InternshipAdmin(ModelAdmin):
+    list_display = ["student", "company", "start_date", "end_date", "internship_type", "status"]
+    list_filter = ["internship_type", "status"]
+    search_fields = ["company", "supervisor", "student__user__last_name"]

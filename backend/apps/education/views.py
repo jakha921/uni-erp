@@ -1,4 +1,4 @@
-"""Education views — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
+"""Education views — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library, Alumni, Internship."""
 
 from rest_framework import status
 from rest_framework.decorators import action
@@ -8,9 +8,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .filters import CurriculumFilter, ExamFilter
-from .models import Attendance, Book, BookLoan, Curriculum, Exam, Grade, Schedule, Subject
+from .filters import AlumniFilter, CurriculumFilter, ExamFilter, InternshipFilter
+from .models import (
+    Alumni,
+    Attendance,
+    Book,
+    BookLoan,
+    Curriculum,
+    Exam,
+    Grade,
+    Internship,
+    Schedule,
+    Subject,
+)
 from .serializers import (
+    AlumniSerializer,
     AttendanceSerializer,
     BookLoanCreateSerializer,
     BookLoanSerializer,
@@ -22,6 +34,8 @@ from .serializers import (
     ExamCreateSerializer,
     ExamSerializer,
     GradeSerializer,
+    InternshipCreateSerializer,
+    InternshipSerializer,
     ScheduleSerializer,
     SubjectSerializer,
 )
@@ -148,3 +162,27 @@ class BookLoanViewSet(ModelViewSet):
             )
         loan.return_book()
         return Response(BookLoanSerializer(loan).data)
+
+
+class AlumniViewSet(ModelViewSet):
+    serializer_class = AlumniSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_class = AlumniFilter
+    search_fields = ["full_name", "workplace", "email"]
+
+    def get_queryset(self):
+        return Alumni.objects.select_related("faculty", "specialty").all()
+
+
+class InternshipViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filterset_class = InternshipFilter
+    search_fields = ["company", "supervisor"]
+
+    def get_queryset(self):
+        return Internship.objects.select_related("student__user").all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return InternshipCreateSerializer
+        return InternshipSerializer

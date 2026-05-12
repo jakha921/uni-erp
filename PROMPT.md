@@ -29,10 +29,10 @@
 - [x] **BE-3**: Модели `Book` + `BookLoan` в education/models.py + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return для возврата книги) + router.register("library/books") + router.register("library/loans") + миграция.
 
 ### 1.4 Education: Alumni
-- [ ] **BE-4**: Модель `Alumni` в education/models.py + сериализатор + AlumniViewSet(filterset: graduation_year, status; search: full_name, workplace) + router.register("alumni") + миграция.
+- [x] **BE-4**: Модель `Alumni` в education/models.py + сериализатор + AlumniViewSet(filterset: graduation_year, status; search: full_name, workplace) + router.register("alumni") + миграция.
 
 ### 1.5 Education: Internship
-- [ ] **BE-5**: Модель `Internship` в education/models.py + сериализатор(studentName) + InternshipViewSet(filterset: status, type) + router.register("internships") + миграция.
+- [x] **BE-5**: Модель `Internship` в education/models.py + сериализатор(studentName) + InternshipViewSet(filterset: status, type) + router.register("internships") + миграция.
 
 ### 1.6 Education: Seed + Verify
 - [ ] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums(15 subjects каждый), 50 books, 30 loans, 40 alumni, 20 internships. Запустить seed. `uv run python manage.py check`. Git commit.
