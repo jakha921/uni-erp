@@ -35,7 +35,7 @@
 - [x] **BE-5**: Модель `Internship` в education/models.py + сериализатор(studentName) + InternshipViewSet(filterset: status, type) + router.register("internships") + миграция.
 
 ### 1.6 Education: Seed + Verify
-- [ ] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums(15 subjects каждый), 50 books, 30 loans, 40 alumni, 20 internships. Запустить seed. `uv run python manage.py check`. Git commit.
+- [x] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums(15 subjects каждый), 50 books, 30 loans, 40 alumni, 20 internships. Запустить seed. `uv run python manage.py check`. Git commit.
 
 ### 1.7 Finance: Payroll + Budget + Report
 - [ ] **BE-7**: Модель `PayrollRecord` в finance/models.py + PayrollSerializer + PayrollViewSet(@action summary, @action process) + router.register("payroll") + миграция.
