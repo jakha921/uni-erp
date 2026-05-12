@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from apps.core.models import Group
 
-from .models import Student
+from .models import Student, StudentDocument
 
 
 def code_name(code: str, choices: list) -> dict:
@@ -196,3 +196,19 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
             "pinfl",
         ]
         extra_kwargs = {f: {"required": False} for f in fields}
+
+
+class StudentDocumentSerializer(serializers.ModelSerializer):
+    categoryLabel = serializers.CharField(source="get_category_display", read_only=True)
+    fileUrl = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StudentDocument
+        fields = ["id", "name", "category", "categoryLabel", "file", "fileUrl", "uploaded_at"]
+        extra_kwargs = {"file": {"write_only": True}}
+
+    def get_fileUrl(self, obj: StudentDocument) -> str | None:
+        request = self.context.get("request")
+        if obj.file and request:
+            return request.build_absolute_uri(obj.file.url)
+        return obj.file.url if obj.file else None

@@ -65,3 +65,28 @@ class Student(models.Model):
 
     def __str__(self) -> str:
         return f"{self.student_id_number} — {self.user.full_name}"
+
+
+class StudentDocument(models.Model):
+    """Талаба ҳужжатлари."""
+
+    CATEGORY_CHOICES = [
+        ("passport", "Pasport"),
+        ("diploma", "Diplom"),
+        ("certificate", "Sertifikat"),
+        ("contract", "Kontrakt"),
+        ("photo", "Fotosurat"),
+        ("other", "Boshqa"),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="documents")
+    name = models.CharField(max_length=200, verbose_name="Nomi")
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="other")
+    file = models.FileField(upload_to="student_documents/%Y/%m/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+    def __str__(self) -> str:
+        return f"{self.student} — {self.name}"

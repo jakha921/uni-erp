@@ -10,10 +10,11 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .filters import StudentFilter
-from .models import Student
+from .models import Student, StudentDocument
 from .serializers import (
     CreateStudentSerializer,
     StudentDetailSerializer,
+    StudentDocumentSerializer,
     StudentListSerializer,
     UpdateStudentSerializer,
 )
@@ -145,6 +146,21 @@ class StudentViewSet(ModelViewSet):
             rows=rows,
             filename="talabalar_royxati",
         )
+
+
+class StudentDocumentViewSet(ModelViewSet):
+    """GET/POST/DELETE student documents — multipart file upload."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentDocumentSerializer
+    http_method_names = ["get", "post", "delete", "head", "options"]
+
+    def get_queryset(self):
+        return StudentDocument.objects.filter(student_id=self.kwargs["student_pk"])
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(pk=self.kwargs["student_pk"], is_deleted=False)
+        serializer.save(student=student)
 
 
 class StatisticsView(APIView):

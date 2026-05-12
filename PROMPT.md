@@ -52,7 +52,7 @@
 - [x] **BE-12**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегация данных для текущего пользователя). URLs в config/urls.py: `/api/v1/cabinets/student/`, `/api/v1/cabinets/teacher/`.
 - [x] **BE-13**: TeacherViewSet в education/views.py (queryset Employee filtered by department). teacher_urls.py + config/urls.py: `/api/v1/teachers/`.
 - [x] **BE-14**: ChatThread + ChatMessage модели в operations/models.py + ChatThreadViewSet(@action messages GET/POST) + router.register("messages/threads"). ReportTemplate модель + ReportTemplateViewSet + GenerateReportView. Миграция. Seed.
-- [ ] **BE-15**: StudentDocument модель в students/models.py + ViewSet(list, create multipart, delete) + URL: `students/<id>/documents/`. Миграция.
+- [x] **BE-15**: StudentDocument модель в students/models.py + ViewSet(list, create multipart, delete) + URL: `students/<id>/documents/`. Миграция.
 - [ ] **BE-16**: Финальная проверка: `uv run python manage.py check` + `uv run pytest -v` + все seed commands + curl тесты. Git commit + push.
 
 ---
