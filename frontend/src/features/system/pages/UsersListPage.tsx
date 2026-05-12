@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Users, CheckCircle, ShieldAlert, UserPlus, Search, Lock, KeyRound, Pencil } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Avatar, Button, Spinner } from '@/components/ui';
+import { Badge, Avatar, Button, Spinner, AlertBanner } from '@/components/ui';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useSystemUsers, useBlockUser, useCreateUser, useUpdateUser, useRoles } from '@/api/hooks/useSystem';
 import { UserForm } from '../components/UserForm';
@@ -42,7 +42,7 @@ export function UsersListPage() {
   const [editUser, setEditUser] = useState<SystemUserListItem | null>(null);
   const pageSize = 20;
 
-  const { data, isLoading } = useSystemUsers({
+  const { data, isLoading, error } = useSystemUsers({
     page, pageSize, search: search || undefined,
     role: roleFilter || undefined, status: statusFilter || undefined,
   });
@@ -143,6 +143,14 @@ export function UsersListPage() {
       </div>
     ), [blockUser],
   );
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

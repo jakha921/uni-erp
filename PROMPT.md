@@ -90,102 +90,102 @@
 - [x] **FE-16**: **AlumniPage** `/alumni` — Проверить: данные из useAlumni. CRUD: AlumniForm в SlideOver (fullName, graduationYear, faculty, specialty, workplace, phone, email, status). Фильтры: год, факультет, статус. Export Excel. i18n.
 - [x] **FE-17**: **InternshipPage** `/internship` — Проверить: данные из useInternships. CRUD: InternshipForm в SlideOver (student, company, supervisor, dates, type). Tabs: Joriy/Yakunlangan. i18n.
 - [x] **FE-18**: **MyStudentsPage** `/my-students` — Проверить: данные из API для текущего преподавателя. Фильтр по группе. Оценки и посещаемость студентов. i18n.
-- [ ] **FE-19**: **AcademicDepartmentsPage** `/departments` — Проверить: данные из API. Статистика: преподаватели, студенты, средний балл. i18n.
+- [x] **FE-19**: **AcademicDepartmentsPage** `/departments` — Проверить: данные из API. Статистика: преподаватели, студенты, средний балл. i18n.
 
 ### 2.5 Finance (9 страниц)
 
-- [ ] **FE-20**: **FinanceDashboardPage** `/finance` — Проверить: данные из useFinanceDashboard (реальный API). Графики с реальными данными. Drill-down по факультету. i18n.
-- [ ] **FE-21**: **ContractsListPage** `/finance/contracts` — Проверить: CRUD полный (Create в Modal, Edit, Delete через ConfirmDialog). Фильтры из API (не hardcoded). Excel/PDF export кнопки. Per-contract PDF кнопка "Shartnoma PDF" → `/contracts/{id}/pdf/`. i18n.
-- [ ] **FE-22**: **ContractDetailPage** `/finance/contracts/:id` — Проверить: данные из API. Кнопка "Onlayn to'lov" → Payme/Click ссылки из `/contracts/{id}/payment-link/`. Кнопка PDF download. PaymentTimeline из реальных платежей. Кнопка "Nazad". i18n.
-- [ ] **FE-23**: **DebtorsListPage** `/finance/debtors` — Проверить: фильтры факультет из useFaculties (не hardcoded). SMS Modal подключён к `/core/sms/send/`. Bulk SMS. Export Excel. i18n.
-- [ ] **FE-24**: **PaymentsListPage** `/finance/payments` — Проверить: CRUD. DateRangePicker. Receipt печать. Export Excel. i18n.
-- [ ] **FE-25**: **ScholarshipsPage** `/finance/scholarship` — Проверить: CRUD полный (Create, Edit, Delete). Bulk назначение. i18n.
-- [ ] **FE-26**: **FinanceReportPage** `/finance/report` — Проверить: данные из API `/finance/report/`. CSV export работает. PDF export подключён. i18n.
-- [ ] **FE-27**: **PayrollPage** `/finance/payroll` — Проверить: данные из usePayroll (реальный API). Excel export. Кнопка "Hisoblash" → useProcessPayroll mutation. i18n.
-- [ ] **FE-28**: **BudgetPage** `/finance/budget` — Проверить: данные из useBudgetCategories (реальный API). CRUD категорий. Фильтр по кварталу. i18n.
+- [x] **FE-20**: **FinanceDashboardPage** `/finance` — Проверить: данные из useFinanceDashboard (реальный API). Графики с реальными данными. Drill-down по факультету. i18n.
+- [x] **FE-21**: **ContractsListPage** `/finance/contracts` — Проверить: CRUD полный (Create в Modal, Edit, Delete через ConfirmDialog). Фильтры из API (не hardcoded). Excel/PDF export кнопки. Per-contract PDF кнопка "Shartnoma PDF" → `/contracts/{id}/pdf/`. i18n.
+- [x] **FE-22**: **ContractDetailPage** `/finance/contracts/:id` — Проверить: данные из API. Кнопка "Onlayn to'lov" → Payme/Click ссылки из `/contracts/{id}/payment-link/`. Кнопка PDF download. PaymentTimeline из реальных платежей. Кнопка "Nazad". i18n.
+- [x] **FE-23**: **DebtorsListPage** `/finance/debtors` — Проверить: фильтры факультет из useFaculties (не hardcoded). SMS Modal подключён к `/core/sms/send/`. Bulk SMS. Export Excel. i18n.
+- [x] **FE-24**: **PaymentsListPage** `/finance/payments` — Проверить: CRUD. DateRangePicker. Receipt печать. Export Excel. i18n.
+- [x] **FE-25**: **ScholarshipsPage** `/finance/scholarship` — Проверить: CRUD полный (Create, Edit, Delete). Bulk назначение. i18n.
+- [x] **FE-26**: **FinanceReportPage** `/finance/report` — Проверить: данные из API `/finance/report/`. CSV export работает. PDF export подключён. i18n.
+- [x] **FE-27**: **PayrollPage** `/finance/payroll` — Проверить: данные из usePayroll (реальный API). Excel export. Кнопка "Hisoblash" → useProcessPayroll mutation. i18n.
+- [x] **FE-28**: **BudgetPage** `/finance/budget` — Проверить: данные из useBudgetCategories (реальный API). CRUD категорий. Фильтр по кварталу. i18n.
 
 ### 2.6 HR (7 страниц)
 
-- [ ] **FE-29**: **HrDashboardPage** `/hr` — Проверить: данные из API. Графики с реальными данными. i18n.
-- [ ] **FE-30**: **EmployeesListPage** `/hr/employees` — Проверить: CRUD (Create в Modal, Edit, Delete soft). Position options из API/i18n (не hardcoded). Excel export. i18n.
-- [ ] **FE-31**: **EmployeeProfilePage** `/hr/employees/:id` — Проверить: tabs Info/Career/Salary/Documents. Career из API (не hardcoded CAREER_EVENTS). Salary из payroll API. Documents FileUpload. Кнопки Edit/Print. i18n.
-- [ ] **FE-32**: **DepartmentsPage** `/hr/departments` — Проверить: CRUD: DepartmentForm в Modal (name, code, faculty, head). i18n.
-- [ ] **FE-33**: **OrdersPage** `/hr/orders` — Проверить: CRUD. Статус flow (draft→review→signed). PDF генерация приказа. i18n.
-- [ ] **FE-34**: **AttendancePage** `/hr/attendance` — Проверить: MONTH_NAMES через i18n (не hardcoded). Department options из API. Excel export. i18n.
-- [ ] **FE-35**: **LeavesPage** `/hr/leaves` — Проверить: CRUD (Create, Approve/Reject, Delete). Календарь отпусков. DateRangePicker. i18n.
+- [x] **FE-29**: **HrDashboardPage** `/hr` — Проверить: данные из API. Графики с реальными данными. i18n.
+- [x] **FE-30**: **EmployeesListPage** `/hr/employees` — Проверить: CRUD (Create в Modal, Edit, Delete soft). Position options из API/i18n (не hardcoded). Excel export. i18n.
+- [x] **FE-31**: **EmployeeProfilePage** `/hr/employees/:id` — Проверить: tabs Info/Career/Salary/Documents. Career из API (не hardcoded CAREER_EVENTS). Salary из payroll API. Documents FileUpload. Кнопки Edit/Print. i18n.
+- [x] **FE-32**: **DepartmentsPage** `/hr/departments` — Проверить: CRUD: DepartmentForm в Modal (name, code, faculty, head). i18n.
+- [x] **FE-33**: **OrdersPage** `/hr/orders` — Проверить: CRUD. Статус flow (draft→review→signed). PDF генерация приказа. i18n.
+- [x] **FE-34**: **AttendancePage** `/hr/attendance` — Проверить: MONTH_NAMES через i18n (не hardcoded). Department options из API. Excel export. i18n.
+- [x] **FE-35**: **LeavesPage** `/hr/leaves` — Проверить: CRUD (Create, Approve/Reject, Delete). Календарь отпусков. DateRangePicker. i18n.
 
 ### 2.7 CRM (3 страницы)
 
-- [ ] **FE-36**: **CrmListPage** `/crm` — Проверить: CRUD (LeadForm в SlideOver с Zod: firstName, lastName, phone, email, direction, source). Фильтры: status tabs, source, assignee Combobox, DateRangePicker. Bulk status change. Excel export. i18n.
-- [ ] **FE-37**: **CrmKanbanPage** `/crm/kanban` — Проверить: данные из useLeads группированы по статусу. Drag-and-drop → useUpdateLead mutation. Клик → LeadDetail. Rollback при ошибке drag. i18n.
-- [ ] **FE-38**: **CrmReportPage** `/crm/report` — Проверить: данные из useCrmStats. Графики: воронка, источники, динамика. DateRangePicker. i18n.
+- [x] **FE-36**: **CrmListPage** `/crm` — Проверить: CRUD (LeadForm в SlideOver с Zod: firstName, lastName, phone, email, direction, source). Фильтры: status tabs, source, assignee Combobox, DateRangePicker. Bulk status change. Excel export. i18n.
+- [x] **FE-37**: **CrmKanbanPage** `/crm/kanban` — Проверить: данные из useLeads группированы по статусу. Drag-and-drop → useUpdateLead mutation. Клик → LeadDetail. Rollback при ошибке drag. i18n.
+- [x] **FE-38**: **CrmReportPage** `/crm/report` — Проверить: данные из useCrmStats. Графики: воронка, источники, динамика. DateRangePicker. i18n.
 
 ### 2.8 Operations (6 страниц)
 
-- [ ] **FE-39**: **TasksPage** `/tasks` — Проверить: CRUD (TaskForm в SlideOver: title, description, assignee Combobox, priority, dueDate, tags). Kanban + List view. Drag-drop статус через mutation. i18n.
-- [ ] **FE-40**: **NotificationsPage** `/notifications` — Проверить: "O'qilgan" → useMarkNotificationRead mutation. "Barchasini" → useMarkAllRead. Delete. Tabs по типам. i18n.
-- [ ] **FE-41**: **MessagesPage** `/messages` — Проверить: подключен к useChatThreads + useMessages. Compose → useSendMessage. Split layout (threads/messages). i18n.
-- [ ] **FE-42**: **AppealsPage** `/appeals` — Проверить: CRUD (AppealForm: title, description, category). Комментарии useAddComment. Фильтры: status, category. i18n.
-- [ ] **FE-43**: **NewsPage** `/news` — Проверить: CRUD для admin (NewsForm в SlideOver: title, content, category, tags, image FileUpload). Grid/List view. Фильтры. i18n.
-- [ ] **FE-44**: **ReportsPage** `/reports` — Проверить: useReportTemplates список. Генерация useGenerateReport → скачивание файла. Параметры в Modal. i18n.
+- [x] **FE-39**: **TasksPage** `/tasks` — Проверить: CRUD (TaskForm в SlideOver: title, description, assignee Combobox, priority, dueDate, tags). Kanban + List view. Drag-drop статус через mutation. i18n.
+- [x] **FE-40**: **NotificationsPage** `/notifications` — Проверить: "O'qilgan" → useMarkNotificationRead mutation. "Barchasini" → useMarkAllRead. Delete. Tabs по типам. i18n.
+- [x] **FE-41**: **MessagesPage** `/messages` — Проверить: подключен к useChatThreads + useMessages. Compose → useSendMessage. Split layout (threads/messages). i18n.
+- [x] **FE-42**: **AppealsPage** `/appeals` — Проверить: CRUD (AppealForm: title, description, category). Комментарии useAddComment. Фильтры: status, category. i18n.
+- [x] **FE-43**: **NewsPage** `/news` — Проверить: CRUD для admin (NewsForm в SlideOver: title, content, category, tags, image FileUpload). Grid/List view. Фильтры. i18n.
+- [x] **FE-44**: **ReportsPage** `/reports` — Проверить: useReportTemplates список. Генерация useGenerateReport → скачивание файла. Параметры в Modal. i18n.
 
 ### 2.9 Teachers (2 страницы)
 
-- [ ] **FE-45**: **TeachersListPage** `/teachers` — Проверить: данные из useTeachers. Клик → `/teachers/:id`. Фильтры: кафедра Combobox, степень, звание. i18n.
-- [ ] **FE-46**: **TeacherProfilePage** `/teachers/:id` — Проверить: данные из useTeacher. Tabs: Info, Schedule, Load, Publications. Print. Кнопка "Nazad". i18n.
+- [x] **FE-45**: **TeachersListPage** `/teachers` — Проверить: данные из useTeachers. Клик → `/teachers/:id`. Фильтры: кафедра Combobox, степень, звание. i18n.
+- [x] **FE-46**: **TeacherProfilePage** `/teachers/:id` — Проверить: данные из useTeacher. Tabs: Info, Schedule, Load, Publications. Print. Кнопка "Nazad". i18n.
 
 ### 2.10 Science (4 страницы)
 
-- [ ] **FE-47**: **ResearchPage** `/research` — Проверить: Tab "Loyihalar" CRUD (ProjectForm: title, leader, description, fund, dates). Tab "Maqolalar" CRUD (ArticleForm: title, authors, journal, year, type, doi). Tab "Grantlar" read-only. i18n.
-- [ ] **FE-48**: **ThesesPage** `/theses` — Проверить: CRUD (ThesisForm: title, student, supervisor, type, department). Фильтры: stage tabs, type. i18n.
-- [ ] **FE-49**: **ConferencesPage** `/conferences` — Проверить: CRUD (ConferenceForm: name, date, location, type). Tabs: Kelgusi/O'tgan. i18n.
-- [ ] **FE-50**: **PatentsPage** `/patents` — Проверить: CRUD (PatentForm: title, inventors, date, category). Status tabs. i18n.
+- [x] **FE-47**: **ResearchPage** `/research` — Проверить: Tab "Loyihalar" CRUD (ProjectForm: title, leader, description, fund, dates). Tab "Maqolalar" CRUD (ArticleForm: title, authors, journal, year, type, doi). Tab "Grantlar" read-only. i18n.
+- [x] **FE-48**: **ThesesPage** `/theses` — Проверить: CRUD (ThesisForm: title, student, supervisor, type, department). Фильтры: stage tabs, type. i18n.
+- [x] **FE-49**: **ConferencesPage** `/conferences` — Проверить: CRUD (ConferenceForm: name, date, location, type). Tabs: Kelgusi/O'tgan. i18n.
+- [x] **FE-50**: **PatentsPage** `/patents` — Проверить: CRUD (PatentForm: title, inventors, date, category). Status tabs. i18n.
 
 ### 2.11 System (4 страницы)
 
-- [ ] **FE-51**: **UsersListPage** `/system/users` — Проверить: CRUD (UserForm: firstName, lastName, phone, email, password, roles[]). Block/Unblock кнопка. Reset password. i18n.
-- [ ] **FE-52**: **RolesPage** `/system/roles` — Проверить: системные роли read-only, кастомные CRUD. i18n.
-- [ ] **FE-53**: **PermissionMatrixPage** `/system/permissions` — Проверить: matrix из API. Click toggle → useUpdateRolePermissions mutation. i18n.
-- [ ] **FE-54**: **AuditLogPage** `/system/audit` — Проверить: данные из API. DateRangePicker. Export Excel. i18n.
+- [x] **FE-51**: **UsersListPage** `/system/users` — Проверить: CRUD (UserForm: firstName, lastName, phone, email, password, roles[]). Block/Unblock кнопка. Reset password. i18n.
+- [x] **FE-52**: **RolesPage** `/system/roles` — Проверить: системные роли read-only, кастомные CRUD. i18n.
+- [x] **FE-53**: **PermissionMatrixPage** `/system/permissions` — Проверить: matrix из API. Click toggle → useUpdateRolePermissions mutation. i18n.
+- [x] **FE-54**: **AuditLogPage** `/system/audit` — Проверить: данные из API. DateRangePicker. Export Excel. i18n.
 
 ### 2.12 Admin (3 страницы)
 
-- [ ] **FE-55**: **DmsPage** `/dms` — Проверить: folder sidebar из useFolders. Documents из useDocuments. CRUD (DocumentForm: title, category, folder, priority, file FileUpload). Фильтры. i18n.
-- [ ] **FE-56**: **AnalyticsPage** `/analytics` — Проверить: данные из useAnalytics (реальный API). Графики: тренды, сравнение. DateRangePicker. i18n.
-- [ ] **FE-57**: **ReferencesPage** `/reference` — Проверить: useDictionaryItems(type) CRUD. DictionaryItemForm (code, name, description, sortOrder). i18n.
+- [x] **FE-55**: **DmsPage** `/dms` — Проверить: folder sidebar из useFolders. Documents из useDocuments. CRUD (DocumentForm: title, category, folder, priority, file FileUpload). Фильтры. i18n.
+- [x] **FE-56**: **AnalyticsPage** `/analytics` — Проверить: данные из useAnalytics (реальный API). Графики: тренды, сравнение. DateRangePicker. i18n.
+- [x] **FE-57**: **ReferencesPage** `/reference` — Проверить: useDictionaryItems(type) CRUD. DictionaryItemForm (code, name, description, sortOrder). i18n.
 
 ### 2.13 Infrastructure (3 страницы)
 
-- [ ] **FE-58**: **DormitoryPage** `/dormitory` — Проверить: buildings из API. Rooms CRUD (DormRoomForm). Поселение/выселение студентов. i18n.
-- [ ] **FE-59**: **EquipmentPage** `/equipment` — Проверить: CRUD (EquipmentForm: name, inventoryNumber, category, location, person, date, cost). Фильтры. Export Excel. i18n.
-- [ ] **FE-60**: **TransportPage** `/transport` — Проверить: CRUD (VehicleForm: brand, model, plateNumber, year, driver, route). Status tabs. i18n.
+- [x] **FE-58**: **DormitoryPage** `/dormitory` — Проверить: buildings из API. Rooms CRUD (DormRoomForm). Поселение/выселение студентов. i18n.
+- [x] **FE-59**: **EquipmentPage** `/equipment` — Проверить: CRUD (EquipmentForm: name, inventoryNumber, category, location, person, date, cost). Фильтры. Export Excel. i18n.
+- [x] **FE-60**: **TransportPage** `/transport` — Проверить: CRUD (VehicleForm: brand, model, plateNumber, year, driver, route). Status tabs. i18n.
 
 ### 2.14 Warehouse (1 страница)
 
-- [ ] **FE-61**: **WarehousePage** `/warehouse` — Проверить: CRUD items (ItemForm: name, sku, category, unit, minQty, price, location). Tab "Harakatlar" movements (MovementForm: item, type, quantity, note). AlertBanner для belowMinimum. Export Excel. i18n.
+- [x] **FE-61**: **WarehousePage** `/warehouse` — Проверить: CRUD items (ItemForm: name, sku, category, unit, minQty, price, location). Tab "Harakatlar" movements (MovementForm: item, type, quantity, note). AlertBanner для belowMinimum. Export Excel. i18n.
 
 ### 2.15 Legacy (2 страницы)
 
-- [ ] **FE-62**: **LegacyOrdersPage** `/orders` — Проверить: read-only из API. Пагинация. DateRangePicker. i18n.
-- [ ] **FE-63**: **StaffingPage** `/staffing` — Проверить: read-only из API. Фильтр department. ProgressBar fill rate. i18n.
+- [x] **FE-62**: **LegacyOrdersPage** `/orders` — Проверить: read-only из API. Пагинация. DateRangePicker. i18n.
+- [x] **FE-63**: **StaffingPage** `/staffing` — Проверить: read-only из API. Фильтр department. ProgressBar fill rate. i18n.
 
 ### 2.16 Cabinets (2 страницы)
 
-- [ ] **FE-64**: **StudentCabinetPage** `/student-cabinet` — Проверить: cabinet.service.ts использует USE_MOCK toggle (не hardcoded MockService). Данные из `/cabinets/student/` API: student info, todaySchedule, currentGrades, upcomingExams, notifications. i18n.
-- [ ] **FE-65**: **TeacherCabinetPage** `/teacher-cabinet` — Проверить: данные из `/cabinets/teacher/` API: teacher info, todayClasses, myGroups, pendingTasks, stats. i18n.
+- [x] **FE-64**: **StudentCabinetPage** `/student-cabinet` — Проверить: cabinet.service.ts использует USE_MOCK toggle (не hardcoded MockService). Данные из `/cabinets/student/` API: student info, todaySchedule, currentGrades, upcomingExams, notifications. i18n.
+- [x] **FE-65**: **TeacherCabinetPage** `/teacher-cabinet` — Проверить: данные из `/cabinets/teacher/` API: teacher info, todayClasses, myGroups, pendingTasks, stats. i18n.
 
 ### 2.17 Profile (2 страницы)
 
-- [ ] **FE-66**: **ProfilePage** `/profile` — Проверить: FileUpload фото. useUpdateProfile mutation (name, phone, email). i18n.
-- [ ] **FE-67**: **SettingsPage** `/settings` — Проверить: смена пароля useChangePassword с Zod (oldPassword, newPassword, confirmPassword). Notification settings сохраняются. i18n.
+- [x] **FE-66**: **ProfilePage** `/profile` — Проверить: FileUpload фото. useUpdateProfile mutation (name, phone, email). i18n.
+- [x] **FE-67**: **SettingsPage** `/settings` — Проверить: смена пароля useChangePassword с Zod (oldPassword, newPassword, confirmPassword). Notification settings сохраняются. i18n.
 
 ### 2.18 Error handling на ВСЕХ страницах
 
-- [ ] **FE-68**: Пройти по ВСЕМ 67 страницам. Для каждой с useQuery — добавить: `if (error) return <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />`. Import AlertBanner. `npm run build`. Git commit.
+- [x] **FE-68**: Пройти по ВСЕМ 67 страницам. Для каждой с useQuery — добавить: `if (error) return <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />`. Import AlertBanner. `npm run build`. Git commit.
 
 ### 2.19 Frontend Final Verification
 
-- [ ] **FE-69**: `npm run build` — 0 ошибок. `npm test` — все тесты. Git commit + push.
+- [x] **FE-69**: `npm run build` — 0 ошибок. `npm test` — все тесты. Git commit + push.
 
 ---
 

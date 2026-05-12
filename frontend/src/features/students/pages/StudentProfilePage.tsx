@@ -14,6 +14,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Tabs } from '@/components/navigation/Tabs';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { AlertBanner } from '@/components/ui';
 import { StudentStatusBadge } from '../components/StudentStatusBadge';
 import {
   useStudent,
@@ -364,7 +365,7 @@ export function StudentProfilePage() {
   const studentId = Number(id);
   const [activeTab, setActiveTab] = useState('main');
 
-  const { data: student, isLoading } = useStudent(studentId);
+  const { data: student, isLoading, error } = useStudent(studentId);
   const { data: grades } = useStudentGrades(studentId);
   const { data: attendance } = useStudentAttendance(studentId);
 
@@ -378,6 +379,14 @@ export function StudentProfilePage() {
     ],
     [grades?.length, t],
   );
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -3,7 +3,7 @@ import { ScrollText, CheckCircle, Clock, Award, Plus, Trash2 } from 'lucide-reac
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Button, Spinner } from '@/components/ui';
+import { AlertBanner, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { usePatents, useCreatePatent, useDeletePatent } from '@/api/hooks/useScience';
 import { PatentForm } from '../components/PatentForm';
@@ -32,7 +32,7 @@ export function PatentsPage() {
     rejected: t('science.patentStatusRejected'),
   };
 
-  const { data: patentsData, isLoading } = usePatents({ page: 1, pageSize: 50 });
+  const { data: patentsData, isLoading, error } = usePatents({ page: 1, pageSize: 50 });
   const createPatent = useCreatePatent();
   const deletePatentMutation = useDeletePatent();
 
@@ -54,6 +54,14 @@ export function PatentsPage() {
     t('common.status'),
     '',
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

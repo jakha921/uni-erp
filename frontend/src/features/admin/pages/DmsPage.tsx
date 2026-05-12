@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import {
   Inbox,
@@ -56,7 +56,7 @@ export function DmsPage() {
   const [editDocument, setEditDocument] = useState<Document | null>(null);
   const [deleteDocument, setDeleteDocument] = useState<Document | null>(null);
 
-  const { data: foldersData, isLoading: isLoadingFolders } = useFolders();
+  const { data: foldersData, isLoading: isLoadingFolders, error } = useFolders();
   const { data: documentsData, isLoading: isLoadingDocs } = useDocuments({ folderId: activeFolderId });
 
   const createDocument = useCreateDocument();
@@ -80,6 +80,14 @@ export function DmsPage() {
       createDocument.mutate(data, { onSuccess: handleClose });
     }
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

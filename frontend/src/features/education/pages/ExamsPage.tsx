@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
 import { ConfirmDialog } from '@/components/overlays';
@@ -46,7 +46,7 @@ export function ExamsPage() {
     { id: 'vedomost', label: t('education.tabVedomost') },
   ];
 
-  const { data: subjectsData } = useSubjects();
+  const { data: subjectsData, error: subjectsError } = useSubjects();
   const { data: groupsData } = useGroups();
   const { data: teachersData } = useTeachersList({ page: 1, pageSize: 100 });
   const createExam = useCreateExam();
@@ -74,6 +74,14 @@ export function ExamsPage() {
     if (!deleteExam) return;
     deleteExamMutation.mutate(deleteExam.id, { onSuccess: () => setDeleteExam(null) });
   };
+
+  if (subjectsError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(subjectsError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

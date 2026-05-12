@@ -19,6 +19,7 @@ import {
 import { useStudent, useCreateStudent, useUpdateStudent } from '@/api/hooks/useStudents';
 import { useFaculties, useDepartments, useSpecialties, useGroups } from '@/api/hooks/useCore';
 import { useTranslation } from 'react-i18next';
+import { AlertBanner } from '@/components/ui/AlertBanner';
 
 
 export function StudentFormPage() {
@@ -28,7 +29,7 @@ export function StudentFormPage() {
   const isEdit = Boolean(id);
   const studentId = Number(id);
 
-  const { data: student, isLoading: isLoadingStudent } = useStudent(
+  const { data: student, isLoading: isLoadingStudent, error: studentError } = useStudent(
     isEdit ? studentId : 0,
   );
 
@@ -126,6 +127,14 @@ export function StudentFormPage() {
     { value: 'grant', label: t('students.grantPayment') },
     { value: 'kontrakt', label: t('students.contractPayment') },
   ];
+
+  if (isEdit && studentError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(studentError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isEdit && isLoadingStudent) {
     return <PageContent className="text-muted">{t('common.loading')}</PageContent>;

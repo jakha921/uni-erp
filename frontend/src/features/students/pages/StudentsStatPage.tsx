@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { useStudentStatistics } from '@/api/hooks/useStudents';
 import { useAuthStore } from '@/stores/auth.store';
 import { useTranslation } from 'react-i18next';
+import { AlertBanner } from '@/components/ui';
 
 const GENDER_COLORS: Record<string, string> = {
   Erkak: '#0EA5E9',
@@ -52,7 +53,15 @@ export function StudentsStatPage() {
   const { t } = useTranslation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const role = currentUser?.role;
-  const { data: stats, isLoading } = useStudentStatistics();
+  const { data: stats, isLoading, error } = useStudentStatistics();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !stats) {
     return (

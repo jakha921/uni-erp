@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Plus, Calendar, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -55,7 +55,7 @@ export function ThesesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteThesis, setDeleteThesis] = useState<Thesis | null>(null);
 
-  const { data: thesesData, isLoading } = useTheses({ page: 1, pageSize: 50, stage: filter !== 'all' ? filter : undefined });
+  const { data: thesesData, isLoading, error } = useTheses({ page: 1, pageSize: 50, stage: filter !== 'all' ? filter : undefined });
   const { data: studentsData } = useStudentsList({ page: 1, pageSize: 200 });
   const { data: teachersData } = useTeachersList({ page: 1, pageSize: 100 });
   const createThesis = useCreateThesis();
@@ -77,6 +77,14 @@ export function ThesesPage() {
       { onSuccess: () => setFormOpen(false) },
     );
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

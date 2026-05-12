@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, CheckCircle, Calendar, Briefcase } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Spinner } from '@/components/ui';
+import { Badge, Spinner, AlertBanner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { useHrDashboard, useLeaves } from '@/api/hooks/useHr';
 import type { Leave } from '@/types/hr';
@@ -39,7 +39,7 @@ export function HrDashboardPage() {
   const navigate = useNavigate();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const { data: stats, isLoading } = useHrDashboard();
+  const { data: stats, isLoading, error } = useHrDashboard();
   const { data: allLeaves } = useLeaves();
   const pendingLeaves = (allLeaves ?? [])
     .filter((l: Leave) => {
@@ -49,6 +49,14 @@ export function HrDashboardPage() {
       return true;
     })
     .slice(0, 5);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !stats) {
     return (

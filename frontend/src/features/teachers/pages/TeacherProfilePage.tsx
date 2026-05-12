@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, BookOpen, Clock, Users, Printer } from 'lucide-react';
 import { PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Avatar, Spinner, Button } from '@/components/ui';
+import { AlertBanner, Badge, Avatar, Spinner, Button } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { useTeacher } from '@/api/hooks/useTeachers';
 import type { Teacher } from '@/types/teacher';
@@ -69,7 +69,15 @@ export function TeacherProfilePage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
 
-  const { data: teacher, isLoading } = useTeacher(teacherId);
+  const { data: teacher, isLoading, error } = useTeacher(teacherId);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !teacher) {
     return (

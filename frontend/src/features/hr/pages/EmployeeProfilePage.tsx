@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star, Upload } from 'lucide-react';
+import { FileText, ArrowLeft, Upload } from 'lucide-react';
 import type { Employee } from '@/types/hr';
 import { formatDate, formatMoney, formatPhone } from '@/lib/utils';
 import { FileUpload } from '@/components/form/FileUpload';
 import { PageContent } from '@/components/layout';
-import { Spinner } from '@/components/ui';
+import { Spinner, AlertBanner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { Card } from '@/components/data-display';
 import { EmployeeProfileHeader } from '../components/EmployeeProfileHeader';
@@ -15,21 +15,6 @@ import { useEmployee, useUpdateEmployee, useDepartments, useOrders } from '@/api
 import { usePayroll } from '@/api/hooks/usePayroll';
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
-const CAREER_EVENTS = [
-  { date: '01.09.2018', event: 'Ishga qabul qilindi', detail: "Informatika kafedrasi — O'qituvchi", color: '#2DB976', Icon: Plus },
-  { date: '15.02.2020', event: "Lavozim ko'tarildi", detail: "Katta o'qituvchi → Dotsent", color: '#4F46E5', Icon: ArrowUp },
-  { date: '01.09.2022', event: 'Ilmiy daraja oldi', detail: 'PhD (falsafa doktori)', color: '#7C3AED', Icon: CheckCircle },
-  { date: '10.01.2024', event: 'Mukofotlandi', detail: "Eng yaxshi o'qituvchi — 2024", color: '#F59E0B', Icon: Star },
-];
-
-const DOCS_DATA = [
-  { name: 'Mehnat shartnomasi', date: '01.09.2018' },
-  { name: 'Diplom nusxasi', date: '01.09.2018' },
-  { name: 'Pasport nusxasi', date: '01.09.2018' },
-  { name: "Tibbiy ko'rik", date: '15.01.2026' },
-  { name: 'PhD dissertatsiya', date: '01.09.2022' },
-  { name: 'Buyruq (qabul)', date: '01.09.2018' },
-];
 
 function printEmployeeCard(e: Employee) {
   const win = window.open('', '_blank', 'width=794,height=1123');
@@ -104,17 +89,25 @@ export function EmployeeProfilePage() {
 
   const TABS_CONFIG = [
     { id: 'info', label: t('hr.mainInfo') },
-    { id: 'career', label: t('hr.workHistory'), count: CAREER_EVENTS.length },
+    { id: 'career', label: t('hr.workHistory') },
     { id: 'salary', label: t('hr.salary') },
-    { id: 'docs', label: t('hr.documents'), count: DOCS_DATA.length },
+    { id: 'docs', label: t('hr.documents') },
   ];
 
   const [activeTab, setActiveTab] = useState('info');
   const [editOpen, setEditOpen] = useState(false);
 
-  const { data: employee, isLoading } = useEmployee(employeeId);
+  const { data: employee, isLoading, error } = useEmployee(employeeId);
   const updateMutation = useUpdateEmployee();
   const { data: departments = [] } = useDepartments();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !employee) {
     return (
@@ -245,15 +238,13 @@ function CareerTab({ employeeId }: { employeeId: number }) {
   const { data: ordersData } = useOrders();
   const orders = (ordersData ?? []).filter((o) => o.employeeId === employeeId);
 
-  const events = orders.length > 0
-    ? orders.map((o) => ({
-        date: o.date,
-        event: o.typeLabel,
-        detail: o.title,
-        color: o.typeColor ?? '#2DB976',
-        Icon: FileText,
-      }))
-    : CAREER_EVENTS;
+  const events = orders.map((o) => ({
+    date: o.date,
+    event: o.typeLabel,
+    detail: o.title,
+    color: o.typeColor ?? '#2DB976',
+    Icon: FileText,
+  }));
 
   return (
     <Card title={t('hr.workHistoryTitle')}>
@@ -347,7 +338,7 @@ function DocsTab() {
     setExtraDocs((prev) => [...prev, ...files.map((f) => ({ name: f.name, date: today }))]);
   };
 
-  const allDocs = [...DOCS_DATA, ...extraDocs];
+  const allDocs = extraDocs;
 
   return (
     <div className="space-y-4">

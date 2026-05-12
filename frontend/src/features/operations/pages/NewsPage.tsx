@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, LayoutGrid, List, Pencil, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Spinner } from '@/components/ui';
 import { useNewsList, useCreateNews, useUpdateNews, useDeleteNews } from '@/api/hooks/useNews';
 import { ConfirmDialog } from '@/components/overlays';
 import { NewsForm } from '../components/NewsForm';
@@ -24,6 +25,7 @@ function getColor(category: string): string {
 type ViewMode = 'grid' | 'list';
 
 export function NewsPage() {
+  const { t } = useTranslation();
   const [tagFilter, setTagFilter] = useState('all');
   const [view, setView] = useState<ViewMode>('grid');
   const [formOpen, setFormOpen] = useState(false);
@@ -33,7 +35,7 @@ export function NewsPage() {
   const updateNewsMutation = useUpdateNews();
   const deleteNewsMutation = useDeleteNews();
 
-  const { data: newsData, isLoading } = useNewsList({
+  const { data: newsData, isLoading, error } = useNewsList({
     page: 1,
     pageSize: 50,
     category: tagFilter !== 'all' ? tagFilter : undefined,
@@ -50,6 +52,14 @@ export function NewsPage() {
     if (tagFilter === 'all') return newsItems;
     return newsItems.filter((n) => n.category === tagFilter);
   }, [newsItems, tagFilter]);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

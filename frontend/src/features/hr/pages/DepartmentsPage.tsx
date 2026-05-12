@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Building2, Layers, Users, BookOpen, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { StatCard } from '@/components/data-display';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { DepartmentTree } from '../components/DepartmentTree';
 import { DepartmentForm } from '../components/DepartmentForm';
@@ -17,7 +17,7 @@ export function DepartmentsPage() {
   const [editDepartment, setEditDepartment] = useState<HrDepartment | null>(null);
   const [deleteDepartment, setDeleteDepartment] = useState<HrDepartment | null>(null);
 
-  const { data: departments = [], isLoading } = useDepartments();
+  const { data: departments = [], isLoading, error } = useDepartments();
   const { data: employeesData } = useEmployees({ pageSize: 500 });
   const createDepartment = useCreateDepartment();
   const updateDepartment = useUpdateDepartment();
@@ -45,6 +45,14 @@ export function DepartmentsPage() {
       createDepartment.mutate(dto, { onSuccess: handleClose });
     }
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

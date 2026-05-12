@@ -3,7 +3,7 @@ import { Calculator, Download, Wallet, TrendingUp, Users, Percent } from 'lucide
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
-import { Button, Badge, Spinner } from '@/components/ui';
+import { Button, Badge, Spinner, AlertBanner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
 import { usePayroll, usePayrollSummary, useProcessPayroll } from '@/api/hooks/usePayroll';
@@ -41,7 +41,7 @@ export function PayrollPage() {
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
 
-  const { data: payrollData, isLoading: isLoadingPayroll } = usePayroll({
+  const { data: payrollData, isLoading: isLoadingPayroll, error: payrollError } = usePayroll({
     month,
     year,
     search: search || undefined,
@@ -140,6 +140,14 @@ export function PayrollPage() {
   ];
 
   const isLoading = isLoadingPayroll || isLoadingSummary;
+
+  if (payrollError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(payrollError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

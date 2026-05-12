@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, ChartCard, LineChartSimple, BarChartSimple, DonutChart } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { Spinner, AlertBanner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { Users, UserCog, FileText, Percent } from 'lucide-react';
 import { useAnalytics } from '@/api/hooks/useAnalytics';
@@ -19,8 +19,16 @@ export function AnalyticsPage() {
   const [params] = useState<AnalyticsParams>({ period: 'year' });
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const { data, isLoading } = useAnalytics(params);
+  const { data, isLoading, error } = useAnalytics(params);
   const { data: studentStats } = useStudentStatistics();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !data) {
     return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;

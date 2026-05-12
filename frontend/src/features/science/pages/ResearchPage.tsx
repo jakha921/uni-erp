@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
@@ -85,7 +85,7 @@ export function ResearchPage() {
   const [articleFormOpen, setArticleFormOpen] = useState(false);
   const [deleteArticle, setDeleteArticle] = useState<Article | null>(null);
 
-  const { data: projectsData, isLoading: projectsLoading } = useProjects({ page: 1, pageSize: 50 });
+  const { data: projectsData, isLoading: projectsLoading, error } = useProjects({ page: 1, pageSize: 50 });
   const { data: articlesData, isLoading: articlesLoading } = useArticles({ page: 1, pageSize: 50 });
   const { data: grantsData, isLoading: grantsLoading } = useGrants({ page: 1, pageSize: 50 });
   const { data: conferencesData, isLoading: conferencesLoading } = useConferences({ page: 1, pageSize: 50 });
@@ -147,6 +147,14 @@ export function ResearchPage() {
       </Button>
     ),
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { Users, Clock, CheckCircle, Plus, Pencil, Trash2 } from 'lucide-react';
@@ -24,7 +24,7 @@ export function InternshipPage() {
   const [deleteInternship, setDeleteInternship] = useState<Internship | null>(null);
 
   const statusFilter = activeTab === 'all' ? undefined : activeTab;
-  const { data, isLoading } = useInternshipsList({ page: 1, pageSize: 50, status: statusFilter });
+  const { data, isLoading, error } = useInternshipsList({ page: 1, pageSize: 50, status: statusFilter });
   const { data: studentsData } = useStudentsList({ page: 1, pageSize: 200 });
   const createInternship = useCreateInternship();
   const updateInternship = useUpdateInternship();
@@ -81,6 +81,14 @@ export function InternshipPage() {
       ),
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, FileText, ShieldAlert, AlertTriangle, CheckCircle, FileDown } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Avatar, Spinner, Button } from '@/components/ui';
+import { Badge, Avatar, Spinner, Button, AlertBanner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useAuditLog } from '@/api/hooks/useSystem';
@@ -34,7 +34,7 @@ export function AuditLogPage() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const { data, isLoading } = useAuditLog({
+  const { data, isLoading, error } = useAuditLog({
     page, pageSize, search: search || undefined,
     action: actionFilter || undefined, severity: sevFilter || undefined,
     dateFrom: dateFrom || undefined, dateTo: dateTo || undefined,
@@ -81,6 +81,14 @@ export function AuditLogPage() {
     { key: 'details', header: 'Tafsilot', render: (row) => <span className="line-clamp-1 text-[13px] text-slate-600">{row.details}</span> },
     { key: 'ipAddress', header: 'IP', width: '120px', render: (row) => <span className="font-mono text-[12px] text-muted">{row.ipAddress}</span> },
   ], []);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

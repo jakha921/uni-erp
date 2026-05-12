@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Users, Briefcase, GraduationCap, Plus, Pencil, Trash2, FileDown } from 'lucide-react';
 import { useAlumniList, useCreateAlumni, useUpdateAlumni, useDeleteAlumni } from '@/api/hooks/useAlumni';
@@ -35,7 +35,7 @@ export function AlumniPage() {
   const [editAlumni, setEditAlumni] = useState<Alumni | null>(null);
   const [deleteAlumni, setDeleteAlumni] = useState<Alumni | null>(null);
 
-  const { data, isLoading } = useAlumniList({
+  const { data, isLoading, error } = useAlumniList({
     page: 1,
     pageSize: 50,
     graduationYear: yearFilter ? Number(yearFilter) : undefined,
@@ -84,6 +84,14 @@ export function AlumniPage() {
       ),
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

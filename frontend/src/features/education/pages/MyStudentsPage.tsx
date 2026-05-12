@@ -4,7 +4,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { Search, Users, Star, Clock } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Avatar, Spinner } from '@/components/ui';
+import { Avatar, Spinner, AlertBanner } from '@/components/ui';
 import { useTeacherCabinet } from '@/api/hooks/useCabinet';
 import { useStudentsList } from '@/api/hooks/useStudents';
 
@@ -16,7 +16,7 @@ function getAttendanceColor(v: number) {
 
 export function MyStudentsPage() {
   const { t } = useTranslation();
-  const { data: cabinet, isLoading: cabinetLoading } = useTeacherCabinet();
+  const { data: cabinet, isLoading: cabinetLoading, error: cabinetError } = useTeacherCabinet();
   const groups = cabinet?.myGroups ?? [];
 
   const [activeGroupIdx, setActiveGroupIdx] = useState(0);
@@ -36,6 +36,14 @@ export function MyStudentsPage() {
   }, [studentsData, activeGroup]);
 
   const totalStudents = groups.reduce((s, g) => s + g.studentCount, 0);
+
+  if (cabinetError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(cabinetError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (cabinetLoading) {
     return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Presentation, Calendar, Users, Globe, MapPin, Plus, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Button, Spinner } from '@/components/ui';
+import { AlertBanner, Button, Spinner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { useConferences, useCreateConference, useDeleteConference } from '@/api/hooks/useScience';
 import { ConferenceForm } from '../components/ConferenceForm';
@@ -30,7 +30,7 @@ export function ConferencesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteConference, setDeleteConference] = useState<Conference | null>(null);
 
-  const { data: conferencesData, isLoading } = useConferences({ page: 1, pageSize: 50 });
+  const { data: conferencesData, isLoading, error } = useConferences({ page: 1, pageSize: 50 });
   const createConference = useCreateConference();
   const deleteConferenceMutation = useDeleteConference();
 
@@ -44,6 +44,14 @@ export function ConferencesPage() {
   const handleCreate = (data: ConferenceFormData) => {
     createConference.mutate(data, { onSuccess: () => setFormOpen(false) });
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge } from '@/components/ui';
-import { Spinner } from '@/components/ui';
+import { Spinner, AlertBanner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { useFinanceDashboard } from '@/api/hooks/useFinance';
 import { usePayments } from '@/api/hooks/useFinance';
@@ -27,9 +27,17 @@ export function FinanceDashboardPage() {
   const navigate = useNavigate();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const { data: stats, isLoading: statsLoading } = useFinanceDashboard();
+  const { data: stats, isLoading: statsLoading, error: statsError } = useFinanceDashboard();
   const { data: paymentsData } = usePayments({ pageSize: 200 });
   const { data: contractsData } = useContracts({ pageSize: 100 });
+
+  if (statsError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(statsError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (statsLoading || !stats) {
     return (

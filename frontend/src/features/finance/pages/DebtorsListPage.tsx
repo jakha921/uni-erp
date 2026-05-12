@@ -4,11 +4,12 @@ import { Users, AlertTriangle, CircleDollarSign, Mail, DollarSign, X, CheckCircl
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Spinner, Button } from '@/components/ui';
+import { Spinner, Button, AlertBanner } from '@/components/ui';
 import { Tabs } from '@/components/navigation';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useContracts } from '@/api/hooks/useFinance';
 import { useFaculties } from '@/api/hooks/useCore';
+import { apiClient } from '@/api/client';
 import { formatMoney } from '@/lib/utils';
 import type { Contract } from '@/types/finance';
 
@@ -33,7 +34,7 @@ export function DebtorsListPage() {
   const pageSize = 20;
 
   const { data: faculties } = useFaculties();
-  const { data, isLoading } = useContracts({
+  const { data, isLoading, error } = useContracts({
     page: 1,
     pageSize: 500,
     status: 'active',
@@ -86,6 +87,14 @@ export function DebtorsListPage() {
     setSmsTarget(null);
     setSelectedIds(new Set());
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -287,14 +296,9 @@ function SmsModal({ recipients, onClose }: { recipients: DebtorRow[]; onClose: (
   const handleSend = async () => {
     setSending(true);
     try {
-      await fetch('/api/v1/core/sms/send/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          recipients: recipients.map((r) => ({ phone: r.studentIdNumber, name: r.studentName })),
-          message: text,
-        }),
+      await apiClient.post('/core/sms/send/', {
+        recipients: recipients.map((r) => ({ phone: r.studentIdNumber, name: r.studentName })),
+        message: text,
       });
     } finally {
       setSending(false);

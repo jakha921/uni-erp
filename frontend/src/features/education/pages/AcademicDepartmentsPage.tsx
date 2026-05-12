@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Users, BookOpen, Star, X } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { Spinner, AlertBanner } from '@/components/ui';
 import { FilterBar } from '@/components/table';
 import { useDepartments, useFaculties } from '@/api/hooks/useCore';
 import type { Department } from '@/types/core';
@@ -19,7 +19,7 @@ export function AcademicDepartmentsPage() {
   const [search, setSearch] = useState('');
   const [selectedDept, setSelectedDept] = useState<{ dept: Department; facultyName: string } | null>(null);
 
-  const { data: departments, isLoading: deptsLoading } = useDepartments();
+  const { data: departments, isLoading: deptsLoading, error: deptsError } = useDepartments();
   const { data: faculties, isLoading: facultiesLoading } = useFaculties();
 
   const isLoading = deptsLoading || facultiesLoading;
@@ -43,6 +43,14 @@ export function AcademicDepartmentsPage() {
       );
     });
   }, [deptList, search, facultyMap]);
+
+  if (deptsError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(deptsError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

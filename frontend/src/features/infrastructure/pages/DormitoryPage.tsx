@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table';
 import { ConfirmDialog, SlideOver } from '@/components/overlays';
 import { Building2, Users, DoorOpen, FileText, Plus, Map, List, Pencil, Trash2, UserPlus, LogOut } from 'lucide-react';
@@ -45,7 +45,7 @@ export function DormitoryPage() {
   const [checkInDate, setCheckInDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const { data: buildings } = useDormBuildings();
-  const { data: roomsData, isLoading } = useDormRooms({ buildingId, page: 1, pageSize: 100 });
+  const { data: roomsData, isLoading, error } = useDormRooms({ buildingId, page: 1, pageSize: 100 });
 
   const createRoom = useCreateDormRoom();
   const updateRoom = useUpdateDormRoom();
@@ -94,6 +94,14 @@ export function DormitoryPage() {
       ),
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

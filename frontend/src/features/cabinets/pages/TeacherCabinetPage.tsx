@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { CalendarDays, GraduationCap, ClipboardCheck, ListTodo, Calendar } from 'lucide-react';
 import { useTeacherCabinet } from '@/api/hooks/useCabinet';
 
@@ -18,7 +18,15 @@ const PRIORITY_COLORS: Record<string, string> = { grading: '#EF4444', thesis: '#
 
 export function TeacherCabinetPage() {
   const { t } = useTranslation();
-  const { data, isLoading } = useTeacherCabinet();
+  const { data, isLoading, error } = useTeacherCabinet();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !data) {
     return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;

@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, FileText, User, Calendar, Banknote, CreditCard, Extern
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Button, Spinner, Badge } from '@/components/ui';
+import { Button, Spinner, Badge, AlertBanner } from '@/components/ui';
 import { Modal } from '@/components/overlays';
 import { useContract, useCreatePayment, usePayments } from '@/api/hooks/useFinance';
 import { formatMoney, formatDate } from '@/lib/utils';
@@ -147,7 +147,7 @@ export function ContractDetailPage() {
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
   const [onlinePaymentOpen, setOnlinePaymentOpen] = useState(false);
 
-  const { data: contract, isLoading } = useContract(id ?? '');
+  const { data: contract, isLoading, error } = useContract(id ?? '');
   const { data: paymentsData } = usePayments({ contractId: id, pageSize: 100 });
   const createPayment = useCreatePayment();
 
@@ -167,6 +167,14 @@ export function ContractDetailPage() {
     },
     [createPayment],
   );
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !contract) {
     return (

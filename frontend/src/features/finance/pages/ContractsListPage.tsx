@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Plus, Search, FileDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Pagination } from '@/components/table';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { Card } from '@/components/data-display';
 import { ConfirmDialog } from '@/components/overlays';
 import { useContracts, useCreateContract, useUpdateContract, useDeleteContract } from '@/api/hooks/useFinance';
@@ -36,10 +37,11 @@ export function ContractsListPage() {
   const [deleteTarget, setDeleteTarget] = useState<Contract | null>(null);
   const [slideContract, setSlideContract] = useState<Contract | null>(null);
 
-  const { data, isLoading } = useContracts({
+  const debouncedSearch = useDebounce(search);
+  const { data, isLoading, error } = useContracts({
     page,
     pageSize: 10,
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     status: status || undefined,
     contractType: contractType || undefined,
   });
@@ -72,6 +74,14 @@ export function ContractsListPage() {
       onSuccess: () => setDeleteTarget(null),
     });
   }, [deleteTarget, deleteMutation]);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard, EmptyState } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Tabs } from '@/components/navigation';
 import { DataTable, type Column } from '@/components/table';
@@ -38,7 +38,7 @@ export function LibraryPage() {
   const [loanFormOpen, setLoanFormOpen] = useState(false);
   const [returnLoan, setReturnLoan] = useState<BookLoan | null>(null);
 
-  const { data: booksData } = useBooksList({ search: bookSearch || undefined });
+  const { data: booksData, error: booksError } = useBooksList({ search: bookSearch || undefined });
   const { data: loansData } = useLoansList();
   const { data: studentsData } = useStudentsList({ page: 1, pageSize: 200 });
   const createBook = useCreateBook();
@@ -75,6 +75,14 @@ export function LibraryPage() {
       { onSuccess: () => setLoanFormOpen(false) },
     );
   };
+
+  if (booksError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(booksError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

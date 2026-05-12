@@ -5,7 +5,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { useDictionaryItems, useCreateDictionaryItem, useUpdateDictionaryItem, useDeleteDictionaryItem } from '@/api/hooks/useDictionary';
 import { DictionaryItemForm } from '../components/DictionaryItemForm';
@@ -31,7 +31,7 @@ const DICT_CONFIGS: DictConfig[] = [
 
 function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () => void }) {
   const { t } = useTranslation();
-  const { data: items, isLoading } = useDictionaryItems(config.type);
+  const { data: items, isLoading, error } = useDictionaryItems(config.type);
   const createItem = useCreateDictionaryItem();
   const updateItem = useUpdateDictionaryItem();
   const deleteItem = useDeleteDictionaryItem();
@@ -82,7 +82,9 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
         </Button>
       </div>
 
-      {isLoading ? (
+      {error ? (
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      ) : isLoading ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : (
         <div className="rounded-[14px] border border-border bg-white overflow-hidden">

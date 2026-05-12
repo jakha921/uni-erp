@@ -5,7 +5,7 @@ import { Modal } from '@/components/overlays';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
 import { Tabs } from '@/components/navigation';
-import { Button, Spinner, Badge } from '@/components/ui';
+import { Button, Spinner, Badge, AlertBanner } from '@/components/ui';
 import { DropdownMenu, ConfirmDialog } from '@/components/overlays';
 import {
   useScholarships,
@@ -49,7 +49,7 @@ export function ScholarshipsPage() {
   const [bulkEnd, setBulkEnd] = useState('');
   const [bulkGroup, setBulkGroup] = useState('');
 
-  const { data: scholarships, isLoading } = useScholarships({
+  const { data: scholarships, isLoading, error } = useScholarships({
     type: typeFilter || undefined,
   });
 
@@ -173,6 +173,14 @@ export function ScholarshipsPage() {
       ),
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

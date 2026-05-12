@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Spinner } from '@/components/ui';
+import { Badge, Spinner, AlertBanner } from '@/components/ui';
 import { GraduationCap, CreditCard, BookOpen, FileText } from 'lucide-react';
 import { useStudentCabinet } from '@/api/hooks/useCabinet';
 
@@ -28,7 +28,15 @@ const LESSON_LABELS: Record<string, string> = {
 
 export function StudentCabinetPage() {
   const { t } = useTranslation();
-  const { data, isLoading } = useStudentCabinet();
+  const { data, isLoading, error } = useStudentCabinet();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !data) {
     return <PageContent><div className="flex justify-center py-20"><Spinner size="lg" /></div></PageContent>;

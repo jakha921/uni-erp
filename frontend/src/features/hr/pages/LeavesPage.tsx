@@ -8,6 +8,7 @@ import { StatCard } from '@/components/data-display/StatCard';
 import { Tabs } from '@/components/navigation/Tabs';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { LeaveTable } from '../components/LeaveTable';
@@ -129,7 +130,7 @@ export function LeavesPage() {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
   const [deleteLeave, setDeleteLeave] = useState<Leave | null>(null);
 
-  const { data: leaves, isLoading } = useLeaves();
+  const { data: leaves, isLoading, error } = useLeaves();
   const { data: employeesData } = useEmployees();
   const createMutation = useCreateLeave();
   const updateMutation = useUpdateLeave();
@@ -161,6 +162,14 @@ export function LeavesPage() {
   const handleReject = (leave: { id: string }) => {
     updateMutation.mutate({ id: leave.id, patch: { status: 'rejected' as LeaveStatus } });
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent className="space-y-4">

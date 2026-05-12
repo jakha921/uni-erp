@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Button, Avatar, Spinner } from '@/components/ui';
+import { Button, Avatar, Spinner, AlertBanner } from '@/components/ui';
 import { useSchedules, useSubjects, useBulkAttendance } from '@/api/hooks/useEducation';
 import { useGroups } from '@/api/hooks/useCore';
 import type { Schedule } from '@/types/education';
@@ -83,7 +83,7 @@ export function AcademicAttendancePage() {
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
 
-  const { data: schedulesData, isLoading: schedulesLoading } = useSchedules({
+  const { data: schedulesData, isLoading: schedulesLoading, error: schedulesError } = useSchedules({
     groupId: selectedGroupId ? Number(selectedGroupId) : undefined,
   });
   const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
@@ -139,6 +139,14 @@ export function AcademicAttendancePage() {
       }),
     });
   };
+
+  if (schedulesError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(schedulesError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

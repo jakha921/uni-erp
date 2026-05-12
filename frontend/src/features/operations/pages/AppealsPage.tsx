@@ -1,8 +1,9 @@
 import { useState, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Inbox, Bell, Clock, CheckCircle2, Plus, Users, CheckCircle, Trash2, Send } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Spinner } from '@/components/ui';
 import { Avatar } from '@/components/ui/Avatar';
 import { ConfirmDialog } from '@/components/overlays';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ const STATUS_LABEL: Record<AppealStatus, string> = {
 type FilterId = 'all' | 'new' | 'in_progress' | 'resolved';
 
 export function AppealsPage() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<FilterId>('all');
   const [categoryFilter, setCategoryFilter] = useState<AppealCategory | ''>('');
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -48,7 +50,7 @@ export function AppealsPage() {
 
   const statusParam = filter === 'all' ? undefined : filter as AppealStatus;
 
-  const { data: appealsData, isLoading } = useAppealsList({
+  const { data: appealsData, isLoading, error } = useAppealsList({
     status: statusParam,
     category: categoryFilter || undefined,
   });
@@ -83,6 +85,14 @@ export function AppealsPage() {
       updateStatus.mutate({ id: selected.id, status: 'resolved' });
     }
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

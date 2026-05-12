@@ -59,7 +59,7 @@ export function WarehousePage() {
     ...CATEGORY_KEYS.map((k) => ({ value: k, label: t(`warehouse.category${k.charAt(0).toUpperCase()}${k.slice(1)}`) })),
   ], [t]);
 
-  const { data: itemsData, isLoading } = useWarehouseItems({ page: 1, pageSize: 50, search: search || undefined });
+  const { data: itemsData, isLoading, error } = useWarehouseItems({ page: 1, pageSize: 50, search: search || undefined });
   const { data: statsData } = useWarehouseStats();
 
   const createItem = useCreateWarehouseItem();
@@ -138,6 +138,14 @@ export function WarehousePage() {
     { key: 'lastMovementDate', header: t('warehouse.itemLastMovement'), render: (row) => <span className="tabular-nums text-slate-500">{row.lastMovementDate ?? '—'}</span> },
     actionColumn,
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

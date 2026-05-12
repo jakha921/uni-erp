@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Truck, CheckCircle, Wrench, MapPin, Plus, Pencil, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { useVehicles, useCreateVehicle, useUpdateVehicle, useDeleteVehicle } from '@/api/hooks/useInfrastructure';
 import { VehicleForm } from '../components/VehicleForm';
@@ -26,7 +26,7 @@ export function TransportPage() {
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [deleteVehicle, setDeleteVehicle] = useState<Vehicle | null>(null);
 
-  const { data, isLoading } = useVehicles({
+  const { data, isLoading, error } = useVehicles({
     page: 1, pageSize: 50,
     status: filter === 'all' ? undefined : filter as VehicleStatus,
   });
@@ -50,6 +50,14 @@ export function TransportPage() {
       createVehicle.mutate(formData, { onSuccess: handleClose });
     }
   };
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -1,17 +1,19 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Paperclip, Send, MoreHorizontal } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
-import { Button, Spinner } from '@/components/ui';
+import { AlertBanner, Button, Spinner } from '@/components/ui';
 import { Avatar } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import { useThreads, useMessages, useSendMessage } from '@/api/hooks/useMessages';
 
 export function MessagesPage() {
+  const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
 
-  const { data: threads, isLoading: threadsLoading } = useThreads();
+  const { data: threads, isLoading: threadsLoading, error } = useThreads();
   const { data: messages, isLoading: messagesLoading } = useMessages(selectedId ?? 0);
   const sendMessage = useSendMessage();
 
@@ -23,6 +25,14 @@ export function MessagesPage() {
   const current = threadList.find((t) => t.id === selectedId);
   const currentName = current?.participantNames[0] ?? '';
   const currentMessages = messages ?? [];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (selectedId === null && threadList.length > 0 && threadList[0]) {
     setSelectedId(threadList[0].id);

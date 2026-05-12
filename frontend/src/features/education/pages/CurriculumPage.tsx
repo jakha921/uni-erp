@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { Upload, Plus, Trash2, Pencil } from 'lucide-react';
 import { useCurriculumList, useCreateCurriculum, useUpdateCurriculum, useDeleteCurriculum } from '@/api/hooks/useCurriculum';
@@ -28,7 +28,7 @@ const TYPE_BADGE_MAP: Record<string, 'success' | 'info' | 'warning'> = {
 
 export function CurriculumPage() {
   const { t } = useTranslation();
-  const { data: specialties, isLoading: specialtiesLoading } = useSpecialties();
+  const { data: specialties, isLoading: specialtiesLoading, error: specialtiesError } = useSpecialties();
   const { data: academicYears } = useAcademicYears();
   const { data: subjectsData } = useSubjects();
   const [selectedSpecialtyId, setSelectedSpecialtyId] = useState<number | undefined>(undefined);
@@ -84,6 +84,14 @@ export function CurriculumPage() {
   const totalSubjects = curriculum?.subjects.length ?? 0;
   const mandatoryCount = curriculum?.subjects.filter((s) => !s.isElective).length ?? 0;
   const electiveCount = curriculum?.subjects.filter((s) => s.isElective).length ?? 0;
+
+  if (specialtiesError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(specialtiesError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -4,7 +4,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { DataTable, FilterBar, type Column } from '@/components/table';
 import { ConfirmDialog } from '@/components/overlays';
 import { useSubjects, useCreateSubject, useUpdateSubject, useDeleteSubject } from '@/api/hooks/useEducation';
@@ -22,7 +22,7 @@ export function SubjectsPage() {
   const [deleteSubject, setDeleteSubject] = useState<Subject | null>(null);
 
   const debouncedSearch = useDebounce(search);
-  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects({ search: debouncedSearch || undefined });
+  const { data: subjectsData, isLoading: subjectsLoading, error: subjectsError } = useSubjects({ search: debouncedSearch || undefined });
   const { data: departmentsData, isLoading: deptsLoading } = useDepartments();
   const createSubject = useCreateSubject();
   const updateSubject = useUpdateSubject();
@@ -86,6 +86,14 @@ export function SubjectsPage() {
       ),
     },
   ];
+
+  if (subjectsError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(subjectsError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

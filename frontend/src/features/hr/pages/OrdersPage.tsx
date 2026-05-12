@@ -4,7 +4,7 @@ import { Plus, Search, FileText, CheckCircle, Clock, File } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Pagination } from '@/components/table';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { OrderTable } from '../components/OrderTable';
 import { OrderForm } from '../components/OrderForm';
@@ -21,7 +21,7 @@ export function OrdersPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOrder, setDeleteOrder] = useState<HrOrder | null>(null);
 
-  const { data: ordersData, isLoading } = useOrders();
+  const { data: ordersData, isLoading, error } = useOrders();
   const { data: employeesData } = useEmployees({ pageSize: 100 });
   const createMutation = useCreateOrder();
   const updateStatusMutation = useUpdateOrderStatus();
@@ -62,6 +62,14 @@ export function OrdersPage() {
   const signedCount = useMemo(() => allOrders.filter((o) => o.status === 'signed').length, [allOrders]);
   const reviewCount = useMemo(() => allOrders.filter((o) => o.status === 'review').length, [allOrders]);
   const draftCount = useMemo(() => allOrders.filter((o) => o.status === 'draft').length, [allOrders]);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

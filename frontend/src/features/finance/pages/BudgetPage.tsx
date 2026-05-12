@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Target, CheckCircle, TrendingUp, Wallet, Pencil, X, Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
-import { Button, Badge, Spinner } from '@/components/ui';
+import { Button, Badge, Spinner, AlertBanner } from '@/components/ui';
 import { StatCard, Card } from '@/components/data-display';
 import { formatMoney } from '@/lib/utils';
 import { useBudgetCategories, useBudgetSummary, useUpdateBudgetCategory } from '@/api/hooks/useBudget';
@@ -22,7 +22,7 @@ export function BudgetPage() {
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: categoriesData, isLoading: isLoadingCategories } = useBudgetCategories({
+  const { data: categoriesData, isLoading: isLoadingCategories, error: categoriesError } = useBudgetCategories({
     year,
     quarter: quarter > 0 ? quarter : undefined,
   });
@@ -169,6 +169,14 @@ export function BudgetPage() {
   ];
 
   const isLoading = isLoadingCategories || isLoadingSummary;
+
+  if (categoriesError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(categoriesError as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

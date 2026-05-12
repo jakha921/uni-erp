@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Bell,
   Clock,
@@ -10,7 +11,7 @@ import {
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { AlertBanner, Spinner } from '@/components/ui';
 import { Tabs } from '@/components/navigation/Tabs';
 import {
   useNotificationsList,
@@ -40,9 +41,10 @@ const TYPE_COLOR: Record<NotificationType, string> = {
 type FilterId = 'all' | 'unread' | 'system' | 'success' | 'warning';
 
 export function NotificationsPage() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<FilterId>('all');
 
-  const { data: notifData, isLoading } = useNotificationsList({ page: 1, pageSize: 50 });
+  const { data: notifData, isLoading, error } = useNotificationsList({ page: 1, pageSize: 50 });
   const markAllRead = useMarkAllNotificationsRead();
   const markRead = useMarkNotificationRead();
   const deleteNotif = useDeleteNotification();
@@ -68,6 +70,14 @@ export function NotificationsPage() {
     if (filter === 'success') return items.filter((n) => n.type === 'success');
     return items.filter((n) => n.type === 'warning' || n.type === 'info');
   }, [items, filter]);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, MoreHorizontal, Upload, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Avatar, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Avatar, Spinner } from '@/components/ui';
 import { DataTable, Pagination, type Column } from '@/components/table';
 import { useTeachersList } from '@/api/hooks/useTeachers';
 import type { TeacherListItem } from '@/types/teacher';
@@ -25,7 +25,7 @@ export function TeachersListPage() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const { data: teachersData, isLoading } = useTeachersList({
+  const { data: teachersData, isLoading, error } = useTeachersList({
     page,
     pageSize,
     search: search || undefined,
@@ -116,6 +116,14 @@ export function TeachersListPage() {
       },
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

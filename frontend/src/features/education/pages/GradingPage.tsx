@@ -3,7 +3,7 @@ import { Check, FileDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
-import { Badge, Button, Avatar, Spinner } from '@/components/ui';
+import { Badge, Button, Avatar, Spinner, AlertBanner } from '@/components/ui';
 import { useSubjects, useGrades, useBulkGrades } from '@/api/hooks/useEducation';
 import { useGroups } from '@/api/hooks/useCore';
 import type { Grade } from '@/types/education';
@@ -84,7 +84,7 @@ export function GradingPage() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [selectedSemesterId, setSelectedSemesterId] = useState<string>('');
 
-  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects();
+  const { data: subjectsData, isLoading: subjectsLoading, error: subjectsError } = useSubjects();
   const { data: gradesData, isLoading: gradesLoading } = useGrades({
     subjectId: selectedSubjectId ? Number(selectedSubjectId) : undefined,
     semesterId: selectedSemesterId ? Number(selectedSemesterId) : undefined,
@@ -166,6 +166,14 @@ export function GradingPage() {
     );
     setGrades({});
   };
+
+  if (subjectsError) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(subjectsError as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

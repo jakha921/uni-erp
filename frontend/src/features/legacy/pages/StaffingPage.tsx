@@ -1,74 +1,52 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users, Briefcase, AlertCircle, TrendingUp } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { ProgressBar } from '@/components/ui';
-
-interface Position {
-  title: string;
-  total: number;
-  filled: number;
-  salary: string;
-}
-
-interface Department {
-  name: string;
-  positions: Position[];
-}
-
-const STAFFING: Department[] = [
-  {
-    name: 'IT Fakulteti',
-    positions: [
-      { title: 'Dekan', total: 1, filled: 1, salary: '5 200 000' },
-      { title: 'Professor', total: 8, filled: 7, salary: '4 800 000' },
-      { title: 'Dotsent', total: 14, filled: 12, salary: '3 600 000' },
-      { title: "O'qituvchi", total: 20, filled: 18, salary: '2 800 000' },
-      { title: 'Assistent', total: 10, filled: 8, salary: '2 200 000' },
-    ],
-  },
-  {
-    name: 'Moliya va Buxgalteriya',
-    positions: [
-      { title: 'Bosh buxgalter', total: 1, filled: 1, salary: '4 500 000' },
-      { title: "Buxgalter-iqtisodchi", total: 6, filled: 5, salary: '3 200 000' },
-      { title: "Kassa xodimi", total: 3, filled: 3, salary: '2 400 000' },
-    ],
-  },
-  {
-    name: 'Dekanat va ma\'muriyat',
-    positions: [
-      { title: 'Rektor', total: 1, filled: 1, salary: '9 000 000' },
-      { title: 'Prorektor', total: 4, filled: 4, salary: '7 000 000' },
-      { title: "O'quv ishlari bo'limi boshlig'i", total: 2, filled: 2, salary: '5 000 000' },
-      { title: 'Metodist', total: 8, filled: 6, salary: '2 600 000' },
-    ],
-  },
-  {
-    name: "Xo'jalik va texnik xizmat",
-    positions: [
-      { title: "Xo'jalik bo'limi boshlig'i", total: 1, filled: 1, salary: '3 800 000' },
-      { title: 'Texnik xodim', total: 12, filled: 10, salary: '1 800 000' },
-      { title: 'Haydovchi', total: 5, filled: 4, salary: '2 200 000' },
-      { title: 'Qorovul', total: 8, filled: 8, salary: '1 600 000' },
-    ],
-  },
-];
+import { ProgressBar, Spinner, AlertBanner } from '@/components/ui';
+import { formatMoney } from '@/lib/utils';
+import { useStaffing } from '@/api/hooks/useLegacy';
 
 export function StaffingPage() {
   const { t } = useTranslation();
   const [deptFilter, setDeptFilter] = useState('');
 
-  const allPositions = STAFFING.flatMap((d) => d.positions);
-  const totalSlots = allPositions.reduce((s, p) => s + p.total, 0);
-  const filledSlots = allPositions.reduce((s, p) => s + p.filled, 0);
-  const vacantSlots = totalSlots - filledSlots;
-  const fillRate = Math.round((filledSlots / totalSlots) * 100);
+  const { data: positions = [], isLoading, error } = useStaffing({ pageSize: 200 });
 
-  const filteredStaffing = deptFilter
-    ? STAFFING.filter((d) => d.name === deptFilter)
-    : STAFFING;
+  const grouped = useMemo(() => {
+    const map = new Map<string, typeof positions>();
+    for (const pos of positions) {
+      const arr = map.get(pos.departmentName) ?? [];
+      arr.push(pos);
+      map.set(pos.departmentName, arr);
+    }
+    return Array.from(map.entries()).map(([name, items]) => ({ name, positions: items }));
+  }, [positions]);
+
+  const totalSlots = positions.reduce((s, p) => s + p.totalSlots, 0);
+  const filledSlots = positions.reduce((s, p) => s + p.filledSlots, 0);
+  const vacantSlots = totalSlots - filledSlots;
+  const fillRate = totalSlots ? Math.round((filledSlots / totalSlots) * 100) : 0;
+
+  const filteredGrouped = deptFilter ? grouped.filter((d) => d.name === deptFilter) : grouped;
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <PageContent>
+        <div className="flex h-64 items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>
@@ -92,16 +70,16 @@ export function StaffingPage() {
           className="h-9 rounded-md border border-border px-3 text-sm"
         >
           <option value="">{t('legacy.allDepartments')}</option>
-          {STAFFING.map((d) => (
+          {grouped.map((d) => (
             <option key={d.name} value={d.name}>{d.name}</option>
           ))}
         </select>
       </div>
 
       <div className="space-y-4">
-        {filteredStaffing.map((dept) => {
-          const deptTotal = dept.positions.reduce((s, p) => s + p.total, 0);
-          const deptFilled = dept.positions.reduce((s, p) => s + p.filled, 0);
+        {filteredGrouped.map((dept) => {
+          const deptTotal = dept.positions.reduce((s, p) => s + p.totalSlots, 0);
+          const deptFilled = dept.positions.reduce((s, p) => s + p.filledSlots, 0);
           const deptVacant = deptTotal - deptFilled;
 
           return (
@@ -115,11 +93,11 @@ export function StaffingPage() {
                     {deptVacant > 0 && (
                       <span>Bo'sh: <strong className="text-amber-600">{deptVacant}</strong></span>
                     )}
-                    <strong className="text-slate-700">{Math.round((deptFilled / deptTotal) * 100)}%</strong>
+                    <strong className="text-slate-700">{deptTotal ? Math.round((deptFilled / deptTotal) * 100) : 0}%</strong>
                   </div>
                 </div>
                 <ProgressBar
-                  value={Math.round((deptFilled / deptTotal) * 100)}
+                  value={deptTotal ? Math.round((deptFilled / deptTotal) * 100) : 0}
                   color={deptVacant === 0 ? 'bg-emerald-500' : 'bg-primary-500'}
                   size="sm"
                 />
@@ -136,13 +114,13 @@ export function StaffingPage() {
                 </thead>
                 <tbody>
                   {dept.positions.map((pos, i) => {
-                    const vacant = pos.total - pos.filled;
+                    const vacant = pos.totalSlots - pos.filledSlots;
                     return (
-                      <tr key={pos.title} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}>
-                        <td className="px-4 py-2.5 text-[13px] font-medium text-slate-900">{pos.title}</td>
-                        <td className="px-4 py-2.5 text-[13px] text-slate-600 text-center">{pos.total}</td>
+                      <tr key={pos.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}>
+                        <td className="px-4 py-2.5 text-[13px] font-medium text-slate-900">{pos.positionName}</td>
+                        <td className="px-4 py-2.5 text-[13px] text-slate-600 text-center">{pos.totalSlots}</td>
                         <td className="px-4 py-2.5 text-center">
-                          <span className="text-[13px] font-medium text-emerald-600">{pos.filled}</span>
+                          <span className="text-[13px] font-medium text-emerald-600">{pos.filledSlots}</span>
                         </td>
                         <td className="px-4 py-2.5 text-center">
                           {vacant > 0 ? (
@@ -151,7 +129,7 @@ export function StaffingPage() {
                             <span className="text-[13px] text-slate-400">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-2.5 text-[13px] text-slate-600 text-right font-mono">{pos.salary}</td>
+                        <td className="px-4 py-2.5 text-[13px] text-slate-600 text-right font-mono">{formatMoney(pos.salary)}</td>
                       </tr>
                     );
                   })}

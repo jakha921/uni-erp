@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Users, TrendingUp, UserCheck, PhoneCall } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard, DonutChart, LineChartSimple } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { AlertBanner, Spinner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { useCrmStats } from '@/api/hooks/useCrm';
 
@@ -17,7 +17,15 @@ export function CrmReportPage() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  const { data: stats, isLoading } = useCrmStats();
+  const { data: stats, isLoading, error } = useCrmStats();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading || !stats) {
     return (

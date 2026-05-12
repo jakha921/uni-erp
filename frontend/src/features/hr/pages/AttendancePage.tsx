@@ -5,6 +5,7 @@ import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { AlertBanner } from '@/components/ui';
 import { Modal } from '@/components/overlays';
 import { AttendanceCalendar } from '../components/AttendanceCalendar';
 import { useAttendance, useDepartments } from '@/api/hooks/useHr';
@@ -21,8 +22,16 @@ export function AttendancePage() {
   const [holidayApplied, setHolidayApplied] = useState(false);
 
   const monthStr = `${year}-${String(month).padStart(2, '0')}`;
-  const { data: rows, isLoading } = useAttendance(departmentId);
+  const { data: rows, isLoading, error } = useAttendance(departmentId);
   const { data: departments } = useDepartments();
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent className="space-y-4">

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FileText, UserPlus, UserMinus, Gift } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Spinner } from '@/components/ui';
+import { Spinner, AlertBanner } from '@/components/ui';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { Pagination } from '@/components/table';
 import { useLegacyOrders } from '@/api/hooks/useLegacy';
@@ -29,7 +29,7 @@ export function LegacyOrdersPage() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useLegacyOrders({ page, pageSize: PAGE_SIZE, type: typeFilter || undefined });
+  const { data, isLoading, error } = useLegacyOrders({ page, pageSize: PAGE_SIZE, type: typeFilter || undefined });
 
   const allOrders = data?.data ?? [];
   const orders = useMemo(() => allOrders.filter((o) => {
@@ -41,6 +41,14 @@ export function LegacyOrdersPage() {
   const totalPages = data?.totalPages ?? 1;
   const hires = orders.filter((o) => o.type === 'hire').length;
   const fires = orders.filter((o) => o.type === 'fire').length;
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

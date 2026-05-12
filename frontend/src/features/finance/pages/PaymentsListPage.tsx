@@ -3,7 +3,7 @@ import { Plus, CheckCircle, CircleDollarSign, X, Search, ChevronRight, Printer, 
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Button, Spinner, Badge } from '@/components/ui';
+import { Button, Spinner, Badge, AlertBanner } from '@/components/ui';
 import { Modal } from '@/components/overlays';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
 import { usePayments, useContracts } from '@/api/hooks/useFinance';
@@ -118,7 +118,7 @@ export function PaymentsListPage() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [printPayment, setPrintPayment] = useState<Payment | null>(null);
 
-  const { data, isLoading } = usePayments({
+  const { data, isLoading, error } = usePayments({
     page: 1,
     pageSize: 200,
     paymentMethod: method || undefined,
@@ -144,6 +144,14 @@ export function PaymentsListPage() {
     });
     return Object.entries(g).sort((a, b) => b[0].localeCompare(a[0]));
   }, [filtered]);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   if (isLoading) {
     return (

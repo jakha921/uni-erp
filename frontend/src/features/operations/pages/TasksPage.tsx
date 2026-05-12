@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { AlertBanner, Badge, Button, Spinner } from '@/components/ui';
 import { DataTable, type Column } from '@/components/table/DataTable';
 import { SearchInput } from '@/components/form/SearchInput';
 import { Select } from '@/components/ui/Select';
@@ -85,7 +85,7 @@ export function TasksPage() {
     label: STATUS_LABELS[cfg.id],
   }));
 
-  const { data: tasksData, isLoading } = useTasksList({
+  const { data: tasksData, isLoading, error } = useTasksList({
     page: 1,
     pageSize: 50,
     search: search || undefined,
@@ -174,6 +174,14 @@ export function TasksPage() {
       ),
     },
   ];
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

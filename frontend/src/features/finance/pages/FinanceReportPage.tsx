@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { formatMoney } from '@/lib/utils';
 import { useContracts, usePayments } from '@/api/hooks/useFinance';
+import { useFaculties } from '@/api/hooks/useCore';
 import type { Contract, PaymentMethod } from '@/types/finance';
 
 type ReportType = 'general' | 'faculty' | 'level' | 'type' | 'method';
@@ -20,17 +21,6 @@ interface ReportRow {
 const REPORT_TYPE_KEYS: ReportType[] = ['general', 'faculty', 'level', 'type', 'method'];
 const PAY_METHOD_KEYS: PaymentMethod[] = ['bank', 'naqd', 'click', 'payme', 'online'];
 
-const FACULTIES = [
-  'Kompyuter injiniringi',
-  'Iqtisodiyot',
-  'Pedagogika',
-  'Filologiya',
-  'Tabiiy fanlar',
-  'Huquqshunoslik',
-  "San'at va dizayn",
-  'Tibbiyot',
-];
-
 interface MethodRow {
   method: string;
   count: number;
@@ -41,6 +31,7 @@ export function FinanceReportPage() {
   const { t } = useTranslation();
   const { data: contracts } = useContracts();
   const { data: paymentsData } = usePayments({ pageSize: 500 });
+  const { data: facultiesData } = useFaculties();
 
   const [fromDate, setFromDate] = useState('2025-09-01');
   const [toDate, setToDate] = useState('2026-06-30');
@@ -59,7 +50,8 @@ export function FinanceReportPage() {
     let groups: { key: string; contracts: Contract[] }[];
 
     if (reportType === 'faculty') {
-      groups = FACULTIES.map((f) => ({
+      const facultyNames = (facultiesData ?? []).map((f) => f.name);
+      groups = facultyNames.map((f) => ({
         key: f,
         contracts: filteredContracts.filter((c: Contract) => c.facultyName === f),
       }));

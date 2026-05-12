@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
-import { Badge, Button, Spinner } from '@/components/ui';
+import { Badge, Button, Spinner, AlertBanner } from '@/components/ui';
 import { SearchInput } from '@/components/form';
 import { DataTable, type Column } from '@/components/table';
 import { ConfirmDialog } from '@/components/overlays';
@@ -114,7 +114,7 @@ export function EquipmentPage() {
     ),
   };
 
-  const { data: equipmentData, isLoading } = useEquipment({
+  const { data: equipmentData, isLoading, error } = useEquipment({
     page: 1,
     pageSize: 50,
     search: search || undefined,
@@ -157,6 +157,14 @@ export function EquipmentPage() {
   const repair = items.filter((e) => e.status === 'repair').length;
   const writtenOff = items.filter((e) => e.status === 'written_off').length;
   const totalValue = items.reduce((s, e) => s + e.cost, 0);
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

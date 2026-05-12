@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Pagination } from '@/components/table';
-import { Button, Spinner } from '@/components/ui';
+import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { EmployeeTable } from '../components/EmployeeTable';
 import { EmployeeForm } from '../components/EmployeeForm';
@@ -29,7 +29,7 @@ export function EmployeesListPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
   const [position, setPosition] = useState('');
 
-  const { data, isLoading } = useEmployees(params);
+  const { data, isLoading, error } = useEmployees(params);
   const { data: departments = [] } = useDepartments();
   const { data: editEmployeeData } = useEmployee(editEmployeeId ?? 0);
   const createMutation = useCreateEmployee();
@@ -97,6 +97,14 @@ export function EmployeesListPage() {
     },
     [createMutation, updateMutation, editEmployeeId],
   );
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent>

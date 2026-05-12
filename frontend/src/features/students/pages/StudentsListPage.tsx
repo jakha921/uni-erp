@@ -15,6 +15,7 @@ import { useFaculties } from '@/api/hooks/useCore';
 import { useAuthStore } from '@/stores/auth.store';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useTranslation } from 'react-i18next';
+import { AlertBanner } from '@/components/ui';
 import type { StudentStatus, StudentListParams, StudentListItem } from '@/types/student';
 
 export function StudentsListPage() {
@@ -55,7 +56,7 @@ export function StudentsListPage() {
     [page, debouncedSearch, facultyId, course, status, paymentForm, sortBy, sortOrder],
   );
 
-  const { data, isLoading } = useStudentsList(params);
+  const { data, isLoading, error } = useStudentsList(params);
   const deleteStudentMutation = useDeleteStudent();
   const { data: faculties } = useFaculties();
 
@@ -88,6 +89,14 @@ export function StudentsListPage() {
     (id: number) => navigate(`/students/${id}`),
     [navigate],
   );
+
+  if (error) {
+    return (
+      <PageContent>
+        <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />
+      </PageContent>
+    );
+  }
 
   return (
     <PageContent className="space-y-4">
