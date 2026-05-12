@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   GraduationCap, FileText, Globe, Users, BookOpen, MapPin, Home, Briefcase, ArrowLeft, Plus, Pencil, Trash2,
   type LucideIcon,
@@ -29,6 +30,7 @@ const DICT_CONFIGS: DictConfig[] = [
 ];
 
 function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () => void }) {
+  const { t } = useTranslation();
   const { data: items, isLoading } = useDictionaryItems(config.type);
   const createItem = useCreateDictionaryItem();
   const updateItem = useUpdateDictionaryItem();
@@ -61,14 +63,14 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
     <div>
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-1" />Orqaga
+          <ArrowLeft className="h-4 w-4 mr-1" />{t('common.back')}
         </Button>
         <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: config.color + '18', color: config.color }}>
           <config.icon className="h-5 w-5" />
         </div>
         <div className="flex-1">
           <h2 className="text-lg font-semibold text-slate-900">{config.name}</h2>
-          <p className="text-sm text-slate-500">{items?.length ?? 0} ta yozuv</p>
+          <p className="text-sm text-slate-500">{t('admin.entriesCount', { count: items?.length ?? 0 })}</p>
         </div>
         <Button
           variant="primary"
@@ -76,7 +78,7 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
           leftIcon={<Plus className="h-4 w-4" />}
           onClick={() => { setEditItem(null); setFormOpen(true); }}
         >
-          Qo&apos;shish
+          {t('admin.addEntry')}
         </Button>
       </div>
 
@@ -148,9 +150,9 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
             { onSuccess: () => setDeleteTarget(null) },
           );
         }}
-        title="Yozuvni o'chirish"
-        message={`"${deleteTarget?.name}" yozuvini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('admin.deleteEntry')}
+        message={t('admin.deleteEntryConfirm', { name: deleteTarget?.name })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteItem.isPending}
       />
@@ -159,16 +161,17 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
 }
 
 export function ReferencesPage() {
+  const { t } = useTranslation();
   const [activeConfig, setActiveConfig] = useState<DictConfig | null>(null);
 
   return (
     <PageContent>
       <PageHeader
-        title={activeConfig ? activeConfig.name : "Ma'lumotnomalar"}
-        subtitle={activeConfig ? undefined : "Tizim lug'atlari va klassifikatorlari"}
+        title={activeConfig ? activeConfig.name : t('admin.referencesTitle')}
+        subtitle={activeConfig ? undefined : t('admin.referencesSubtitle')}
         breadcrumbs={[
-          { label: 'Admin' },
-          { label: "Ma'lumotnomalar", path: activeConfig ? '/references' : undefined },
+          { label: t('nav.admin') },
+          { label: t('nav.references'), path: activeConfig ? '/references' : undefined },
           ...(activeConfig ? [{ label: activeConfig.name }] : []),
         ]}
       />

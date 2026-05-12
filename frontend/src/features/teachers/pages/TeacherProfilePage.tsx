@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, BookOpen, Clock, Users, Printer } from 'lucide-react';
 import { PageContent } from '@/components/layout';
@@ -62,6 +63,7 @@ const TABS_CONFIG = [
 ];
 
 export function TeacherProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const teacherId = Number(id);
   const navigate = useNavigate();
@@ -80,7 +82,7 @@ export function TeacherProfilePage() {
   }
 
   const statusVariant = teacher.status === 'active' ? 'success' : teacher.status === 'leave' ? 'warning' : 'error';
-  const statusLabel = teacher.status === 'active' ? 'Faol' : teacher.status === 'leave' ? "Ta'tilda" : 'Nofaol';
+  const statusLabel = teacher.status === 'active' ? t('teachers.statusActive') : teacher.status === 'leave' ? t('teachers.statusLeave') : t('teachers.statusInactive');
   const loadPct = teacher.maxLoadHours > 0 ? Math.round((teacher.loadHours / teacher.maxLoadHours) * 100) : 0;
 
   return (
@@ -90,7 +92,7 @@ export function TeacherProfilePage() {
         className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-slate-700 transition-colors mb-4"
       >
         <ArrowLeft className="h-4 w-4" />
-        Orqaga
+        {t('teachers.profileBack')}
       </button>
 
       {/* Profile header */}
@@ -123,9 +125,9 @@ export function TeacherProfilePage() {
           </div>
           {/* Load mini stat */}
           <div className="text-right">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-400 mb-1">Yuklanma</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-400 mb-1">{t('teachers.loadLabel')}</p>
             <p className="text-2xl font-bold text-slate-900">{teacher.loadHours}<span className="text-base font-normal text-muted">/{teacher.maxLoadHours}</span></p>
-            <p className="text-xs text-muted">soat</p>
+            <p className="text-xs text-muted">{t('teachers.hoursUnit')}</p>
             <div className="mt-2 h-1.5 w-32 rounded-full bg-slate-100 overflow-hidden">
               <div
                 className="h-full rounded-full"
@@ -142,7 +144,7 @@ export function TeacherProfilePage() {
               className="mt-3"
               onClick={() => printTeacherCard(teacher)}
             >
-              Chop etish
+              {t('teachers.printCard')}
             </Button>
           </div>
         </div>

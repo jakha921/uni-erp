@@ -1,5 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutGrid,
   Users,
@@ -102,6 +103,7 @@ function saveGroupState(state: Record<string, boolean>) {
 }
 
 export function Sidebar() {
+  const { t } = useTranslation();
   const location = useLocation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const role = currentUser?.role ?? 'admin';
@@ -217,7 +219,7 @@ export function Sidebar() {
                       hasActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400',
                     )}
                   />
-                  <span className="flex-1 text-left">{group.label}</span>
+                  <span className="flex-1 text-left">{t(group.label).toUpperCase()}</span>
                   {!isOpen && totalCount > 0 && (
                     <span className="text-[9.5px] font-bold px-1.5 py-px rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 tabular-nums normal-case tracking-normal">
                       {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}k` : totalCount}
@@ -254,7 +256,7 @@ export function Sidebar() {
                             ? 'bg-emerald-50 text-green-800 font-semibold dark:bg-primary-900/30 dark:text-primary-300'
                             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100',
                       )}
-                      title={collapsed ? item.label : undefined}
+                      title={collapsed ? t(item.label) : undefined}
                     >
                       <Icon
                         className={cn(
@@ -264,7 +266,7 @@ export function Sidebar() {
                       />
                       {!collapsed && (
                         <>
-                          <span className="flex-1 truncate">{item.label}</span>
+                          <span className="flex-1 truncate">{t(item.label)}</span>
                           {item.count !== undefined && (
                             <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-error text-white">
                               {item.count}

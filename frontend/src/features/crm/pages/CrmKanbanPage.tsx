@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, User, Plus, LayoutGrid, BarChart3, Filter, X, Phone, Tag, Clock } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Avatar, Badge, Button } from '@/components/ui';
@@ -6,13 +7,13 @@ import type { LeadStatus, LeadSource, LeadListItem } from '@/types/crm';
 import { useLeads, useUpdateLead } from '@/api/hooks/useCrm';
 import { cn } from '@/lib/utils';
 
-const SOURCE_LABELS: Record<LeadSource, string> = {
-  website: 'Website',
-  telegram: 'Telegram',
-  instagram: 'Instagram',
-  referral: 'Tavsiya',
-  event: 'Tadbir',
-  call: "Qo'ng'iroq",
+const SOURCE_KEYS: Record<LeadSource, string> = {
+  website: 'crm.sourceWebsite',
+  telegram: 'crm.sourceTelegram',
+  instagram: 'crm.sourceInstagram',
+  referral: 'crm.sourceReferral',
+  event: 'crm.sourceEvent',
+  call: 'crm.sourceCall',
 };
 
 const SOURCE_VARIANT: Record<LeadSource, 'info' | 'success' | 'warning' | 'default'> = {
@@ -31,16 +32,22 @@ interface StageConfig {
   bg: string;
 }
 
-const STAGES: StageConfig[] = [
-  { id: 'new', label: 'Yangi', color: '#3B82F6', bg: 'bg-blue-50' },
-  { id: 'contacted', label: "Qo'ng'iroq", color: '#F59E0B', bg: 'bg-amber-50' },
-  { id: 'interested', label: 'Qiziqmoqda', color: '#8B5CF6', bg: 'bg-violet-50' },
-  { id: 'applied', label: 'Hujjat topshirdi', color: '#64748B', bg: 'bg-slate-100' },
-  { id: 'enrolled', label: 'Qabul qilindi', color: '#2DB976', bg: 'bg-green-50' },
-  { id: 'rejected', label: 'Rad etildi', color: '#EF4444', bg: 'bg-red-50' },
+interface StageConfigWithKey extends Omit<StageConfig, 'label'> {
+  labelKey: string;
+}
+
+const STAGES_CONFIG: StageConfigWithKey[] = [
+  { id: 'new', labelKey: 'crm.statusNew', color: '#3B82F6', bg: 'bg-blue-50' },
+  { id: 'contacted', labelKey: 'crm.statusContacted', color: '#F59E0B', bg: 'bg-amber-50' },
+  { id: 'interested', labelKey: 'crm.statusInterested', color: '#8B5CF6', bg: 'bg-violet-50' },
+  { id: 'applied', labelKey: 'crm.statusApplied', color: '#64748B', bg: 'bg-slate-100' },
+  { id: 'enrolled', labelKey: 'crm.statusEnrolled', color: '#2DB976', bg: 'bg-green-50' },
+  { id: 'rejected', labelKey: 'crm.statusRejected', color: '#EF4444', bg: 'bg-red-50' },
 ];
 
 export function CrmKanbanPage() {
+  const { t } = useTranslation();
+  const STAGES = useMemo(() => STAGES_CONFIG.map((s) => ({ ...s, label: t(s.labelKey) })), [t]);
   const { data: leadsData } = useLeads({ pageSize: 100 });
   const allLeads = leadsData?.data ?? [];
   const updateLead = useUpdateLead();
@@ -81,8 +88,8 @@ export function CrmKanbanPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Voronka (Kanban)"
-        subtitle="Qabul jarayonini vizual boshqarish"
+        title={t('crm.kanbanTitle')}
+        subtitle={t('crm.kanbanSubtitle')}
         breadcrumbs={[
           { label: 'CRM', path: '/crm' },
           { label: 'Voronka' },
@@ -94,19 +101,19 @@ export function CrmKanbanPage() {
         <div className="flex gap-1 rounded-[10px] border border-slate-200 bg-white p-[3px]">
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-[12.5px] font-medium text-slate-600">
             <LayoutGrid className="h-3.5 w-3.5" />
-            Ro&apos;yxat
+            {t('crm.listView')}
           </button>
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-primary-500 px-3 py-1.5 text-[12.5px] font-semibold text-white">
             <BarChart3 className="h-3.5 w-3.5" />
-            Voronka
+            {t('crm.funnelView')}
           </button>
         </div>
         <div className="flex-1" />
         <Button variant="secondary" size="sm" leftIcon={<Filter className="h-3.5 w-3.5" />}>
-          Filtr
+          {t('common.filter')}
         </Button>
         <Button size="sm" leftIcon={<Plus className="h-4 w-4" />}>
-          Yangi ariza
+          {t('crm.newApplication')}
         </Button>
       </div>
 
@@ -158,7 +165,7 @@ export function CrmKanbanPage() {
                 ))}
                 <button className="flex items-center justify-center gap-1.5 rounded-[10px] border border-dashed border-slate-300 bg-transparent px-3 py-2.5 text-xs text-muted hover:border-slate-400 hover:text-slate-600">
                   <Plus className="h-3.5 w-3.5" />
-                  Ariza qo&apos;shish
+                  {t('crm.addApplication')}
                 </button>
               </div>
             </div>
@@ -193,6 +200,7 @@ interface KanbanCardProps {
 }
 
 function KanbanCard({ card, isDragging, onDragStart, onDragEnd, onClick }: KanbanCardProps) {
+  const { t } = useTranslation();
   const fullName = `${card.lastName} ${card.firstName}`;
   const shortName = `${card.lastName} ${card.firstName?.[0] ?? ''}.`;
 
@@ -223,7 +231,7 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd, onClick }: Kanba
       {/* Badges */}
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         <Badge>{card.direction}</Badge>
-        <Badge variant={SOURCE_VARIANT[card.source]}>{SOURCE_LABELS[card.source]}</Badge>
+        <Badge variant={SOURCE_VARIANT[card.source]}>{t(SOURCE_KEYS[card.source])}</Badge>
       </div>
 
       {/* Footer */}
@@ -242,7 +250,9 @@ function KanbanCard({ card, isDragging, onDragStart, onDragEnd, onClick }: Kanba
 }
 
 function LeadDetailSlide({ lead, onClose }: { lead: LeadListItem; onClose: () => void }) {
+  const { t } = useTranslation();
   const fullName = `${lead.lastName} ${lead.firstName}`;
+  const STAGES = useMemo(() => STAGES_CONFIG.map((s) => ({ ...s, label: t(s.labelKey) })), [t]);
   const stageCfg = STAGES.find((s) => s.id === lead.status) ?? STAGES[0]!;
 
   return (
@@ -250,7 +260,7 @@ function LeadDetailSlide({ lead, onClose }: { lead: LeadListItem; onClose: () =>
       <div className="flex-1 bg-black/40" onClick={onClose} />
       <div className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <h2 className="text-[15px] font-semibold text-slate-900">Ariza tafsiloti</h2>
+          <h2 className="text-[15px] font-semibold text-slate-900">{t('crm.applicationDetail')}</h2>
           <button onClick={onClose} className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
             <X className="h-4 w-4" />
           </button>
@@ -279,7 +289,7 @@ function LeadDetailSlide({ lead, onClose }: { lead: LeadListItem; onClose: () =>
             </div>
             <div className="flex items-center gap-2.5 text-[13px] text-slate-700">
               <Tag className="h-4 w-4 text-slate-400 shrink-0" />
-              {SOURCE_LABELS[lead.source]}
+              {t(SOURCE_KEYS[lead.source])}
             </div>
             <div className="flex items-center gap-2.5 text-[13px] text-slate-500">
               <Clock className="h-4 w-4 text-slate-400 shrink-0" />
@@ -288,7 +298,7 @@ function LeadDetailSlide({ lead, onClose }: { lead: LeadListItem; onClose: () =>
           </div>
 
           <div className="border-t border-slate-100 pt-4">
-            <p className="text-[12px] font-semibold text-slate-500 mb-2">Mas&apos;ul shaxs</p>
+            <p className="text-[12px] font-semibold text-slate-500 mb-2">{t('crm.responsible')}</p>
             <div className="flex items-center gap-2.5">
               <Avatar name={lead.assigneeName} size="sm" />
               <span className="text-[13px] text-slate-700">{lead.assigneeName}</span>

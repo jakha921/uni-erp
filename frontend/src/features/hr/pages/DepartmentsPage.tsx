@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2, Layers, Users, BookOpen, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { StatCard } from '@/components/data-display';
@@ -11,6 +12,7 @@ import type { HrDepartment } from '@/types/hr';
 import type { DepartmentFormData } from '../schemas/department.schema';
 
 export function DepartmentsPage() {
+  const { t } = useTranslation();
   const [formOpen, setFormOpen] = useState(false);
   const [editDepartment, setEditDepartment] = useState<HrDepartment | null>(null);
   const [deleteDepartment, setDeleteDepartment] = useState<HrDepartment | null>(null);
@@ -64,22 +66,22 @@ export function DepartmentsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Bo'limlar va kafedralar"
-        subtitle={`Jami: ${stats.total} ta tarkibiy bo'linma`}
-        breadcrumbs={[{ label: 'Kadrlar', path: '/hr' }, { label: "Bo'limlar" }]}
+        title={t('hr.departmentsAndChairs')}
+        subtitle={`${t('common.total')}: ${stats.total}`}
+        breadcrumbs={[{ label: t('nav.hr'), path: '/hr' }, { label: t('nav.departments') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Yangi bo&apos;lim
+            {t('hr.newDepartment')}
           </Button>
         }
       />
 
       {/* StatCards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Fakultetlar" value={stats.fakultet} icon={<Building2 className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Kafedralar" value={stats.kafedra} icon={<BookOpen className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
-        <StatCard label="Bo'limlar" value={stats.bolim} icon={<Layers className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Jami xodimlar" value={totalEmployees} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
+        <StatCard label={t('hr.faculties')} value={stats.fakultet} icon={<Building2 className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('hr.departments')} value={stats.kafedra} icon={<BookOpen className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('hr.divisions')} value={stats.bolim} icon={<Layers className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('hr.totalEmployees')} value={totalEmployees} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
       </div>
 
       <div className="mt-6">
@@ -107,9 +109,9 @@ export function DepartmentsPage() {
           if (!deleteDepartment) return;
           deleteDepartmentMutation.mutate(deleteDepartment.id, { onSuccess: () => setDeleteDepartment(null) });
         }}
-        title="Bo'limni o'chirish"
-        message={`"${deleteDepartment?.name}" bo'limini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('hr.deleteDepartment')}
+        message={t('hr.deleteDepartmentConfirm', { name: deleteDepartment?.name })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteDepartmentMutation.isPending}
       />

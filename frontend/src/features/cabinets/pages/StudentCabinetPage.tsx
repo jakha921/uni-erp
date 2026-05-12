@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Spinner } from '@/components/ui';
@@ -26,6 +27,7 @@ const LESSON_LABELS: Record<string, string> = {
 };
 
 export function StudentCabinetPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentCabinet();
 
   if (isLoading || !data) {
@@ -37,8 +39,8 @@ export function StudentCabinetPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Talaba kabineti"
-        breadcrumbs={[{ label: 'Kabinetlar' }, { label: 'Talaba kabineti' }]}
+        title={t('cabinets.studentTitle')}
+        breadcrumbs={[{ label: t('nav.cabinets') }, { label: t('nav.studentCabinet') }]}
       />
 
       <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-700 p-6 text-white flex items-center gap-5 mb-5">
@@ -46,18 +48,18 @@ export function StudentCabinetPage() {
           {student.fullName.split(' ').map((w) => w[0]).join('').slice(0, 2)}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wider opacity-85">Xush kelibsiz</p>
+          <p className="text-xs font-medium uppercase tracking-wider opacity-85">{t('cabinets.welcome')}</p>
           <h2 className="mt-1 text-2xl font-bold">{student.fullName}</h2>
           <p className="mt-1 text-[13px] opacity-90">
             {student.group} guruh &middot; {student.course}-kurs
           </p>
         </div>
         <div className="hidden md:flex items-center gap-8">
-          <StatBlock value={String(student.gpa)} label="O'rtacha ball" />
+          <StatBlock value={String(student.gpa)} label={t('cabinets.avgScore')} />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={String(student.totalCredits)} label="Kreditlar" />
+          <StatBlock value={String(student.totalCredits)} label={t('cabinets.credits')} />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={`${student.attendanceRate}%`} label="Davomat" />
+          <StatBlock value={`${student.attendanceRate}%`} label={t('cabinets.attendance')} />
         </div>
       </div>
 
@@ -82,10 +84,10 @@ export function StudentCabinetPage() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Bugungi dars jadvali</h3>
+              <h3 className="text-sm font-semibold text-slate-900">{t('cabinets.todaySchedule')}</h3>
               <p className="text-xs text-slate-500 mt-0.5">{new Date().toLocaleDateString('uz-UZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
-            <Badge variant="success" dot>{todaySchedule.length} ta dars</Badge>
+            <Badge variant="success" dot>{t('cabinets.lessonsCount', { count: todaySchedule.length })}</Badge>
           </div>
           <div className="flex flex-col gap-2">
             {todaySchedule.map((cls, i) => {
@@ -113,13 +115,13 @@ export function StudentCabinetPage() {
               );
             })}
             {todaySchedule.length === 0 && (
-              <p className="text-center text-sm text-slate-400 py-6">Bugun darslar yo'q</p>
+              <p className="text-center text-sm text-slate-400 py-6">{t('cabinets.noLessonsToday')}</p>
             )}
           </div>
         </Card>
 
         <Card>
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">Joriy semestr baholari</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-4">{t('cabinets.currentGrades')}</h3>
           <div className="flex flex-col gap-1.5">
             {currentGrades.map((g) => (
               <div key={g.subject} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2">

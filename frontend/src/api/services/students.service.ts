@@ -24,6 +24,7 @@ export interface IStudentsService {
   getGrades(studentId: number): Promise<StudentGrade[]>;
   getAttendance(studentId: number): Promise<StudentAttendance[]>;
   getDocuments(studentId: number): Promise<StudentDocument[]>;
+  uploadDocument(studentId: number, file: File, name: string, category: string): Promise<StudentDocument>;
 }
 
 class StudentsApiService implements IStudentsService {
@@ -77,6 +78,14 @@ class StudentsApiService implements IStudentsService {
 
   async getDocuments(studentId: number): Promise<StudentDocument[]> {
     return apiClient.get<StudentDocument[]>(ENDPOINTS.students.documents(studentId));
+  }
+
+  async uploadDocument(studentId: number, file: File, name: string, category: string): Promise<StudentDocument> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('name', name);
+    formData.append('category', category);
+    return apiClient.postFormData<StudentDocument>(ENDPOINTS.students.documents(studentId), formData);
   }
 }
 

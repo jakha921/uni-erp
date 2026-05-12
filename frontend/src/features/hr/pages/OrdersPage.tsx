@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Search, FileText, CheckCircle, Clock, File } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -12,6 +13,7 @@ import type { OrderFormData } from '../schemas/order.schema';
 import type { HrOrder, OrderType, OrderStatus } from '@/types/hr';
 
 export function OrdersPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -64,17 +66,17 @@ export function OrdersPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Kadrlar buyruqlari"
-        subtitle={`Jami: ${filteredOrders.length} ta`}
-        breadcrumbs={[{ label: 'Kadrlar', path: '/hr' }, { label: 'Buyruqlar' }]}
+        title={t('hr.hrOrders')}
+        subtitle={`${t('common.total')}: ${filteredOrders.length}`}
+        breadcrumbs={[{ label: t('nav.hr'), path: '/hr' }, { label: t('nav.orders') }]}
       />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami buyruqlar" value={allOrders.length} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Imzolangan" value={signedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
-        <StatCard label="Ko'rib chiqishda" value={reviewCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Loyihalar" value={draftCount} icon={<File className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
+        <StatCard label={t('hr.totalOrders')} value={allOrders.length} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('statuses.signed')} value={signedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('statuses.review')} value={reviewCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('hr.drafts')} value={draftCount} icon={<File className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
       </div>
 
       {/* Card-toolbar */}
@@ -86,7 +88,7 @@ export function OrdersPage() {
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Buyruq raqami yoki nomi bo'yicha qidirish…"
+              placeholder={t('hr.searchOrderPlaceholder')}
               className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
             />
           </div>
@@ -95,33 +97,33 @@ export function OrdersPage() {
             onChange={(e) => { setTypeFilter(e.target.value as OrderType | ''); setPage(1); }}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Buyruq turi</option>
-            <option value="hire">Ishga qabul qilish</option>
-            <option value="fire">Ishdan bo&apos;shatish</option>
-            <option value="promotion">Lavozimga ko&apos;tarish</option>
-            <option value="salary_change">Maosh o&apos;zgarishi</option>
-            <option value="leave">Ta&apos;tilga jo&apos;natish</option>
-            <option value="business_trip">Xizmat safari</option>
-            <option value="bonus">Mukofotlash</option>
-            <option value="penalty">Hayfsan e&apos;lon qilish</option>
+            <option value="">{t('hr.orderType')}</option>
+            <option value="hire">{t('hr.orderHire')}</option>
+            <option value="fire">{t('hr.orderFire')}</option>
+            <option value="promotion">{t('hr.orderPromotion')}</option>
+            <option value="salary_change">{t('hr.orderSalaryChange')}</option>
+            <option value="leave">{t('hr.orderLeave')}</option>
+            <option value="business_trip">{t('hr.orderBusinessTrip')}</option>
+            <option value="bonus">{t('hr.orderBonus')}</option>
+            <option value="penalty">{t('hr.orderPenalty')}</option>
           </select>
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value as OrderStatus | ''); setPage(1); }}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Holat</option>
-            <option value="draft">Loyiha</option>
-            <option value="review">Ko&apos;rib chiqilmoqda</option>
-            <option value="signed">Imzolangan</option>
-            <option value="cancelled">Bekor qilingan</option>
+            <option value="">{t('common.status')}</option>
+            <option value="draft">{t('statuses.draft')}</option>
+            <option value="review">{t('statuses.review')}</option>
+            <option value="signed">{t('statuses.signed')}</option>
+            <option value="cancelled">{t('statuses.cancelled')}</option>
           </select>
           <div className="flex-1" />
           <Button
             leftIcon={<Plus className="h-4 w-4" />}
             onClick={() => setFormOpen(true)}
           >
-            Yangi buyruq
+            {t('hr.newOrder')}
           </Button>
         </div>
       </Card>
@@ -167,9 +169,9 @@ export function OrdersPage() {
           if (!deleteOrder) return;
           deleteMutation.mutate(deleteOrder.id, { onSuccess: () => setDeleteOrder(null) });
         }}
-        title="Buyruqni o'chirish"
-        message={`"${deleteOrder?.number}" buyruqni o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('hr.deleteOrder')}
+        message={t('hr.deleteOrderConfirm', { number: deleteOrder?.number })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteMutation.isPending}
       />

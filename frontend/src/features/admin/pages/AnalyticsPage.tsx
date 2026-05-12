@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, ChartCard, LineChartSimple, BarChartSimple, DonutChart } from '@/components/data-display';
 import { Spinner } from '@/components/ui';
@@ -14,6 +15,7 @@ const PAYMENT_COLORS: Record<string, string> = {
 };
 
 export function AnalyticsPage() {
+  const { t } = useTranslation();
   const [params] = useState<AnalyticsParams>({ period: 'year' });
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -37,9 +39,9 @@ export function AnalyticsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Analitika"
-        subtitle="Universitet bo'yicha umumiy statistik tahlil"
-        breadcrumbs={[{ label: 'Admin' }, { label: 'Analitika' }]}
+        title={t('admin.analyticsTitle')}
+        subtitle={t('admin.analyticsSubtitle')}
+        breadcrumbs={[{ label: t('nav.admin') }, { label: t('nav.analytics') }]}
         actions={
           <DateRangePicker
             from={dateFrom}
@@ -50,23 +52,23 @@ export function AnalyticsPage() {
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami talabalar" value={totalStudents} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
-        <StatCard label="Yillik tushum" value={`${(totalRevenue / 1_000_000_000).toFixed(1)} mlrd`} sub="so'm" icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="O'rtacha GPA" value={data.topGroups[0]?.avgGrade.toFixed(1) ?? '—'} icon={<Percent className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Davomat" value={`${data.attendanceRate[data.attendanceRate.length - 1]?.rate ?? 0}%`} icon={<UserCog className="h-[18px] w-[18px]" />} iconBg="#10B981" />
+        <StatCard label={t('admin.totalStudents')} value={totalStudents} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('admin.annualRevenue')} value={`${(totalRevenue / 1_000_000_000).toFixed(1)} mlrd`} sub="so'm" icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('admin.avgGpa')} value={data.topGroups[0]?.avgGrade.toFixed(1) ?? '—'} icon={<Percent className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('admin.attendanceRate')} value={`${data.attendanceRate[data.attendanceRate.length - 1]?.rate ?? 0}%`} icon={<UserCog className="h-[18px] w-[18px]" />} iconBg="#10B981" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard title="Oylik o'sish" subtitle="Talabalar kontingenti">
+        <ChartCard title={t('admin.monthlyGrowth')} subtitle={t('admin.studentContingent')}>
           <LineChartSimple data={studentTrend} showArea color="#2DB976" height={240} />
         </ChartCard>
-        <ChartCard title="Fakultetlar" subtitle="Talabalar soni bo'yicha">
+        <ChartCard title={t('admin.byFaculty')} subtitle={t('admin.byFacultySubtitle')}>
           <BarChartSimple data={facultyData} horizontal color="#3B82F6" height={240} />
         </ChartCard>
-        <ChartCard title="To'lov holati" subtitle="Grant vs Kontrakt taqsimoti">
+        <ChartCard title={t('admin.paymentStatus')} subtitle={t('admin.paymentSubtitle')}>
           <DonutChart data={paymentDonut.length > 0 ? paymentDonut : []} size={220} innerRadius={60} />
         </ChartCard>
-        <ChartCard title="Top guruhlar" subtitle="Eng yuqori ko'rsatkichlar">
+        <ChartCard title={t('admin.topGroups')} subtitle={t('admin.topGroupsSubtitle')}>
           <div className="flex flex-col gap-2.5">
             {data.topGroups.map((g, i) => (
               <div key={g.group} className="flex items-center gap-3">

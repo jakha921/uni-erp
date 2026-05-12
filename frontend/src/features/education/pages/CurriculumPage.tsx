@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -11,10 +12,10 @@ import { CurriculumForm } from '../components/CurriculumForm';
 import type { Curriculum, CurriculumSubject, ControlForm } from '@/types/education';
 import type { CreateCurriculumFormData } from '../schemas/curriculum.schema';
 
-const CONTROL_LABELS: Record<ControlForm, string> = {
-  exam: 'Imtihon',
-  credit: 'Sinov',
-  diff_credit: 'Diff. sinov',
+const CONTROL_KEYS: Record<ControlForm, string> = {
+  exam: 'education.controlExam',
+  credit: 'education.controlCredit',
+  diff_credit: 'education.controlDiffCredit',
 };
 
 const TYPE_BADGE_MAP: Record<string, 'success' | 'info' | 'warning'> = {
@@ -26,6 +27,7 @@ const TYPE_BADGE_MAP: Record<string, 'success' | 'info' | 'warning'> = {
 // --- Component ---
 
 export function CurriculumPage() {
+  const { t } = useTranslation();
   const { data: specialties, isLoading: specialtiesLoading } = useSpecialties();
   const { data: academicYears } = useAcademicYears();
   const { data: subjectsData } = useSubjects();
@@ -86,9 +88,9 @@ export function CurriculumPage() {
   return (
     <PageContent>
       <PageHeader
-        title="O'quv rejalar"
-        subtitle={`${selectedSpecialtyName || "Yo'nalish"} yo'nalishi`}
-        breadcrumbs={[{ label: "Ta'lim" }, { label: "O'quv rejalar" }]}
+        title={t('education.curriculumTitle')}
+        subtitle={`${selectedSpecialtyName || t('education.directions')} yo'nalishi`}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('nav.curriculum') }]}
       />
 
       {/* Direction and year selectors + buttons */}
@@ -117,10 +119,10 @@ export function CurriculumPage() {
           {curriculum && (
             <>
               <Button variant="ghost" size="sm" leftIcon={<Pencil className="h-3.5 w-3.5" />} onClick={() => setEditCurriculum(curriculum)}>
-                Tahrirlash
+                {t('common.edit')}
               </Button>
               <Button variant="ghost" size="sm" leftIcon={<Trash2 className="h-3.5 w-3.5 text-red-500" />} onClick={() => setDeleteCurriculumItem(curriculum)}>
-                O&apos;chirish
+                {t('common.delete')}
               </Button>
             </>
           )}
@@ -137,10 +139,10 @@ export function CurriculumPage() {
               document.body.removeChild(a);
             }}
           >
-            Eksport PDF
+            {t('education.exportPdf')}
           </Button>
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Yangi reja
+            {t('education.newPlan')}
           </Button>
         </div>
       </div>
@@ -153,10 +155,10 @@ export function CurriculumPage() {
         <>
           {/* KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-            <StatCard label="Yo'nalishlar" value={specialties?.length ?? 0} sub="faol" />
-            <StatCard label="Jami kreditlar" value={curriculum?.totalCredits ?? 0} sub="barcha semestrlar" />
-            <StatCard label="Majburiy fanlar" value={mandatoryCount} sub={totalSubjects > 0 ? `${Math.round((mandatoryCount / totalSubjects) * 100)}% jami` : '0%'} />
-            <StatCard label="Tanlov fanlar" value={electiveCount} sub={totalSubjects > 0 ? `${Math.round((electiveCount / totalSubjects) * 100)}% jami` : '0%'} />
+            <StatCard label={t('education.directions')} value={specialties?.length ?? 0} sub={t('education.activeLabel')} />
+            <StatCard label={t('education.totalCredits')} value={curriculum?.totalCredits ?? 0} sub={t('education.allSemestersLabel')} />
+            <StatCard label={t('education.mandatorySubjects')} value={mandatoryCount} sub={totalSubjects > 0 ? `${Math.round((mandatoryCount / totalSubjects) * 100)}% ${t('education.totalOf')}` : '0%'} />
+            <StatCard label={t('education.electiveSubjects')} value={electiveCount} sub={totalSubjects > 0 ? `${Math.round((electiveCount / totalSubjects) * 100)}% ${t('education.totalOf')}` : '0%'} />
           </div>
 
           {/* Semester sections */}
@@ -171,19 +173,19 @@ export function CurriculumPage() {
                   <div className="flex items-center justify-between px-5 py-4">
                     <div>
                       <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                        {sem.course}-kurs
+                        {t('education.courseLabel', { n: sem.course })}
                       </p>
                       <h3 className="mt-0.5 text-base font-bold text-slate-900">
-                        {sem.semester}-semestr
+                        {t('education.semesterLabel', { n: sem.semester })}
                       </h3>
                     </div>
                     <div className="flex items-center gap-5">
                       <div className="text-right">
-                        <p className="text-[11px] text-muted">Kreditlar</p>
+                        <p className="text-[11px] text-muted">{t('education.creditsLabel')}</p>
                         <p className="text-lg font-bold text-green-700 tabular-nums">{totalSemCredits}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[11px] text-muted">Soatlar</p>
+                        <p className="text-[11px] text-muted">{t('education.hoursLabel')}</p>
                         <p className="text-lg font-bold text-slate-900 tabular-nums">{totalSemHours}</p>
                       </div>
                     </div>
@@ -193,17 +195,17 @@ export function CurriculumPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-[11px] uppercase tracking-wider text-muted text-left">
-                        <th className="border-b border-[#F1F5F9] px-3 py-2">Fan nomi</th>
-                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[100px]">Turi</th>
-                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[80px] text-right">Kredit</th>
-                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[80px] text-right">Soat</th>
-                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[100px]">Nazorat</th>
+                        <th className="border-b border-[#F1F5F9] px-3 py-2">{t('education.subjectName')}</th>
+                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[100px]">{t('education.subjectType')}</th>
+                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[80px] text-right">{t('education.credit')}</th>
+                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[80px] text-right">{t('education.hour')}</th>
+                        <th className="border-b border-[#F1F5F9] px-3 py-2 w-[100px]">{t('education.control')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {sem.subjects.map((sub) => {
                         const typeKey = sub.isElective ? 'elective' : 'mandatory';
-                        const typeLabel = sub.isElective ? 'Tanlov' : 'Majburiy';
+                        const typeLabel = sub.isElective ? t('education.elective') : t('education.mandatory');
                         const totalHours = sub.hoursLecture + sub.hoursPractice + sub.hoursLab;
 
                         return (
@@ -214,7 +216,7 @@ export function CurriculumPage() {
                             </td>
                             <td className="border-b border-[#F8FAFC] px-3 py-2.5 text-right tabular-nums">{sub.credits}</td>
                             <td className="border-b border-[#F8FAFC] px-3 py-2.5 text-right tabular-nums text-muted">{totalHours}</td>
-                            <td className="border-b border-[#F8FAFC] px-3 py-2.5 text-[12.5px] text-slate-600">{CONTROL_LABELS[sub.controlForm]}</td>
+                            <td className="border-b border-[#F8FAFC] px-3 py-2.5 text-[12.5px] text-slate-600">{t(CONTROL_KEYS[sub.controlForm])}</td>
                           </tr>
                         );
                       })}
@@ -227,8 +229,8 @@ export function CurriculumPage() {
 
           {semesterGroups.length === 0 && (
             <div className="py-16 text-center">
-              <p className="text-sm font-medium text-slate-500">O&apos;quv reja topilmadi</p>
-              <p className="mt-1 text-xs text-slate-400">Boshqa yo&apos;nalish yoki yil tanlang</p>
+              <p className="text-sm font-medium text-slate-500">{t('education.curriculumNotFound')}</p>
+              <p className="mt-1 text-xs text-slate-400">{t('education.tryOtherFilter')}</p>
             </div>
           )}
         </>
@@ -240,9 +242,9 @@ export function CurriculumPage() {
           if (!deleteCurriculumItem) return;
           deleteCurriculumMutation.mutate(deleteCurriculumItem.id, { onSuccess: () => setDeleteCurriculumItem(null) });
         }}
-        title="O'quv rejani o'chirish"
-        message={`"${deleteCurriculumItem?.specialtyName}" o'quv rejasini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteCurriculumTitle')}
+        message={t('education.deleteCurriculumConfirm', { name: deleteCurriculumItem?.specialtyName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteCurriculumMutation.isPending}
       />

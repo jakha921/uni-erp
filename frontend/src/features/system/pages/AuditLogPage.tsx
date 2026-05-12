@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, FileText, ShieldAlert, AlertTriangle, CheckCircle, FileDown } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
@@ -24,6 +25,7 @@ const SEV_OPTIONS = [
 ];
 
 export function AuditLogPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [sevFilter, setSevFilter] = useState('');
   const [actionFilter, setActionFilter] = useState('');
@@ -83,9 +85,9 @@ export function AuditLogPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Audit log"
-        subtitle="Tizimdagi barcha harakatlar tarixi"
-        breadcrumbs={[{ label: 'Tizim' }, { label: 'Audit log' }]}
+        title={t('system.auditTitle')}
+        subtitle={t('system.auditSubtitle')}
+        breadcrumbs={[{ label: t('nav.system') }, { label: t('nav.auditLog') }]}
         actions={
           <Button
             variant="secondary"
@@ -105,10 +107,10 @@ export function AuditLogPage() {
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Jami yozuv" value={total} icon={<FileText className="h-5 w-5" />} iconBg="#3B82F6" />
-        <StatCard label="Critical" value={criticalCount} icon={<ShieldAlert className="h-5 w-5" />} iconBg="#EF4444" />
-        <StatCard label="Ogohlantirish" value={warningCount} icon={<AlertTriangle className="h-5 w-5" />} iconBg="#F59E0B" />
-        <StatCard label="Info" value={infoCount} icon={<CheckCircle className="h-5 w-5" />} iconBg="#10B981" />
+        <StatCard label={t('system.totalRecords')} value={total} icon={<FileText className="h-5 w-5" />} iconBg="#3B82F6" />
+        <StatCard label={t('system.critical')} value={criticalCount} icon={<ShieldAlert className="h-5 w-5" />} iconBg="#EF4444" />
+        <StatCard label={t('system.warnings')} value={warningCount} icon={<AlertTriangle className="h-5 w-5" />} iconBg="#F59E0B" />
+        <StatCard label={t('system.info')} value={infoCount} icon={<CheckCircle className="h-5 w-5" />} iconBg="#10B981" />
       </div>
 
       <Card className="mt-6" noPadding>
@@ -116,7 +118,7 @@ export function AuditLogPage() {
           <div className="relative min-w-[240px] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Login, IP, harakat yoki tafsilot..."
+              placeholder={t('system.searchAuditPlaceholder')}
               className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm placeholder:text-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20" />
           </div>
           <DateRangePicker
@@ -136,11 +138,11 @@ export function AuditLogPage() {
           </div>
           <select value={actionFilter} onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
             className="h-9 rounded-md border border-border bg-white px-3 text-sm">
-            <option value="">Barcha harakatlar</option>
-            <option value="login">Kirish</option>
-            <option value="create">Yaratish</option>
-            <option value="update">Tahrir</option>
-            <option value="delete">O&apos;chirish</option>
+            <option value="">{t('system.allActions')}</option>
+            <option value="login">{t('system.actionLogin')}</option>
+            <option value="create">{t('system.actionCreate')}</option>
+            <option value="update">{t('system.actionUpdate')}</option>
+            <option value="delete">{t('system.actionDelete')}</option>
           </select>
         </div>
 

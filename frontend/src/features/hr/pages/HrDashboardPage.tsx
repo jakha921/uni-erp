@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Users, CheckCircle, Calendar, Briefcase } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
@@ -34,6 +35,7 @@ function KpiMiniRow({ label, value, accent = '#4F46E5' }: { label: string; value
 }
 
 export function HrDashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -61,9 +63,9 @@ export function HrDashboardPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Kadrlar paneli"
-        subtitle="Universitet kadrlari ma'lumoti"
-        breadcrumbs={[{ label: 'Kadrlar' }]}
+        title={t('nav.hrPanel')}
+        subtitle={t('hr.dashboardSubtitle')}
+        breadcrumbs={[{ label: t('nav.hr') }]}
         actions={
           <DateRangePicker
             from={dateFrom}
@@ -77,7 +79,7 @@ export function HrDashboardPage() {
       <div className="grid grid-cols-4 gap-4">
         <div className="cursor-pointer" onClick={() => navigate('/hr/employees')}>
           <StatCard
-            label="Jami xodimlar"
+            label={t('hr.totalEmployees')}
             value={stats.totalEmployees}
             icon={<Users className="h-[18px] w-[18px]" />}
             iconBg="#3B82F6"
@@ -85,19 +87,19 @@ export function HrDashboardPage() {
         </div>
         <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=active')}>
           <StatCard
-            label="Faol"
+            label={t('statuses.active')}
             value={stats.activeEmployees}
             icon={<CheckCircle className="h-[18px] w-[18px]" />}
             iconBg="#2DB976"
             trend={{
               value: stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0,
-              label: 'faol',
+              label: t('statuses.active').toLowerCase(),
             }}
           />
         </div>
         <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=leave')}>
           <StatCard
-            label="Ta'tilda"
+            label={t('hr.onLeave')}
             value={stats.onLeave}
             icon={<Calendar className="h-[18px] w-[18px]" />}
             iconBg="#F59E0B"
@@ -105,7 +107,7 @@ export function HrDashboardPage() {
         </div>
         <div className="cursor-pointer" onClick={() => navigate('/hr/employees?status=business_trip')}>
           <StatCard
-            label="Xizmat safarida"
+            label={t('hr.onBusinessTrip')}
             value={stats.onBusinessTrip}
             icon={<Briefcase className="h-[18px] w-[18px]" />}
             iconBg="#8B5CF6"
@@ -118,16 +120,16 @@ export function HrDashboardPage() {
         {/* Left column */}
         <div className="flex flex-col gap-6">
           <Card>
-            <h3 className="text-base font-semibold text-slate-900 mb-4">Yosh bo&apos;yicha taqsimot</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-4">{t('hr.ageDistribution')}</h3>
             {stats.byAge.map((a) => (
               <ProgressBar key={a.range} label={a.range + ' yosh'} value={a.count} max={ageMax} color="#4F46E5" />
             ))}
           </Card>
 
           <Card>
-            <h3 className="text-base font-semibold text-slate-900 mb-4">So&apos;nggi buyruqlar</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-4">{t('hr.recentOrders')}</h3>
             {stats.recentOrders.length === 0 ? (
-              <p className="text-[13px] text-slate-400 text-center py-4">Buyruqlar yo&apos;q</p>
+              <p className="text-[13px] text-slate-400 text-center py-4">{t('hr.noOrders')}</p>
             ) : (
               stats.recentOrders.map((o) => (
                 <div key={o.id} className="py-3 border-b border-slate-100 last:border-0">
@@ -151,7 +153,7 @@ export function HrDashboardPage() {
                 onClick={() => navigate('/hr/orders')}
                 className="mt-3 text-sm font-medium text-primary-600 hover:text-primary-700"
               >
-                Barcha buyruqlar &rarr;
+                {t('hr.allOrders')} &rarr;
               </button>
             )}
           </Card>
@@ -160,41 +162,41 @@ export function HrDashboardPage() {
         {/* Right column */}
         <div className="flex flex-col gap-6">
           <Card>
-            <h3 className="text-base font-semibold text-slate-900 mb-3.5">Tuzilma</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-3.5">{t('hr.structure')}</h3>
             <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=fakultet')}>
-              <KpiMiniRow label="Fakultetlar" value={stats.byDepartment.filter((d) => d.type === 'fakultet').length || 4} />
+              <KpiMiniRow label={t('hr.faculties')} value={stats.byDepartment.filter((d) => d.type === 'fakultet').length || 4} />
             </div>
             <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=kafedra')}>
-              <KpiMiniRow label="Kafedralar" value={stats.byDepartment.filter((d) => d.type === 'kafedra').length || 12} />
+              <KpiMiniRow label={t('hr.departments')} value={stats.byDepartment.filter((d) => d.type === 'kafedra').length || 12} />
             </div>
             <div className="cursor-pointer hover:opacity-70 transition-opacity" onClick={() => navigate('/hr/departments?type=admin')}>
-              <KpiMiniRow label="Bo'limlar" value={stats.byDepartment.filter((d) => d.type === 'admin').length || 6} />
+              <KpiMiniRow label={t('hr.divisions')} value={stats.byDepartment.filter((d) => d.type === 'admin').length || 6} />
             </div>
           </Card>
 
           <Card>
-            <h3 className="text-base font-semibold text-slate-900 mb-3.5">Ilmiy salohiyat</h3>
+            <h3 className="text-base font-semibold text-slate-900 mb-3.5">{t('hr.scientificPotential')}</h3>
             <KpiMiniRow label="DSc" value={stats.scienceStats?.dsc ?? 3} accent="#7C3AED" />
             <KpiMiniRow label="PhD" value={stats.scienceStats?.phd ?? 8} accent="#4F46E5" />
-            <KpiMiniRow label="Professorlar" value={stats.scienceStats?.professor ?? 5} accent="#EC4899" />
-            <KpiMiniRow label="Dotsentlar" value={stats.scienceStats?.dotsent ?? 12} accent="#0EA5E9" />
+            <KpiMiniRow label={t('hr.professors')} value={stats.scienceStats?.professor ?? 5} accent="#EC4899" />
+            <KpiMiniRow label={t('hr.dotsents')} value={stats.scienceStats?.dotsent ?? 12} accent="#0EA5E9" />
           </Card>
 
           <Card>
             <div className="flex items-center justify-between mb-3.5">
-              <h3 className="text-base font-semibold text-slate-900">Tasdiqlash kutmoqda</h3>
+              <h3 className="text-base font-semibold text-slate-900">{t('hr.pendingApproval')}</h3>
               <Badge variant="warning">{pendingLeaves.length}</Badge>
             </div>
             {pendingLeaves.length === 0 ? (
               <p className="text-[13px] text-slate-400 text-center py-4">
-                Tasdiqlash uchun arizalar yo&apos;q
+                {t('hr.noApplications')}
               </p>
             ) : (
               pendingLeaves.map((l) => (
                 <div key={l.id} className="py-2.5 border-b border-slate-100 last:border-0 text-[13px]">
                   <div className="font-semibold text-slate-900">{l.employeeName}</div>
                   <div className="text-xs text-muted mt-0.5">
-                    {l.typeLabel} &middot; {l.days} kun &middot; {l.startDate}
+                    {l.typeLabel} &middot; {l.days} {t('hr.days')} &middot; {l.startDate}
                   </div>
                 </div>
               ))
@@ -203,7 +205,7 @@ export function HrDashboardPage() {
               onClick={() => navigate('/hr/leaves?status=pending')}
               className="mt-3 text-sm font-medium text-primary-600 hover:text-primary-700"
             >
-              Barcha arizalar &rarr;
+              {t('hr.allApplications')} &rarr;
             </button>
           </Card>
         </div>

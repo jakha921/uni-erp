@@ -100,3 +100,12 @@ export function useStudentDocuments(id: number) {
     enabled: id > 0,
   });
 }
+
+export function useUploadStudentDocument(studentId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ file, name, category }: { file: File; name: string; category: string }) =>
+      studentsService.uploadDocument(studentId, file, name, category),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: KEYS.documents(studentId) }),
+  });
+}

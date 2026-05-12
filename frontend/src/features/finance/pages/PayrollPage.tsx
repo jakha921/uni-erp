@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Calculator, Download, Wallet, TrendingUp, Users, Percent } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, FilterBar, type Column } from '@/components/table';
 import { Button, Badge, Spinner } from '@/components/ui';
@@ -32,6 +33,7 @@ function generateYears(count = 4): { value: number; label: string }[] {
 }
 
 export function PayrollPage() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const YEARS = generateYears();
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -88,7 +90,7 @@ export function PayrollPage() {
     },
     {
       key: 'employeeName',
-      header: 'Xodim',
+      header: t('hr.employee'),
       sortable: true,
       render: (row) => (
         <div>
@@ -99,12 +101,12 @@ export function PayrollPage() {
     },
     {
       key: 'department',
-      header: "Bo'lim",
+      header: t('hr.department'),
       render: (row) => <span className="text-slate-700">{row.department}</span>,
     },
     {
       key: 'baseSalary',
-      header: 'Asosiy',
+      header: t('finance.baseSalary'),
       className: 'text-right',
       render: (row) => (
         <span className="tabular-nums font-medium text-slate-900">{formatMoney(row.baseSalary)}</span>
@@ -112,7 +114,7 @@ export function PayrollPage() {
     },
     {
       key: 'bonus',
-      header: "Qo'shimcha",
+      header: t('finance.bonus'),
       className: 'text-right',
       render: (row) => (
         <span className="tabular-nums text-green-700">+{formatMoney(row.bonus)}</span>

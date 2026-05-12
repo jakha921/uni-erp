@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
@@ -12,10 +13,11 @@ import { InternshipForm } from '../components/InternshipForm';
 import type { Internship } from '@/types/education';
 import type { CreateInternshipFormData } from '../schemas/internship.schema';
 
-const STATUS_LABELS: Record<string, string> = { planned: 'Rejalashtirilgan', active: 'Joriy', completed: 'Yakunlangan' };
+const STATUS_KEYS: Record<string, string> = { planned: 'education.internStatusPlanned', active: 'education.internStatusActive', completed: 'education.internStatusCompleted' };
 const STATUS_VARIANT: Record<string, 'info' | 'success' | 'default'> = { planned: 'default', active: 'info', completed: 'success' };
 
 export function InternshipPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('active');
   const [formOpen, setFormOpen] = useState(false);
   const [editInternship, setEditInternship] = useState<Internship | null>(null);
@@ -35,8 +37,8 @@ export function InternshipPage() {
   const students = (studentsData?.data ?? []).map((s) => ({ id: s.id, fullName: s.fullName }));
 
   const tabs = [
-    { id: 'active', label: 'Joriy', count: activeCount },
-    { id: 'completed', label: 'Yakunlangan', count: completedCount },
+    { id: 'active', label: t('education.tabCurrent'), count: activeCount },
+    { id: 'completed', label: t('education.tabCompleted'), count: completedCount },
   ];
 
   const handleCreate = (formData: CreateInternshipFormData) => {
@@ -56,14 +58,14 @@ export function InternshipPage() {
 
   const columns: Column<Internship>[] = [
     { key: 'idx', header: 'No', width: '50px', render: (_, index) => <span className="text-slate-500">{index + 1}</span> },
-    { key: 'studentName', header: 'Talaba', render: (row) => <span className="font-medium text-slate-900">{row.studentName}</span> },
-    { key: 'companyName', header: 'Tashkilot' },
-    { key: 'startDate', header: 'Boshlangan', render: (row) => <span className="tabular-nums">{row.startDate}</span> },
-    { key: 'endDate', header: 'Tugash', render: (row) => <span className="tabular-nums">{row.endDate}</span> },
-    { key: 'supervisorName', header: 'Rahbar' },
+    { key: 'studentName', header: t('education.student'), render: (row) => <span className="font-medium text-slate-900">{row.studentName}</span> },
+    { key: 'companyName', header: t('education.company') },
+    { key: 'startDate', header: t('education.startedDate'), render: (row) => <span className="tabular-nums">{row.startDate}</span> },
+    { key: 'endDate', header: t('education.endDateLabel'), render: (row) => <span className="tabular-nums">{row.endDate}</span> },
+    { key: 'supervisorName', header: t('education.supervisor') },
     {
-      key: 'status', header: 'Holat',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? 'default'} dot>{STATUS_LABELS[row.status] ?? row.status}</Badge>,
+      key: 'status', header: t('common.status'),
+      render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? 'default'} dot>{t(STATUS_KEYS[row.status] ?? row.status)}</Badge>,
     },
     {
       key: 'actions', header: '',
@@ -83,20 +85,20 @@ export function InternshipPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Amaliyot"
-        subtitle="Ishlab chiqarish amaliyoti ma'lumotlari"
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Amaliyot' }]}
+        title={t('education.internshipTitle')}
+        subtitle={t('education.internshipSubtitle')}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('nav.internship') }]}
         actions={
           <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" /> Yangi amaliyot
+            <Plus className="h-4 w-4 mr-1.5" /> {t('education.newInternship')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
-        <StatCard label="Jami amaliyotchilar" value={total} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Joriy" value={activeCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Yakunlangan" value={completedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('education.totalInterns')} value={total} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('education.currentInternships')} value={activeCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('education.completedInternships')} value={completedCount} icon={<CheckCircle className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
       </div>
 
       <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -106,7 +108,7 @@ export function InternshipPage() {
           {isLoading ? (
             <div className="flex justify-center py-12"><Spinner size="lg" /></div>
           ) : (
-            <DataTable data={internships} columns={columns} keyField="id" emptyMessage="Amaliyotlar topilmadi" />
+            <DataTable data={internships} columns={columns} keyField="id" emptyMessage={t('education.internshipsNotFound')} />
           )}
         </Card>
       </div>
@@ -135,9 +137,9 @@ export function InternshipPage() {
           if (!deleteInternship) return;
           deleteInternshipMutation.mutate(deleteInternship.id, { onSuccess: () => setDeleteInternship(null) });
         }}
-        title="Amaliyotni o'chirish"
-        message={`"${deleteInternship?.studentName}" amaliyotini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteInternshipTitle')}
+        message={t('education.deleteInternshipConfirm', { name: deleteInternship?.studentName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteInternshipMutation.isPending}
       />

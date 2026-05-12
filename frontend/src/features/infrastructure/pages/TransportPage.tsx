@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Truck, CheckCircle, Wrench, MapPin, Plus, Pencil, Trash2 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -19,6 +20,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export function TransportPage() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [formOpen, setFormOpen] = useState(false);
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
@@ -52,21 +54,21 @@ export function TransportPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Transport"
-        subtitle="Universitet transport vositalari boshqaruvi"
-        breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'Transport' }]}
+        title={t('infrastructure.transportTitle')}
+        subtitle={t('infrastructure.transportSubtitle')}
+        breadcrumbs={[{ label: t('nav.infrastructure') }, { label: t('nav.transport') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Transport qo&apos;shish
+            {t('infrastructure.addTransport')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami transport" value={String(total)} icon={<Truck className="h-5 w-5" />} />
-        <StatCard label="Faol" value={String(available)} icon={<CheckCircle className="h-5 w-5" />} />
-        <StatCard label="Ta'mirda" value={String(inRepair)} icon={<Wrench className="h-5 w-5" />} />
-        <StatCard label="Yo'nalishlar" value={String(vehicles.filter((v) => v.route).length)} icon={<MapPin className="h-5 w-5" />} />
+        <StatCard label={t('infrastructure.totalTransport')} value={String(total)} icon={<Truck className="h-5 w-5" />} />
+        <StatCard label={t('infrastructure.activeTransport')} value={String(available)} icon={<CheckCircle className="h-5 w-5" />} />
+        <StatCard label={t('infrastructure.underRepair')} value={String(inRepair)} icon={<Wrench className="h-5 w-5" />} />
+        <StatCard label={t('infrastructure.routes')} value={String(vehicles.filter((v) => v.route).length)} icon={<MapPin className="h-5 w-5" />} />
       </div>
 
       <VehicleForm
@@ -83,9 +85,9 @@ export function TransportPage() {
           if (!deleteVehicle) return;
           deleteVehicleMutation.mutate(deleteVehicle.id, { onSuccess: () => setDeleteVehicle(null) });
         }}
-        title="Transportni o'chirish"
-        message={`"${deleteVehicle?.brand} ${deleteVehicle?.model}" transportni o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('infrastructure.deleteTransport')}
+        message={t('infrastructure.deleteTransportConfirm', { name: `${deleteVehicle?.brand} ${deleteVehicle?.model}` })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteVehicleMutation.isPending}
       />
@@ -100,7 +102,7 @@ export function TransportPage() {
                 filter === s ? 'bg-primary-500 text-white' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {s === 'all' ? 'Barchasi' : STATUS_LABELS[s]?.label ?? s}
+              {s === 'all' ? t('common.all') : STATUS_LABELS[s]?.label ?? s}
             </button>
           ))}
         </div>
@@ -111,7 +113,7 @@ export function TransportPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-border">
-                {['MARKA', "DAVLAT RAQAMI", 'HAYDOVCHI', "YO'NALISH", 'HOLAT', ''].map((h, i) => (
+                {[t('infrastructure.headerBrand'), t('infrastructure.headerPlateNumber'), t('infrastructure.headerDriver'), t('infrastructure.headerRoute'), t('infrastructure.headerStatus'), ''].map((h, i) => (
                   <th key={i} className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">{h}</th>
                 ))}
               </tr>
@@ -146,7 +148,7 @@ export function TransportPage() {
         )}
 
         {!isLoading && vehicles.length === 0 && (
-          <div className="text-center py-10 text-slate-400 text-sm">Ma'lumot topilmadi</div>
+          <div className="text-center py-10 text-slate-400 text-sm">{t('infrastructure.transportNotFound')}</div>
         )}
       </Card>
     </PageContent>

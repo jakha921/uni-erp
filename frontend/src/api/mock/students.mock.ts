@@ -703,6 +703,11 @@ export class StudentsMockService implements IStudentsService {
       { id: 6, name: 'Harbiy hisob varaqasi', uploadedAt: '05.09.2024' },
     ];
   }
+
+  async uploadDocument(_studentId: number, file: File, name: string, _category: string): Promise<StudentDocument> {
+    await delay(300);
+    return { id: Date.now(), name: name || file.name, uploadedAt: new Date().toLocaleDateString('uz-UZ') };
+  }
 }
 
 export { FACULTIES, DEPARTMENTS, SPECIALTIES, GROUPS, EDUCATION_FORMS, PAYMENT_FORMS, STUDENT_STATUS_OPTIONS };

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Target, CheckCircle, TrendingUp, Wallet, Pencil, X, Check } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, type Column } from '@/components/table';
@@ -13,15 +14,8 @@ function getCategoryColor(name: string): string {
   return BUDGET_CATEGORY_COLORS[name] ?? BUDGET_CATEGORY_DEFAULT_COLOR;
 }
 
-const QUARTERS = [
-  { value: 0, label: "Yil bo'yi" },
-  { value: 1, label: 'I chorak' },
-  { value: 2, label: 'II chorak' },
-  { value: 3, label: 'III chorak' },
-  { value: 4, label: 'IV chorak' },
-];
-
 export function BudgetPage() {
+  const { t } = useTranslation();
   const [year] = useState(2026);
   const [quarter, setQuarter] = useState(0);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -62,6 +56,14 @@ export function BudgetPage() {
     setEditValue('');
   }
 
+  const QUARTERS = [
+    { value: 0, label: t('finance.yearRound') },
+    { value: 1, label: t('finance.quarter1') },
+    { value: 2, label: t('finance.quarter2') },
+    { value: 3, label: t('finance.quarter3') },
+    { value: 4, label: t('finance.quarter4') },
+  ];
+
   const columns: Column<BudgetCategory>[] = [
     {
       key: 'idx',
@@ -71,7 +73,7 @@ export function BudgetPage() {
     },
     {
       key: 'name',
-      header: 'Kategoriya',
+      header: t('common.category'),
       render: (row) => (
         <div className="flex items-center gap-2.5">
           <span
@@ -84,7 +86,7 @@ export function BudgetPage() {
     },
     {
       key: 'planned',
-      header: 'Rejalashtirilgan',
+      header: t('finance.planned'),
       className: 'text-right',
       sortable: true,
       render: (row) => {
@@ -126,7 +128,7 @@ export function BudgetPage() {
     },
     {
       key: 'spent',
-      header: 'Sarflangan',
+      header: t('finance.spent'),
       className: 'text-right',
       sortable: true,
       render: (row) => (
@@ -135,7 +137,7 @@ export function BudgetPage() {
     },
     {
       key: 'remaining',
-      header: 'Qoldiq',
+      header: t('finance.remaining'),
       className: 'text-right',
       render: (row) => (
         <span className="tabular-nums text-green-700">{formatMoney(row.remaining)}</span>
@@ -143,7 +145,7 @@ export function BudgetPage() {
     },
     {
       key: 'percentUsed',
-      header: 'Ijro %',
+      header: t('finance.executionPct'),
       width: '220px',
       render: (row) => (
         <div className="flex items-center gap-3">
@@ -171,18 +173,18 @@ export function BudgetPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Byudjet"
-        subtitle={`Daromad va xarajatlar rejasi va ijrosi - ${year}`}
+        title={t('nav.budget')}
+        subtitle={`${t('finance.budgetPlanAndExecution')} - ${year}`}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Byudjet' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.budget') },
         ]}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="secondary" leftIcon={<Target className="h-4 w-4" />}>
-              Hisobot
+              {t('nav.report')}
             </Button>
-            <Button leftIcon={<CheckCircle className="h-4 w-4" />}>Xarajat hujjati</Button>
+            <Button leftIcon={<CheckCircle className="h-4 w-4" />}>{t('finance.expenseDocument')}</Button>
           </div>
         }
       />
@@ -203,34 +205,34 @@ export function BudgetPage() {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-5">
         <StatCard
-          label="Umumiy byudjet"
+          label={t('finance.totalBudget')}
           value={formatMoney(totalPlanned)}
           icon={<Target className="h-5 w-5" />}
           iconBg="bg-blue-500"
         />
         <StatCard
-          label="Sarflangan"
+          label={t('finance.spent')}
           value={formatMoney(totalSpent)}
           icon={<CheckCircle className="h-5 w-5" />}
           iconBg="bg-emerald-500"
-          sub={`April ${year} holatiga`}
+          sub={`${t('finance.asOfDate', { date: `April ${year}` })}`}
         />
         <StatCard
-          label="Qoldiq"
+          label={t('finance.remaining')}
           value={formatMoney(totalRemaining)}
           icon={<Wallet className="h-5 w-5" />}
           iconBg="bg-amber-500"
         />
         <StatCard
-          label="Ijro foizi"
+          label={t('finance.executionPercent')}
           value={`${totalPercent}%`}
           icon={<TrendingUp className="h-5 w-5" />}
           iconBg="bg-violet-500"
-          trend={{ value: 2, label: "o'tgan oyga" }}
+          trend={{ value: 2, label: t('finance.vsLastMonth') }}
         />
       </div>
 
-      <Card title="Byudjet kategoriyalari" subtitle="Xarajat moddalari bo'yicha reja va ijro" noPadding>
+      <Card title={t('finance.budgetCategories')} subtitle={t('finance.budgetCategoriesSubtitle')} noPadding>
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Spinner size="lg" />
@@ -240,14 +242,14 @@ export function BudgetPage() {
             data={categories}
             columns={columns}
             keyField="id"
-            emptyMessage="Kategoriyalar topilmadi"
+            emptyMessage={t('finance.categoriesNotFound')}
           />
         )}
       </Card>
 
       <Card className="mt-4">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-slate-900">Umumiy ijro</span>
+          <span className="text-sm font-semibold text-slate-900">{t('finance.totalExecution')}</span>
           <span className="text-sm font-bold text-slate-900">{totalPercent}%</span>
         </div>
         <div className="h-4 rounded-full bg-slate-100 overflow-hidden">
@@ -257,8 +259,8 @@ export function BudgetPage() {
           />
         </div>
         <div className="mt-2 flex justify-between text-xs text-slate-500">
-          <span>Sarflangan: {formatMoney(totalSpent)}</span>
-          <span>Qoldiq: {formatMoney(totalRemaining)}</span>
+          <span>{t('finance.spent')}: {formatMoney(totalSpent)}</span>
+          <span>{t('finance.remaining')}: {formatMoney(totalRemaining)}</span>
         </div>
       </Card>
     </PageContent>

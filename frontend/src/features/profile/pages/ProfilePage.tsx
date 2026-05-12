@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Pencil, Mail, Phone, MapPin, Calendar, GraduationCap, Briefcase, Camera } from 'lucide-react';
@@ -23,6 +24,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const patchCurrentUser = useAuthStore((s) => s.patchCurrentUser);
   const [editOpen, setEditOpen] = useState(false);
@@ -57,11 +59,11 @@ export function ProfilePage() {
   return (
     <PageContent className="space-y-4">
       <PageHeader
-        title="Profil"
-        breadcrumbs={[{ label: 'Profil' }]}
+        title={t('profile.title')}
+        breadcrumbs={[{ label: t('nav.profile') }]}
         actions={
           <Button leftIcon={<Pencil className="h-4 w-4" />} variant="secondary" onClick={handleEdit}>
-            Tahrirlash
+            {t('profile.editProfile')}
           </Button>
         }
       />
@@ -80,7 +82,7 @@ export function ProfilePage() {
                 <button
                   onClick={() => setPhotoUploadOpen(true)}
                   className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600 transition-colors"
-                  title="Rasm yuklash"
+                  title={t('profile.uploadPhoto')}
                 >
                   <Camera className="h-3.5 w-3.5" />
                 </button>
@@ -128,31 +130,31 @@ export function ProfilePage() {
         <div className="space-y-4">
           <Card>
             <div className="p-4">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Tizim ma&apos;lumotlari</h3>
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">{t('profile.systemInfo')}</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted">ID</span>
                   <span className="font-mono text-slate-700">{currentUser.id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Rol</span>
+                  <span className="text-muted">{t('profile.roleLabel')}</span>
                   <span className="text-slate-700">{roleLabel}</span>
                 </div>
                 {currentUser.employeeId && (
                   <div className="flex justify-between">
-                    <span className="text-muted">Xodim ID</span>
+                    <span className="text-muted">{t('profile.employeeIdLabel')}</span>
                     <span className="font-mono text-slate-700">{currentUser.employeeId}</span>
                   </div>
                 )}
                 {currentUser.studentId && (
                   <div className="flex justify-between">
-                    <span className="text-muted">Talaba ID</span>
+                    <span className="text-muted">{t('profile.studentIdLabel')}</span>
                     <span className="font-mono text-slate-700">{currentUser.studentId}</span>
                   </div>
                 )}
                 {currentUser.studentIdNumber && (
                   <div className="flex justify-between">
-                    <span className="text-muted">ID raqami</span>
+                    <span className="text-muted">{t('profile.idNumberLabel')}</span>
                     <span className="font-mono text-slate-700">{currentUser.studentIdNumber}</span>
                   </div>
                 )}
@@ -162,14 +164,14 @@ export function ProfilePage() {
 
           <Card>
             <div className="p-4">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Xavfsizlik</h3>
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">{t('profile.security')}</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted">Parol</span>
-                  <Button variant="ghost" size="sm">O&apos;zgartirish</Button>
+                  <span className="text-muted">{t('profile.passwordLabel')}</span>
+                  <Button variant="ghost" size="sm">{t('profile.changePassword')}</Button>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted">Oxirgi kirish</span>
+                  <span className="text-muted">{t('profile.lastLoginLabel')}</span>
                   <span className="text-slate-700">{formatDate(new Date().toISOString())}</span>
                 </div>
               </div>
@@ -181,12 +183,12 @@ export function ProfilePage() {
       <Modal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        title="Profilni tahrirlash"
+        title={t('profile.editProfileTitle')}
         size="sm"
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="secondary" size="sm" onClick={() => setEditOpen(false)}>
-              Bekor qilish
+              {t('common.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -194,18 +196,18 @@ export function ProfilePage() {
               loading={updateProfile.isPending}
               onClick={handleSubmit(onSubmit)}
             >
-              Saqlash
+              {t('common.save')}
             </Button>
           </div>
         }
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">F.I.Sh.</label>
+            <label className="block text-xs font-medium text-slate-700 mb-1">{t('profile.fullNameLabel')}</label>
             <input
               {...register('name')}
               className="w-full rounded-lg border border-border px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none"
-              placeholder="To'liq ism"
+              placeholder={t('profile.fullNamePlaceholder')}
             />
             {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
           </div>
@@ -232,7 +234,7 @@ export function ProfilePage() {
         </form>
       </Modal>
 
-      <Modal open={photoUploadOpen} onClose={() => setPhotoUploadOpen(false)} title="Profil rasmini yuklash">
+      <Modal open={photoUploadOpen} onClose={() => setPhotoUploadOpen(false)} title={t('profile.uploadPhoto')}>
         <FileUpload
           accept="image/jpeg,image/png,image/webp"
           maxSize={5 * 1024 * 1024}
@@ -245,7 +247,7 @@ export function ProfilePage() {
           }}
           preview={false}
         />
-        <p className="mt-2 text-xs text-slate-400 text-center">JPG, PNG, WebP. Maks. 5 MB</p>
+        <p className="mt-2 text-xs text-slate-400 text-center">{t('profile.photoHint')}</p>
       </Modal>
     </PageContent>
   );

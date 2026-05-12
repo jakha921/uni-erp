@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard, EmptyState } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -14,17 +15,22 @@ import type { Book, BookLoan, BookQueueEntry } from '@/types/education';
 import type { CreateBookFormData } from '../schemas/book.schema';
 import type { CreateLoanFormData } from '../schemas/loan.schema';
 
-const PAGE_TABS = [
-  { id: 'catalog', label: 'Katalog' },
-  { id: 'loans', label: "Ijara ro'yxati" },
-  { id: 'queue', label: 'Zayavkalar' },
-  { id: 'readers', label: "O'quvchilar" },
-];
+function usePageTabs() {
+  const { t } = useTranslation();
+  return [
+    { id: 'catalog', label: t('education.tabCatalog') },
+    { id: 'loans', label: t('education.tabLoans') },
+    { id: 'queue', label: t('education.tabQueue') },
+    { id: 'readers', label: t('education.tabReaders') },
+  ];
+}
 
 const BOOK_GRADIENT_FROM = ['#2DB976', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
 const BOOK_GRADIENT_TO = ['#1B7A4E', '#1D4ED8', '#B45309', '#6B21A8', '#BE185D', '#0891B2'];
 
 export function LibraryPage() {
+  const { t } = useTranslation();
+  const PAGE_TABS = usePageTabs();
   const [activeTab, setActiveTab] = useState('catalog');
   const [bookSearch, setBookSearch] = useState('');
   const [bookFormOpen, setBookFormOpen] = useState(false);
@@ -73,27 +79,27 @@ export function LibraryPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Kutubxona"
-        subtitle="Kitoblar katalogi va ijara boshqaruvi"
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Kutubxona' }]}
+        title={t('education.libraryTitle')}
+        subtitle={t('education.librarySubtitle')}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('nav.library') }]}
         actions={
           activeTab === 'catalog' ? (
             <Button variant="primary" size="sm" onClick={() => setBookFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-1.5" /> Yangi kitob
+              <Plus className="h-4 w-4 mr-1.5" /> {t('education.newBook')}
             </Button>
           ) : activeTab === 'loans' ? (
             <Button variant="primary" size="sm" onClick={() => setLoanFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-1.5" /> Kitob berish
+              <Plus className="h-4 w-4 mr-1.5" /> {t('education.lendBook')}
             </Button>
           ) : undefined
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami kitoblar" value={totalBooks} />
-        <StatCard label="Ijarada" value={activeLoans} />
-        <StatCard label="Muddati o'tgan" value={overdueLoans} />
-        <StatCard label="Jami kitob nusxalari" value={books.reduce((sum, b) => sum + b.totalCopies, 0)} />
+        <StatCard label={t('education.libraryTitle')} value={totalBooks} />
+        <StatCard label={t('education.onLoan')} value={activeLoans} />
+        <StatCard label={t('education.overdue')} value={overdueLoans} />
+        <StatCard label={t('education.totalBookCopies')} value={books.reduce((sum, b) => sum + b.totalCopies, 0)} />
       </div>
 
       <Tabs tabs={PAGE_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -106,7 +112,7 @@ export function LibraryPage() {
               type="text"
               value={bookSearch}
               onChange={(e) => setBookSearch(e.target.value)}
-              placeholder="Nomi, muallif yoki ISBN bo'yicha..."
+              placeholder={t('education.searchBookPlaceholder')}
               className="h-9 w-full rounded-lg border border-border pl-8 pr-3 text-[13px] outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
             />
           </div>
@@ -155,9 +161,9 @@ export function LibraryPage() {
           if (!returnLoan) return;
           returnBook.mutate(returnLoan.id, { onSuccess: () => setReturnLoan(null) });
         }}
-        title="Kitobni qaytarish"
-        message={`"${returnLoan?.bookTitle}" kitobini qaytarishni tasdiqlaysizmi?`}
-        confirmLabel="Qaytarish"
+        title={t('education.returnBookTitle')}
+        message={t('education.returnBookConfirm', { title: returnLoan?.bookTitle })}
+        confirmLabel={t('education.returnBtn')}
         variant="warning"
         loading={returnBook.isPending}
       />
@@ -166,6 +172,7 @@ export function LibraryPage() {
 }
 
 function CatalogTab({ books, onEdit }: { books: Book[]; onEdit: (book: Book) => void }) {
+  const { t } = useTranslation();
   const { isLoading } = useBooksList();
 
   if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
@@ -191,14 +198,14 @@ function CatalogTab({ books, onEdit }: { books: Book[]; onEdit: (book: Book) => 
             </p>
             <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
               <Badge variant={book.availableCopies > 0 ? 'success' : 'error'} dot>
-                {book.availableCopies > 0 ? `${book.availableCopies} / ${book.totalCopies}` : "Yo'q"}
+                {book.availableCopies > 0 ? `${book.availableCopies} / ${book.totalCopies}` : t('education.notAvailable')}
               </Badge>
               <button
                 type="button"
                 onClick={() => onEdit(book)}
                 className="flex items-center gap-1 rounded-md bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
               >
-                <Pencil className="h-3 w-3" /> Tahrir
+                <Pencil className="h-3 w-3" /> {t('education.editBtn')}
               </button>
             </div>
           </Card>
@@ -208,48 +215,54 @@ function CatalogTab({ books, onEdit }: { books: Book[]; onEdit: (book: Book) => 
   );
 }
 
-const loanColumns = (onReturn: (loan: BookLoan) => void): Column<BookLoan>[] => [
-  { key: 'bookTitle', header: 'Kitob', render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
-  { key: 'studentName', header: 'Talaba', render: (row) => <span className="text-slate-600">{row.studentName}</span> },
-  { key: 'issueDate', header: 'Berilgan sana', render: (row) => <span className="tabular-nums text-slate-500">{row.issueDate}</span> },
-  {
-    key: 'dueDate', header: 'Qaytarish',
-    render: (row) => (
-      <span className={`tabular-nums ${row.status === 'overdue' ? 'text-red-700 font-medium' : 'text-slate-500'}`}>
-        {row.dueDate}
-      </span>
-    ),
-  },
-  {
-    key: 'status', header: 'Holat',
-    render: (row) => {
-      const variant = row.status === 'overdue' ? 'error' : row.status === 'returned' ? 'default' : 'success';
-      const label = row.status === 'overdue' ? "Muddati o'tgan" : row.status === 'returned' ? 'Qaytarilgan' : 'Faol';
-      return <Badge variant={variant} dot>{label}</Badge>;
+function useLoanColumns(onReturn: (loan: BookLoan) => void): Column<BookLoan>[] {
+  const { t } = useTranslation();
+  return [
+    { key: 'bookTitle', header: t('education.bookTitle'), render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
+    { key: 'studentName', header: t('education.student'), render: (row) => <span className="text-slate-600">{row.studentName}</span> },
+    { key: 'issueDate', header: t('education.issuedDate'), render: (row) => <span className="tabular-nums text-slate-500">{row.issueDate}</span> },
+    {
+      key: 'dueDate', header: t('education.returnDate'),
+      render: (row) => (
+        <span className={`tabular-nums ${row.status === 'overdue' ? 'text-red-700 font-medium' : 'text-slate-500'}`}>
+          {row.dueDate}
+        </span>
+      ),
     },
-  },
-  {
-    key: 'actions', header: '',
-    render: (row) =>
-      row.status === 'active' || row.status === 'overdue' ? (
-        <button type="button" onClick={() => onReturn(row)} className="flex items-center gap-1 text-[12px] text-slate-500 hover:text-slate-800">
-          <RotateCcw className="h-3.5 w-3.5" /> Qaytarish
-        </button>
-      ) : null,
-  },
-];
+    {
+      key: 'status', header: t('common.status'),
+      render: (row) => {
+        const variant = row.status === 'overdue' ? 'error' : row.status === 'returned' ? 'default' : 'success';
+        const label = row.status === 'overdue' ? t('education.loanStatusOverdue') : row.status === 'returned' ? t('education.loanStatusReturned') : t('education.loanStatusActive');
+        return <Badge variant={variant} dot>{label}</Badge>;
+      },
+    },
+    {
+      key: 'actions', header: '',
+      render: (row) =>
+        row.status === 'active' || row.status === 'overdue' ? (
+          <button type="button" onClick={() => onReturn(row)} className="flex items-center gap-1 text-[12px] text-slate-500 hover:text-slate-800">
+            <RotateCcw className="h-3.5 w-3.5" /> {t('education.returnBtn')}
+          </button>
+        ) : null,
+    },
+  ];
+}
 
 function LoansTab({ loans, onReturn }: { loans: BookLoan[]; onReturn: (loan: BookLoan) => void }) {
+  const { t } = useTranslation();
+  const columns = useLoanColumns(onReturn);
   const { isLoading } = useLoansList();
   if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
   return (
     <Card noPadding>
-      <DataTable data={loans} columns={loanColumns(onReturn)} keyField="id" emptyMessage="Berilgan kitoblar topilmadi" />
+      <DataTable data={loans} columns={columns} keyField="id" emptyMessage={t('education.loansNotFound')} />
     </Card>
   );
 }
 
 function QueueTab({ books, students }: { books: { id: number; title: string }[]; students: { id: number; fullName: string }[] }) {
+  const { t } = useTranslation();
   const { data: queue, isLoading } = useBookQueue();
   const addToQueue = useAddToQueue();
   const removeFromQueue = useRemoveFromQueue();
@@ -276,11 +289,11 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
         </span>
       ),
     },
-    { key: 'bookTitle', header: 'Kitob', render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
-    { key: 'studentName', header: 'Talaba', render: (row) => <span className="text-slate-700">{row.studentName}</span> },
-    { key: 'requestDate', header: 'So\'ralgan sana', render: (row) => <span className="tabular-nums text-slate-500">{row.requestDate}</span> },
+    { key: 'bookTitle', header: t('education.bookTitle'), render: (row) => <span className="font-medium text-slate-900">{row.bookTitle}</span> },
+    { key: 'studentName', header: t('education.student'), render: (row) => <span className="text-slate-700">{row.studentName}</span> },
+    { key: 'requestDate', header: t('education.requestDate'), render: (row) => <span className="tabular-nums text-slate-500">{row.requestDate}</span> },
     {
-      key: 'estimatedAvailableDate', header: 'Taxminiy sana',
+      key: 'estimatedAvailableDate', header: t('education.estimatedDate'),
       render: (row) => row.estimatedAvailableDate ? (
         <span className="flex items-center gap-1.5 text-slate-500 tabular-nums">
           <Clock className="h-3 w-3 text-amber-500" />{row.estimatedAvailableDate}
@@ -293,7 +306,7 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
         <button
           onClick={() => removeFromQueue.mutate(row.id)}
           className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500"
-          title="O'chirish"
+          title={t('common.delete')}
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
@@ -305,27 +318,27 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
     <div className="space-y-4">
       {/* Add to queue form */}
       <Card>
-        <h4 className="text-[13px] font-semibold text-slate-900 mb-3">Navbatga qo&apos;shish</h4>
+        <h4 className="text-[13px] font-semibold text-slate-900 mb-3">{t('education.addToQueue')}</h4>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[200px]">
-            <label className="mb-1 block text-xs font-medium text-slate-600">Kitob</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600">{t('education.bookTitle')}</label>
             <select
               value={bookId}
               onChange={(e) => setBookId(e.target.value)}
               className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
             >
-              <option value="">Kitobni tanlang</option>
+              <option value="">{t('education.selectBook')}</option>
               {books.map((b) => <option key={b.id} value={b.id}>{b.title}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-[200px]">
-            <label className="mb-1 block text-xs font-medium text-slate-600">Talaba</label>
+            <label className="mb-1 block text-xs font-medium text-slate-600">{t('education.student')}</label>
             <select
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
             >
-              <option value="">Talabani tanlang</option>
+              <option value="">{t('education.selectStudent')}</option>
               {students.map((s) => <option key={s.id} value={s.id}>{s.fullName}</option>)}
             </select>
           </div>
@@ -335,7 +348,7 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
             loading={addToQueue.isPending}
             onClick={handleAdd}
           >
-            Qo&apos;shish
+            {t('common.add')}
           </Button>
         </div>
       </Card>
@@ -343,12 +356,12 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
       {entries.length === 0 ? (
         <EmptyState
           icon={<Inbox className="h-6 w-6" />}
-          title="Navbat bo'sh"
-          description="Hozirda kutayotgan talabalar yo'q"
+          title={t('education.queueEmpty')}
+          description={t('education.queueEmptyDesc')}
         />
       ) : (
         <Card noPadding>
-          <DataTable data={entries} columns={queueColumns} keyField="id" emptyMessage="Navbat bo'sh" />
+          <DataTable data={entries} columns={queueColumns} keyField="id" emptyMessage={t('education.queueEmpty')} />
         </Card>
       )}
     </div>
@@ -356,6 +369,7 @@ function QueueTab({ books, students }: { books: { id: number; title: string }[];
 }
 
 function ReadersTab({ loans }: { loans: BookLoan[] }) {
+  const { t } = useTranslation();
   const { isLoading } = useLoansList();
   if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
@@ -373,7 +387,7 @@ function ReadersTab({ loans }: { loans: BookLoan[] }) {
 
   const readerColumns: Column<ReaderRow>[] = [
     {
-      key: 'studentName', header: "O'quvchi",
+      key: 'studentName', header: t('education.student'),
       render: (row) => (
         <div className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500 text-[10px] font-semibold text-white">
@@ -383,11 +397,11 @@ function ReadersTab({ loans }: { loans: BookLoan[] }) {
         </div>
       ),
     },
-    { key: 'type', header: 'Toifa', render: () => <Badge variant="info">Talaba</Badge> },
-    { key: 'currentLoans', header: 'Hozir ijarada', className: 'text-center', render: (row) => <span className="font-medium tabular-nums">{row.currentLoans}</span> },
-    { key: 'totalBorrowed', header: 'Jami olingan', className: 'text-center', render: (row) => <span className="tabular-nums">{row.totalBorrowed}</span> },
+    { key: 'type', header: t('education.readerCategory'), render: () => <Badge variant="info">{t('education.studentLabel')}</Badge> },
+    { key: 'currentLoans', header: t('education.currentLoans'), className: 'text-center', render: (row) => <span className="font-medium tabular-nums">{row.currentLoans}</span> },
+    { key: 'totalBorrowed', header: t('education.totalBorrowed'), className: 'text-center', render: (row) => <span className="tabular-nums">{row.totalBorrowed}</span> },
     {
-      key: 'overdueCount', header: "Muddati o'tgan", className: 'text-center',
+      key: 'overdueCount', header: t('education.overdue'), className: 'text-center',
       render: (row) => (
         <span className={`tabular-nums ${row.overdueCount > 0 ? 'text-red-700 font-medium' : 'text-slate-400'}`}>
           {row.overdueCount}
@@ -398,7 +412,7 @@ function ReadersTab({ loans }: { loans: BookLoan[] }) {
 
   return (
     <Card noPadding>
-      <DataTable data={readers} columns={readerColumns} keyField="studentId" emptyMessage="O'quvchilar topilmadi" />
+      <DataTable data={readers} columns={readerColumns} keyField="studentId" emptyMessage={t('education.readersNotFound')} />
     </Card>
   );
 }

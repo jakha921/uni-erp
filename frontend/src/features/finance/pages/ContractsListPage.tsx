@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Plus, Search, FileDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Pagination } from '@/components/table';
 import { Button, Spinner } from '@/components/ui';
@@ -16,6 +17,7 @@ import type { Contract, ContractStatus, ContractType } from '@/types/finance';
 import type { ContractFormData, ContractEditFormData } from '../schemas/contract.schema';
 
 export function ContractsListPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -88,11 +90,11 @@ export function ContractsListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Kontraktlar"
-        subtitle={`Jami: ${total} ta`}
+        title={t('nav.contracts')}
+        subtitle={`${t('common.total')}: ${total} ta`}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Kontraktlar' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.contracts') },
         ]}
         actions={
           <div className="flex items-center gap-2">
@@ -138,7 +140,7 @@ export function ContractsListPage() {
                 type="text"
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Kontrakt №, talaba nomi..."
+                placeholder={t('common.search')}
                 className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
               />
             </div>
@@ -148,18 +150,18 @@ export function ContractsListPage() {
             onChange={(e) => { setContractType(e.target.value as ContractType | ''); setPage(1); }}
             className="h-9 w-[180px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha turlari</option>
-            <option value="bazoviy">Bazoviy</option>
-            <option value="tabaqalashtirilgan">Tabaqalashtirilgan</option>
-            <option value="grant">Grant</option>
-            <option value="xorijiy">Xorijiy</option>
+            <option value="">{t('finance.allTypes')}</option>
+            <option value="bazoviy">{t('finance.contractTypes.bazoviy')}</option>
+            <option value="tabaqalashtirilgan">{t('finance.contractTypes.tabaqalashtirilgan')}</option>
+            <option value="grant">{t('finance.contractTypes.grant')}</option>
+            <option value="xorijiy">{t('finance.contractTypes.xorijiy')}</option>
           </select>
           <select
             value={fYear}
             onChange={(e) => { setFYear(e.target.value); setPage(1); }}
             className="h-9 w-[140px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha yillar</option>
+            <option value="">{t('finance.allYears')}</option>
             <option value="2025-2026">2025-2026</option>
             <option value="2024-2025">2024-2025</option>
             <option value="2023-2024">2023-2024</option>
@@ -169,7 +171,7 @@ export function ContractsListPage() {
             value={faculty}
             onChange={(e) => { setFaculty(e.target.value); setPage(1); }}
           >
-            <option value="">Barcha fakultetlar</option>
+            <option value="">{t('finance.allFaculties')}</option>
             {(faculties ?? []).map((f) => (
               <option key={f.id} value={f.name}>{f.name}</option>
             ))}
@@ -179,14 +181,14 @@ export function ContractsListPage() {
             onChange={(e) => { setStatus(e.target.value as ContractStatus | ''); setPage(1); }}
             className="h-9 w-[150px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha holatlar</option>
-            <option value="active">Faol</option>
-            <option value="completed">Yakunlangan</option>
-            <option value="cancelled">Bekor qilingan</option>
+            <option value="">{t('finance.allStatuses')}</option>
+            <option value="active">{t('statuses.active')}</option>
+            <option value="completed">{t('statuses.completed')}</option>
+            <option value="cancelled">{t('statuses.cancelled')}</option>
           </select>
           <div className="flex-1" />
           <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Yangi kontrakt
+            {t('finance.newContract')}
           </Button>
         </div>
       </Card>
@@ -237,9 +239,9 @@ export function ContractsListPage() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Kontraktni o'chirish"
-        message={`"${deleteTarget?.contractNumber}" kontraktni o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('finance.deleteContractTitle')}
+        message={t('finance.deleteContractConfirm', { number: deleteTarget?.contractNumber ?? '' })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteMutation.isPending}
       />

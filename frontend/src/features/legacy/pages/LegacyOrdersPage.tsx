@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, UserPlus, UserMinus, Gift } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -23,6 +24,7 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 };
 
 export function LegacyOrdersPage() {
+  const { t } = useTranslation();
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -43,29 +45,29 @@ export function LegacyOrdersPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Buyruqlar (arxiv)"
-        subtitle="Eski tizimdan ko'chirilgan buyruqlar. Yangi buyruqlar uchun HR modulidan foydalaning."
-        breadcrumbs={[{ label: 'Eski tizim' }, { label: 'Buyruqlar' }]}
+        title={t('legacy.ordersTitle')}
+        subtitle={t('legacy.ordersSubtitle')}
+        breadcrumbs={[{ label: t('nav.legacy') }, { label: t('nav.orders') }]}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami buyruqlar" value={String(total)} icon={<FileText className="h-5 w-5" />} />
-        <StatCard label="Faol" value={String(orders.filter((o) => o.status === 'active').length)} icon={<FileText className="h-5 w-5" />} />
-        <StatCard label="Qabul qilish" value={String(hires)} icon={<UserPlus className="h-5 w-5" />} />
-        <StatCard label="Bo'shatish" value={String(fires)} icon={<UserMinus className="h-5 w-5" />} />
+        <StatCard label={t('legacy.totalOrders')} value={String(total)} icon={<FileText className="h-5 w-5" />} />
+        <StatCard label={t('legacy.activeOrders')} value={String(orders.filter((o) => o.status === 'active').length)} icon={<FileText className="h-5 w-5" />} />
+        <StatCard label={t('legacy.hireOrders')} value={String(hires)} icon={<UserPlus className="h-5 w-5" />} />
+        <StatCard label={t('legacy.fireOrders')} value={String(fires)} icon={<UserMinus className="h-5 w-5" />} />
       </div>
 
       <Card title="" className="overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-border">
-          {[{ key: '', label: 'Barchasi' }, { key: 'hire', label: 'Qabul' }, { key: 'fire', label: "Bo'shatish" }, { key: 'reward', label: 'Mukofot' }, { key: 'leave', label: "Ta'til" }].map((t) => (
+          {[{ key: '', label: t('legacy.allTypes') }, { key: 'hire', label: t('legacy.hireType') }, { key: 'fire', label: t('legacy.fireType') }, { key: 'reward', label: t('legacy.rewardType') }, { key: 'leave', label: t('legacy.leaveType') }].map((tab) => (
             <button
-              key={t.key}
-              onClick={() => { setTypeFilter(t.key); setPage(1); }}
+              key={tab.key}
+              onClick={() => { setTypeFilter(tab.key); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                typeFilter === t.key ? 'bg-primary-500 text-white' : 'text-slate-600 hover:bg-slate-100'
+                typeFilter === tab.key ? 'bg-primary-500 text-white' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {t.label}
+              {tab.label}
             </button>
           ))}
           <div className="ml-auto">
@@ -118,7 +120,7 @@ export function LegacyOrdersPage() {
         )}
 
         {!isLoading && orders.length === 0 && (
-          <div className="text-center py-10 text-slate-400 text-sm">Buyruqlar topilmadi</div>
+          <div className="text-center py-10 text-slate-400 text-sm">{t('legacy.ordersNotFound')}</div>
         )}
         {!isLoading && totalPages > 1 && (
           <div className="border-t border-border px-4 py-3">

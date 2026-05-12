@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, FileText, User, Calendar, Banknote, CreditCard, ExternalLink, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Spinner, Badge } from '@/components/ui';
@@ -140,6 +141,7 @@ function OnlinePaymentModal({ open, onClose, contractId, amount }: { open: boole
 }
 
 export function ContractDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
@@ -188,8 +190,8 @@ export function ContractDetailPage() {
         title={contract.contractNumber}
         subtitle={`${contract.studentName} — ${contract.facultyName}`}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Kontraktlar', path: '/finance/contracts' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.contracts'), path: '/finance/contracts' },
           { label: contract.contractNumber },
         ]}
         actions={
@@ -199,27 +201,27 @@ export function ContractDetailPage() {
               leftIcon={<ArrowLeft className="h-4 w-4" />}
               onClick={() => navigate('/finance/contracts')}
             >
-              Orqaga
+              {t('common.back')}
             </Button>
             <Button
               variant="secondary"
               leftIcon={<Download className="h-4 w-4" />}
               onClick={() => printContractPdf(contract)}
             >
-              Yuklab olish
+              {t('common.download')}
             </Button>
             <Button
               variant="secondary"
               leftIcon={<CreditCard className="h-4 w-4" />}
               onClick={() => setOnlinePaymentOpen(true)}
             >
-              Onlayn to&apos;lov
+              {t('finance.payOnline')}
             </Button>
             <Button
               leftIcon={<Plus className="h-4 w-4" />}
               onClick={() => setPaymentFormOpen(true)}
             >
-              Yangi to&apos;lov
+              {t('finance.newPayment')}
             </Button>
           </div>
         }
@@ -260,7 +262,7 @@ export function ContractDetailPage() {
                 </Badge>
               </div>
               <p className="mt-1 text-xs text-slate-500">
-                Turi: {CONTRACT_TYPE_LABELS[contract.contractType]}
+                {t('common.type')}: {CONTRACT_TYPE_LABELS[contract.contractType]}
               </p>
               <p className="text-xs text-slate-500">
                 <Calendar className="mr-1 inline h-3 w-3" />
@@ -282,10 +284,10 @@ export function ContractDetailPage() {
               </p>
               <div className="mt-2 flex gap-4 text-xs">
                 <span className="text-green-700">
-                  To&apos;langan: <strong>{formatMoney(contract.paidAmount)}</strong>
+                  {t('finance.paidAmount')}: <strong>{formatMoney(contract.paidAmount)}</strong>
                 </span>
                 <span className="text-red-700">
-                  Qarz: <strong>{formatMoney(contract.debtAmount)}</strong>
+                  {t('finance.debtAmount')}: <strong>{formatMoney(contract.debtAmount)}</strong>
                 </span>
               </div>
               <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
@@ -308,7 +310,7 @@ export function ContractDetailPage() {
 
       {/* Payment schedule */}
       <div className="mt-6">
-        <Card title="To'lov jadvali" subtitle="Rejadagi va bajarilgan to'lovlar">
+        <Card title={t('finance.paymentSchedule')} subtitle={t('finance.paymentScheduleSubtitle')}>
           {contract.paymentSchedule.length === 0 ? (
             <p className="py-8 text-center text-sm text-slate-500">
               To&apos;lov jadvali mavjud emas

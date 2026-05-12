@@ -13,6 +13,7 @@ import { StudentTable } from '../components/StudentTable';
 import { useStudentsList, useDeleteStudent } from '@/api/hooks/useStudents';
 import { useFaculties } from '@/api/hooks/useCore';
 import { useAuthStore } from '@/stores/auth.store';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useTranslation } from 'react-i18next';
 import type { StudentStatus, StudentListParams, StudentListItem } from '@/types/student';
 
@@ -36,11 +37,13 @@ export function StudentsListPage() {
   const [dateTo, setDateTo] = useState('');
   const pageSize = 25;
 
+  const debouncedSearch = useDebounce(search);
+
   const params = useMemo<StudentListParams>(
     () => ({
       page,
       pageSize,
-      search: search || undefined,
+      search: debouncedSearch || undefined,
       facultyId: facultyId ? Number(facultyId) : undefined,
       course: course ? Number(course) : undefined,
       status: (status as StudentStatus) || undefined,
@@ -49,7 +52,7 @@ export function StudentsListPage() {
       sortBy,
       sortOrder,
     }),
-    [page, search, facultyId, course, status, paymentForm, sortBy, sortOrder],
+    [page, debouncedSearch, facultyId, course, status, paymentForm, sortBy, sortOrder],
   );
 
   const { data, isLoading } = useStudentsList(params);

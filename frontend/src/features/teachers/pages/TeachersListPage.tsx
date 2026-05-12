@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Search, MoreHorizontal, Upload, Plus } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
@@ -16,6 +17,7 @@ const EMPLOYMENT_LABELS: Record<string, string> = {
 };
 
 export function TeachersListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [dept, setDept] = useState('');
@@ -118,21 +120,21 @@ export function TeachersListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="O'qituvchilar"
-        subtitle="O'qituvchilar ro'yxati va statistikasi"
+        title={t('teachers.title')}
+        subtitle={t('teachers.subtitle')}
         breadcrumbs={[
-          { label: "Ta'lim", path: '/teachers' },
-          { label: "O'qituvchilar" },
+          { label: t('nav.education'), path: '/teachers' },
+          { label: t('nav.teachers') },
         ]}
       />
 
       {/* KPI StatCards */}
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Jami o'qituvchilar" value={stats.total.toString()} />
-        <StatCard label="Shtatli" value={stats.shtatli.toString()} />
-        <StatCard label="Soatbay" value={stats.soatbay.toString()} />
-        <StatCard label="PhD / DSc" value={stats.phd.toString()} />
-        <StatCard label="Professor" value={stats.professor.toString()} />
+        <StatCard label={t('teachers.totalTeachers')} value={stats.total.toString()} />
+        <StatCard label={t('teachers.fullTime')} value={stats.shtatli.toString()} />
+        <StatCard label={t('teachers.partTime')} value={stats.soatbay.toString()} />
+        <StatCard label={t('teachers.phdDsc')} value={stats.phd.toString()} />
+        <StatCard label={t('teachers.professor')} value={stats.professor.toString()} />
       </div>
 
       {/* Table with toolbar inside */}
@@ -147,7 +149,7 @@ export function TeachersListPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="F.I.Sh. bo'yicha qidirish..."
+              placeholder={t('teachers.searchPlaceholder')}
               className="h-9 w-full rounded-lg border border-border pl-8 pr-3 text-[13px] outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
             />
           </div>
@@ -181,10 +183,10 @@ export function TeachersListPage() {
           </select>
           <div className="flex-1" />
           <Button variant="secondary" size="sm" leftIcon={<Upload className="h-3.5 w-3.5" />}>
-            Eksport
+            {t('common.export')}
           </Button>
           <Button size="sm" leftIcon={<Plus className="h-4 w-4" />}>
-            Yangi o&apos;qituvchi
+            {t('teachers.newTeacher')}
           </Button>
         </div>
 

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, Download, X, FileDown } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
@@ -14,6 +15,7 @@ import type { EmployeeListParams, EmployeeStatus, EmployeeListItem } from '@/typ
 import type { EmployeeFormData } from '../schemas/employee.schema';
 
 export function EmployeesListPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [params, setParams] = useState<EmployeeListParams>({
     page: 1,
@@ -99,9 +101,9 @@ export function EmployeesListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Xodimlar"
-        subtitle={data ? `Jami: ${data.total} ta xodim` : undefined}
-        breadcrumbs={[{ label: 'Kadrlar', path: '/hr' }, { label: 'Xodimlar' }]}
+        title={t('nav.employees')}
+        subtitle={data ? `${t('common.total')}: ${data.total}` : undefined}
+        breadcrumbs={[{ label: t('nav.hr'), path: '/hr' }, { label: t('nav.employees') }]}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -122,7 +124,7 @@ export function EmployeesListPage() {
               leftIcon={<Plus className="h-4 w-4" />}
               onClick={() => { setEditEmployeeId(null); setFormOpen(true); }}
             >
-              Yangi xodim
+              {t('hr.newEmployee')}
             </Button>
           </div>
         }
@@ -137,7 +139,7 @@ export function EmployeesListPage() {
               type="text"
               value={params.search}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="F.I.SH yoki ID raqam bo'yicha qidirish…"
+              placeholder={t('hr.searchEmployeePlaceholder')}
               className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
             />
           </div>
@@ -146,7 +148,7 @@ export function EmployeesListPage() {
             onChange={(e) => handleDepartmentChange(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Bo&apos;lim</option>
+            <option value="">{t('hr.department')}</option>
             {departments.map((d) => (
               <option key={d.id} value={String(d.id)}>
                 {d.name.length > 28 ? d.name.slice(0, 28) + '…' : d.name}
@@ -158,29 +160,29 @@ export function EmployeesListPage() {
             value={position}
             onChange={(e) => { setPosition(e.target.value); setParams((p) => ({ ...p, page: 1 })); }}
           >
-            <option value="">Lavozim</option>
-            <option value="professor">Professor</option>
-            <option value="dotsent">Dotsent</option>
-            <option value="katta-oqituvchi">Katta o&apos;qituvchi</option>
-            <option value="oqituvchi">O&apos;qituvchi</option>
-            <option value="laborant">Laborant</option>
-            <option value="boshqaruvchi">Boshqaruvchi</option>
+            <option value="">{t('hr.position')}</option>
+            <option value="professor">{t('hr.positionProfessor')}</option>
+            <option value="dotsent">{t('hr.positionDotsent')}</option>
+            <option value="katta-oqituvchi">{t('hr.positionSeniorTeacher')}</option>
+            <option value="oqituvchi">{t('hr.positionTeacher')}</option>
+            <option value="laborant">{t('hr.positionLaborant')}</option>
+            <option value="boshqaruvchi">{t('hr.positionManager')}</option>
           </select>
           <select
             value={params.status ?? ''}
             onChange={(e) => handleStatusChange(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Holat</option>
-            <option value="active">Faol</option>
-            <option value="leave">Ta&apos;tilda</option>
-            <option value="business_trip">Xizmat safarida</option>
-            <option value="inactive">Nofaol</option>
+            <option value="">{t('common.status')}</option>
+            <option value="active">{t('statuses.active')}</option>
+            <option value="leave">{t('hr.onLeave')}</option>
+            <option value="business_trip">{t('hr.onBusinessTrip')}</option>
+            <option value="inactive">{t('statuses.inactive')}</option>
           </select>
           <div className="flex-1" />
           {useAuthStore.getState().currentUser?.role === 'admin' && (
             <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>
-              HEMIS dan yuklash
+              {t('hr.importFromHemis')}
             </Button>
           )}
         </div>
@@ -190,7 +192,7 @@ export function EmployeesListPage() {
       {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
-          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <span className="text-sm font-medium text-primary-700">{selectedIds.size} {t('common.selected')}</span>
           <div className="ml-auto flex items-center gap-2">
             <Button
               variant="secondary"
@@ -206,7 +208,7 @@ export function EmployeesListPage() {
                 document.body.removeChild(a);
               }}
             >
-              Eksport
+              {t('common.export')}
             </Button>
             <Button
               variant="secondary"
@@ -270,9 +272,9 @@ export function EmployeesListPage() {
           if (!deleteEmployee) return;
           deleteEmployeeMutation.mutate(deleteEmployee.id, { onSuccess: () => setDeleteEmployee(null) });
         }}
-        title="Xodimni o'chirish"
-        message={`"${deleteEmployee?.fullName}" xodimni o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('hr.deleteEmployee')}
+        message={t('hr.deleteEmployeeConfirm', { name: deleteEmployee?.fullName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteEmployeeMutation.isPending}
       />

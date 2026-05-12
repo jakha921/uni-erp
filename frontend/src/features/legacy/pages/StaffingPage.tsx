@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, Briefcase, AlertCircle, TrendingUp } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -56,6 +57,7 @@ const STAFFING: Department[] = [
 ];
 
 export function StaffingPage() {
+  const { t } = useTranslation();
   const [deptFilter, setDeptFilter] = useState('');
 
   const allPositions = STAFFING.flatMap((d) => d.positions);
@@ -71,16 +73,16 @@ export function StaffingPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Shtatlash jadvali"
-        subtitle="Xodimlar shtati va lavozimlar jadvali"
-        breadcrumbs={[{ label: 'Eski tizim' }, { label: 'Shtatlash jadvali' }]}
+        title={t('legacy.staffingTitle')}
+        subtitle={t('legacy.staffingSubtitle')}
+        breadcrumbs={[{ label: t('nav.legacy') }, { label: t('nav.staffing') }]}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami shtat birliklari" value={totalSlots.toString()} icon={<Briefcase className="h-5 w-5" />} />
-        <StatCard label="Band" value={filledSlots.toString()} icon={<Users className="h-5 w-5" />} />
-        <StatCard label="Bo'sh o'rinlar" value={vacantSlots.toString()} icon={<AlertCircle className="h-5 w-5" />} />
-        <StatCard label="Band foizi" value={`${fillRate}%`} icon={<TrendingUp className="h-5 w-5" />} trend={{ value: fillRate - 90 }} />
+        <StatCard label={t('legacy.totalStaffUnits')} value={totalSlots.toString()} icon={<Briefcase className="h-5 w-5" />} />
+        <StatCard label={t('legacy.filledPositions')} value={filledSlots.toString()} icon={<Users className="h-5 w-5" />} />
+        <StatCard label={t('legacy.vacantPositions')} value={vacantSlots.toString()} icon={<AlertCircle className="h-5 w-5" />} />
+        <StatCard label={t('legacy.fillRate')} value={`${fillRate}%`} icon={<TrendingUp className="h-5 w-5" />} trend={{ value: fillRate - 90 }} />
       </div>
 
       <div className="mb-4">
@@ -89,7 +91,7 @@ export function StaffingPage() {
           onChange={(e) => setDeptFilter(e.target.value)}
           className="h-9 rounded-md border border-border px-3 text-sm"
         >
-          <option value="">Barcha bo'limlar</option>
+          <option value="">{t('legacy.allDepartments')}</option>
           {STAFFING.map((d) => (
             <option key={d.name} value={d.name}>{d.name}</option>
           ))}

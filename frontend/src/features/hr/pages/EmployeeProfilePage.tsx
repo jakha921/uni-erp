@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FileText, Plus, ArrowUp, ArrowLeft, CheckCircle, Star, Upload } from 'lucide-react';
 import type { Employee } from '@/types/hr';
@@ -93,17 +94,20 @@ function printEmployeeCard(e: Employee) {
   setTimeout(() => { win.print(); win.close(); }, 250);
 }
 
-const TABS_CONFIG = [
-  { id: 'info', label: "Asosiy ma'lumotlar" },
-  { id: 'career', label: 'Ish faoliyati', count: CAREER_EVENTS.length },
-  { id: 'salary', label: 'Maosh' },
-  { id: 'docs', label: 'Hujjatlar', count: DOCS_DATA.length },
-];
+/* TABS_CONFIG moved inside component for i18n */
 
 export function EmployeeProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const employeeId = Number(id);
   const navigate = useNavigate();
+
+  const TABS_CONFIG = [
+    { id: 'info', label: t('hr.mainInfo') },
+    { id: 'career', label: t('hr.workHistory'), count: CAREER_EVENTS.length },
+    { id: 'salary', label: t('hr.salary') },
+    { id: 'docs', label: t('hr.documents'), count: DOCS_DATA.length },
+  ];
 
   const [activeTab, setActiveTab] = useState('info');
   const [editOpen, setEditOpen] = useState(false);
@@ -129,7 +133,7 @@ export function EmployeeProfilePage() {
         className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-slate-700 transition-colors mb-4"
       >
         <ArrowLeft className="h-4 w-4" />
-        Orqaga
+        {t('common.back')}
       </button>
 
       <EmployeeProfileHeader employee={employee} onEdit={() => setEditOpen(true)} onPrint={() => printEmployeeCard(employee)} />
@@ -183,34 +187,35 @@ export function EmployeeProfilePage() {
 }
 
 function InfoTab({ employee }: { employee: NonNullable<ReturnType<typeof useEmployee>['data']> }) {
+  const { t } = useTranslation();
   const e = employee;
 
   const sections = [
     {
-      title: "Shaxsiy ma'lumotlar",
+      title: t('hr.personalInfo'),
       fields: [
-        { label: 'F.I.Sh.', value: e.fullName },
-        { label: 'Jinsi', value: e.gender.name },
-        { label: "Tug'ilgan sana", value: formatDate(e.birthDate) },
-        { label: 'Pasport', value: e.passport },
-        { label: 'JSHSHIR', value: e.pinfl },
-        { label: 'Telefon', value: formatPhone(e.phone) },
-        { label: 'Email', value: e.email },
+        { label: t('hr.fullName'), value: e.fullName },
+        { label: t('hr.gender'), value: e.gender.name },
+        { label: t('hr.birthDate'), value: formatDate(e.birthDate) },
+        { label: t('hr.passport'), value: e.passport },
+        { label: t('hr.pinfl'), value: e.pinfl },
+        { label: t('common.phone'), value: formatPhone(e.phone) },
+        { label: t('common.email'), value: e.email },
       ],
     },
     {
-      title: "Ish ma'lumotlari",
+      title: t('hr.workInfo'),
       fields: [
-        { label: "Bo'lim", value: e.department.name },
-        { label: 'Lavozimi', value: e.position.name },
-        { label: 'Ish turi', value: e.employmentForm.name },
-        { label: 'Stavka', value: e.employmentForm.name },
-        { label: 'Ilmiy daraja', value: e.academicDegree.name },
-        { label: 'Ilmiy unvon', value: e.academicRank.name },
-        { label: 'Ish staji', value: e.experience.years ? `${e.experience.years} yil` : '—' },
-        { label: 'Ishga qabul', value: formatDate(e.hireDate) },
-        { label: 'Shartnoma №', value: e.contractNumber },
-        { label: 'Maoshi', value: formatMoney(e.salary) },
+        { label: t('hr.department'), value: e.department.name },
+        { label: t('hr.position'), value: e.position.name },
+        { label: t('hr.employmentForm'), value: e.employmentForm.name },
+        { label: t('hr.workRate'), value: e.employmentForm.name },
+        { label: t('hr.academicDegree'), value: e.academicDegree.name },
+        { label: t('hr.academicRank'), value: e.academicRank.name },
+        { label: t('hr.experience'), value: e.experience.years ? `${e.experience.years} ${t('hr.years')}` : '—' },
+        { label: t('hr.hireDate'), value: formatDate(e.hireDate) },
+        { label: t('hr.contractNo'), value: e.contractNumber },
+        { label: t('hr.salary'), value: formatMoney(e.salary) },
       ],
     },
   ];
@@ -236,6 +241,7 @@ function InfoTab({ employee }: { employee: NonNullable<ReturnType<typeof useEmpl
 }
 
 function CareerTab({ employeeId }: { employeeId: number }) {
+  const { t } = useTranslation();
   const { data: ordersData } = useOrders();
   const orders = (ordersData ?? []).filter((o) => o.employeeId === employeeId);
 
@@ -250,7 +256,7 @@ function CareerTab({ employeeId }: { employeeId: number }) {
     : CAREER_EVENTS;
 
   return (
-    <Card title="Ish faoliyati tarixi">
+    <Card title={t('hr.workHistoryTitle')}>
       <div className="relative pl-7">
         <div className="absolute left-[7px] top-1.5 bottom-1.5 w-0.5 bg-slate-200" />
         {events.map((item, i) => (
@@ -272,6 +278,7 @@ function CareerTab({ employeeId }: { employeeId: number }) {
 }
 
 function SalaryTab({ employeeId, salary }: { employeeId: number; salary: number }) {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const { data: payrollData } = usePayroll({ month: currentMonth, year: currentYear, employeeId, pageSize: 12 });
@@ -298,16 +305,16 @@ function SalaryTab({ employeeId, salary }: { employeeId: number; salary: number 
     <div className="space-y-4">
       {/* Current salary highlight */}
       <div className="rounded-[14px] p-5 text-white" style={{ background: 'linear-gradient(135deg, #0891B2, #0E7490)' }}>
-        <p className="text-xs font-medium opacity-80 mb-1">Joriy oylik maosh</p>
+        <p className="text-xs font-medium opacity-80 mb-1">{t('hr.currentMonthlySalary')}</p>
         <p className="text-[28px] font-bold tracking-tight tabular-nums">{formatMoney(base)}</p>
       </div>
 
       {/* Salary history table */}
-      <Card title="Maosh tarixi" noPadding>
+      <Card title={t('hr.salaryHistory')} noPadding>
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-slate-50">
-              {['Oy', 'Asosiy', 'Bonus', 'Soliq', "Qo'lga"].map((h) => (
+              {[t('hr.month'), t('hr.baseSalary'), t('hr.bonus'), t('hr.tax'), t('hr.netSalary')].map((h) => (
                 <th key={h} className="px-3.5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500 text-right first:text-left">
                   {h}
                 </th>

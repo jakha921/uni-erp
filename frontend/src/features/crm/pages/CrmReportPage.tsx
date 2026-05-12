@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, TrendingUp, UserCheck, PhoneCall } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard, DonutChart, LineChartSimple } from '@/components/data-display';
@@ -11,6 +12,7 @@ type Period = 'month' | 'quarter' | 'year';
 const SOURCE_COLORS = ['#3B82F6', '#2DB976', '#F59E0B', '#8B5CF6', '#EC4899', '#EF4444'];
 
 export function CrmReportPage() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<Period>('month');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -47,8 +49,8 @@ export function CrmReportPage() {
   return (
     <PageContent>
       <PageHeader
-        title="CRM Hisobot"
-        subtitle="Qabul jarayoni statistikasi va konversiya tahlili"
+        title={t('crm.reportTitle')}
+        subtitle={t('crm.reportSubtitle')}
         breadcrumbs={[{ label: 'CRM', path: '/crm' }, { label: 'Hisobot' }]}
         actions={
           <div className="flex items-center gap-3">
@@ -68,7 +70,7 @@ export function CrmReportPage() {
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  {p === 'month' ? 'Oy' : p === 'quarter' ? 'Chorak' : 'Yil'}
+                  {p === 'month' ? t('crm.periodMonth') : p === 'quarter' ? t('crm.periodQuarter') : t('crm.periodYear')}
                 </button>
               ))}
             </div>
@@ -78,25 +80,25 @@ export function CrmReportPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatCard
-          label="Jami murojaatlar"
+          label={t('crm.totalAppeals')}
           value={totalLeads.toLocaleString()}
           icon={<PhoneCall className="h-5 w-5" />}
           trend={{ value: 12 }}
         />
         <StatCard
-          label="Qabul qilinganlar"
+          label={t('crm.enrolledCount')}
           value={enrolled.toLocaleString()}
           icon={<UserCheck className="h-5 w-5" />}
           trend={{ value: 8 }}
         />
         <StatCard
-          label="Konversiya"
+          label={t('crm.conversion')}
           value={`${conversionRate.toFixed(1)}%`}
           icon={<TrendingUp className="h-5 w-5" />}
           trend={{ value: 3 }}
         />
         <StatCard
-          label="Yangi murojaatlar"
+          label={t('crm.newAppeals')}
           value={newLeads.toLocaleString()}
           icon={<Users className="h-5 w-5" />}
           trend={{ value: -5 }}
@@ -104,7 +106,7 @@ export function CrmReportPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <Card title="Qabul qilish funnel" className="p-5">
+        <Card title={t('crm.admissionFunnel')} className="p-5">
           <div className="space-y-3 mt-2">
             {funnelData.map((stage, i) => (
               <div key={stage.stage}>
@@ -128,18 +130,18 @@ export function CrmReportPage() {
           </div>
         </Card>
 
-        <Card title="Holat bo'yicha dinamika" className="p-5">
+        <Card title={t('crm.statusDynamic')} className="p-5">
           <LineChartSimple data={monthlyTrend} color="#2DB976" showArea height={220} />
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 mb-6">
-        <Card title="Murojaatlar manbalari" className="overflow-hidden">
+        <Card title={t('crm.appealSources')} className="overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-slate-50">
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">MANBA</th>
-                <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">MUROJAATLAR</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">{t('crm.sourceLabel')}</th>
+                <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-slate-500">{t('crm.appealsLabel')}</th>
               </tr>
             </thead>
             <tbody>
@@ -152,7 +154,7 @@ export function CrmReportPage() {
             </tbody>
           </table>
         </Card>
-        <Card title="Manba ulushi" className="p-5">
+        <Card title={t('crm.sourceShare')} className="p-5">
           <DonutChart data={sourceDonutData} size={220} innerRadius={60} />
         </Card>
       </div>

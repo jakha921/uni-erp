@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, AlertTriangle, CircleDollarSign, Mail, DollarSign, X, CheckCircle, FileDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Spinner, Button } from '@/components/ui';
@@ -20,6 +21,7 @@ interface DebtorRow extends Contract {
 
 
 export function DebtorsListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [bucket, setBucket] = useState<Tier>('all');
@@ -96,18 +98,18 @@ export function DebtorsListPage() {
   const columns: Column<DebtorRow>[] = [
     { key: 'idx', header: '#', width: '50px', render: (_, i) => <span className="text-slate-500">{(page - 1) * pageSize + i + 1}</span> },
     {
-      key: 'studentName', header: 'Talaba', render: (row) => (
+      key: 'studentName', header: t('education.student'), render: (row) => (
         <div>
           <p className="font-medium text-slate-900">{row.studentName}</p>
           <p className="text-[11.5px] text-muted">{row.contractNumber}</p>
         </div>
       ),
     },
-    { key: 'groupName', header: 'Guruh', render: (row) => <span>{row.groupName}</span> },
-    { key: 'facultyName', header: 'Fakultet', render: (row) => <span className="text-[12.5px]">{row.facultyName.split(' ').slice(0, 2).join(' ')}</span> },
-    { key: 'contractAmount', header: 'Kontrakt', className: 'text-right', render: (row) => <span className="tabular-nums">{formatMoney(row.contractAmount)}</span> },
-    { key: 'paidAmount', header: "To'langan", className: 'text-right', render: (row) => <span className="tabular-nums text-green-700">{formatMoney(row.paidAmount)}</span> },
-    { key: 'debtAmount', header: 'Qarz', className: 'text-right', render: (row) => <span className="tabular-nums font-bold text-red-700">{formatMoney(row.debtAmount)}</span> },
+    { key: 'groupName', header: t('students.group'), render: (row) => <span>{row.groupName}</span> },
+    { key: 'facultyName', header: t('students.faculty'), render: (row) => <span className="text-[12.5px]">{row.facultyName.split(' ').slice(0, 2).join(' ')}</span> },
+    { key: 'contractAmount', header: t('nav.contracts'), className: 'text-right', render: (row) => <span className="tabular-nums">{formatMoney(row.contractAmount)}</span> },
+    { key: 'paidAmount', header: t('finance.paidAmount'), className: 'text-right', render: (row) => <span className="tabular-nums text-green-700">{formatMoney(row.paidAmount)}</span> },
+    { key: 'debtAmount', header: t('finance.debtAmount'), className: 'text-right', render: (row) => <span className="tabular-nums font-bold text-red-700">{formatMoney(row.debtAmount)}</span> },
     {
       key: 'debtPct', header: '%', render: (row) => {
         const color = row.tier === 'critical' ? '#EF4444' : row.tier === 'medium' ? '#F59E0B' : '#2DB976';
@@ -128,10 +130,10 @@ export function DebtorsListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Qarzdorlar"
+        title={t('nav.debtors')}
         breadcrumbs={[
-          { label: 'Moliya', path: '/finance' },
-          { label: 'Qarzdorlar' },
+          { label: t('nav.finance'), path: '/finance' },
+          { label: t('nav.debtors') },
         ]}
         actions={
           <Button
@@ -154,21 +156,21 @@ export function DebtorsListPage() {
       {/* KPI cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
         <StatCard
-          label="Jami talabalar"
+          label={t('dashboard.totalStudents')}
           value={totalContracts}
           icon={<Users className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
-          sub="Kontrakt bo'yicha"
+          sub={t('finance.byContract')}
         />
         <StatCard
-          label="Qarzdor talabalar"
+          label={t('finance.debtorStudents')}
           value={debtorsList.length}
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
-          sub={`${totalContracts > 0 ? Math.round(debtorsList.length / totalContracts * 100) : 0}% talabalardan`}
+          sub={`${totalContracts > 0 ? Math.round(debtorsList.length / totalContracts * 100) : 0}%`}
         />
         <StatCard
-          label="O'rtacha qarzdorlik"
+          label={t('finance.averageDebt')}
           value={formatMoney(avgDebt)}
           icon={<CircleDollarSign className="h-[18px] w-[18px]" />}
           iconBg="#EF4444"
@@ -178,10 +180,10 @@ export function DebtorsListPage() {
       {/* Bucket tabs */}
       <Tabs
         tabs={[
-          { id: 'all', label: 'Barchasi', count: debtorsList.length },
-          { id: 'critical', label: 'Kritik', count: criticalCount },
-          { id: 'medium', label: "O'rtacha", count: mediumCount },
-          { id: 'light', label: 'Yengil', count: lightCount },
+          { id: 'all', label: t('common.all'), count: debtorsList.length },
+          { id: 'critical', label: t('finance.debtCritical'), count: criticalCount },
+          { id: 'medium', label: t('finance.debtMedium'), count: mediumCount },
+          { id: 'light', label: t('finance.debtLight'), count: lightCount },
         ]}
         activeTab={bucket}
         onTabChange={(id) => { setBucket(id as Tier); setPage(1); }}
@@ -194,7 +196,7 @@ export function DebtorsListPage() {
           onChange={(e) => { setFacultyFilter(e.target.value); setPage(1); }}
           className="h-9 px-3 rounded-lg border border-border text-sm bg-white dark:bg-slate-800 min-w-[180px]"
         >
-          <option value="all">Barcha fakultetlar</option>
+          <option value="all">{t('finance.allFaculties')}</option>
           {(faculties ?? []).map((f) => (
             <option key={f.id} value={f.name}>{f.name}</option>
           ))}
@@ -204,7 +206,7 @@ export function DebtorsListPage() {
           onChange={(e) => { setLevelFilter(e.target.value); setPage(1); }}
           className="h-9 px-3 rounded-lg border border-border text-sm bg-white dark:bg-slate-800 min-w-[130px]"
         >
-          <option value="all">Barcha kurslar</option>
+          <option value="all">{t('finance.allCourses')}</option>
           <option value="1-kurs">1-kurs</option>
           <option value="2-kurs">2-kurs</option>
           <option value="3-kurs">3-kurs</option>
@@ -231,7 +233,7 @@ export function DebtorsListPage() {
           selectable
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
-          emptyMessage="Qarzdorlar topilmadi"
+          emptyMessage={t('finance.noDebtors')}
           rowClassName={(row) => row.tier === 'critical' ? 'border-l-[3px] border-l-red-500' : ''}
           actions={(row) => (
             <div className="flex items-center gap-1 justify-end">

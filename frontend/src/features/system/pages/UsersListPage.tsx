@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, CheckCircle, ShieldAlert, UserPlus, Search, Lock, KeyRound, Pencil } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
@@ -26,12 +27,13 @@ function RoleChip({ role, roleName }: { role: string; roleName: string }) {
   );
 }
 
-const STATUS_MAP: Record<string, { variant: 'success' | 'error'; label: string }> = {
-  active: { variant: 'success', label: 'Faol' },
-  blocked: { variant: 'error', label: 'Bloklangan' },
+const STATUS_MAP_KEYS: Record<string, { variant: 'success' | 'error'; labelKey: string }> = {
+  active: { variant: 'success', labelKey: 'system.userStatusActive' },
+  blocked: { variant: 'error', labelKey: 'system.userStatusBlocked' },
 };
 
 export function UsersListPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -81,7 +83,7 @@ export function UsersListPage() {
   const columns: Column<SystemUserListItem>[] = useMemo(() => [
     { key: 'index', header: '#', width: '50px', render: (_row, index) => <span className="text-xs text-muted">{(page - 1) * pageSize + index + 1}</span> },
     {
-      key: 'fullName', header: 'Foydalanuvchi',
+      key: 'fullName', header: t('system.userColumn'),
       render: (row) => (
         <div className="flex items-center gap-3">
           <Avatar name={row.fullName} size="sm" src={row.image ?? undefined} />
@@ -94,7 +96,7 @@ export function UsersListPage() {
     },
     { key: 'email', header: 'Email', render: (row) => <span className="text-[13px] text-slate-600">{row.email}</span> },
     {
-      key: 'roles', header: 'Rollar',
+      key: 'roles', header: t('system.rolesColumn'),
       render: (row) => (
         <div className="flex flex-wrap gap-1">
           {row.roles.slice(0, 2).map((r) => <RoleChip key={r.id} role={r.role} roleName={r.roleName} />)}
@@ -103,14 +105,14 @@ export function UsersListPage() {
       ),
     },
     {
-      key: 'status', header: 'Holat',
+      key: 'status', header: t('system.statusColumn'),
       render: (row) => {
-        const st = STATUS_MAP[row.status] ?? { variant: 'default' as const, label: row.status };
-        return <Badge variant={st.variant} dot>{st.label}</Badge>;
+        const st = STATUS_MAP_KEYS[row.status] ?? { variant: 'default' as const, labelKey: row.status };
+        return <Badge variant={st.variant} dot>{t(st.labelKey)}</Badge>;
       },
     },
     {
-      key: 'lastLogin', header: 'Oxirgi kirish',
+      key: 'lastLogin', header: t('system.lastLogin'),
       render: (row) => <span className="text-[13px] text-slate-600">{row.lastLogin ? new Date(row.lastLogin).toLocaleDateString('uz-UZ') : '—'}</span>,
     },
   ], [page]);
@@ -121,20 +123,20 @@ export function UsersListPage() {
         <button
           className="h-7 w-7 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 inline-flex items-center justify-center transition-colors"
           onClick={(e) => { e.stopPropagation(); setEditUser(row); }}
-          title="Tahrirlash"
+          title={t('common.edit')}
         >
           <Pencil className="h-3.5 w-3.5" />
         </button>
         <button
           className="h-7 w-7 rounded-md hover:bg-amber-50 text-slate-400 hover:text-amber-600 inline-flex items-center justify-center transition-colors"
           onClick={(e) => { e.stopPropagation(); blockUser.mutate(row.id); }}
-          title={row.status === 'blocked' ? 'Blokdan chiqarish' : 'Bloklash'}
+          title={row.status === 'blocked' ? t('system.unblockUser') : t('system.blockUser')}
         >
           <Lock className="h-3.5 w-3.5" />
         </button>
         <button
           className="h-7 w-7 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 inline-flex items-center justify-center transition-colors"
-          title="Parol tiklash"
+          title={t('system.resetPassword')}
         >
           <KeyRound className="h-3.5 w-3.5" />
         </button>
@@ -145,21 +147,21 @@ export function UsersListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Foydalanuvchilar"
-        subtitle="Tizim foydalanuvchilari va ularning huquqlari"
-        breadcrumbs={[{ label: 'Tizim' }, { label: 'Foydalanuvchilar' }]}
+        title={t('system.usersTitle')}
+        subtitle={t('system.usersSubtitle')}
+        breadcrumbs={[{ label: t('nav.system') }, { label: t('nav.users') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<UserPlus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Foydalanuvchi qo&apos;shish
+            {t('system.addUser')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Jami foydalanuvchi" value={total} icon={<Users className="h-5 w-5" />} iconBg="#2DB976" />
-        <StatCard label="Faol" value={activeCount} icon={<CheckCircle className="h-5 w-5" />} iconBg="#10B981" />
-        <StatCard label="Bloklangan" value={blockedCount} icon={<ShieldAlert className="h-5 w-5" />} iconBg="#EF4444" />
-        <StatCard label="Jami rollar" value={roles?.length ?? 0} icon={<UserPlus className="h-5 w-5" />} iconBg="#3B82F6" />
+        <StatCard label={t('system.totalUsers')} value={total} icon={<Users className="h-5 w-5" />} iconBg="#2DB976" />
+        <StatCard label={t('system.activeUsers')} value={activeCount} icon={<CheckCircle className="h-5 w-5" />} iconBg="#10B981" />
+        <StatCard label={t('system.blockedUsers')} value={blockedCount} icon={<ShieldAlert className="h-5 w-5" />} iconBg="#EF4444" />
+        <StatCard label={t('system.totalRoles')} value={roles?.length ?? 0} icon={<UserPlus className="h-5 w-5" />} iconBg="#3B82F6" />
       </div>
 
       <Card className="mt-6" noPadding>
@@ -167,19 +169,19 @@ export function UsersListPage() {
           <div className="relative min-w-[240px] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Ism, telefon yoki email bo'yicha qidirish..."
+              placeholder={t('system.searchUsersPlaceholder')}
               className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm placeholder:text-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20" />
           </div>
           <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
             className="h-9 rounded-md border border-border bg-white px-3 text-sm">
-            <option value="">Barcha rollar</option>
+            <option value="">{t('system.allRoles')}</option>
             {(roles ?? []).map((r) => <option key={r.id} value={r.id}>{r.nameUz}</option>)}
           </select>
           <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="h-9 rounded-md border border-border bg-white px-3 text-sm">
-            <option value="">Barcha statuslar</option>
-            <option value="active">Faol</option>
-            <option value="blocked">Bloklangan</option>
+            <option value="">{t('system.allStatuses')}</option>
+            <option value="active">{t('system.userStatusActive')}</option>
+            <option value="blocked">{t('system.userStatusBlocked')}</option>
           </select>
         </div>
 

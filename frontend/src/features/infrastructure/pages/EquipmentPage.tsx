@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -91,6 +92,7 @@ const columns: Column<Equipment>[] = [
 // --- Component ---
 
 export function EquipmentPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -159,9 +161,9 @@ export function EquipmentPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Jihozlar"
-        subtitle="Asosiy vositalar va texnika"
-        breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'Jihozlar' }]}
+        title={t('infrastructure.equipmentTitle')}
+        subtitle={t('infrastructure.equipmentSubtitle')}
+        breadcrumbs={[{ label: t('nav.infrastructure') }, { label: t('nav.equipment') }]}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -179,7 +181,7 @@ export function EquipmentPage() {
             >
               Excel
             </Button>
-            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>Jihoz qo&apos;shish</Button>
+            <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>{t('infrastructure.addEquipment')}</Button>
           </div>
         }
       />
@@ -187,26 +189,26 @@ export function EquipmentPage() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <StatCard
-          label="Umumiy qiymat"
+          label={t('infrastructure.totalValue')}
           value={totalValue > 0 ? `${(totalValue / 1_000_000_000).toFixed(2)} mlrd` : '0'}
           icon={<Monitor className="h-[18px] w-[18px]" />}
           iconBg="#2DB976"
           sub="so'm"
         />
         <StatCard
-          label="Ishlamoqda"
+          label={t('infrastructure.working')}
           value={working}
           icon={<CheckCircle className="h-[18px] w-[18px]" />}
           iconBg="#3B82F6"
         />
         <StatCard
-          label="Ta'mirda"
+          label={t('infrastructure.underRepair')}
           value={repair}
           icon={<Wrench className="h-[18px] w-[18px]" />}
           iconBg="#F59E0B"
         />
         <StatCard
-          label="Hisobdan chiq."
+          label={t('infrastructure.writtenOff')}
           value={writtenOff}
           icon={<XCircle className="h-[18px] w-[18px]" />}
           iconBg="#94A3B8"
@@ -228,9 +230,9 @@ export function EquipmentPage() {
           if (!deleteEquipment) return;
           deleteEquipmentMutation.mutate(deleteEquipment.id, { onSuccess: () => setDeleteEquipment(null) });
         }}
-        title="Jihozni o'chirish"
-        message={`"${deleteEquipment?.name}" jihozini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('infrastructure.deleteEquipment')}
+        message={t('infrastructure.deleteEquipmentConfirm', { name: deleteEquipment?.name })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteEquipmentMutation.isPending}
       />
@@ -238,7 +240,7 @@ export function EquipmentPage() {
       <Card noPadding>
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border flex-wrap">
           <SearchInput
-            placeholder="Qidirish..."
+            placeholder={t('common.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onClear={() => setSearch('')}
@@ -249,7 +251,7 @@ export function EquipmentPage() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="h-9 px-3 pr-8 border border-border rounded-md text-sm bg-white"
           >
-            <option value="">Barcha kategoriyalar</option>
+            <option value="">{t('infrastructure.allCategories')}</option>
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
@@ -259,7 +261,7 @@ export function EquipmentPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-9 px-3 pr-8 border border-border rounded-md text-sm bg-white"
           >
-            <option value="">Barcha holatlar</option>
+            <option value="">{t('infrastructure.allStatuses')}</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>{STATUS_LABELS[s]}</option>
             ))}
@@ -275,7 +277,7 @@ export function EquipmentPage() {
             data={filtered}
             columns={[...columns, actionColumn]}
             keyField="id"
-            emptyMessage="Jihozlar topilmadi"
+            emptyMessage={t('infrastructure.equipmentNotFound')}
           />
         )}
       </Card>

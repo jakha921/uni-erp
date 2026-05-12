@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PageContent } from '@/components/layout';
-import { PageHeader } from '@/components/layout';
+import { PageContent, PageHeader } from '@/components/layout';
 import { DateRangePicker } from '@/components/form/DateRangePicker';
-import { useDashboardStats } from '../hooks/useDashboardStats';
+import { useAuthStore } from '@/stores/auth.store';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { BuxgalterDashboard } from '../components/BuxgalterDashboard';
 import { DekanDashboard } from '../components/DekanDashboard';
@@ -36,7 +35,7 @@ function DashboardByRole({ role }: { role: string }) {
 
 export function DashboardPage() {
   const { t } = useTranslation();
-  const { role } = useDashboardStats();
+  const role = useAuthStore((s) => s.currentUser?.role ?? 'admin');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
@@ -49,7 +48,7 @@ export function DashboardPage() {
           <DateRangePicker
             from={dateFrom}
             to={dateTo}
-            onChange={(f, t) => { setDateFrom(f); setDateTo(t); }}
+            onChange={(f, tt) => { setDateFrom(f); setDateTo(tt); }}
           />
         }
       />

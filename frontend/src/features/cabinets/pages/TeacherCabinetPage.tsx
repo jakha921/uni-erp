@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Button, Spinner } from '@/components/ui';
@@ -16,6 +17,7 @@ const PAIR_TIMES = ['08:30', '10:10', '12:00', '13:40', '15:20'];
 const PRIORITY_COLORS: Record<string, string> = { grading: '#EF4444', thesis: '#F59E0B', other: '#94A3B8' };
 
 export function TeacherCabinetPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useTeacherCabinet();
 
   if (isLoading || !data) {
@@ -27,7 +29,7 @@ export function TeacherCabinetPage() {
 
   return (
     <PageContent>
-      <PageHeader title="O'qituvchi kabineti" breadcrumbs={[{ label: 'Kabinetlar' }, { label: "O'qituvchi kabineti" }]} />
+      <PageHeader title={t('cabinets.teacherTitle')} breadcrumbs={[{ label: t('nav.cabinets') }, { label: t('nav.teacherCabinet') }]} />
 
       <div className="rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 p-6 text-white flex items-center gap-5 mb-5">
         <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[26px] font-bold">{initials}</div>
@@ -37,11 +39,11 @@ export function TeacherCabinetPage() {
           <p className="mt-1 text-[13px] opacity-90">{teacher.department} &middot; {teacher.position}</p>
         </div>
         <div className="hidden md:flex items-center gap-8">
-          <StatBlock value={String(todayClasses.length)} label="Bugungi darslar" />
+          <StatBlock value={String(todayClasses.length)} label={t('cabinets.todayLessons')} />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={String(stats.totalStudents)} label="Talabalar" />
+          <StatBlock value={String(stats.totalStudents)} label={t('cabinets.totalStudents')} />
           <div className="h-10 w-px bg-white/30" />
-          <StatBlock value={`${stats.avgAttendance}%`} label="Davomat" />
+          <StatBlock value={`${stats.avgAttendance}%`} label={t('cabinets.attendance')} />
         </div>
       </div>
 
@@ -60,10 +62,10 @@ export function TeacherCabinetPage() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Bugungi dars jadvali</h3>
+              <h3 className="text-sm font-semibold text-slate-900">{t('cabinets.todaySchedule')}</h3>
               <p className="text-xs text-slate-500 mt-0.5">{new Date().toLocaleDateString('uz-UZ', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
             </div>
-            <Button variant="secondary" size="sm"><ClipboardCheck className="h-3.5 w-3.5 mr-1" />Davomat olish</Button>
+            <Button variant="secondary" size="sm"><ClipboardCheck className="h-3.5 w-3.5 mr-1" />{t('cabinets.takeAttendance')}</Button>
           </div>
           <div className="flex flex-col gap-2">
             {todayClasses.map((cls) => (
@@ -76,7 +78,7 @@ export function TeacherCabinetPage() {
                   <p className="text-[13.5px] font-semibold text-slate-900">{cls.subjectName}</p>
                   <p className="text-[11.5px] text-slate-500 mt-0.5">{cls.groupName} &middot; {cls.room}</p>
                 </div>
-                <Button variant="secondary" size="sm">Boshlash</Button>
+                <Button variant="secondary" size="sm">{t('cabinets.startLesson')}</Button>
               </div>
             ))}
             {todayClasses.length === 0 && <p className="text-center text-sm text-slate-400 py-6">Bugun darslar yo&apos;q</p>}
@@ -84,7 +86,7 @@ export function TeacherCabinetPage() {
         </Card>
 
         <Card>
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">Mening vazifalarim</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-4">{t('cabinets.myTasks')}</h3>
           <div className="flex flex-col gap-2">
             {pendingTasks.map((task) => (
               <div key={task.title} className="flex gap-2.5 rounded-lg bg-[#F8FAFB] p-2.5">
@@ -101,7 +103,7 @@ export function TeacherCabinetPage() {
 
           {myGroups.length > 0 && (
             <>
-              <h3 className="text-sm font-semibold text-slate-900 mt-6 mb-3">Mening guruhlarim</h3>
+              <h3 className="text-sm font-semibold text-slate-900 mt-6 mb-3">{t('cabinets.myGroups')}</h3>
               <div className="flex flex-col gap-1.5">
                 {myGroups.map((g) => (
                   <div key={g.groupName} className="flex items-center justify-between rounded-lg px-2.5 py-2">

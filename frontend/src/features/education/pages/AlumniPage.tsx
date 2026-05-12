@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { DataTable, type Column } from '@/components/table';
@@ -10,11 +11,11 @@ import { AlumniForm } from '../components/AlumniForm';
 import type { Alumni } from '@/types/education';
 import type { CreateAlumniFormData } from '../schemas/alumni.schema';
 
-const STATUS_LABELS: Record<string, string> = {
-  employed: 'Ishlamoqda',
-  unemployed: 'Ish qidiryapti',
-  studying: 'Magistraturada',
-  unknown: "Noma'lum",
+const STATUS_KEYS: Record<string, string> = {
+  employed: 'education.alumniStatusEmployed',
+  unemployed: 'education.alumniStatusUnemployed',
+  studying: 'education.alumniStatusStudying',
+  unknown: 'education.alumniStatusUnknown',
 };
 
 const STATUS_VARIANT: Record<string, 'success' | 'info' | 'warning' | 'default'> = {
@@ -27,6 +28,7 @@ const STATUS_VARIANT: Record<string, 'success' | 'info' | 'warning' | 'default'>
 const YEARS = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
 export function AlumniPage() {
+  const { t } = useTranslation();
   const [yearFilter, setYearFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -59,14 +61,14 @@ export function AlumniPage() {
 
   const columns: Column<Alumni>[] = [
     { key: 'idx', header: 'No', width: '50px', render: (_, index) => <span className="text-slate-500">{index + 1}</span> },
-    { key: 'fullName', header: 'F.I.Sh', render: (row) => <span className="font-medium text-slate-900">{row.fullName}</span> },
-    { key: 'graduationYear', header: 'Bitirgan yili', render: (row) => <span className="tabular-nums">{row.graduationYear}</span> },
-    { key: 'faculty', header: 'Fakultet' },
-    { key: 'specialty', header: "Yo'nalish" },
-    { key: 'workplace', header: 'Ish joyi' },
+    { key: 'fullName', header: t('students.fullName'), render: (row) => <span className="font-medium text-slate-900">{row.fullName}</span> },
+    { key: 'graduationYear', header: t('education.graduationYear'), render: (row) => <span className="tabular-nums">{row.graduationYear}</span> },
+    { key: 'faculty', header: t('students.faculty') },
+    { key: 'specialty', header: t('education.directions') },
+    { key: 'workplace', header: t('education.workplace') },
     {
-      key: 'status', header: 'Holat',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? 'default'} dot>{STATUS_LABELS[row.status] ?? row.status}</Badge>,
+      key: 'status', header: t('common.status'),
+      render: (row) => <Badge variant={STATUS_VARIANT[row.status] ?? 'default'} dot>{t(STATUS_KEYS[row.status] ?? row.status)}</Badge>,
     },
     {
       key: 'actions', header: '',
@@ -86,9 +88,9 @@ export function AlumniPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Bitiruvchilar"
-        subtitle="Universitet bitiruvchilari ma'lumotlari"
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Bitiruvchilar' }]}
+        title={t('education.alumniTitle')}
+        subtitle={t('education.alumniSubtitle')}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('nav.alumni') }]}
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -107,16 +109,16 @@ export function AlumniPage() {
               Excel
             </Button>
             <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-1.5" /> Yangi bitiruvchi
+              <Plus className="h-4 w-4 mr-1.5" /> {t('education.newAlumni')}
             </Button>
           </div>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
-        <StatCard label="Jami bitiruvchilar" value={total} icon={<GraduationCap className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Ishga joylashgan" value={employed} icon={<Briefcase className="h-[18px] w-[18px]" />} iconBg="#2DB976" sub={total > 0 ? `${((employed / total) * 100).toFixed(1)}% band` : ''} />
-        <StatCard label="Magistraturada" value={studying} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
+        <StatCard label={t('education.totalAlumni')} value={total} icon={<GraduationCap className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('education.employed')} value={employed} icon={<Briefcase className="h-[18px] w-[18px]" />} iconBg="#2DB976" sub={total > 0 ? t('education.employedPct', { pct: ((employed / total) * 100).toFixed(1) }) : ''} />
+        <StatCard label={t('education.inMaster')} value={studying} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
       </div>
 
       <Card noPadding>
@@ -126,7 +128,7 @@ export function AlumniPage() {
             onChange={(e) => setYearFilter(e.target.value)}
             className="h-8 rounded-lg border border-border px-2 text-[13px] text-slate-700"
           >
-            <option value="">Barcha yillar</option>
+            <option value="">{t('education.allYears')}</option>
             {YEARS.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
@@ -136,25 +138,25 @@ export function AlumniPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-8 rounded-lg border border-border px-2 text-[13px] text-slate-700"
           >
-            <option value="">Barcha holatlar</option>
-            <option value="employed">Ishlamoqda</option>
-            <option value="unemployed">Ish qidiryapti</option>
-            <option value="studying">Magistraturada</option>
-            <option value="unknown">Noma&apos;lum</option>
+            <option value="">{t('education.allStatuses')}</option>
+            <option value="employed">{t('education.alumniStatusEmployed')}</option>
+            <option value="unemployed">{t('education.alumniStatusUnemployed')}</option>
+            <option value="studying">{t('education.alumniStatusStudying')}</option>
+            <option value="unknown">{t('education.alumniStatusUnknown')}</option>
           </select>
           {(yearFilter || statusFilter) && (
             <button
               onClick={() => { setYearFilter(''); setStatusFilter(''); }}
               className="text-xs text-slate-400 hover:text-slate-600 underline"
             >
-              Tozalash
+              {t('education.clearFilters')}
             </button>
           )}
         </div>
         {isLoading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : (
-          <DataTable data={alumni} columns={columns} keyField="id" emptyMessage="Bitiruvchilar topilmadi" />
+          <DataTable data={alumni} columns={columns} keyField="id" emptyMessage={t('education.alumniNotFound')} />
         )}
       </Card>
 
@@ -180,9 +182,9 @@ export function AlumniPage() {
           if (!deleteAlumni) return;
           deleteAlumniMutation.mutate(deleteAlumni.id, { onSuccess: () => setDeleteAlumni(null) });
         }}
-        title="Bitiruvchini o'chirish"
-        message={`"${deleteAlumni?.fullName}" bitiruvchisini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteAlumniTitle')}
+        message={t('education.deleteAlumniConfirm', { name: deleteAlumni?.fullName })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteAlumniMutation.isPending}
       />

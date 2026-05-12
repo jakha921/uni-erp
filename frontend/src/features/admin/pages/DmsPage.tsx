@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageContent, PageHeader } from '@/components/layout';
 import { StatCard, Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -49,6 +50,7 @@ const FOLDER_ICONS = {
 };
 
 export function DmsPage() {
+  const { t } = useTranslation();
   const [activeFolderId, setActiveFolderId] = useState<number | undefined>(undefined);
   const [formOpen, setFormOpen] = useState(false);
   const [editDocument, setEditDocument] = useState<Document | null>(null);
@@ -82,21 +84,21 @@ export function DmsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Hujjat aylanishi"
-        subtitle="Elektron hujjat boshqaruv tizimi"
-        breadcrumbs={[{ label: 'Admin' }, { label: 'Hujjat aylanishi' }]}
+        title={t('admin.dmsTitle')}
+        subtitle={t('admin.dmsSubtitle')}
+        breadcrumbs={[{ label: t('nav.admin') }, { label: t('nav.dms') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Hujjat qo&apos;shish
+            {t('admin.addDocument')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami hujjatlar" value={totalDocs} icon={<Inbox className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Kutilmoqda" value={pendingCount} icon={<Send className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
-        <StatCard label="Loyihalar" value={draftCount} icon={<FileEdit className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Imzolangan" value={approvedCount} icon={<FileCheck className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('admin.totalDocuments')} value={totalDocs} icon={<Inbox className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('admin.pendingDocs')} value={pendingCount} icon={<Send className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
+        <StatCard label={t('admin.draftDocs')} value={draftCount} icon={<FileEdit className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('admin.signedDocs')} value={approvedCount} icon={<FileCheck className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
       </div>
 
       <DocumentForm
@@ -114,9 +116,9 @@ export function DmsPage() {
           if (!deleteDocument) return;
           deleteDocumentMutation.mutate(deleteDocument.id, { onSuccess: () => setDeleteDocument(null) });
         }}
-        title="Hujjatni o'chirish"
-        message={`"${deleteDocument?.title}" hujjatni o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('admin.deleteDocument')}
+        message={t('admin.deleteDocumentConfirm', { name: deleteDocument?.title })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteDocumentMutation.isPending}
       />
@@ -136,7 +138,7 @@ export function DmsPage() {
                 }`}
               >
                 <FolderOpen className="h-4 w-4 shrink-0" />
-                <span className="flex-1">Hammasi</span>
+                <span className="flex-1">{t('admin.allFolders')}</span>
                 <span className={`rounded-full px-1.5 py-px text-[11px] font-semibold ${activeFolderId === undefined ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
                   {totalDocs}
                 </span>
@@ -187,7 +189,7 @@ export function DmsPage() {
                   {documents.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-3 py-12 text-center text-sm text-slate-400">
-                        Hujjatlar topilmadi
+                        {t('admin.documentsNotFound')}
                       </td>
                     </tr>
                   ) : (

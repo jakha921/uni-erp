@@ -19,11 +19,11 @@ import {
   useStudent,
   useStudentGrades,
   useStudentAttendance,
+  useStudentDocuments,
+  useUploadStudentDocument,
 } from '@/api/hooks/useStudents';
 import { useContracts } from '@/api/hooks/useFinance';
-import { formatMoney } from '@/lib/utils';
-import { formatDate } from '@/lib/utils';
-import { useStudentDocuments } from '@/api/hooks/useStudents';
+import { formatMoney, formatDate } from '@/lib/utils';
 import { FileUpload } from '@/components/form/FileUpload';
 import type { StudentGrade, StudentAttendance, StudentDocument } from '@/types/student';
 
@@ -595,7 +595,12 @@ export function StudentProfilePage() {
 
 function StudentDocsTab({ studentId }: { studentId: number }) {
   const { data: documents, isLoading } = useStudentDocuments(studentId);
+  const upload = useUploadStudentDocument(studentId);
   const docs: StudentDocument[] = documents ?? [];
+
+  const handleUpload = (files: File[]) => {
+    files.forEach((file) => upload.mutate({ file, name: file.name, category: 'other' }));
+  };
 
   if (isLoading) {
     return (
@@ -616,7 +621,7 @@ function StudentDocsTab({ studentId }: { studentId: number }) {
         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
         maxSize={10 * 1024 * 1024}
         multiple
-        onUpload={(_files) => {}}
+        onUpload={handleUpload}
       />
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {docs.map((d) => (

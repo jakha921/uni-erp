@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Plus, MoreHorizontal, X, FileDown } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { DataTable, Pagination } from '@/components/table';
@@ -12,28 +13,28 @@ import { LeadForm } from '../components/LeadForm';
 
 import type { CreateLeadFormData } from '../schemas/lead.schema';
 
-const STATUS_LABELS: Record<LeadStatus, string> = {
-  new: 'Yangi',
-  contacted: "Qo'ng'iroq",
-  interested: 'Qiziqmoqda',
-  applied: 'Hujjat topshirdi',
-  enrolled: 'Qabul',
-  rejected: 'Rad',
+const STATUS_KEYS: Record<LeadStatus, string> = {
+  new: 'crm.statusNew',
+  contacted: 'crm.statusContacted',
+  interested: 'crm.statusInterested',
+  applied: 'crm.statusApplied',
+  enrolled: 'crm.statusEnrolled',
+  rejected: 'crm.statusRejected',
 };
 
-const SOURCE_LABELS: Record<LeadSource, string> = {
-  website: 'Website',
-  telegram: 'Telegram',
-  instagram: 'Instagram',
-  referral: 'Tavsiya',
-  event: 'Tadbir',
-  call: "Qo'ng'iroq",
+const SOURCE_KEYS: Record<LeadSource, string> = {
+  website: 'crm.sourceWebsite',
+  telegram: 'crm.sourceTelegram',
+  instagram: 'crm.sourceInstagram',
+  referral: 'crm.sourceReferral',
+  event: 'crm.sourceEvent',
+  call: 'crm.sourceCall',
 };
 
 const STATUS_TABS: Array<LeadStatus | 'all'> = ['all', 'new', 'contacted', 'interested', 'applied', 'enrolled', 'rejected'];
-const STATUS_TAB_LABELS: Record<LeadStatus | 'all', string> = {
-  all: 'Barchasi',
-  ...STATUS_LABELS,
+const STATUS_TAB_KEYS: Record<LeadStatus | 'all', string> = {
+  all: 'crm.allLabel',
+  ...STATUS_KEYS,
 };
 
 const STATUS_BADGE_VARIANT: Record<LeadStatus, 'info' | 'warning' | 'default' | 'success' | 'error'> = {
@@ -57,6 +58,7 @@ const SOURCE_VARIANT: Record<LeadSource, 'info' | 'success' | 'warning' | 'defau
 const PAGE_SIZE = 10;
 
 export function CrmListPage() {
+  const { t } = useTranslation();
   const [statusTab, setStatusTab] = useState<LeadStatus | 'all'>('all');
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -96,7 +98,7 @@ export function CrmListPage() {
     },
     {
       key: 'firstName',
-      header: 'Abituriyent',
+      header: t('crm.applicant'),
       sortable: true,
       render: (row) => (
         <div className="flex items-center gap-2.5">
@@ -112,33 +114,33 @@ export function CrmListPage() {
     },
     {
       key: 'direction',
-      header: "Yo'nalish",
+      header: t('crm.direction'),
       render: (row) => <span className="text-[13px]">{row.direction}</span>,
     },
     {
       key: 'source',
-      header: 'Manba',
+      header: t('crm.source'),
       render: (row) => (
-        <Badge variant={SOURCE_VARIANT[row.source]}>{SOURCE_LABELS[row.source]}</Badge>
+        <Badge variant={SOURCE_VARIANT[row.source]}>{t(SOURCE_KEYS[row.source])}</Badge>
       ),
     },
     {
       key: 'assigneeName',
-      header: "Mas'ul",
+      header: t('common.assignee'),
       render: (row) => <span className="text-[13px]">{row.assigneeName}</span>,
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('common.status'),
       render: (row) => (
         <Badge variant={STATUS_BADGE_VARIANT[row.status]} dot>
-          {STATUS_LABELS[row.status]}
+          {t(STATUS_KEYS[row.status])}
         </Badge>
       ),
     },
     {
       key: 'createdAt',
-      header: 'Sana',
+      header: t('common.date'),
       render: (row) => (
         <span className="text-xs text-muted">{row.createdAt}</span>
       ),
@@ -148,8 +150,8 @@ export function CrmListPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Arizalar (CRM)"
-        subtitle="Abituriyentlar va qabul jarayoni"
+        title={t('crm.listTitle')}
+        subtitle={t('crm.listSubtitle')}
         breadcrumbs={[
           { label: 'CRM', path: '/crm' },
           { label: 'Arizalar' },
@@ -174,26 +176,26 @@ export function CrmListPage() {
 
       {/* KPI Cards */}
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Jami arizalar" value={String(stats?.totalLeads ?? '-')} sub="+23 bu hafta" />
-        <StatCard label="Yangi" value={String(stats?.newLeads ?? '-')} sub="Ko'rib chiqilmagan" />
-        <StatCard label="Konversiya" value={`${stats?.conversionRate ?? '-'}%`} sub="+4% bu oy" />
-        <StatCard label="Qabul qilindi" value={String(stats?.enrolledLeads ?? '-')} sub="Bu yil" />
-        <StatCard label="O'rtacha vaqt" value="3.2 kun" sub="Javob vaqti" />
+        <StatCard label={t('crm.totalApplications')} value={String(stats?.totalLeads ?? '-')} sub={t('crm.thisWeek')} />
+        <StatCard label={t('crm.statusNew')} value={String(stats?.newLeads ?? '-')} sub={t('crm.newUnreviewed')} />
+        <StatCard label={t('crm.conversion')} value={`${stats?.conversionRate ?? '-'}%`} sub={t('crm.thisMonth')} />
+        <StatCard label={t('crm.enrolled')} value={String(stats?.enrolledLeads ?? '-')} sub={t('crm.thisYear')} />
+        <StatCard label={t('crm.avgTime')} value="3.2 kun" sub={t('crm.responseTime')} />
       </div>
 
       {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
         <div className="mb-3 flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5">
-          <span className="text-sm font-medium text-primary-700">{selectedIds.size} ta tanlandi</span>
+          <span className="text-sm font-medium text-primary-700">{t('crm.selectedCount', { count: selectedIds.size })}</span>
           <div className="ml-auto flex items-center gap-2">
             <select
               value={bulkStatus}
               onChange={(e) => setBulkStatus(e.target.value as LeadStatus | '')}
               className="h-8 rounded-lg border border-border px-2 text-sm"
             >
-              <option value="">Statusni tanlang</option>
-              {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
-                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+              <option value="">{t('crm.selectStatus')}</option>
+              {(Object.keys(STATUS_KEYS) as LeadStatus[]).map((s) => (
+                <option key={s} value={s}>{t(STATUS_KEYS[s])}</option>
               ))}
             </select>
             <Button
@@ -207,7 +209,7 @@ export function CrmListPage() {
                 );
               }}
             >
-              Qo&apos;llash
+              {t('crm.apply')}
             </Button>
             <button
               onClick={() => setSelectedIds(new Set())}
@@ -234,7 +236,7 @@ export function CrmListPage() {
                     : 'rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-muted hover:text-slate-700'
                 }
               >
-                {STATUS_TAB_LABELS[s]}
+                {t(STATUS_TAB_KEYS[s])}
               </button>
             ))}
           </div>
@@ -248,7 +250,7 @@ export function CrmListPage() {
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Ism yoki telefon..."
+              placeholder={t('crm.searchPlaceholder')}
               className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400"
             />
           </div>
@@ -259,14 +261,14 @@ export function CrmListPage() {
             onChange={(e) => { setSourceFilter(e.target.value as LeadSource | ''); setPage(1); }}
             className="h-9 w-[160px] rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha manbalar</option>
-            {(Object.keys(SOURCE_LABELS) as LeadSource[]).map((s) => (
-              <option key={s} value={s}>{SOURCE_LABELS[s]}</option>
+            <option value="">{t('crm.allSources')}</option>
+            {(Object.keys(SOURCE_KEYS) as LeadSource[]).map((s) => (
+              <option key={s} value={s}>{t(SOURCE_KEYS[s])}</option>
             ))}
           </select>
 
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-            Yangi ariza
+            {t('crm.newApplication')}
           </Button>
         </div>
 
@@ -312,9 +314,9 @@ export function CrmListPage() {
           if (!deleteLead) return;
           deleteLeadMutation.mutate(deleteLead.id, { onSuccess: () => setDeleteLead(null) });
         }}
-        title="Arizani o'chirish"
-        message={`"${deleteLead?.firstName} ${deleteLead?.lastName}" arizasini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('crm.deleteApplicationTitle')}
+        message={t('crm.deleteApplicationConfirm', { name: `${deleteLead?.firstName} ${deleteLead?.lastName}` })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteLeadMutation.isPending}
       />

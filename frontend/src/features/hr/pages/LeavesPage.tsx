@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Plus, Clock, Briefcase, Calendar, Search, BarChart3, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
@@ -14,8 +15,7 @@ import { LeaveForm } from '../components/LeaveForm';
 import { useLeaves, useCreateLeave, useUpdateLeave, useDeleteLeave, useEmployees } from '@/api/hooks/useHr';
 import type { CreateLeaveDto, Leave, LeaveStatus } from '@/types/hr';
 
-const MONTH_NAMES = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
-const DAY_SHORTS = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+/* MONTH_NAMES/DAY_SHORTS moved inside components for i18n */
 
 const LEAVE_COLORS: Record<string, { bg: string; text: string }> = {
   annual: { bg: '#DCFCE7', text: '#16A34A' },
@@ -31,6 +31,9 @@ function LeaveCalendar({ leaves, calendarMonth, onMonthChange }: {
   calendarMonth: Date;
   onMonthChange: (d: Date) => void;
 }) {
+  const { t } = useTranslation();
+  const MONTH_NAMES = t('education.months', { returnObjects: true }) as string[];
+  const DAY_SHORTS = [...(t('education.daysShort', { returnObjects: true }) as string[]), t('hr.daySunday')];
   const year = calendarMonth.getFullYear();
   const month = calendarMonth.getMonth();
   const firstDay = new Date(year, month, 1);
@@ -115,6 +118,7 @@ function LeaveCalendar({ leaves, calendarMonth, onMonthChange }: {
 }
 
 export function LeavesPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
   const [tab, setTab] = useState(() => searchParams.get('status') ?? 'all');
@@ -161,11 +165,11 @@ export function LeavesPage() {
   return (
     <PageContent className="space-y-4">
       <PageHeader
-        title="Ta'tillar va xizmat safarlari"
-        subtitle={`Jami: ${filtered.length} ta`}
+        title={t('nav.leaves')}
+        subtitle={`${t('common.total')}: ${filtered.length}`}
         breadcrumbs={[
-          { label: 'Kadrlar', path: '/hr' },
-          { label: "Ta'tillar" },
+          { label: t('nav.hr'), path: '/hr' },
+          { label: t('nav.leaves') },
         ]}
         actions={
           <div className="flex gap-2">
@@ -173,30 +177,30 @@ export function LeavesPage() {
               <button
                 onClick={() => setViewMode('list')}
                 className={`rounded-md p-1.5 transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-700'}`}
-                title="Ro'yxat"
+                title={t('hr.listView')}
               >
                 <List className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setViewMode('calendar')}
                 className={`rounded-md p-1.5 transition-colors ${viewMode === 'calendar' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-400 hover:text-slate-700'}`}
-                title="Kalendar"
+                title={t('hr.calendarView')}
               >
                 <Calendar className="h-4 w-4" />
               </button>
             </div>
             <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setFormOpen(true)}>
-              Yangi ariza
+              {t('hr.newApplication')}
             </Button>
           </div>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Hozir ta'tilda" value={onLeaveCount} icon={<Calendar className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
-        <StatCard label="Hozir safarda" value={onTripCount} icon={<Briefcase className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
-        <StatCard label="Tasdiqlash kutmoqda" value={pendingCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Bu oy jami" value={leaves?.length ?? 0} icon={<BarChart3 className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
+        <StatCard label={t('hr.currentlyOnLeave')} value={onLeaveCount} icon={<Calendar className="h-[18px] w-[18px]" />} iconBg="#3B82F6" />
+        <StatCard label={t('hr.currentlyOnTrip')} value={onTripCount} icon={<Briefcase className="h-[18px] w-[18px]" />} iconBg="#8B5CF6" />
+        <StatCard label={t('hr.pendingApproval')} value={pendingCount} icon={<Clock className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('hr.thisMonthTotal')} value={leaves?.length ?? 0} icon={<BarChart3 className="h-[18px] w-[18px]" />} iconBg="#6366F1" />
       </div>
 
       <div className="mt-6">
@@ -204,10 +208,10 @@ export function LeavesPage() {
           <>
             <Tabs
               tabs={[
-                { id: 'all', label: 'Hammasi', count: leaves?.length ?? 0 },
-                { id: 'leaves', label: "Ta'tillar", count: leaves?.filter((l) => l.type !== 'business_trip').length ?? 0 },
-                { id: 'trips', label: 'Xizmat safarlari', count: leaves?.filter((l) => l.type === 'business_trip').length ?? 0 },
-                { id: 'pending', label: 'Tasdiqlash kutmoqda', count: pendingCount },
+                { id: 'all', label: t('common.all'), count: leaves?.length ?? 0 },
+                { id: 'leaves', label: t('hr.leavesTab'), count: leaves?.filter((l) => l.type !== 'business_trip').length ?? 0 },
+                { id: 'trips', label: t('hr.businessTrips'), count: leaves?.filter((l) => l.type === 'business_trip').length ?? 0 },
+                { id: 'pending', label: t('hr.pendingApproval'), count: pendingCount },
               ]}
               activeTab={tab}
               onTabChange={setTab}
@@ -220,7 +224,7 @@ export function LeavesPage() {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Xodim ismi bo'yicha qidirish…"
+                    placeholder={t('hr.searchEmployeeByName')}
                     className="h-9 w-full rounded-lg border border-border pl-9 pr-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
                   />
                 </div>
@@ -267,9 +271,9 @@ export function LeavesPage() {
           if (!deleteLeave) return;
           deleteMutation.mutate(deleteLeave.id, { onSuccess: () => setDeleteLeave(null) });
         }}
-        title="Arizani bekor qilish"
-        message={`"${deleteLeave?.employeeName}" xodimining ta'til arizasini bekor qilishni tasdiqlaysizmi?`}
-        confirmLabel="Bekor qilish"
+        title={t('hr.cancelApplication')}
+        message={t('hr.cancelApplicationConfirm', { name: deleteLeave?.employeeName })}
+        confirmLabel={t('common.cancel')}
         variant="danger"
         loading={deleteMutation.isPending}
       />

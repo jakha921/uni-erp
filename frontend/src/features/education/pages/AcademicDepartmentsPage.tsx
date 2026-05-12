@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, BookOpen, Star, X } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
@@ -14,6 +15,7 @@ const COLORS = ['#2DB976', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'
 // --- Component ---
 
 export function AcademicDepartmentsPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedDept, setSelectedDept] = useState<{ dept: Department; facultyName: string } | null>(null);
 
@@ -46,9 +48,9 @@ export function AcademicDepartmentsPage() {
     return (
       <PageContent>
         <PageHeader
-          title="Kafedralar"
-          subtitle="Yuklanmoqda..."
-          breadcrumbs={[{ label: "Ta'lim" }, { label: 'Kafedralar' }]}
+          title={t('education.departmentsTitle')}
+          subtitle={t('common.loading')}
+          breadcrumbs={[{ label: t('nav.education') }, { label: t('education.departmentsTitle') }]}
         />
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
@@ -60,16 +62,16 @@ export function AcademicDepartmentsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Kafedralar"
-        subtitle={`Jami: ${deptList.length} ta kafedra`}
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Kafedralar' }]}
+        title={t('education.departmentsTitle')}
+        subtitle={t('education.departmentsSubtitle', { count: deptList.length })}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('education.departmentsTitle') }]}
       />
 
       <div className="mb-5">
         <FilterBar
           search={search}
           onSearchChange={setSearch}
-          searchPlaceholder="Kafedra qidirish..."
+          searchPlaceholder={t('education.searchDeptPlaceholder')}
         />
       </div>
 
@@ -87,8 +89,8 @@ export function AcademicDepartmentsPage() {
 
       {filtered.length === 0 && (
         <div className="py-16 text-center">
-          <p className="text-sm font-medium text-slate-500">Kafedralar topilmadi</p>
-          <p className="mt-1 text-xs text-slate-400">Qidiruv so&apos;zini o&apos;zgartirib ko&apos;ring</p>
+          <p className="text-sm font-medium text-slate-500">{t('education.deptNotFound')}</p>
+          <p className="mt-1 text-xs text-slate-400">{t('education.deptNotFoundHint')}</p>
         </div>
       )}
 
@@ -114,6 +116,7 @@ function DepartmentCard({
   color: string;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const headInitials = department.headName
     ? department.headName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
     : 'N/A';
@@ -141,9 +144,9 @@ function DepartmentCard({
             {headInitials}
           </div>
           <div>
-            <p className="text-[11px] text-slate-500">Mudir</p>
+            <p className="text-[11px] text-slate-500">{t('education.deptHead')}</p>
             <p className="text-[12.5px] font-semibold text-slate-900">
-              {department.headName ?? "Belgilanmagan"}
+              {department.headName ?? t('education.deptHeadNotSet')}
             </p>
           </div>
         </div>
@@ -152,17 +155,17 @@ function DepartmentCard({
           <div className="rounded-md bg-slate-50 p-2 text-center">
             <div className="flex justify-center mb-0.5"><Users className="h-3.5 w-3.5 text-slate-400" /></div>
             <p className="text-sm font-bold text-slate-900">{department.staffCount ?? '—'}</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">O'qituvchi</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">{t('education.teacherLabel')}</p>
           </div>
           <div className="rounded-md bg-slate-50 p-2 text-center">
             <div className="flex justify-center mb-0.5"><BookOpen className="h-3.5 w-3.5 text-slate-400" /></div>
             <p className="text-sm font-bold text-slate-900">{department.studentCount ?? '—'}</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">Talaba</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">{t('education.studentLabel')}</p>
           </div>
           <div className="rounded-md bg-slate-50 p-2 text-center">
             <div className="flex justify-center mb-0.5"><Star className="h-3.5 w-3.5 text-slate-400" /></div>
             <p className="text-sm font-bold text-slate-900">{department.avgGrade ?? '—'}</p>
-            <p className="mt-0.5 text-[10px] text-slate-500">O'rtacha</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">{t('education.avgGradeLabel')}</p>
           </div>
         </div>
       </div>
@@ -180,12 +183,13 @@ function DepartmentSlideOver({
   facultyName: string;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/40" onClick={onClose} />
       <div className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <h2 className="text-[15px] font-semibold text-slate-900">Kafedra tafsiloti</h2>
+          <h2 className="text-[15px] font-semibold text-slate-900">{t('education.deptDetailTitle')}</h2>
           <button onClick={onClose} className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
             <X className="h-4 w-4" />
           </button>
@@ -203,7 +207,7 @@ function DepartmentSlideOver({
                 {department.headName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <p className="text-[11px] text-slate-500">Kafedra mudiri</p>
+                <p className="text-[11px] text-slate-500">{t('education.deptHeadFull')}</p>
                 <p className="text-[14px] font-semibold text-slate-900">{department.headName}</p>
               </div>
             </div>
@@ -213,17 +217,17 @@ function DepartmentSlideOver({
             <div className="rounded-xl bg-blue-50 p-3 text-center">
               <Users className="h-5 w-5 text-blue-600 mx-auto mb-1" />
               <p className="text-xl font-bold text-blue-700">{department.staffCount ?? '—'}</p>
-              <p className="text-[11px] text-blue-500">O&apos;qituvchi</p>
+              <p className="text-[11px] text-blue-500">{t('education.teacherLabel')}</p>
             </div>
             <div className="rounded-xl bg-emerald-50 p-3 text-center">
               <BookOpen className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
               <p className="text-xl font-bold text-emerald-700">{department.studentCount ?? '—'}</p>
-              <p className="text-[11px] text-emerald-500">Talaba</p>
+              <p className="text-[11px] text-emerald-500">{t('education.studentLabel')}</p>
             </div>
             <div className="rounded-xl bg-amber-50 p-3 text-center">
               <Star className="h-5 w-5 text-amber-600 mx-auto mb-1" />
               <p className="text-xl font-bold text-amber-700">{department.avgGrade ?? '—'}</p>
-              <p className="text-[11px] text-amber-500">O&apos;rtacha baho</p>
+              <p className="text-[11px] text-amber-500">{t('education.avgGradeFull')}</p>
             </div>
           </div>
         </div>

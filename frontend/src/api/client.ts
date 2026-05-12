@@ -188,6 +188,14 @@ class ApiClient {
       headers: this.getHeaders(),
     });
   }
+
+  async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
+    const url = this.buildUrl(endpoint);
+    const token = useAuthStore.getState().token;
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return this.requestWithRetry<T>(url, { method: 'POST', headers, body: formData });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

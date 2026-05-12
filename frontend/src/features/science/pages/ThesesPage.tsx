@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -14,12 +15,12 @@ import type { ThesisFormData } from '../schemas/thesis.schema';
 
 type ThesisStage = Thesis['stage'];
 
-const STAGE_LABELS: Record<ThesisStage, string> = {
-  topic_approved: 'Birinchi sharx',
-  in_progress: 'Tahrirlash',
-  review: 'Himoyaga ruxsat',
-  defense: 'Himoyada',
-  completed: 'Himoyalandi',
+const STAGE_KEYS: Record<ThesisStage, string> = {
+  topic_approved: 'science.stageTopicApproved',
+  in_progress: 'science.stageInProgress',
+  review: 'science.stageReview',
+  defense: 'science.stageDefense',
+  completed: 'science.stageCompleted',
 };
 
 const STAGE_COLORS: Record<ThesisStage, string> = {
@@ -38,15 +39,16 @@ const STAGE_BADGE_VARIANTS: Record<ThesisStage, 'info' | 'warning' | 'success' |
   completed: 'success',
 };
 
-const FILTER_TABS = [
-  { id: 'all', label: 'Barchasi' },
-  { id: 'topic_approved', label: 'Birinchi sharx' },
-  { id: 'in_progress', label: 'Tahrirlash' },
-  { id: 'review', label: 'Himoyaga ruxsat' },
-  { id: 'completed', label: 'Himoyalandi' },
+const FILTER_TAB_KEYS = [
+  { id: 'all', labelKey: 'crm.allLabel' },
+  { id: 'topic_approved', labelKey: 'science.stageTopicApproved' },
+  { id: 'in_progress', labelKey: 'science.stageInProgress' },
+  { id: 'review', labelKey: 'science.stageReview' },
+  { id: 'completed', labelKey: 'science.stageCompleted' },
 ];
 
 export function ThesesPage() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('');
   const [supervisorFilter, setSupervisorFilter] = useState('');
@@ -79,19 +81,19 @@ export function ThesesPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Diplom ishlari"
-        subtitle="Talabalar bitiruv malakaviy ishlari"
-        breadcrumbs={[{ label: 'Ilm-fan' }, { label: 'Diplom ishlari' }]}
+        title={t('science.thesesTitle')}
+        subtitle={t('science.thesesSubtitle')}
+        breadcrumbs={[{ label: t('nav.science') }, { label: t('nav.theses') }]}
         actions={
           <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" /> Yangi diplom ishi
+            <Plus className="h-4 w-4 mr-1.5" /> {t('science.newThesis')}
           </Button>
         }
       />
 
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
-          {FILTER_TABS.map((tab) => (
+          {FILTER_TAB_KEYS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setFilter(tab.id)}
@@ -100,7 +102,7 @@ export function ThesesPage() {
                 filter === tab.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700',
               )}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>
@@ -110,15 +112,15 @@ export function ThesesPage() {
             onChange={(e) => setTypeFilter(e.target.value)}
             className="h-9 rounded-lg border border-border px-3 text-sm"
           >
-            <option value="">Barcha turlar</option>
-            <option value="bakalavr">Bakalavr</option>
-            <option value="magistr">Magistr</option>
+            <option value="">{t('science.allTypes')}</option>
+            <option value="bakalavr">{t('science.typeBachelor')}</option>
+            <option value="magistr">{t('science.typeMaster')}</option>
           </select>
           <input
             type="text"
             value={supervisorFilter}
             onChange={(e) => setSupervisorFilter(e.target.value)}
-            placeholder="Ilmiy rahbar..."
+            placeholder={t('science.supervisorSearch')}
             className="h-9 rounded-lg border border-border px-3 text-sm w-40 outline-none focus:border-primary-400"
           />
         </div>
@@ -126,7 +128,7 @@ export function ThesesPage() {
 
       {isLoading && <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>}
       {!isLoading && filtered.length === 0 && (
-        <div className="text-center py-10 text-slate-400 text-sm">Diplom ishlari topilmadi</div>
+        <div className="text-center py-10 text-slate-400 text-sm">{t('science.thesesNotFound')}</div>
       )}
       {!isLoading && filtered.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -152,9 +154,9 @@ export function ThesesPage() {
           if (!deleteThesis) return;
           deleteThesisMutation.mutate(deleteThesis.id, { onSuccess: () => setDeleteThesis(null) });
         }}
-        title="Diplom ishini o'chirish"
-        message={`"${deleteThesis?.title}" ishini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('science.deleteThesisTitle')}
+        message={t('science.deleteThesisConfirm', { title: deleteThesis?.title })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteThesisMutation.isPending}
       />
@@ -163,6 +165,7 @@ export function ThesesPage() {
 }
 
 function ThesisCard({ thesis, onDelete }: { thesis: Thesis; onDelete: () => void }) {
+  const { t } = useTranslation();
   const topColor = STAGE_COLORS[thesis.stage] ?? '#94A3B8';
   const initials = thesis.studentName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
@@ -172,9 +175,9 @@ function ThesisCard({ thesis, onDelete }: { thesis: Thesis; onDelete: () => void
       <div className="flex items-center gap-2 mb-2.5 flex-wrap">
         <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">DIP-{thesis.id}</span>
         <Badge variant={STAGE_BADGE_VARIANTS[thesis.stage] ?? 'default'} dot>
-          {STAGE_LABELS[thesis.stage] ?? thesis.stage}
+          {t(STAGE_KEYS[thesis.stage] ?? thesis.stage)}
         </Badge>
-        {thesis.grade != null && <Badge variant="success">Baho: {thesis.grade}/100</Badge>}
+        {thesis.grade != null && <Badge variant="success">{t('science.gradeLabel', { grade: thesis.grade })}</Badge>}
         <button type="button" onClick={onDelete} className="ml-auto p-1 text-slate-400 hover:text-red-600 rounded">
           <Trash2 className="h-3.5 w-3.5" />
         </button>
@@ -187,7 +190,7 @@ function ThesisCard({ thesis, onDelete }: { thesis: Thesis; onDelete: () => void
         <span className="text-[13px] font-medium text-slate-900">{thesis.studentName}</span>
       </div>
       <div className="flex items-center justify-between text-[11px] text-slate-500">
-        <span>Rahbar: <strong className="text-slate-700">{thesis.supervisorName}</strong></span>
+        <span>{t('science.supervisorLabel')}: <strong className="text-slate-700">{thesis.supervisorName}</strong></span>
         {thesis.defenseDate && (
           <span className="inline-flex items-center gap-1">
             <Calendar className="h-3 w-3" />

@@ -63,20 +63,20 @@
 
 ### 2.1 Auth (3 страницы)
 
-- [ ] **FE-1**: **LoginPage** `/login` — Проверить: input mask телефона работает, ошибка API показывается (не "Xatolik: 500" а детальный текст), loading на кнопке, i18n все тексты. Если нет — исправить.
-- [ ] **FE-2**: **RoleSelectPage** `/role-select` — Проверить: 5 карточек ролей отображаются, клик логинит (при USE_MOCK=false phone format совпадает с API), i18n. Исправить если не работает.
-- [ ] **FE-3**: **ForgotPasswordPage** `/forgot-password` — Проверить: 3-step flow (телефон → SMS код → новый пароль) через Stepper компонент, таймер 60 сек, подключен к API `/auth/forgot-password/`. Если нет — реализовать.
+- [x] **FE-1**: **LoginPage** `/login` — Проверить: input mask телефона работает, ошибка API показывается (не "Xatolik: 500" а детальный текст), loading на кнопке, i18n все тексты. Если нет — исправить.
+- [x] **FE-2**: **RoleSelectPage** `/role-select` — Проверить: 5 карточек ролей отображаются, клик логинит (при USE_MOCK=false phone format совпадает с API), i18n. Исправить если не работает.
+- [x] **FE-3**: **ForgotPasswordPage** `/forgot-password` — Проверить: 3-step flow (телефон → SMS код → новый пароль) через Stepper компонент, таймер 60 сек, подключен к API `/auth/forgot-password/`. Если нет — реализовать.
 
 ### 2.2 Dashboard (1 страница)
 
-- [ ] **FE-4**: **DashboardPage** `/dashboard` — Проверить: AdminDashboard подключён к `/api/v1/dashboard/` (не mock). StatCards показывают реальные цифры. Графики рендерятся. "So'nggi faoliyat" из API. Если sub-dashboard компоненты используют hardcoded данные — подключить к API. i18n все лейблы.
+- [x] **FE-4**: **DashboardPage** `/dashboard` — Проверить: AdminDashboard подключён к `/api/v1/dashboard/` (не mock). StatCards показывают реальные цифры. Графики рендерятся. "So'nggi faoliyat" из API. Если sub-dashboard компоненты используют hardcoded данные — подключить к API. i18n все лейблы.
 
 ### 2.3 Students (4 страницы)
 
-- [ ] **FE-5**: **StudentsListPage** `/students` — Проверить: таблица из API, пагинация, поиск(debounced), фильтры факультет/группа из `useFaculties()`/`useGroups()` (не hardcoded), кнопка "Yangi talaba" → `/students/new`, Delete через ConfirmDialog, Excel/PDF export кнопки скачивают файлы. Исправить что не работает.
-- [ ] **FE-6**: **StudentFormPage** `/students/new` и `/students/:id/edit` — Проверить: форма с Zod, cascading selects (Faculty→Department→Specialty→Group) из API, FileUpload фото, при Edit предзаполнение из useStudent(id), success → redirect на profile. Исправить.
-- [ ] **FE-7**: **StudentProfilePage** `/students/:id` — Проверить: данные из API, tabs (Info, Grades, Attendance, Contract, Documents) все подключены к API. Tab "Hujjatlar" — FileUpload для документов через `/students/{id}/documents/`. Кнопки "Tahrirlash", "Ma'lumotnoma"(PDF), "Chop etish"(print). Исправить.
-- [ ] **FE-8**: **StudentsStatPage** `/students/statistics` — Проверить: данные из useStudentStatistics, export PDF кнопка. i18n. Исправить.
+- [x] **FE-5**: **StudentsListPage** `/students` — Проверить: таблица из API, пагинация, поиск(debounced), фильтры факультет/группа из `useFaculties()`/`useGroups()` (не hardcoded), кнопка "Yangi talaba" → `/students/new`, Delete через ConfirmDialog, Excel/PDF export кнопки скачивают файлы. Исправить что не работает.
+- [x] **FE-6**: **StudentFormPage** `/students/new` и `/students/:id/edit` — Проверить: форма с Zod, cascading selects (Faculty→Department→Specialty→Group) из API, FileUpload фото, при Edit предзаполнение из useStudent(id), success → redirect на profile. Исправить.
+- [x] **FE-7**: **StudentProfilePage** `/students/:id` — Проверить: данные из API, tabs (Info, Grades, Attendance, Contract, Documents) все подключены к API. Tab "Hujjatlar" — FileUpload для документов через `/students/{id}/documents/`. Кнопки "Tahrirlash", "Ma'lumotnoma"(PDF), "Chop etish"(print). Исправить.
+- [x] **FE-8**: **StudentsStatPage** `/students/statistics` — Проверить: данные из useStudentStatistics, export PDF кнопка. i18n. Исправить.
 
 ### 2.4 Education (11 страниц)
 

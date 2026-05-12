@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -12,6 +13,7 @@ import type { Subject } from '@/types/education';
 import type { SubjectFormData } from '../schemas/subject.schema';
 
 export function SubjectsPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -29,9 +31,9 @@ export function SubjectsPage() {
   const isLoading = subjectsLoading || deptsLoading;
 
   const DEPT_FILTER_OPTIONS = useMemo(() => [
-    { value: '', label: 'Barcha kafedralar' },
+    { value: '', label: t('education.allDepartments') },
     ...departments.map((d) => ({ value: String(d.id), label: d.name })),
-  ], [departments]);
+  ], [departments, t]);
 
   const filtered = useMemo(() =>
     subjects.filter((s) => !deptFilter || String(s.departmentId) === deptFilter),
@@ -54,18 +56,18 @@ export function SubjectsPage() {
 
   const subjectColumns: Column<Subject>[] = [
     {
-      key: 'code', header: 'Kod', width: '100px',
+      key: 'code', header: t('education.subjectCode'), width: '100px',
       render: (row) => <span className="font-medium text-slate-900 tabular-nums">{row.code}</span>,
     },
     {
-      key: 'name', header: 'Fan nomi', sortable: true,
+      key: 'name', header: t('education.subjectName'), sortable: true,
       render: (row) => <span className="text-slate-900">{row.name}</span>,
     },
-    { key: 'credits', header: 'Kredit', width: '80px', className: 'text-center', render: (row) => <span className="font-semibold tabular-nums">{row.credits}</span> },
-    { key: 'hoursLecture', header: 'Lek.', width: '70px', className: 'text-center', render: (row) => <span className="tabular-nums">{row.hoursLecture}</span> },
-    { key: 'hoursPractice', header: 'Amaliy', width: '70px', className: 'text-center', render: (row) => <span className="tabular-nums">{row.hoursPractice}</span> },
+    { key: 'credits', header: t('education.credit'), width: '80px', className: 'text-center', render: (row) => <span className="font-semibold tabular-nums">{row.credits}</span> },
+    { key: 'hoursLecture', header: t('education.lecture'), width: '70px', className: 'text-center', render: (row) => <span className="tabular-nums">{row.hoursLecture}</span> },
+    { key: 'hoursPractice', header: t('education.practice'), width: '70px', className: 'text-center', render: (row) => <span className="tabular-nums">{row.hoursPractice}</span> },
     {
-      key: 'departmentName', header: 'Kafedra',
+      key: 'departmentName', header: t('education.departmentLabel'),
       render: (row) => <span className="text-muted">{row.departmentName}</span>,
     },
     {
@@ -86,12 +88,12 @@ export function SubjectsPage() {
   return (
     <PageContent>
       <PageHeader
-        title="Fanlar"
-        subtitle="O'quv fanlari va dasturlari katalogi"
-        breadcrumbs={[{ label: "Ta'lim" }, { label: 'Fanlar' }]}
+        title={t('education.subjectsTitle')}
+        subtitle={t('education.subjectsSubtitle')}
+        breadcrumbs={[{ label: t('nav.education') }, { label: t('nav.subjects') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Yangi fan
+            {t('education.addSubject')}
           </Button>
         }
       />
@@ -103,17 +105,17 @@ export function SubjectsPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-            <StatCard label="Jami fanlar" value={subjects.length} />
-            <StatCard label="Kafedralar" value={departments.length} />
-            <StatCard label="Jami kreditlar" value={totalCredits} />
-            <StatCard label="O'rtacha kredit" value={avgCredits} />
+            <StatCard label={t('education.totalSubjects')} value={subjects.length} />
+            <StatCard label={t('education.departmentsCount')} value={departments.length} />
+            <StatCard label={t('education.totalCredits')} value={totalCredits} />
+            <StatCard label={t('education.avgCredits')} value={avgCredits} />
           </div>
 
           <div className="mb-4">
             <FilterBar
               search={search}
               onSearchChange={setSearch}
-              searchPlaceholder="Fan nomi yoki kod..."
+              searchPlaceholder={t('education.subjectSearchPlaceholder')}
               activeFilterCount={deptFilter ? 1 : 0}
               onClearFilters={() => { setDeptFilter(''); setSearch(''); }}
               filters={
@@ -128,7 +130,7 @@ export function SubjectsPage() {
                 </select>
               }
               actions={
-                <Badge variant="default">{filtered.length} ta fan</Badge>
+                <Badge variant="default">{t('education.subjectCountBadge', { count: filtered.length })}</Badge>
               }
             />
           </div>
@@ -138,7 +140,7 @@ export function SubjectsPage() {
               data={filtered}
               columns={subjectColumns}
               keyField="id"
-              emptyMessage="Fanlar topilmadi"
+              emptyMessage={t('education.subjectsNotFound')}
             />
           </Card>
         </>
@@ -160,9 +162,9 @@ export function SubjectsPage() {
           if (!deleteSubject) return;
           deleteSubjectMutation.mutate(deleteSubject.id, { onSuccess: () => setDeleteSubject(null) });
         }}
-        title="Fanni o'chirish"
-        message={`"${deleteSubject?.name}" fanini o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('education.deleteSubjectTitle')}
+        message={t('education.deleteSubjectConfirm', { name: deleteSubject?.name })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteSubjectMutation.isPending}
       />

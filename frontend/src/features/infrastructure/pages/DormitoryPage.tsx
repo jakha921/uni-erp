@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
 import { Badge, Button, Spinner } from '@/components/ui';
@@ -18,11 +19,11 @@ const ROOM_STYLES = {
   repair: { bg: 'bg-slate-100', border: 'border-slate-300', text: 'text-slate-500' },
 } as const;
 
-const STATUS_LABELS: Record<DormRoom['status'], string> = {
-  available: "Bo'sh",
-  partial: 'Qisman',
-  full: "To'liq",
-  repair: "Ta'mirda",
+const STATUS_LABEL_KEYS: Record<DormRoom['status'], string> = {
+  available: 'infrastructure.roomStatusAvailable',
+  partial: 'infrastructure.roomStatusPartial',
+  full: 'infrastructure.roomStatusFull',
+  repair: 'infrastructure.roomStatusRepair',
 };
 
 const STATUS_VARIANTS: Record<DormRoom['status'], 'default' | 'success' | 'warning' | 'error'> = {
@@ -33,6 +34,7 @@ const STATUS_VARIANTS: Record<DormRoom['status'], 'default' | 'success' | 'warni
 };
 
 export function DormitoryPage() {
+  const { t } = useTranslation();
   const [view, setView] = useState<'map' | 'list'>('map');
   const [buildingId, setBuildingId] = useState<number>(1);
   const [formOpen, setFormOpen] = useState(false);
@@ -72,12 +74,12 @@ export function DormitoryPage() {
   };
 
   const roomColumns: Column<DormRoom>[] = [
-    { key: 'number', header: 'Xona', render: (row) => <span className="font-semibold text-slate-900 tabular-nums">{row.number}</span> },
-    { key: 'floor', header: 'Qavat', render: (row) => <span className="text-slate-600">{row.floor}-qavat</span> },
-    { key: 'capacity', header: "Sig'im", render: (row) => <span className="text-slate-600 tabular-nums">{row.capacity} o&apos;rinli</span> },
-    { key: 'occupied', header: 'Band', render: (row) => <span className="font-medium tabular-nums">{row.occupied}/{row.capacity}</span> },
-    { key: 'status', header: 'Holat', render: (row) => <Badge variant={STATUS_VARIANTS[row.status]} dot>{STATUS_LABELS[row.status]}</Badge> },
-    { key: 'supervisorName', header: 'Nazoratchi', render: (row) => <span className="text-slate-600">{row.supervisorName ?? '—'}</span> },
+    { key: 'number', header: t('infrastructure.roomLabel'), render: (row) => <span className="font-semibold text-slate-900 tabular-nums">{row.number}</span> },
+    { key: 'floor', header: t('infrastructure.floorLabel'), render: (row) => <span className="text-slate-600">{row.floor}{t('infrastructure.floorSuffix')}</span> },
+    { key: 'capacity', header: t('infrastructure.capacityLabel'), render: (row) => <span className="text-slate-600 tabular-nums">{row.capacity} {t('infrastructure.capacitySuffix')}</span> },
+    { key: 'occupied', header: t('infrastructure.occupiedLabel'), render: (row) => <span className="font-medium tabular-nums">{row.occupied}/{row.capacity}</span> },
+    { key: 'status', header: t('infrastructure.statusLabel'), render: (row) => <Badge variant={STATUS_VARIANTS[row.status]} dot>{t(STATUS_LABEL_KEYS[row.status])}</Badge> },
+    { key: 'supervisorName', header: t('infrastructure.supervisorLabel'), render: (row) => <span className="text-slate-600">{row.supervisorName ?? '—'}</span> },
     {
       key: 'id', header: '', width: '70px',
       render: (row) => (
@@ -96,21 +98,21 @@ export function DormitoryPage() {
   return (
     <PageContent>
       <PageHeader
-        title="TTJ (yotoqxona)"
-        subtitle="Talabalar turar joyi boshqaruvi"
-        breadcrumbs={[{ label: 'Infratuzilma' }, { label: 'TTJ' }]}
+        title={t('infrastructure.dormTitle')}
+        subtitle={t('infrastructure.dormSubtitle')}
+        breadcrumbs={[{ label: t('nav.infrastructure') }, { label: t('nav.dormitory') }]}
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="h-4 w-4" />} onClick={handleOpenCreate}>
-            Xona qo&apos;shish
+            {t('infrastructure.addRoom')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <StatCard label="Jami xonalar" value={totalRooms} icon={<Building2 className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
-        <StatCard label="Bandligi" value={`${occupancy}%`} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#1B7A4E" />
-        <StatCard label="Bo'sh xonalar" value={freeRooms} icon={<DoorOpen className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
-        <StatCard label="Ta'mirda" value={repairRooms} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#EF4444" />
+        <StatCard label={t('infrastructure.totalRooms')} value={totalRooms} icon={<Building2 className="h-[18px] w-[18px]" />} iconBg="#2DB976" />
+        <StatCard label={t('infrastructure.occupancy')} value={`${occupancy}%`} icon={<Users className="h-[18px] w-[18px]" />} iconBg="#1B7A4E" />
+        <StatCard label={t('infrastructure.freeRooms')} value={freeRooms} icon={<DoorOpen className="h-[18px] w-[18px]" />} iconBg="#F59E0B" />
+        <StatCard label={t('infrastructure.underRepair')} value={repairRooms} icon={<FileText className="h-[18px] w-[18px]" />} iconBg="#EF4444" />
       </div>
 
       <DormRoomForm
@@ -128,9 +130,9 @@ export function DormitoryPage() {
           if (!deleteRoom) return;
           deleteRoomMutation.mutate(deleteRoom.id, { onSuccess: () => setDeleteRoom(null) });
         }}
-        title="Xonani o'chirish"
-        message={`${deleteRoom?.number}-xonani o'chirishni tasdiqlaysizmi?`}
-        confirmLabel="O'chirish"
+        title={t('infrastructure.deleteRoom')}
+        message={t('infrastructure.deleteRoomConfirm', { number: deleteRoom?.number })}
+        confirmLabel={t('common.delete')}
         variant="danger"
         loading={deleteRoomMutation.isPending}
       />
@@ -139,8 +141,8 @@ export function DormitoryPage() {
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border flex-wrap">
           <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
             {([
-              { id: 'map' as const, label: 'Xarita', icon: Map },
-              { id: 'list' as const, label: "Ro'yxat", icon: List },
+              { id: 'map' as const, label: t('infrastructure.mapView'), icon: Map },
+              { id: 'list' as const, label: t('infrastructure.listView'), icon: List },
             ]).map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -169,10 +171,10 @@ export function DormitoryPage() {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-emerald-50 border border-emerald-200" />Bo&apos;sh</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-amber-50 border border-amber-300" />Qisman</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-green-100 border border-green-400" />To&apos;liq</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-slate-100 border border-slate-300" />Ta&apos;mirda</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-emerald-50 border border-emerald-200" />{t('infrastructure.roomStatusAvailable')}</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-amber-50 border border-amber-300" />{t('infrastructure.roomStatusPartial')}</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-green-100 border border-green-400" />{t('infrastructure.roomStatusFull')}</span>
+            <span className="inline-flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-slate-100 border border-slate-300" />{t('infrastructure.roomStatusRepair')}</span>
           </div>
         </div>
 
@@ -181,29 +183,29 @@ export function DormitoryPage() {
         ) : view === 'map' ? (
           <RoomMapView rooms={rooms} onRoomClick={setSelectedRoom} />
         ) : (
-          <DataTable data={rooms} columns={roomColumns} keyField="id" emptyMessage="Xonalar topilmadi" />
+          <DataTable data={rooms} columns={roomColumns} keyField="id" emptyMessage={t('infrastructure.roomsNotFound')} />
         )}
       </Card>
 
       <SlideOver
         open={!!selectedRoom}
         onClose={() => setSelectedRoom(null)}
-        title={selectedRoom ? `${selectedRoom.number}-xona — ${selectedRoom.floor}-qavat` : ''}
+        title={selectedRoom ? `${selectedRoom.number}-${t('infrastructure.roomLabel')} — ${selectedRoom.floor}${t('infrastructure.floorSuffix')}` : ''}
       >
         {selectedRoom && (
           <div className="p-5 space-y-4">
             <div className="flex items-center gap-3">
-              <Badge variant={STATUS_VARIANTS[selectedRoom.status]} dot>{STATUS_LABELS[selectedRoom.status]}</Badge>
-              <span className="text-sm text-slate-600">{selectedRoom.occupied}/{selectedRoom.capacity} talaba</span>
+              <Badge variant={STATUS_VARIANTS[selectedRoom.status]} dot>{t(STATUS_LABEL_KEYS[selectedRoom.status])}</Badge>
+              <span className="text-sm text-slate-600">{selectedRoom.occupied}/{selectedRoom.capacity} {t('infrastructure.studentCount')}</span>
             </div>
 
             <div className="rounded-xl border border-border p-4 space-y-3">
-              <h4 className="text-[13px] font-semibold text-slate-900">Yangi talabani joylash</h4>
+              <h4 className="text-[13px] font-semibold text-slate-900">{t('infrastructure.checkInStudent')}</h4>
               <input
                 type="text"
                 value={checkInName}
                 onChange={(e) => setCheckInName(e.target.value)}
-                placeholder="Talaba ismi..."
+                placeholder={t('infrastructure.studentNamePlaceholder')}
                 className="h-9 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-primary-400"
               />
               <input
@@ -225,26 +227,26 @@ export function DormitoryPage() {
                   );
                 }}
               >
-                Joylash
+                {t('infrastructure.checkIn')}
               </Button>
             </div>
 
             <div>
-              <h4 className="text-[13px] font-semibold text-slate-900 mb-2">Hozirgi sakinlar</h4>
+              <h4 className="text-[13px] font-semibold text-slate-900 mb-2">{t('infrastructure.currentResidents')}</h4>
               {residentsLoading ? (
                 <div className="flex justify-center py-6"><Spinner /></div>
               ) : (residents ?? []).length === 0 ? (
-                <p className="text-sm text-slate-400 py-4 text-center">Sakinlar yo'q</p>
+                <p className="text-sm text-slate-400 py-4 text-center">{t('infrastructure.noResidents')}</p>
               ) : (
                 <div className="space-y-2">
                   {(residents ?? []).map((r) => (
                     <div key={r.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
                       <div>
                         <p className="text-[13px] font-medium text-slate-900">{r.studentName}</p>
-                        <p className="text-[11px] text-slate-400">Kirgan: {r.checkInDate}</p>
+                        <p className="text-[11px] text-slate-400">{t('infrastructure.checkInDate')}: {r.checkInDate}</p>
                       </div>
                       <button
-                        title="Chiqarish"
+                        title={t('infrastructure.checkOut')}
                         onClick={() => checkOut.mutate({ residentId: r.id, roomId: selectedRoom.id })}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                       >
