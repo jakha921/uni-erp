@@ -5,6 +5,7 @@ from .views import (
     AttendanceViewSet,
     BulkAttendanceView,
     BulkGradeView,
+    CurriculumViewSet,
     ExamViewSet,
     GradeViewSet,
     ScheduleViewSet,
@@ -17,6 +18,7 @@ router.register("schedule", ScheduleViewSet, basename="schedule")
 router.register("attendance", AttendanceViewSet, basename="attendance")
 router.register("grades", GradeViewSet, basename="grade")
 router.register("exams", ExamViewSet, basename="exam")
+router.register("curriculums", CurriculumViewSet, basename="curriculum")
 
 urlpatterns = [
     path("attendance/bulk/", BulkAttendanceView.as_view(), name="attendance-bulk"),

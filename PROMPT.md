@@ -23,7 +23,7 @@
 - [x] **BE-1**: Модель `Exam` в `apps/education/models.py` + сериализатор ExamSerializer (subjectName, groupName, teacherName через SerializerMethodField) + ExamCreateSerializer + ExamViewSet(ModelViewSet) + ExamFilter(django-filters: semester, group, subject, type, status) + admin.py + router.register("exams") + makemigrations + migrate.
 
 ### 1.2 Education: Curriculum
-- [ ] **BE-2**: Модели `Curriculum` + `CurriculumSubject` в education/models.py + сериализаторы (nested subjects) + CurriculumViewSet + filterset_fields=[specialty, year] + router.register("curriculums") + миграция.
+- [x] **BE-2**: Модели `Curriculum` + `CurriculumSubject` в education/models.py + сериализаторы (nested subjects) + CurriculumViewSet + filterset_fields=[specialty, year] + router.register("curriculums") + миграция.
 
 ### 1.3 Education: Library
 - [ ] **BE-3**: Модели `Book` + `BookLoan` в education/models.py + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return для возврата книги) + router.register("library/books") + router.register("library/loans") + миграция.

@@ -1,8 +1,8 @@
-"""Education serializers — Subject, Schedule, Attendance, Grade."""
+"""Education serializers — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
 
 from rest_framework import serializers
 
-from .models import Attendance, Exam, Grade, Schedule, Subject
+from .models import Attendance, Curriculum, CurriculumSubject, Exam, Grade, Schedule, Subject
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -217,3 +217,66 @@ class ExamCreateSerializer(serializers.ModelSerializer):
             "status",
             "notes",
         ]
+
+
+class CurriculumSubjectSerializer(serializers.ModelSerializer):
+    subjectName = serializers.CharField(source="subject.name", read_only=True)
+    subjectCode = serializers.CharField(source="subject.code", read_only=True)
+    credits = serializers.IntegerField(source="subject.credits", read_only=True)
+
+    class Meta:
+        model = CurriculumSubject
+        fields = [
+            "id",
+            "subject",
+            "subjectName",
+            "subjectCode",
+            "credits",
+            "semester_number",
+            "hours_total",
+            "is_elective",
+        ]
+
+
+class CurriculumSerializer(serializers.ModelSerializer):
+    specialtyName = serializers.CharField(source="specialty.name", read_only=True)
+    subjects = CurriculumSubjectSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Curriculum
+        fields = [
+            "id",
+            "specialty",
+            "specialtyName",
+            "year",
+            "total_credits",
+            "description",
+            "subjects",
+            "created_at",
+        ]
+
+
+class CurriculumCreateSerializer(serializers.ModelSerializer):
+    subjects = CurriculumSubjectSerializer(many=True, required=False)
+
+    class Meta:
+        model = Curriculum
+        fields = ["specialty", "year", "total_credits", "description", "subjects"]
+
+    def create(self, validated_data: dict) -> Curriculum:
+        subjects_data = validated_data.pop("subjects", [])
+        curriculum = Curriculum.objects.create(**validated_data)
+        for s in subjects_data:
+            CurriculumSubject.objects.create(curriculum=curriculum, **s)
+        return curriculum
+
+    def update(self, instance: Curriculum, validated_data: dict) -> Curriculum:
+        subjects_data = validated_data.pop("subjects", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if subjects_data is not None:
+            instance.subjects.all().delete()
+            for s in subjects_data:
+                CurriculumSubject.objects.create(curriculum=instance, **s)
+        return instance

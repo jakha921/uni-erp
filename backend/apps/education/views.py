@@ -1,4 +1,4 @@
-"""Education views — Subject, Schedule, Attendance, Grade, Exam."""
+"""Education views — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -7,12 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .filters import ExamFilter
-from .models import Attendance, Exam, Grade, Schedule, Subject
+from .filters import CurriculumFilter, ExamFilter
+from .models import Attendance, Curriculum, Exam, Grade, Schedule, Subject
 from .serializers import (
     AttendanceSerializer,
     BulkAttendanceSerializer,
     BulkGradeSerializer,
+    CurriculumCreateSerializer,
+    CurriculumSerializer,
     ExamCreateSerializer,
     ExamSerializer,
     GradeSerializer,
@@ -90,3 +92,21 @@ class ExamViewSet(ModelViewSet):
         if self.action in ("create", "update", "partial_update"):
             return ExamCreateSerializer
         return ExamSerializer
+
+
+class CurriculumViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filterset_class = CurriculumFilter
+    search_fields = ["specialty__name", "description"]
+
+    def get_queryset(self):
+        return (
+            Curriculum.objects.select_related("specialty")
+            .prefetch_related("subjects__subject")
+            .all()
+        )
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return CurriculumCreateSerializer
+        return CurriculumSerializer

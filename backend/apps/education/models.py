@@ -1,4 +1,4 @@
-"""Education models — Subject, Schedule, Attendance, Grade."""
+"""Education models — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
 
 from django.db import models
 
@@ -141,3 +141,40 @@ class Exam(models.Model):
 
     def __str__(self) -> str:
         return f"{self.subject} — {self.group} — {self.date}"
+
+
+class Curriculum(models.Model):
+    """O'quv reja — specialty va yil bo'yicha."""
+
+    specialty = models.ForeignKey(
+        "core.Specialty", on_delete=models.CASCADE, related_name="curriculums"
+    )
+    year = models.PositiveSmallIntegerField(verbose_name="O'quv yili (1–4)")
+    total_credits = models.PositiveSmallIntegerField(default=0)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ["specialty", "year"]
+        ordering = ["specialty", "year"]
+
+    def __str__(self) -> str:
+        return f"{self.specialty} — {self.year}-kurs"
+
+
+class CurriculumSubject(models.Model):
+    """O'quv reja predmeti — Curriculum + Subject + semester_number."""
+
+    curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE, related_name="subjects")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    semester_number = models.PositiveSmallIntegerField()
+    hours_total = models.PositiveSmallIntegerField(default=0)
+    is_elective = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ["curriculum", "subject", "semester_number"]
+        ordering = ["semester_number", "subject__name"]
+
+    def __str__(self) -> str:
+        return f"{self.curriculum} — {self.subject} — {self.semester_number}-sem"

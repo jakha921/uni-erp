@@ -3,7 +3,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import Attendance, Exam, Grade, Schedule, Subject
+from .models import Attendance, Curriculum, CurriculumSubject, Exam, Grade, Schedule, Subject
 
 
 @admin.register(Subject)
@@ -48,3 +48,17 @@ class ExamAdmin(ModelAdmin):
     ]
     list_filter = ["exam_type", "status", "semester"]
     search_fields = ["subject__name", "group__name", "teacher__last_name", "room"]
+
+
+class CurriculumSubjectInline(admin.TabularInline):
+    model = CurriculumSubject
+    extra = 0
+    fields = ["subject", "semester_number", "hours_total", "is_elective"]
+
+
+@admin.register(Curriculum)
+class CurriculumAdmin(ModelAdmin):
+    list_display = ["specialty", "year", "total_credits"]
+    list_filter = ["specialty", "year"]
+    search_fields = ["specialty__name"]
+    inlines = [CurriculumSubjectInline]
