@@ -431,7 +431,9 @@
     "budgetCategories": "Категории бюджета",
     "budgetCategoriesSubtitle": "План и исполнение по статьям расходов",
     "categoriesNotFound": "Категории не найдены",
-    "totalExecution": "Общее исполнение"
+    "totalExecution": "Общее исполнение",
+    "allYears": "Все годы",
+    "newContract": "Новый контракт"
   },
   "hr": {
     "title": "Кадровый отдел",

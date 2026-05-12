@@ -431,7 +431,9 @@
     "budgetCategories": "Budget categories",
     "budgetCategoriesSubtitle": "Plan and execution by expense items",
     "categoriesNotFound": "No categories found",
-    "totalExecution": "Total execution"
+    "totalExecution": "Total execution",
+    "allYears": "All years",
+    "newContract": "New contract"
   },
   "hr": {
     "title": "Human Resources",

@@ -439,7 +439,9 @@
     "budgetCategories": "Byudjet kategoriyalari",
     "budgetCategoriesSubtitle": "Xarajat moddalari bo'yicha reja va ijro",
     "categoriesNotFound": "Kategoriyalar topilmadi",
-    "totalExecution": "Umumiy ijro"
+    "totalExecution": "Umumiy ijro",
+    "allYears": "Barcha yillar",
+    "newContract": "Yangi kontrakt"
   },
   "hr": {
     "title": "Kadrlar bo'limi",
