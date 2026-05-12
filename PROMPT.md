@@ -49,7 +49,7 @@
 - [x] **BE-11**: Создать app `apps/admin_panel/` (НЕ admin). Модели: Folder(name, parent), Document(title, number, category, folder, priority, status, author, file), DictionaryItem(type, code, name). ViewSets: FolderViewSet, DocumentViewSet, DictionaryItemViewSet(filter by type from URL), AnalyticsView(APIView). Зарегистрировать в settings + urls.py. Миграция. Seed. Git commit.
 
 ### 1.10 Cabinets + Teachers + Messages + Reports + Student Documents
-- [ ] **BE-12**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегация данных для текущего пользователя). URLs в config/urls.py: `/api/v1/cabinets/student/`, `/api/v1/cabinets/teacher/`.
+- [x] **BE-12**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегация данных для текущего пользователя). URLs в config/urls.py: `/api/v1/cabinets/student/`, `/api/v1/cabinets/teacher/`.
 - [ ] **BE-13**: TeacherViewSet в education/views.py (queryset Employee filtered by department). teacher_urls.py + config/urls.py: `/api/v1/teachers/`.
 - [ ] **BE-14**: ChatThread + ChatMessage модели в operations/models.py + ChatThreadViewSet(@action messages GET/POST) + router.register("messages/threads"). ReportTemplate модель + ReportTemplateViewSet + GenerateReportView. Миграция. Seed.
 - [ ] **BE-15**: StudentDocument модель в students/models.py + ViewSet(list, create multipart, delete) + URL: `students/<id>/documents/`. Миграция.

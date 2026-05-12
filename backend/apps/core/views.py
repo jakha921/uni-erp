@@ -3,6 +3,7 @@
 import django_filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView  # noqa: F401
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -232,3 +233,117 @@ class SendNotificationView(APIView):
             send_sms=send_sms_flag,
         )
         return Response({"id": notification.id, "status": "sent"}, status=201)
+
+
+class StudentCabinetView(APIView):
+    """Aggregated data for the student cabinet page."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        from datetime import date
+
+        from apps.education.models import Attendance, Grade, Schedule
+        from apps.operations.models import Notification
+        from apps.students.models import Student
+
+        try:
+            student = Student.objects.select_related("user", "group").get(user=request.user)
+        except Student.DoesNotExist:
+            return Response({"detail": "Student profile not found."}, status=404)
+
+        today = date.today()
+        today_schedules = list(
+            Schedule.objects.filter(group=student.group, day_of_week=today.isoweekday())
+            .select_related("subject", "teacher")
+            .values(
+                "subject__name", "teacher__first_name", "teacher__last_name", "pair_number", "room"
+            )
+        )
+        current_grades = list(
+            Grade.objects.filter(student=student)
+            .select_related("subject")
+            .values("subject__name", "grade_type", "score", "max_score")
+            .order_by("-updated_at")[:20]
+        )
+        notifications = list(
+            Notification.objects.filter(user=request.user, is_read=False)
+            .values("id", "title", "message", "created_at")
+            .order_by("-created_at")[:10]
+        )
+        attendance_count = Attendance.objects.filter(student=student).count()
+        present_count = Attendance.objects.filter(student=student, status="present").count()
+
+        return Response(
+            {
+                "student": {
+                    "id": student.id,
+                    "fullName": student.user.full_name,
+                    "studentIdNumber": student.student_id_number,
+                    "group": student.group.name if student.group else "",
+                    "level": student.level,
+                },
+                "todaySchedule": today_schedules,
+                "currentGrades": current_grades,
+                "notifications": notifications,
+                "attendanceRate": round(present_count / attendance_count * 100, 1)
+                if attendance_count
+                else 0,
+            }
+        )
+
+
+class TeacherCabinetView(APIView):
+    """Aggregated data for the teacher cabinet page."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        from datetime import date
+
+        from apps.education.models import Schedule
+        from apps.hr.models import Employee
+        from apps.operations.models import Notification, Task
+
+        try:
+            employee = Employee.objects.select_related("user", "department").get(user=request.user)
+        except Employee.DoesNotExist:
+            return Response({"detail": "Employee profile not found."}, status=404)
+
+        today = date.today()
+        today_classes = list(
+            Schedule.objects.filter(teacher=request.user, day_of_week=today.isoweekday())
+            .select_related("subject", "group")
+            .values("subject__name", "group__name", "pair_number", "room", "lesson_type")
+        )
+        my_groups = list(
+            Schedule.objects.filter(teacher=request.user)
+            .values_list("group__name", flat=True)
+            .distinct()
+        )
+        pending_tasks = list(
+            Task.objects.filter(assigned_to=request.user, status__in=["todo", "in_progress"])
+            .values("id", "title", "priority", "due_date")
+            .order_by("due_date")[:5]
+        )
+        notifications = list(
+            Notification.objects.filter(user=request.user, is_read=False)
+            .values("id", "title", "message", "created_at")
+            .order_by("-created_at")[:10]
+        )
+
+        return Response(
+            {
+                "teacher": {
+                    "id": employee.id,
+                    "fullName": request.user.full_name,
+                    "employeeIdNumber": employee.employee_id_number,
+                    "department": employee.department.name if employee.department else "",
+                    "position": employee.position,
+                },
+                "todayClasses": today_classes,
+                "myGroups": my_groups,
+                "pendingTasks": pending_tasks,
+                "notifications": notifications,
+            }
+        )

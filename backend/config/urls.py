@@ -3,11 +3,13 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from apps.core.views import DashboardView
+from apps.core.views import DashboardView, StudentCabinetView, TeacherCabinetView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("api/v1/cabinets/student/", StudentCabinetView.as_view(), name="student-cabinet"),
+    path("api/v1/cabinets/teacher/", TeacherCabinetView.as_view(), name="teacher-cabinet"),
     path("api/v1/", include("apps.accounts.urls")),
     path("api/v1/core/", include("apps.core.urls")),
     path("api/v1/students/", include("apps.students.urls")),
