@@ -80,16 +80,16 @@
 
 ### 2.4 Education (11 страниц)
 
-- [ ] **FE-9**: **SchedulePage** `/schedule` — Проверить: данные из useSchedules (НЕ hardcoded EVENTS). CRUD: "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара), Edit по клику на ячейку, Delete через ConfirmDialog. Фильтры: группа Combobox, преподаватель, неделя. 3 вида (haftalik/kunlik/oylik). i18n. Export PDF. Исправить что не работает.
-- [ ] **FE-10**: **AcademicAttendancePage** `/attendance` — Проверить: attendance grid подключён к API, кнопка "Saqlash" → useBulkAttendance mutation отправляет данные. Фильтры: группа, предмет, дата. Export Excel. i18n.
-- [ ] **FE-11**: **GradingPage** `/grading` — Проверить: оценки из API, inline editing, кнопка "Saqlash" → useBulkGrades mutation. Auto-compute итоговой оценки. Фильтры: группа, предмет, семестр. Export Excel/PDF ведомость. i18n.
-- [ ] **FE-12**: **ExamsPage** `/exams` — Проверить: данные из useExams. CRUD: ExamForm в Modal (subject, group, teacher, date, room, type). Tabs: Sessiyalar(list), Jadval(calendar), Vedomost(grades). Фильтры: семестр, группа, предмет. i18n.
-- [ ] **FE-13**: **CurriculumPage** `/curriculum` — Проверить: данные из useCurriculums. CRUD: CurriculumForm в SlideOver с useFieldArray для предметов. Фильтры: specialty Combobox, year. Export PDF. i18n.
-- [ ] **FE-14**: **SubjectsPage** `/subjects` — Проверить: данные из useSubjects. CRUD: SubjectForm в Modal (name, code, credits, hours, department). Фильтр кафедры из useDepartments. i18n.
-- [ ] **FE-15**: **LibraryPage** `/library` — Проверить: Tab "Katalog" → useBooks + BookForm (title, author, isbn, year, category, copies, location). Tab "Berilganlar" → useLoans + LoanForm (book Combobox, student Combobox, dueDate) + кнопка "Qaytarish"(returnBook). Поиск книг. i18n.
-- [ ] **FE-16**: **AlumniPage** `/alumni` — Проверить: данные из useAlumni. CRUD: AlumniForm в SlideOver (fullName, graduationYear, faculty, specialty, workplace, phone, email, status). Фильтры: год, факультет, статус. Export Excel. i18n.
-- [ ] **FE-17**: **InternshipPage** `/internship` — Проверить: данные из useInternships. CRUD: InternshipForm в SlideOver (student, company, supervisor, dates, type). Tabs: Joriy/Yakunlangan. i18n.
-- [ ] **FE-18**: **MyStudentsPage** `/my-students` — Проверить: данные из API для текущего преподавателя. Фильтр по группе. Оценки и посещаемость студентов. i18n.
+- [x] **FE-9**: **SchedulePage** `/schedule` — Проверить: данные из useSchedules (НЕ hardcoded EVENTS). CRUD: "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара), Edit по клику на ячейку, Delete через ConfirmDialog. Фильтры: группа Combobox, преподаватель, неделя. 3 вида (haftalik/kunlik/oylik). i18n. Export PDF. Исправить что не работает.
+- [x] **FE-10**: **AcademicAttendancePage** `/attendance` — Проверить: attendance grid подключён к API, кнопка "Saqlash" → useBulkAttendance mutation отправляет данные. Фильтры: группа, предмет, дата. Export Excel. i18n.
+- [x] **FE-11**: **GradingPage** `/grading` — Проверить: оценки из API, inline editing, кнопка "Saqlash" → useBulkGrades mutation. Auto-compute итоговой оценки. Фильтры: группа, предмет, семестр. Export Excel/PDF ведомость. i18n.
+- [x] **FE-12**: **ExamsPage** `/exams` — Проверить: данные из useExams. CRUD: ExamForm в Modal (subject, group, teacher, date, room, type). Tabs: Sessiyalar(list), Jadval(calendar), Vedomost(grades). Фильтры: семестр, группа, предмет. i18n.
+- [x] **FE-13**: **CurriculumPage** `/curriculum` — Проверить: данные из useCurriculums. CRUD: CurriculumForm в SlideOver с useFieldArray для предметов. Фильтры: specialty Combobox, year. Export PDF. i18n.
+- [x] **FE-14**: **SubjectsPage** `/subjects` — Проверить: данные из useSubjects. CRUD: SubjectForm в Modal (name, code, credits, hours, department). Фильтр кафедры из useDepartments. i18n.
+- [x] **FE-15**: **LibraryPage** `/library` — Проверить: Tab "Katalog" → useBooks + BookForm (title, author, isbn, year, category, copies, location). Tab "Berilganlar" → useLoans + LoanForm (book Combobox, student Combobox, dueDate) + кнопка "Qaytarish"(returnBook). Поиск книг. i18n.
+- [x] **FE-16**: **AlumniPage** `/alumni` — Проверить: данные из useAlumni. CRUD: AlumniForm в SlideOver (fullName, graduationYear, faculty, specialty, workplace, phone, email, status). Фильтры: год, факультет, статус. Export Excel. i18n.
+- [x] **FE-17**: **InternshipPage** `/internship` — Проверить: данные из useInternships. CRUD: InternshipForm в SlideOver (student, company, supervisor, dates, type). Tabs: Joriy/Yakunlangan. i18n.
+- [x] **FE-18**: **MyStudentsPage** `/my-students` — Проверить: данные из API для текущего преподавателя. Фильтр по группе. Оценки и посещаемость студентов. i18n.
 - [ ] **FE-19**: **AcademicDepartmentsPage** `/departments` — Проверить: данные из API. Статистика: преподаватели, студенты, средний балл. i18n.
 
 ### 2.5 Finance (9 страниц)

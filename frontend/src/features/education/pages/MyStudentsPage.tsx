@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Search, Users, Star, Clock } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -23,8 +24,9 @@ export function MyStudentsPage() {
 
   const activeGroup = groups[activeGroupIdx];
 
+  const debouncedSearch = useDebounce(search);
   const { data: studentsData, isLoading: studentsLoading } = useStudentsList({
-    page: 1, pageSize: 50, search: search || undefined,
+    page: 1, pageSize: 50, search: debouncedSearch || undefined,
   });
 
   const students = useMemo(() => {

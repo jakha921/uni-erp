@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card, StatCard } from '@/components/data-display';
@@ -20,7 +21,8 @@ export function SubjectsPage() {
   const [editSubject, setEditSubject] = useState<Subject | null>(null);
   const [deleteSubject, setDeleteSubject] = useState<Subject | null>(null);
 
-  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects({ search: search || undefined });
+  const debouncedSearch = useDebounce(search);
+  const { data: subjectsData, isLoading: subjectsLoading } = useSubjects({ search: debouncedSearch || undefined });
   const { data: departmentsData, isLoading: deptsLoading } = useDepartments();
   const createSubject = useCreateSubject();
   const updateSubject = useUpdateSubject();
