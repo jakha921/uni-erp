@@ -107,6 +107,15 @@ class PaymentViewSet(ModelViewSet):
             return CreatePaymentSerializer
         return PaymentListSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = CreatePaymentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payment = serializer.save()
+        return Response(
+            PaymentListSerializer(payment).data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class ScholarshipViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
