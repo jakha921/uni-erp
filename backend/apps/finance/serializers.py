@@ -1,8 +1,15 @@
-"""Finance serializers — Contract, Payment, Scholarship matching frontend interfaces."""
+"""Finance serializers — Contract, Payment, Scholarship, PayrollRecord, BudgetCategory."""
 
 from rest_framework import serializers
 
-from .models import Contract, Payment, PaymentScheduleItem, Scholarship
+from .models import (
+    BudgetCategory,
+    Contract,
+    Payment,
+    PaymentScheduleItem,
+    PayrollRecord,
+    Scholarship,
+)
 
 
 class PaymentScheduleItemSerializer(serializers.ModelSerializer):
@@ -203,3 +210,103 @@ class CreateScholarshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scholarship
         fields = ["student", "semester", "type", "amount", "start_date", "end_date", "basis"]
+
+
+class PayrollSerializer(serializers.ModelSerializer):
+    employeeName = serializers.SerializerMethodField()
+    departmentName = serializers.SerializerMethodField()
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PayrollRecord
+        fields = [
+            "id",
+            "employee",
+            "employeeName",
+            "departmentName",
+            "period_year",
+            "period_month",
+            "base_salary",
+            "bonus",
+            "deductions",
+            "net_salary",
+            "status",
+            "statusLabel",
+            "paid_date",
+            "notes",
+            "created_at",
+        ]
+
+    def get_employeeName(self, obj: PayrollRecord) -> str:
+        return obj.employee.full_name
+
+    def get_departmentName(self, obj: PayrollRecord) -> str:
+        return obj.employee.department.name if obj.employee.department else ""
+
+    def get_statusLabel(self, obj: PayrollRecord) -> str:
+        return obj.get_status_display()
+
+
+class PayrollCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PayrollRecord
+        fields = [
+            "employee",
+            "period_year",
+            "period_month",
+            "base_salary",
+            "bonus",
+            "deductions",
+            "status",
+            "paid_date",
+            "notes",
+        ]
+
+    def create(self, validated_data: dict) -> PayrollRecord:
+        record = PayrollRecord(**validated_data)
+        record.net_salary = record.base_salary + record.bonus - record.deductions
+        record.save()
+        return record
+
+
+class BudgetCategorySerializer(serializers.ModelSerializer):
+    remaining = serializers.FloatField(read_only=True)
+    percentUsed = serializers.FloatField(source="percent_used", read_only=True)
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BudgetCategory
+        fields = [
+            "id",
+            "name",
+            "code",
+            "parent",
+            "year",
+            "period",
+            "planned_amount",
+            "actual_amount",
+            "remaining",
+            "percentUsed",
+            "notes",
+            "children",
+            "created_at",
+        ]
+
+    def get_children(self, obj: BudgetCategory) -> list:
+        children = obj.children.all()
+        return BudgetCategorySerializer(children, many=True).data
+
+
+class BudgetCategoryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BudgetCategory
+        fields = [
+            "name",
+            "code",
+            "parent",
+            "year",
+            "period",
+            "planned_amount",
+            "actual_amount",
+            "notes",
+        ]

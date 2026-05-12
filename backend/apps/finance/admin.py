@@ -3,7 +3,14 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
 
-from .models import Contract, Payment, PaymentScheduleItem, Scholarship
+from .models import (
+    BudgetCategory,
+    Contract,
+    Payment,
+    PaymentScheduleItem,
+    PayrollRecord,
+    Scholarship,
+)
 
 
 class PaymentScheduleItemInline(TabularInline):
@@ -47,3 +54,24 @@ class ScholarshipAdmin(ModelAdmin):
     list_display = ["student", "type", "amount", "status", "start_date", "end_date"]
     list_filter = ["type", "status"]
     search_fields = ["student__user__last_name"]
+
+
+@admin.register(PayrollRecord)
+class PayrollRecordAdmin(ModelAdmin):
+    list_display = [
+        "employee",
+        "period_year",
+        "period_month",
+        "base_salary",
+        "net_salary",
+        "status",
+    ]
+    list_filter = ["status", "period_year", "period_month"]
+    search_fields = ["employee__last_name", "employee__first_name"]
+
+
+@admin.register(BudgetCategory)
+class BudgetCategoryAdmin(ModelAdmin):
+    list_display = ["name", "code", "year", "period", "planned_amount", "actual_amount", "parent"]
+    list_filter = ["year", "period"]
+    search_fields = ["name", "code"]

@@ -38,9 +38,9 @@
 - [x] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums(15 subjects каждый), 50 books, 30 loans, 40 alumni, 20 internships. Запустить seed. `uv run python manage.py check`. Git commit.
 
 ### 1.7 Finance: Payroll + Budget + Report
-- [ ] **BE-7**: Модель `PayrollRecord` в finance/models.py + PayrollSerializer + PayrollViewSet(@action summary, @action process) + router.register("payroll") + миграция.
-- [ ] **BE-8**: Модель `BudgetCategory` в finance/models.py(parent FK self) + сериализатор(remaining, percentUsed computed) + BudgetCategoryViewSet(@action summary) + router.register("budget/categories") + миграция.
-- [ ] **BE-9**: FinanceReportView(APIView) GET → агрегация contracts_by_type, payments_by_month, revenue_by_faculty. URL: path("report/"). Seed payroll(3 месяца) + budget(10 категорий). Git commit.
+- [x] **BE-7**: Модель `PayrollRecord` в finance/models.py + PayrollSerializer + PayrollViewSet(@action summary, @action process) + router.register("payroll") + миграция.
+- [x] **BE-8**: Модель `BudgetCategory` в finance/models.py(parent FK self) + сериализатор(remaining, percentUsed computed) + BudgetCategoryViewSet(@action summary) + router.register("budget/categories") + миграция.
+- [x] **BE-9**: FinanceReportView(APIView) GET → агрегация contracts_by_type, payments_by_month, revenue_by_faculty. URL: path("report/"). Seed payroll(3 месяца) + budget(10 категорий). Git commit.
 
 ### 1.8 Auth: Password Recovery
 - [ ] **BE-10**: Модель `PasswordResetCode` в accounts/models.py + 4 views: ForgotPasswordView(SMS через core.sms), VerifyCodeView, ResetPasswordView, ChangePasswordView + URLs + миграция. Git commit.
