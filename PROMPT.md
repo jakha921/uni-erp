@@ -26,7 +26,7 @@
 - [x] **BE-2**: Модели `Curriculum` + `CurriculumSubject` в education/models.py + сериализаторы (nested subjects) + CurriculumViewSet + filterset_fields=[specialty, year] + router.register("curriculums") + миграция.
 
 ### 1.3 Education: Library
-- [ ] **BE-3**: Модели `Book` + `BookLoan` в education/models.py + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return для возврата книги) + router.register("library/books") + router.register("library/loans") + миграция.
+- [x] **BE-3**: Модели `Book` + `BookLoan` в education/models.py + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return для возврата книги) + router.register("library/books") + router.register("library/loans") + миграция.
 
 ### 1.4 Education: Alumni
 - [ ] **BE-4**: Модель `Alumni` в education/models.py + сериализатор + AlumniViewSet(filterset: graduation_year, status; search: full_name, workplace) + router.register("alumni") + миграция.

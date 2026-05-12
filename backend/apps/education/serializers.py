@@ -1,8 +1,18 @@
-"""Education serializers — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
+"""Education serializers — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
 
 from rest_framework import serializers
 
-from .models import Attendance, Curriculum, CurriculumSubject, Exam, Grade, Schedule, Subject
+from .models import (
+    Attendance,
+    Book,
+    BookLoan,
+    Curriculum,
+    CurriculumSubject,
+    Exam,
+    Grade,
+    Schedule,
+    Subject,
+)
 
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -280,3 +290,60 @@ class CurriculumCreateSerializer(serializers.ModelSerializer):
             for s in subjects_data:
                 CurriculumSubject.objects.create(curriculum=instance, **s)
         return instance
+
+
+class BookSerializer(serializers.ModelSerializer):
+    categoryLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Book
+        fields = [
+            "id",
+            "title",
+            "author",
+            "isbn",
+            "year",
+            "category",
+            "categoryLabel",
+            "copies_total",
+            "copies_available",
+            "location",
+            "created_at",
+        ]
+
+    def get_categoryLabel(self, obj: Book) -> str:
+        return obj.get_category_display()
+
+
+class BookLoanSerializer(serializers.ModelSerializer):
+    bookTitle = serializers.CharField(source="book.title", read_only=True)
+    studentName = serializers.SerializerMethodField()
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BookLoan
+        fields = [
+            "id",
+            "book",
+            "bookTitle",
+            "student",
+            "studentName",
+            "issued_date",
+            "due_date",
+            "returned_date",
+            "status",
+            "statusLabel",
+            "notes",
+        ]
+
+    def get_studentName(self, obj: BookLoan) -> str:
+        return obj.student.user.full_name
+
+    def get_statusLabel(self, obj: BookLoan) -> str:
+        return obj.get_status_display()
+
+
+class BookLoanCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookLoan
+        fields = ["book", "student", "due_date", "notes"]

@@ -1,6 +1,7 @@
-"""Education models — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
+"""Education models — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
 
 from django.db import models
+from django.utils import timezone
 
 
 class Subject(models.Model):
@@ -178,3 +179,65 @@ class CurriculumSubject(models.Model):
 
     def __str__(self) -> str:
         return f"{self.curriculum} — {self.subject} — {self.semester_number}-sem"
+
+
+class Book(models.Model):
+    """Kutubxona kitob."""
+
+    CATEGORY_CHOICES = [
+        ("textbook", "Darslik"),
+        ("reference", "Ma'lumotnoma"),
+        ("fiction", "Badiiy"),
+        ("periodical", "Davriy nashr"),
+        ("other", "Boshqa"),
+    ]
+
+    title = models.CharField(max_length=300)
+    author = models.CharField(max_length=200)
+    isbn = models.CharField(max_length=20, blank=True)
+    year = models.PositiveSmallIntegerField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="textbook")
+    copies_total = models.PositiveSmallIntegerField(default=1)
+    copies_available = models.PositiveSmallIntegerField(default=1)
+    location = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self) -> str:
+        return f"{self.title} — {self.author}"
+
+
+class BookLoan(models.Model):
+    """Kitob berish/qaytarish."""
+
+    STATUS_CHOICES = [
+        ("active", "Berilgan"),
+        ("returned", "Qaytarilgan"),
+        ("overdue", "Muddati o'tgan"),
+    ]
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="loans")
+    student = models.ForeignKey(
+        "students.Student", on_delete=models.CASCADE, related_name="book_loans"
+    )
+    issued_date = models.DateField(auto_now_add=True)
+    due_date = models.DateField()
+    returned_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-issued_date"]
+
+    def __str__(self) -> str:
+        return f"{self.book.title} — {self.student} — {self.status}"
+
+    def return_book(self) -> None:
+        self.returned_date = timezone.now().date()
+        self.status = "returned"
+        self.save(update_fields=["returned_date", "status"])
+        self.book.copies_available = models.F("copies_available") + 1
+        self.book.save(update_fields=["copies_available"])

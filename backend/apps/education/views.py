@@ -1,6 +1,7 @@
-"""Education views — Subject, Schedule, Attendance, Grade, Exam, Curriculum."""
+"""Education views — Subject, Schedule, Attendance, Grade, Exam, Curriculum, Library."""
 
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -8,9 +9,12 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .filters import CurriculumFilter, ExamFilter
-from .models import Attendance, Curriculum, Exam, Grade, Schedule, Subject
+from .models import Attendance, Book, BookLoan, Curriculum, Exam, Grade, Schedule, Subject
 from .serializers import (
     AttendanceSerializer,
+    BookLoanCreateSerializer,
+    BookLoanSerializer,
+    BookSerializer,
     BulkAttendanceSerializer,
     BulkGradeSerializer,
     CurriculumCreateSerializer,
@@ -110,3 +114,37 @@ class CurriculumViewSet(ModelViewSet):
         if self.action in ("create", "update", "partial_update"):
             return CurriculumCreateSerializer
         return CurriculumSerializer
+
+
+class BookViewSet(ModelViewSet):
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["category"]
+    search_fields = ["title", "author", "isbn"]
+
+    def get_queryset(self):
+        return Book.objects.all()
+
+
+class BookLoanViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["status", "student", "book"]
+
+    def get_queryset(self):
+        return BookLoan.objects.select_related("book", "student__user").all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return BookLoanCreateSerializer
+        return BookLoanSerializer
+
+    @action(detail=True, methods=["post"], url_path="return")
+    def return_book(self, request: Request, pk: int = None) -> Response:
+        loan = self.get_object()
+        if loan.status == "returned":
+            return Response(
+                {"detail": "Kitob allaqachon qaytarilgan."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        loan.return_book()
+        return Response(BookLoanSerializer(loan).data)

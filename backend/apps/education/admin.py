@@ -3,7 +3,17 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import Attendance, Curriculum, CurriculumSubject, Exam, Grade, Schedule, Subject
+from .models import (
+    Attendance,
+    Book,
+    BookLoan,
+    Curriculum,
+    CurriculumSubject,
+    Exam,
+    Grade,
+    Schedule,
+    Subject,
+)
 
 
 @admin.register(Subject)
@@ -62,3 +72,25 @@ class CurriculumAdmin(ModelAdmin):
     list_filter = ["specialty", "year"]
     search_fields = ["specialty__name"]
     inlines = [CurriculumSubjectInline]
+
+
+@admin.register(Book)
+class BookAdmin(ModelAdmin):
+    list_display = [
+        "title",
+        "author",
+        "isbn",
+        "year",
+        "category",
+        "copies_total",
+        "copies_available",
+    ]
+    list_filter = ["category", "year"]
+    search_fields = ["title", "author", "isbn"]
+
+
+@admin.register(BookLoan)
+class BookLoanAdmin(ModelAdmin):
+    list_display = ["book", "student", "issued_date", "due_date", "returned_date", "status"]
+    list_filter = ["status"]
+    search_fields = ["book__title", "student__user__last_name"]

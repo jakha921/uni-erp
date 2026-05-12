@@ -3,6 +3,8 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     AttendanceViewSet,
+    BookLoanViewSet,
+    BookViewSet,
     BulkAttendanceView,
     BulkGradeView,
     CurriculumViewSet,
@@ -19,6 +21,8 @@ router.register("attendance", AttendanceViewSet, basename="attendance")
 router.register("grades", GradeViewSet, basename="grade")
 router.register("exams", ExamViewSet, basename="exam")
 router.register("curriculums", CurriculumViewSet, basename="curriculum")
+router.register("library/books", BookViewSet, basename="book")
+router.register("library/loans", BookLoanViewSet, basename="bookloan")
 
 urlpatterns = [
     path("attendance/bulk/", BulkAttendanceView.as_view(), name="attendance-bulk"),
