@@ -191,12 +191,12 @@
 
 ## PHASE 3: INTEGRATION — Полная проверка
 
-- [ ] **INT-1**: Запустить backend + frontend. Проверить в браузере ВСЕ 14 новых страниц (exams, curriculum, library, alumni, internship, payroll, budget, student-cabinet, teacher-cabinet, messages, reports, dms, reference, analytics) — данные из API загружаются.
-- [ ] **INT-2**: Проверить CRUD на 5 страницах: `/students` (C/R/U/D), `/finance/contracts` (C/R/U/D), `/hr/employees` (C/R/U/D), `/crm` (C/R/U/D), `/exams` (C/R/U/D). Если что-то не работает — исправить.
-- [ ] **INT-3**: Войти под 5 ролями (admin/buxgalter/dekan/oqituvchi/talaba) — sidebar правильный, страницы без ошибок.
-- [ ] **INT-4**: Переключить язык UZ→RU→EN — тексты на всех страницах меняются.
-- [ ] **INT-5**: Включить dark mode — все страницы корректно отображаются.
-- [ ] **INT-6**: Final deploy: `git add -A && git commit -m "feat: MVP complete — all 66 pages fully functional" && git push origin main`.
+- [x] **INT-1**: Запустить backend + frontend. Проверить в браузере ВСЕ 14 новых страниц (exams, curriculum, library, alumni, internship, payroll, budget, student-cabinet, teacher-cabinet, messages, reports, dms, reference, analytics) — данные из API загружаются.
+- [x] **INT-2**: Проверить CRUD на 5 страницах: `/students` (C/R/U/D), `/finance/contracts` (C/R/U/D), `/hr/employees` (C/R/U/D), `/crm` (C/R/U/D), `/exams` (C/R/U/D). Если что-то не работает — исправить.
+- [x] **INT-3**: Войти под 5 ролями (admin/buxgalter/dekan/oqituvchi/talaba) — sidebar правильный, страницы без ошибок.
+- [x] **INT-4**: Переключить язык UZ→RU→EN — тексты на всех страницах меняются.
+- [x] **INT-5**: Включить dark mode — все страницы корректно отображаются.
+- [x] **INT-6**: Final deploy: `git add -A && git commit -m "feat: MVP complete — all 66 pages fully functional" && git push origin main`.
 
 ---
 
