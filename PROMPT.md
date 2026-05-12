@@ -46,7 +46,7 @@
 - [x] **BE-10**: Модель `PasswordResetCode` в accounts/models.py + 4 views: ForgotPasswordView(SMS через core.sms), VerifyCodeView, ResetPasswordView, ChangePasswordView + URLs + миграция. Git commit.
 
 ### 1.9 Admin Panel App
-- [ ] **BE-11**: Создать app `apps/admin_panel/` (НЕ admin). Модели: Folder(name, parent), Document(title, number, category, folder, priority, status, author, file), DictionaryItem(type, code, name). ViewSets: FolderViewSet, DocumentViewSet, DictionaryItemViewSet(filter by type from URL), AnalyticsView(APIView). Зарегистрировать в settings + urls.py. Миграция. Seed. Git commit.
+- [x] **BE-11**: Создать app `apps/admin_panel/` (НЕ admin). Модели: Folder(name, parent), Document(title, number, category, folder, priority, status, author, file), DictionaryItem(type, code, name). ViewSets: FolderViewSet, DocumentViewSet, DictionaryItemViewSet(filter by type from URL), AnalyticsView(APIView). Зарегистрировать в settings + urls.py. Миграция. Seed. Git commit.
 
 ### 1.10 Cabinets + Teachers + Messages + Reports + Student Documents
 - [ ] **BE-12**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегация данных для текущего пользователя). URLs в config/urls.py: `/api/v1/cabinets/student/`, `/api/v1/cabinets/teacher/`.
