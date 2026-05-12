@@ -186,3 +186,25 @@ class InternshipViewSet(ModelViewSet):
         if self.action in ("create", "update", "partial_update"):
             return InternshipCreateSerializer
         return InternshipSerializer
+
+
+class TeacherViewSet(ReadOnlyModelViewSet):
+    """Read-only ViewSet for teachers (Employees with oqituvchi role)."""
+
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["department", "academic_degree", "academic_rank", "status"]
+    search_fields = ["user__first_name", "user__last_name", "employee_id_number"]
+
+    def get_queryset(self):
+        from apps.hr.models import Employee
+
+        return (
+            Employee.objects.filter(is_deleted=False, user__roles__role="oqituvchi")
+            .select_related("user", "department__faculty")
+            .distinct()
+        )
+
+    def get_serializer_class(self):
+        from apps.hr.serializers import EmployeeListSerializer
+
+        return EmployeeListSerializer
