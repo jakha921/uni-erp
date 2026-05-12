@@ -70,3 +70,24 @@ class UserRole(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} — {self.role}"
+
+
+class PasswordResetCode(models.Model):
+    """SMS орқали паролни тиклаш коди."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reset_codes")
+    code = models.CharField(max_length=6)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user.phone} — {self.code}"
+
+    def is_valid(self) -> bool:
+        from django.utils import timezone
+
+        return not self.is_used and self.expires_at > timezone.now()

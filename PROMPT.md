@@ -43,7 +43,7 @@
 - [x] **BE-9**: FinanceReportView(APIView) GET → агрегация contracts_by_type, payments_by_month, revenue_by_faculty. URL: path("report/"). Seed payroll(3 месяца) + budget(10 категорий). Git commit.
 
 ### 1.8 Auth: Password Recovery
-- [ ] **BE-10**: Модель `PasswordResetCode` в accounts/models.py + 4 views: ForgotPasswordView(SMS через core.sms), VerifyCodeView, ResetPasswordView, ChangePasswordView + URLs + миграция. Git commit.
+- [x] **BE-10**: Модель `PasswordResetCode` в accounts/models.py + 4 views: ForgotPasswordView(SMS через core.sms), VerifyCodeView, ResetPasswordView, ChangePasswordView + URLs + миграция. Git commit.
 
 ### 1.9 Admin Panel App
 - [ ] **BE-11**: Создать app `apps/admin_panel/` (НЕ admin). Модели: Folder(name, parent), Document(title, number, category, folder, priority, status, author, file), DictionaryItem(type, code, name). ViewSets: FolderViewSet, DocumentViewSet, DictionaryItemViewSet(filter by type from URL), AnalyticsView(APIView). Зарегистрировать в settings + urls.py. Миграция. Seed. Git commit.
