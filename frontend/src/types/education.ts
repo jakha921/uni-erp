@@ -61,10 +61,14 @@ export interface Grade {
   subjectId: number;
   subjectName: string;
   semesterId: number;
+  semesterNumber?: number;
   gradeType: GradeType;
+  gradeTypeLabel?: string;
   score: number;
   maxScore: number;
   gradedByName: string;
+  teacherName?: string;
+  updatedAt?: string;
 }
 
 export interface SubjectListParams extends ListParams {

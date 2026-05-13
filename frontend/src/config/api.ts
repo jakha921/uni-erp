@@ -61,8 +61,8 @@ export const ENDPOINTS = {
   },
   education: {
     subjects: '/education/subjects',
-    schedules: '/education/schedules',
-    scheduleDetail: (id: number) => `/education/schedules/${id}`,
+    schedules: '/education/schedules/',
+    scheduleDetail: (id: number) => `/education/schedules/${id}/`,
     attendanceBulk: '/education/attendance/bulk',
     gradesBulk: '/education/grades/bulk',
     grades: '/education/grades',

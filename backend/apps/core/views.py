@@ -161,7 +161,7 @@ class DashboardView(APIView):
         departments = Department.objects.count()
         groups = Group.objects.count()
 
-        avg_grade = Grade.objects.aggregate(a=Avg("grade"))["a"]
+        avg_grade = Grade.objects.aggregate(a=Avg("score"))["a"]
 
         by_faculty = list(
             students_qs.values("group__specialty__department__faculty__name")
@@ -389,8 +389,9 @@ class HemisSyncView(APIView):
             return Response({"detail": "Invalid type"}, status=400)
 
         try:
-            from django.core.management import call_command
             from io import StringIO
+
+            from django.core.management import call_command
 
             out = StringIO()
             call_command("sync_hemis", f"--type={sync_type}", stdout=out)

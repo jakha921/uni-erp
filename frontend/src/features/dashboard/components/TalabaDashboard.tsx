@@ -148,7 +148,7 @@ export function TalabaDashboard() {
                       </Badge>
                     </td>
                     <td className="py-3 text-right text-slate-400">
-                      {formatDate ? formatDate(String(g.semesterId)) : g.semesterId}
+                      {g.semesterNumber ? `${g.semesterNumber}-sem` : (g.updatedAt ? formatDate(g.updatedAt) : '-')}
                     </td>
                   </tr>
                 ))}
