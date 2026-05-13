@@ -7,6 +7,7 @@ from django.utils import timezone
 class Subject(models.Model):
     name = models.CharField(max_length=200, verbose_name="Nomi")
     code = models.CharField(max_length=20, unique=True, verbose_name="Kodi")
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True, verbose_name="HEMIS ID")
     credits = models.PositiveSmallIntegerField(verbose_name="Kreditlar")
     hours_lecture = models.PositiveSmallIntegerField(default=0)
     hours_practice = models.PositiveSmallIntegerField(default=0)

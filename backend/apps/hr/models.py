@@ -38,6 +38,7 @@ class Employee(models.Model):
         "accounts.User", on_delete=models.CASCADE, related_name="employee_profile"
     )
     employee_id_number = models.CharField(max_length=20, unique=True)
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True, verbose_name="HEMIS ID")
     department = models.ForeignKey(
         "core.Department", on_delete=models.PROTECT, null=True, blank=True, related_name="employees"
     )

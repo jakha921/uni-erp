@@ -33,6 +33,7 @@ class Student(models.Model):
         "accounts.User", on_delete=models.CASCADE, related_name="student_profile"
     )
     student_id_number = models.CharField(max_length=20, unique=True, db_index=True)
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True, verbose_name="HEMIS ID")
     group = models.ForeignKey("core.Group", on_delete=models.PROTECT, related_name="students")
     course = models.PositiveSmallIntegerField()
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default="bakalavr")

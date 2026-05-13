@@ -3,7 +3,16 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import AcademicYear, Branch, Department, Faculty, Group, Semester, Specialty
+from .models import (
+    AcademicYear,
+    Branch,
+    Department,
+    Faculty,
+    Group,
+    ReferenceData,
+    Semester,
+    Specialty,
+)
 
 
 @admin.register(Branch)
@@ -50,3 +59,11 @@ class GroupAdmin(ModelAdmin):
     list_display = ["name", "course", "education_form", "specialty"]
     list_filter = ["course", "education_form", "specialty__department__faculty"]
     search_fields = ["name"]
+
+
+@admin.register(ReferenceData)
+class ReferenceDataAdmin(ModelAdmin):
+    list_display = ["type", "code", "name", "hemis_id", "is_active", "sort_order"]
+    list_filter = ["type", "is_active"]
+    search_fields = ["name", "name_uz", "name_ru", "code"]
+    ordering = ["type", "sort_order", "name"]

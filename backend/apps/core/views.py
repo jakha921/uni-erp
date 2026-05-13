@@ -6,16 +6,27 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView  # noqa: F401
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .filters import DepartmentFilter, GroupFilter
-from .models import AcademicYear, AuditLog, Branch, Department, Faculty, Group, Semester, Specialty
+from .models import (
+    AcademicYear,
+    AuditLog,
+    Branch,
+    Department,
+    Faculty,
+    Group,
+    ReferenceData,
+    Semester,
+    Specialty,
+)
 from .serializers import (
     AcademicYearSerializer,
     BranchSerializer,
     DepartmentSerializer,
     FacultySerializer,
     GroupSerializer,
+    ReferenceDataSerializer,
     SemesterSerializer,
     SpecialtySerializer,
 )
@@ -347,3 +358,42 @@ class TeacherCabinetView(APIView):
                 "notifications": notifications,
             }
         )
+
+
+class ReferenceDataViewSet(ModelViewSet):
+    serializer_class = ReferenceDataSerializer
+    permission_classes = [IsAuthenticated]
+    search_fields = ["name", "name_uz", "name_ru", "code"]
+
+    def get_queryset(self):
+        ref_type = self.kwargs.get("ref_type")
+        qs = ReferenceData.objects.filter(is_active=True)
+        if ref_type:
+            qs = qs.filter(type=ref_type)
+        return qs
+
+
+class HemisSyncView(APIView):
+    """Trigger HEMIS data synchronization. Admin only."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request) -> Response:
+        from apps.accounts.permissions import IsAdmin
+
+        if not IsAdmin().has_permission(request, self):
+            return Response({"detail": "Forbidden"}, status=403)
+
+        sync_type = request.data.get("type", "all")
+        if sync_type not in ("references", "students", "employees", "all"):
+            return Response({"detail": "Invalid type"}, status=400)
+
+        try:
+            from django.core.management import call_command
+            from io import StringIO
+
+            out = StringIO()
+            call_command("sync_hemis", f"--type={sync_type}", stdout=out)
+            return Response({"status": "ok", "output": out.getvalue()})
+        except Exception as exc:
+            return Response({"status": "error", "detail": str(exc)}, status=500)

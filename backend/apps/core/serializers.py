@@ -2,7 +2,16 @@
 
 from rest_framework import serializers
 
-from .models import AcademicYear, Branch, Department, Faculty, Group, Semester, Specialty
+from .models import (
+    AcademicYear,
+    Branch,
+    Department,
+    Faculty,
+    Group,
+    ReferenceData,
+    Semester,
+    Specialty,
+)
 
 
 class BranchSerializer(serializers.ModelSerializer):
@@ -66,4 +75,24 @@ class GroupSerializer(serializers.ModelSerializer):
             "specialtyName",
             "facultyId",
             "facultyName",
+        ]
+
+
+class ReferenceDataSerializer(serializers.ModelSerializer):
+    parentId = serializers.IntegerField(source="parent_id", allow_null=True, required=False)
+
+    class Meta:
+        model = ReferenceData
+        fields = [
+            "id",
+            "type",
+            "code",
+            "name",
+            "name_uz",
+            "name_ru",
+            "name_en",
+            "hemis_id",
+            "parentId",
+            "is_active",
+            "sort_order",
         ]

@@ -1,4 +1,4 @@
-# PROMPT.md — MVP Uni ERP: ВСЕ задачи Backend + Frontend
+# PROMPT.md — MVP Uni ERP: ВСЕ задачи Backend + Frontend + HEMIS
 
 > Автономный план для ralph-loop. Каждая задача — чекбокс `[ ]`.
 > Найди первую `[ ]`, выполни, отметь `[x]`, коммить. Повторяй до `ALL PHASES COMPLETE`.
@@ -6,197 +6,305 @@
 > **Проект:** /Users/jakha/Programming/Django/uni-erp
 > **Backend:** Django 5.1 + DRF, `cd backend`, команды через `uv run`
 > **Frontend:** React 19 + TypeScript + Vite, `cd frontend`, команды через `npm`
+> **HEMIS API:** https://student.hemis.uz/rest/v1/data/ (Bearer token)
 > **Паттерн Backend:** Model(BaseModel) → Serializer(camelCase) → ViewSet(ModelViewSet) → Router → Filter → Admin(Unfold) → Seed
 > **Паттерн Frontend:** types/ → services/(Interface+ApiService+MockService) → hooks/(KEYS factory) → schemas/(Zod) → pages/
 
 ---
 
-## PHASE 0: FIX BUILD
+## PHASE 0: FIX BUILD + ADMIN URL
 
-- [x] **FIX-1**: Исправить `frontend/src/features/system/pages/UsersListPage.tsx` — TS ошибки: `STATUS_MAP_KEYS` declared but never read, `STATUS_MAP` not found. Убрать/исправить. Проверить: `cd frontend && npm run build` — 0 ошибок.
-
----
-
-## PHASE 1: BACKEND — Недостающие модели и endpoints (26 endpoints)
-
-### 1.1 Education: Exam
-- [x] **BE-1**: Модель `Exam` в `apps/education/models.py` + сериализатор ExamSerializer (subjectName, groupName, teacherName через SerializerMethodField) + ExamCreateSerializer + ExamViewSet(ModelViewSet) + ExamFilter(django-filters: semester, group, subject, type, status) + admin.py + router.register("exams") + makemigrations + migrate.
-
-### 1.2 Education: Curriculum
-- [x] **BE-2**: Модели `Curriculum` + `CurriculumSubject` в education/models.py + сериализаторы (nested subjects) + CurriculumViewSet + filterset_fields=[specialty, year] + router.register("curriculums") + миграция.
-
-### 1.3 Education: Library
-- [x] **BE-3**: Модели `Book` + `BookLoan` в education/models.py + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return для возврата книги) + router.register("library/books") + router.register("library/loans") + миграция.
-
-### 1.4 Education: Alumni
-- [x] **BE-4**: Модель `Alumni` в education/models.py + сериализатор + AlumniViewSet(filterset: graduation_year, status; search: full_name, workplace) + router.register("alumni") + миграция.
-
-### 1.5 Education: Internship
-- [x] **BE-5**: Модель `Internship` в education/models.py + сериализатор(studentName) + InternshipViewSet(filterset: status, type) + router.register("internships") + миграция.
-
-### 1.6 Education: Seed + Verify
-- [x] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums(15 subjects каждый), 50 books, 30 loans, 40 alumni, 20 internships. Запустить seed. `uv run python manage.py check`. Git commit.
-
-### 1.7 Finance: Payroll + Budget + Report
-- [x] **BE-7**: Модель `PayrollRecord` в finance/models.py + PayrollSerializer + PayrollViewSet(@action summary, @action process) + router.register("payroll") + миграция.
-- [x] **BE-8**: Модель `BudgetCategory` в finance/models.py(parent FK self) + сериализатор(remaining, percentUsed computed) + BudgetCategoryViewSet(@action summary) + router.register("budget/categories") + миграция.
-- [x] **BE-9**: FinanceReportView(APIView) GET → агрегация contracts_by_type, payments_by_month, revenue_by_faculty. URL: path("report/"). Seed payroll(3 месяца) + budget(10 категорий). Git commit.
-
-### 1.8 Auth: Password Recovery
-- [x] **BE-10**: Модель `PasswordResetCode` в accounts/models.py + 4 views: ForgotPasswordView(SMS через core.sms), VerifyCodeView, ResetPasswordView, ChangePasswordView + URLs + миграция. Git commit.
-
-### 1.9 Admin Panel App
-- [x] **BE-11**: Создать app `apps/admin_panel/` (НЕ admin). Модели: Folder(name, parent), Document(title, number, category, folder, priority, status, author, file), DictionaryItem(type, code, name). ViewSets: FolderViewSet, DocumentViewSet, DictionaryItemViewSet(filter by type from URL), AnalyticsView(APIView). Зарегистрировать в settings + urls.py. Миграция. Seed. Git commit.
-
-### 1.10 Cabinets + Teachers + Messages + Reports + Student Documents
-- [x] **BE-12**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегация данных для текущего пользователя). URLs в config/urls.py: `/api/v1/cabinets/student/`, `/api/v1/cabinets/teacher/`.
-- [x] **BE-13**: TeacherViewSet в education/views.py (queryset Employee filtered by department). teacher_urls.py + config/urls.py: `/api/v1/teachers/`.
-- [x] **BE-14**: ChatThread + ChatMessage модели в operations/models.py + ChatThreadViewSet(@action messages GET/POST) + router.register("messages/threads"). ReportTemplate модель + ReportTemplateViewSet + GenerateReportView. Миграция. Seed.
-- [x] **BE-15**: StudentDocument модель в students/models.py + ViewSet(list, create multipart, delete) + URL: `students/<id>/documents/`. Миграция.
-- [x] **BE-16**: Финальная проверка: `uv run python manage.py check` + `uv run pytest -v` + все seed commands + curl тесты. Git commit + push.
+- [x] **FIX-1**: Исправить `frontend/src/features/system/pages/UsersListPage.tsx` — TS ошибки: `STATUS_MAP_KEYS`/`STATUS_MAP`. Проверить: `cd frontend && npm run build` — 0 ошибок.
+- [x] **FIX-2**: Изменить backend URL `/api/v1/admin-panel/` → `/api/v1/admin/` в `backend/config/urls.py`. Django admin живёт на `/admin/`, а API на `/api/v1/admin/` — конфликта нет. Обновить фронтенд `config/api.ts` если нужно.
 
 ---
 
-## PHASE 2: FRONTEND — Полная детализация каждой страницы (66 страниц)
+## PHASE 1: HEMIS ИНТЕГРАЦИЯ — Справочники + Синхронизация
 
-> Для каждой страницы: проверить что данные из API (не mock), CRUD работает, формы с Zod, фильтры через API, i18n, error handling, loading/empty states.
+### 1.1 HEMIS Client
+- [x] **HEMIS-1**: Создать `backend/apps/core/hemis.py` — HEMIS API client:
+```
+HEMIS_BASE_URL = env("HEMIS_BASE_URL", "https://student.hemis.uz/rest/v1")
+HEMIS_TOKEN = env("HEMIS_TOKEN", "")
 
-### 2.1 Auth (3 страницы)
+class HemisClient:
+    def _get(self, endpoint, params=None) → dict  # GET с Bearer token
+    def get_departments(self) → list  # /data/department-list
+    def get_specialties(self) → list  # /data/specialty-list
+    def get_groups(self) → list  # /data/group-list
+    def get_students(self, page=1) → dict  # /data/student-list?page=N
+    def get_subjects(self) → list  # /data/subject-list
+    def get_semesters(self) → list  # /data/semester-list
+    def get_curriculum(self) → list  # /data/curriculum-list
+    def get_employees(self) → list  # /data/employee-list
+    def get_student_grades(self, student_id) → list  # student grades
+    def get_schedule(self, params) → list  # schedule data
+```
+Добавить env vars `HEMIS_BASE_URL`, `HEMIS_TOKEN` в `.env.example`. Проверить: `uv run python manage.py check`.
 
-- [x] **FE-1**: **LoginPage** `/login` — Проверить: input mask телефона работает, ошибка API показывается (не "Xatolik: 500" а детальный текст), loading на кнопке, i18n все тексты. Если нет — исправить.
-- [x] **FE-2**: **RoleSelectPage** `/role-select` — Проверить: 5 карточек ролей отображаются, клик логинит (при USE_MOCK=false phone format совпадает с API), i18n. Исправить если не работает.
-- [x] **FE-3**: **ForgotPasswordPage** `/forgot-password` — Проверить: 3-step flow (телефон → SMS код → новый пароль) через Stepper компонент, таймер 60 сек, подключен к API `/auth/forgot-password/`. Если нет — реализовать.
+### 1.2 Справочники (Reference Data) — модели + HEMIS sync
+- [x] **HEMIS-2**: Создать модели справочников в `backend/apps/core/models.py` (или отдельный `reference_models.py`):
+```
+class ReferenceData(BaseModel):
+    """Универсальный справочник — синхронизируется с HEMIS."""
+    TYPE_CHOICES = [
+        ('education_type', "Ta'lim turi"),          # Бакалавр/Магистр
+        ('education_form', "Ta'lim shakli"),         # Kunduzgi/Sirtqi/Kechki
+        ('payment_form', "To'lov shakli"),           # Kontrakt/Grant/Davlat
+        ('accommodation', "Yashash joyi"),           # Yotoqxona/Ijarada/Uyda
+        ('country', "Davlat"),
+        ('region', "Viloyat"),
+        ('district', "Tuman"),
+        ('nationality', "Millat"),
+        ('citizenship', "Fuqarolik"),
+        ('social_category', "Ijtimoiy toifa"),       # Yetim/Nogironlik/Kam ta'minlangan
+        ('student_status', "Talaba holati"),          # O'qimoqda/Akademik ta'til/Chetlatilgan
+        ('gender', "Jinsi"),
+        ('marital_status', "Oilaviy holat"),
+        ('language', "Til"),
+        ('subject_type', "Fan turi"),                # Majburiy/Tanlov
+        ('academic_degree', "Ilmiy daraja"),
+        ('academic_rank', "Ilmiy unvon"),
+        ('employment_form', "Bandlik shakli"),        # Shtatli/Soatbay/Sovmestitel
+        ('custom', "Boshqa"),                         # Кастомные справочники
+    ]
+    type = models.CharField(max_length=30, choices=TYPE_CHOICES, db_index=True)
+    code = models.CharField(max_length=50)
+    name = models.CharField(max_length=300)
+    name_uz = models.CharField(max_length=300, blank=True)
+    name_ru = models.CharField(max_length=300, blank=True)
+    name_en = models.CharField(max_length=300, blank=True)
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True)  # ID из HEMIS для синхронизации
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.IntegerField(default=0)
 
-### 2.2 Dashboard (1 страница)
+    class Meta:
+        unique_together = ['type', 'code']
+        ordering = ['type', 'sort_order', 'name']
+```
+Сериализатор: `ReferenceDataSerializer` (id, type, code, name, nameUz, nameRu, nameEn, hemis_id, parentId, isActive, sortOrder).
+ViewSet: `ReferenceDataViewSet` с URL `/api/v1/references/{type}/` — фильтрация по type из URL, search по name.
+Миграция. Admin.
 
-- [x] **FE-4**: **DashboardPage** `/dashboard` — Проверить: AdminDashboard подключён к `/api/v1/dashboard/` (не mock). StatCards показывают реальные цифры. Графики рендерятся. "So'nggi faoliyat" из API. Если sub-dashboard компоненты используют hardcoded данные — подключить к API. i18n все лейблы.
+### 1.3 HEMIS Sync Management Command
+- [x] **HEMIS-3**: Создать `backend/apps/core/management/commands/sync_hemis.py`:
+```
+class Command(BaseCommand):
+    help = "Sync reference data from HEMIS API"
+    
+    def add_arguments(self, parser):
+        parser.add_argument('--type', choices=['references', 'students', 'employees', 'all'])
+        parser.add_argument('--force', action='store_true')
+    
+    def handle(self, *args, **options):
+        client = HemisClient()
+        sync_type = options.get('type', 'all')
+        
+        if sync_type in ('references', 'all'):
+            self._sync_departments(client)  # → ReferenceData type=department + core.Department
+            self._sync_specialties(client)  # → ReferenceData + core.Specialty
+            self._sync_groups(client)       # → ReferenceData + core.Group
+            self._sync_semesters(client)    # → core.Semester
+            self._sync_subjects(client)     # → education.Subject
+        
+        if sync_type in ('students', 'all'):
+            self._sync_students(client)     # → students.Student (update_or_create by hemis_id)
+        
+        if sync_type in ('employees', 'all'):
+            self._sync_employees(client)    # → hr.Employee (update_or_create by hemis_id)
+```
+Каждый sync метод: get данные из HEMIS → update_or_create в локальной БД по hemis_id. Логировать: `self.stdout.write(f"Synced {count} items")`.
 
-### 2.3 Students (4 страницы)
+### 1.4 HEMIS Sync Endpoint (для кнопки в UI)
+- [x] **HEMIS-4**: Создать `HemisSyncView(APIView)` в `apps/core/views.py`:
+```
+POST /api/v1/core/hemis/sync/ 
+Body: { "type": "references" | "students" | "employees" | "all" }
+Response: { "status": "ok", "synced": { "departments": 15, "students": 200, ... } }
+```
+Только для admin роли (IsAdminUser). URL в core/urls.py.
 
-- [x] **FE-5**: **StudentsListPage** `/students` — Проверить: таблица из API, пагинация, поиск(debounced), фильтры факультет/группа из `useFaculties()`/`useGroups()` (не hardcoded), кнопка "Yangi talaba" → `/students/new`, Delete через ConfirmDialog, Excel/PDF export кнопки скачивают файлы. Исправить что не работает.
-- [x] **FE-6**: **StudentFormPage** `/students/new` и `/students/:id/edit` — Проверить: форма с Zod, cascading selects (Faculty→Department→Specialty→Group) из API, FileUpload фото, при Edit предзаполнение из useStudent(id), success → redirect на profile. Исправить.
-- [x] **FE-7**: **StudentProfilePage** `/students/:id` — Проверить: данные из API, tabs (Info, Grades, Attendance, Contract, Documents) все подключены к API. Tab "Hujjatlar" — FileUpload для документов через `/students/{id}/documents/`. Кнопки "Tahrirlash", "Ma'lumotnoma"(PDF), "Chop etish"(print). Исправить.
-- [x] **FE-8**: **StudentsStatPage** `/students/statistics` — Проверить: данные из useStudentStatistics, export PDF кнопка. i18n. Исправить.
+### 1.5 Добавить hemis_id к существующим моделям
+- [x] **HEMIS-5**: Добавить `hemis_id = models.IntegerField(null=True, blank=True, unique=True)` к моделям:
+- `apps/core/models.py`: Department, Specialty, Group, Semester
+- `apps/students/models.py`: Student
+- `apps/hr/models.py`: Employee
+- `apps/education/models.py`: Subject
+Миграция. Это позволит связывать записи с HEMIS при синхронизации.
 
-### 2.4 Education (11 страниц)
+### 1.6 Frontend: Reference Data Page + Sync Button
+- [ ] **HEMIS-6**: Обновить `frontend/src/features/admin/pages/ReferencesPage.tsx`:
+- Слева: список типов справочников (education_type, education_form, payment_form, и т.д.)
+- Справа: таблица записей выбранного типа с CRUD (создание/редактирование/удаление)
+- Кнопка "HEMIS dan sinxronlash" → POST `/api/v1/core/hemis/sync/` с loading state
+- Показывать hemis_id если запись синхронизирована
+- i18n все тексты
 
-- [x] **FE-9**: **SchedulePage** `/schedule` — Проверить: данные из useSchedules (НЕ hardcoded EVENTS). CRUD: "Yangi dars" → ScheduleForm в Modal (группа, предмет, преподаватель, аудитория, день, пара), Edit по клику на ячейку, Delete через ConfirmDialog. Фильтры: группа Combobox, преподаватель, неделя. 3 вида (haftalik/kunlik/oylik). i18n. Export PDF. Исправить что не работает.
-- [x] **FE-10**: **AcademicAttendancePage** `/attendance` — Проверить: attendance grid подключён к API, кнопка "Saqlash" → useBulkAttendance mutation отправляет данные. Фильтры: группа, предмет, дата. Export Excel. i18n.
-- [x] **FE-11**: **GradingPage** `/grading` — Проверить: оценки из API, inline editing, кнопка "Saqlash" → useBulkGrades mutation. Auto-compute итоговой оценки. Фильтры: группа, предмет, семестр. Export Excel/PDF ведомость. i18n.
-- [x] **FE-12**: **ExamsPage** `/exams` — Проверить: данные из useExams. CRUD: ExamForm в Modal (subject, group, teacher, date, room, type). Tabs: Sessiyalar(list), Jadval(calendar), Vedomost(grades). Фильтры: семестр, группа, предмет. i18n.
-- [x] **FE-13**: **CurriculumPage** `/curriculum` — Проверить: данные из useCurriculums. CRUD: CurriculumForm в SlideOver с useFieldArray для предметов. Фильтры: specialty Combobox, year. Export PDF. i18n.
-- [x] **FE-14**: **SubjectsPage** `/subjects` — Проверить: данные из useSubjects. CRUD: SubjectForm в Modal (name, code, credits, hours, department). Фильтр кафедры из useDepartments. i18n.
-- [x] **FE-15**: **LibraryPage** `/library` — Проверить: Tab "Katalog" → useBooks + BookForm (title, author, isbn, year, category, copies, location). Tab "Berilganlar" → useLoans + LoanForm (book Combobox, student Combobox, dueDate) + кнопка "Qaytarish"(returnBook). Поиск книг. i18n.
-- [x] **FE-16**: **AlumniPage** `/alumni` — Проверить: данные из useAlumni. CRUD: AlumniForm в SlideOver (fullName, graduationYear, faculty, specialty, workplace, phone, email, status). Фильтры: год, факультет, статус. Export Excel. i18n.
-- [x] **FE-17**: **InternshipPage** `/internship` — Проверить: данные из useInternships. CRUD: InternshipForm в SlideOver (student, company, supervisor, dates, type). Tabs: Joriy/Yakunlangan. i18n.
-- [x] **FE-18**: **MyStudentsPage** `/my-students` — Проверить: данные из API для текущего преподавателя. Фильтр по группе. Оценки и посещаемость студентов. i18n.
-- [x] **FE-19**: **AcademicDepartmentsPage** `/departments` — Проверить: данные из API. Статистика: преподаватели, студенты, средний балл. i18n.
+### 1.7 Frontend: HEMIS Sync в Settings
+- [ ] **HEMIS-7**: Добавить в `frontend/src/features/profile/pages/SettingsPage.tsx` секцию "HEMIS sinxronizatsiya" (только для admin):
+- Кнопка "Barcha ma'lumotlarni sinxronlash" → sync all
+- Кнопки по категориям: "Faqat talabalar", "Faqat xodimlar", "Faqat ma'lumotnomalar"
+- Показывать результат (сколько записей синхронизировано)
+- Последняя дата синхронизации
 
-### 2.5 Finance (9 страниц)
-
-- [x] **FE-20**: **FinanceDashboardPage** `/finance` — Проверить: данные из useFinanceDashboard (реальный API). Графики с реальными данными. Drill-down по факультету. i18n.
-- [x] **FE-21**: **ContractsListPage** `/finance/contracts` — Проверить: CRUD полный (Create в Modal, Edit, Delete через ConfirmDialog). Фильтры из API (не hardcoded). Excel/PDF export кнопки. Per-contract PDF кнопка "Shartnoma PDF" → `/contracts/{id}/pdf/`. i18n.
-- [x] **FE-22**: **ContractDetailPage** `/finance/contracts/:id` — Проверить: данные из API. Кнопка "Onlayn to'lov" → Payme/Click ссылки из `/contracts/{id}/payment-link/`. Кнопка PDF download. PaymentTimeline из реальных платежей. Кнопка "Nazad". i18n.
-- [x] **FE-23**: **DebtorsListPage** `/finance/debtors` — Проверить: фильтры факультет из useFaculties (не hardcoded). SMS Modal подключён к `/core/sms/send/`. Bulk SMS. Export Excel. i18n.
-- [x] **FE-24**: **PaymentsListPage** `/finance/payments` — Проверить: CRUD. DateRangePicker. Receipt печать. Export Excel. i18n.
-- [x] **FE-25**: **ScholarshipsPage** `/finance/scholarship` — Проверить: CRUD полный (Create, Edit, Delete). Bulk назначение. i18n.
-- [x] **FE-26**: **FinanceReportPage** `/finance/report` — Проверить: данные из API `/finance/report/`. CSV export работает. PDF export подключён. i18n.
-- [x] **FE-27**: **PayrollPage** `/finance/payroll` — Проверить: данные из usePayroll (реальный API). Excel export. Кнопка "Hisoblash" → useProcessPayroll mutation. i18n.
-- [x] **FE-28**: **BudgetPage** `/finance/budget` — Проверить: данные из useBudgetCategories (реальный API). CRUD категорий. Фильтр по кварталу. i18n.
-
-### 2.6 HR (7 страниц)
-
-- [x] **FE-29**: **HrDashboardPage** `/hr` — Проверить: данные из API. Графики с реальными данными. i18n.
-- [x] **FE-30**: **EmployeesListPage** `/hr/employees` — Проверить: CRUD (Create в Modal, Edit, Delete soft). Position options из API/i18n (не hardcoded). Excel export. i18n.
-- [x] **FE-31**: **EmployeeProfilePage** `/hr/employees/:id` — Проверить: tabs Info/Career/Salary/Documents. Career из API (не hardcoded CAREER_EVENTS). Salary из payroll API. Documents FileUpload. Кнопки Edit/Print. i18n.
-- [x] **FE-32**: **DepartmentsPage** `/hr/departments` — Проверить: CRUD: DepartmentForm в Modal (name, code, faculty, head). i18n.
-- [x] **FE-33**: **OrdersPage** `/hr/orders` — Проверить: CRUD. Статус flow (draft→review→signed). PDF генерация приказа. i18n.
-- [x] **FE-34**: **AttendancePage** `/hr/attendance` — Проверить: MONTH_NAMES через i18n (не hardcoded). Department options из API. Excel export. i18n.
-- [x] **FE-35**: **LeavesPage** `/hr/leaves` — Проверить: CRUD (Create, Approve/Reject, Delete). Календарь отпусков. DateRangePicker. i18n.
-
-### 2.7 CRM (3 страницы)
-
-- [x] **FE-36**: **CrmListPage** `/crm` — Проверить: CRUD (LeadForm в SlideOver с Zod: firstName, lastName, phone, email, direction, source). Фильтры: status tabs, source, assignee Combobox, DateRangePicker. Bulk status change. Excel export. i18n.
-- [x] **FE-37**: **CrmKanbanPage** `/crm/kanban` — Проверить: данные из useLeads группированы по статусу. Drag-and-drop → useUpdateLead mutation. Клик → LeadDetail. Rollback при ошибке drag. i18n.
-- [x] **FE-38**: **CrmReportPage** `/crm/report` — Проверить: данные из useCrmStats. Графики: воронка, источники, динамика. DateRangePicker. i18n.
-
-### 2.8 Operations (6 страниц)
-
-- [x] **FE-39**: **TasksPage** `/tasks` — Проверить: CRUD (TaskForm в SlideOver: title, description, assignee Combobox, priority, dueDate, tags). Kanban + List view. Drag-drop статус через mutation. i18n.
-- [x] **FE-40**: **NotificationsPage** `/notifications` — Проверить: "O'qilgan" → useMarkNotificationRead mutation. "Barchasini" → useMarkAllRead. Delete. Tabs по типам. i18n.
-- [x] **FE-41**: **MessagesPage** `/messages` — Проверить: подключен к useChatThreads + useMessages. Compose → useSendMessage. Split layout (threads/messages). i18n.
-- [x] **FE-42**: **AppealsPage** `/appeals` — Проверить: CRUD (AppealForm: title, description, category). Комментарии useAddComment. Фильтры: status, category. i18n.
-- [x] **FE-43**: **NewsPage** `/news` — Проверить: CRUD для admin (NewsForm в SlideOver: title, content, category, tags, image FileUpload). Grid/List view. Фильтры. i18n.
-- [x] **FE-44**: **ReportsPage** `/reports` — Проверить: useReportTemplates список. Генерация useGenerateReport → скачивание файла. Параметры в Modal. i18n.
-
-### 2.9 Teachers (2 страницы)
-
-- [x] **FE-45**: **TeachersListPage** `/teachers` — Проверить: данные из useTeachers. Клик → `/teachers/:id`. Фильтры: кафедра Combobox, степень, звание. i18n.
-- [x] **FE-46**: **TeacherProfilePage** `/teachers/:id` — Проверить: данные из useTeacher. Tabs: Info, Schedule, Load, Publications. Print. Кнопка "Nazad". i18n.
-
-### 2.10 Science (4 страницы)
-
-- [x] **FE-47**: **ResearchPage** `/research` — Проверить: Tab "Loyihalar" CRUD (ProjectForm: title, leader, description, fund, dates). Tab "Maqolalar" CRUD (ArticleForm: title, authors, journal, year, type, doi). Tab "Grantlar" read-only. i18n.
-- [x] **FE-48**: **ThesesPage** `/theses` — Проверить: CRUD (ThesisForm: title, student, supervisor, type, department). Фильтры: stage tabs, type. i18n.
-- [x] **FE-49**: **ConferencesPage** `/conferences` — Проверить: CRUD (ConferenceForm: name, date, location, type). Tabs: Kelgusi/O'tgan. i18n.
-- [x] **FE-50**: **PatentsPage** `/patents` — Проверить: CRUD (PatentForm: title, inventors, date, category). Status tabs. i18n.
-
-### 2.11 System (4 страницы)
-
-- [x] **FE-51**: **UsersListPage** `/system/users` — Проверить: CRUD (UserForm: firstName, lastName, phone, email, password, roles[]). Block/Unblock кнопка. Reset password. i18n.
-- [x] **FE-52**: **RolesPage** `/system/roles` — Проверить: системные роли read-only, кастомные CRUD. i18n.
-- [x] **FE-53**: **PermissionMatrixPage** `/system/permissions` — Проверить: matrix из API. Click toggle → useUpdateRolePermissions mutation. i18n.
-- [x] **FE-54**: **AuditLogPage** `/system/audit` — Проверить: данные из API. DateRangePicker. Export Excel. i18n.
-
-### 2.12 Admin (3 страницы)
-
-- [x] **FE-55**: **DmsPage** `/dms` — Проверить: folder sidebar из useFolders. Documents из useDocuments. CRUD (DocumentForm: title, category, folder, priority, file FileUpload). Фильтры. i18n.
-- [x] **FE-56**: **AnalyticsPage** `/analytics` — Проверить: данные из useAnalytics (реальный API). Графики: тренды, сравнение. DateRangePicker. i18n.
-- [x] **FE-57**: **ReferencesPage** `/reference` — Проверить: useDictionaryItems(type) CRUD. DictionaryItemForm (code, name, description, sortOrder). i18n.
-
-### 2.13 Infrastructure (3 страницы)
-
-- [x] **FE-58**: **DormitoryPage** `/dormitory` — Проверить: buildings из API. Rooms CRUD (DormRoomForm). Поселение/выселение студентов. i18n.
-- [x] **FE-59**: **EquipmentPage** `/equipment` — Проверить: CRUD (EquipmentForm: name, inventoryNumber, category, location, person, date, cost). Фильтры. Export Excel. i18n.
-- [x] **FE-60**: **TransportPage** `/transport` — Проверить: CRUD (VehicleForm: brand, model, plateNumber, year, driver, route). Status tabs. i18n.
-
-### 2.14 Warehouse (1 страница)
-
-- [x] **FE-61**: **WarehousePage** `/warehouse` — Проверить: CRUD items (ItemForm: name, sku, category, unit, minQty, price, location). Tab "Harakatlar" movements (MovementForm: item, type, quantity, note). AlertBanner для belowMinimum. Export Excel. i18n.
-
-### 2.15 Legacy (2 страницы)
-
-- [x] **FE-62**: **LegacyOrdersPage** `/orders` — Проверить: read-only из API. Пагинация. DateRangePicker. i18n.
-- [x] **FE-63**: **StaffingPage** `/staffing` — Проверить: read-only из API. Фильтр department. ProgressBar fill rate. i18n.
-
-### 2.16 Cabinets (2 страницы)
-
-- [x] **FE-64**: **StudentCabinetPage** `/student-cabinet` — Проверить: cabinet.service.ts использует USE_MOCK toggle (не hardcoded MockService). Данные из `/cabinets/student/` API: student info, todaySchedule, currentGrades, upcomingExams, notifications. i18n.
-- [x] **FE-65**: **TeacherCabinetPage** `/teacher-cabinet` — Проверить: данные из `/cabinets/teacher/` API: teacher info, todayClasses, myGroups, pendingTasks, stats. i18n.
-
-### 2.17 Profile (2 страницы)
-
-- [x] **FE-66**: **ProfilePage** `/profile` — Проверить: FileUpload фото. useUpdateProfile mutation (name, phone, email). i18n.
-- [x] **FE-67**: **SettingsPage** `/settings` — Проверить: смена пароля useChangePassword с Zod (oldPassword, newPassword, confirmPassword). Notification settings сохраняются. i18n.
-
-### 2.18 Error handling на ВСЕХ страницах
-
-- [x] **FE-68**: Пройти по ВСЕМ 67 страницам. Для каждой с useQuery — добавить: `if (error) return <AlertBanner variant="error" title={t('errors.unexpected')} message={(error as Error).message} />`. Import AlertBanner. `npm run build`. Git commit.
-
-### 2.19 Frontend Final Verification
-
-- [x] **FE-69**: `npm run build` — 0 ошибок. `npm test` — все тесты. Git commit + push.
+### 1.8 HEMIS Verify
+- [ ] **HEMIS-8**: Git commit: `git add backend/ frontend/ && git commit -m "feat: HEMIS integration — reference data sync, client, management command"`. `uv run python manage.py check`. `npm run build`.
 
 ---
 
-## PHASE 3: INTEGRATION — Полная проверка
+## PHASE 2: BACKEND — Недостающие endpoints
 
-- [x] **INT-1**: Запустить backend + frontend. Проверить в браузере ВСЕ 14 новых страниц (exams, curriculum, library, alumni, internship, payroll, budget, student-cabinet, teacher-cabinet, messages, reports, dms, reference, analytics) — данные из API загружаются.
-- [x] **INT-2**: Проверить CRUD на 5 страницах: `/students` (C/R/U/D), `/finance/contracts` (C/R/U/D), `/hr/employees` (C/R/U/D), `/crm` (C/R/U/D), `/exams` (C/R/U/D). Если что-то не работает — исправить.
-- [x] **INT-3**: Войти под 5 ролями (admin/buxgalter/dekan/oqituvchi/talaba) — sidebar правильный, страницы без ошибок.
-- [x] **INT-4**: Переключить язык UZ→RU→EN — тексты на всех страницах меняются.
-- [x] **INT-5**: Включить dark mode — все страницы корректно отображаются.
-- [x] **INT-6**: Final deploy: `git add -A && git commit -m "feat: MVP complete — all 66 pages fully functional" && git push origin main`.
+### 2.1 Education: Exam + Curriculum + Library + Alumni + Internship
+- [ ] **BE-1**: Модель `Exam` в education/models.py + ExamSerializer(subjectName, groupName, teacherName method fields) + ExamCreateSerializer + ExamViewSet(ModelViewSet, filterset: semester/group/subject/type/status) + ExamFilter + admin + router.register("exams") + makemigrations + migrate.
+- [ ] **BE-2**: Модели `Curriculum` + `CurriculumSubject` + сериализаторы (nested subjects) + CurriculumViewSet(filterset: specialty, year) + router.register("curriculums") + миграция.
+- [ ] **BE-3**: Модели `Book` + `BookLoan` + сериализаторы + BookViewSet(search: title,author,isbn) + BookLoanViewSet(@action return_book) + router.register("library/books", "library/loans") + миграция.
+- [ ] **BE-4**: Модель `Alumni` + AlumniViewSet(filterset: graduation_year, status; search: full_name) + router.register("alumni") + миграция.
+- [ ] **BE-5**: Модель `Internship`(student FK, company, supervisor, dates, type, status, grade) + InternshipViewSet + router.register("internships") + миграция.
+- [ ] **BE-6**: Обновить seed_education.py: 30 exams, 5 curriculums, 50 books, 30 loans, 40 alumni, 20 internships. `uv run python manage.py seed_education`. Git commit.
+
+### 2.2 Finance: Payroll + Budget + Report
+- [ ] **BE-7**: Модель `PayrollRecord`(employee FK, month, year, base_salary, bonus, deductions, net_salary, status) + PayrollViewSet(@action summary, @action process) + router.register("payroll") + миграция.
+- [ ] **BE-8**: Модель `BudgetCategory`(name, code, planned, spent, parent FK self, year) + BudgetCategoryViewSet(@action summary) + router.register("budget/categories") + миграция.
+- [ ] **BE-9**: FinanceReportView(APIView) GET → агрегация. Seed payroll + budget. Git commit.
+
+### 2.3 Auth: Password Recovery
+- [ ] **BE-10**: Модель `PasswordResetCode` + ForgotPasswordView + VerifyCodeView + ResetPasswordView + ChangePasswordView + URLs. Миграция. Git commit.
+
+### 2.4 Operations: Messages + Reports
+- [ ] **BE-11**: Модели `ChatThread`(M2M participants) + `ChatMessage`(thread FK, sender FK, content, is_read) + ChatThreadViewSet(@action messages GET/POST) + router.register("messages/threads"). Модель `ReportTemplate` + ReportTemplateViewSet + GenerateReportView. Миграция. Seed. Git commit.
+
+### 2.5 Teachers + Student Documents
+- [ ] **BE-12**: TeacherViewSet в education/views.py (Employee queryset filtered by department). teacher_urls.py. URL: `/api/v1/teachers/`. Модель `StudentDocument` в students/models.py + ViewSet(multipart upload). URL: `students/<id>/documents/`. Миграция. Git commit.
+
+### 2.6 Cabinets
+- [ ] **BE-13**: StudentCabinetView + TeacherCabinetView в core/views.py (агрегированные данные). Проверить что URLs `/api/v1/cabinets/student/` и `/api/v1/cabinets/teacher/` уже зарегистрированы в config/urls.py (да, они есть). Проверить что views возвращают правильный формат для фронтенда.
+
+### 2.7 Backend Final
+- [ ] **BE-14**: `uv run python manage.py check` + `uv run python manage.py makemigrations` (No changes) + `uv run pytest -v`. Все seed commands. Git commit + push.
+
+---
+
+## PHASE 3: FRONTEND — Каждая из 66 страниц полностью функциональна
+
+> Для каждой страницы: данные из API (не mock), CRUD работает (все кнопки), формы с Zod, фильтры через API, i18n, error handling (`AlertBanner`), loading/empty states.
+
+### 3.1 Auth (3)
+- [ ] **FE-1**: **LoginPage** `/login` — input mask телефона, детальная ошибка API, loading кнопка, i18n, error banner. `npm run build`.
+- [ ] **FE-2**: **RoleSelectPage** `/role-select` — 5 карточек, login при USE_MOCK=false, i18n. `npm run build`.
+- [ ] **FE-3**: **ForgotPasswordPage** `/forgot-password` — 3-step flow (Stepper), таймер 60с, подключен к API. i18n. `npm run build`.
+
+### 3.2 Dashboard (1)
+- [ ] **FE-4**: **DashboardPage** `/dashboard` — 5 sub-dashboards подключены к реальному API `/dashboard/`. Графики, StatCards, "So'nggi faoliyat" из API. i18n. `npm run build`.
+
+### 3.3 Students (4)
+- [ ] **FE-5**: **StudentsListPage** `/students` — таблица из API, пагинация, поиск debounced, фильтры из `useFaculties()`/`useGroups()`, Delete через ConfirmDialog, Excel/PDF export. i18n. `npm run build`.
+- [ ] **FE-6**: **StudentFormPage** `/students/new`, `/students/:id/edit` — Zod форма, cascading selects из API, FileUpload фото, Edit предзаполнение, success redirect. i18n. `npm run build`.
+- [ ] **FE-7**: **StudentProfilePage** `/students/:id` — tabs (Info, Grades, Attendance, Contract, Documents) из API. FileUpload документов через `/students/{id}/documents/`. Кнопки Edit/PDF/Print. i18n. `npm run build`.
+- [ ] **FE-8**: **StudentsStatPage** `/students/statistics` — данные из API, export PDF, i18n. `npm run build`.
+
+### 3.4 Education (11)
+- [ ] **FE-9**: **SchedulePage** `/schedule` — данные из useSchedules, CRUD (ScheduleForm в Modal), фильтры (группа Combobox, преподаватель, неделя), 3 вида, Export PDF. i18n. `npm run build`.
+- [ ] **FE-10**: **AcademicAttendancePage** `/attendance` — grid из API, "Saqlash" → useBulkAttendance, фильтры, Export Excel. i18n. `npm run build`.
+- [ ] **FE-11**: **GradingPage** `/grading` — оценки из API, inline editing, "Saqlash" → useBulkGrades, auto-compute, Export Excel/PDF. i18n. `npm run build`.
+- [ ] **FE-12**: **ExamsPage** `/exams` — CRUD (ExamForm: subject, group, teacher, date, room, type). Tabs. Фильтры. i18n. `npm run build`.
+- [ ] **FE-13**: **CurriculumPage** `/curriculum` — CRUD (CurriculumForm с useFieldArray subjects). Фильтры: specialty, year. Export PDF. i18n. `npm run build`.
+- [ ] **FE-14**: **SubjectsPage** `/subjects` — CRUD (SubjectForm: name, code, credits, hours, department). Фильтр кафедры из API. i18n. `npm run build`.
+- [ ] **FE-15**: **LibraryPage** `/library` — Tab Katalog CRUD (BookForm). Tab Berilganlar CRUD (LoanForm + "Qaytarish" кнопка). Поиск. i18n. `npm run build`.
+- [ ] **FE-16**: **AlumniPage** `/alumni` — CRUD (AlumniForm в SlideOver). Фильтры: год, факультет, статус. Export Excel. i18n. `npm run build`.
+- [ ] **FE-17**: **InternshipPage** `/internship` — CRUD (InternshipForm). Tabs: Joriy/Yakunlangan. i18n. `npm run build`.
+- [ ] **FE-18**: **MyStudentsPage** `/my-students` — данные из API для текущего преподавателя. Фильтр по группе. i18n. `npm run build`.
+- [ ] **FE-19**: **AcademicDepartmentsPage** `/departments` — данные из API. Статистика. i18n. `npm run build`.
+
+### 3.5 Finance (9)
+- [ ] **FE-20**: **FinanceDashboardPage** `/finance` — данные из API. Графики. Drill-down по факультету. i18n. `npm run build`.
+- [ ] **FE-21**: **ContractsListPage** `/finance/contracts` — CRUD полный (Create/Edit/Delete). Фильтры из API. Excel/PDF export. Per-contract PDF. i18n. `npm run build`.
+- [ ] **FE-22**: **ContractDetailPage** `/finance/contracts/:id` — API данные. "Onlayn to'lov" → Payme/Click ссылки. PDF download. PaymentTimeline. i18n. `npm run build`.
+- [ ] **FE-23**: **DebtorsListPage** `/finance/debtors` — фильтры из useFaculties. SMS Modal → API. Bulk SMS. Export Excel. i18n. `npm run build`.
+- [ ] **FE-24**: **PaymentsListPage** `/finance/payments` — CRUD. DateRangePicker. Receipt print. Export Excel. i18n. `npm run build`.
+- [ ] **FE-25**: **ScholarshipsPage** `/finance/scholarship` — CRUD полный (Create/Edit/Delete). Bulk назначение. i18n. `npm run build`.
+- [ ] **FE-26**: **FinanceReportPage** `/finance/report` — данные из `/finance/report/` API. CSV + PDF export. i18n. `npm run build`.
+- [ ] **FE-27**: **PayrollPage** `/finance/payroll` — данные из usePayroll (реальный API). Excel export. "Hisoblash" → useProcessPayroll. i18n. `npm run build`.
+- [ ] **FE-28**: **BudgetPage** `/finance/budget` — данные из useBudgetCategories (реальный API). CRUD категорий. Фильтр квартал. i18n. `npm run build`.
+
+### 3.6 HR (7)
+- [ ] **FE-29**: **HrDashboardPage** `/hr` — API данные. Графики. i18n. `npm run build`.
+- [ ] **FE-30**: **EmployeesListPage** `/hr/employees` — CRUD (Create/Edit/Delete). Position options из API/i18n. Excel export. i18n. `npm run build`.
+- [ ] **FE-31**: **EmployeeProfilePage** `/hr/employees/:id` — tabs Info/Career/Salary/Documents из API. Career из реальных данных (не hardcoded). Salary из payroll. FileUpload документы. Edit/Print. i18n. `npm run build`.
+- [ ] **FE-32**: **DepartmentsPage** `/hr/departments` — CRUD (DepartmentForm). i18n. `npm run build`.
+- [ ] **FE-33**: **OrdersPage** `/hr/orders` — CRUD. Статус flow. PDF приказ. i18n. `npm run build`.
+- [ ] **FE-34**: **AttendancePage** `/hr/attendance` — MONTH_NAMES через i18n. Department из API. Excel export. i18n. `npm run build`.
+- [ ] **FE-35**: **LeavesPage** `/hr/leaves` — CRUD. Календарь отпусков. DateRangePicker. i18n. `npm run build`.
+
+### 3.7 CRM (3)
+- [ ] **FE-36**: **CrmListPage** `/crm` — CRUD (LeadForm, Zod). Фильтры: status/source/assignee/date. Bulk status. Excel export. i18n. `npm run build`.
+- [ ] **FE-37**: **CrmKanbanPage** `/crm/kanban` — drag-drop → mutation с rollback. LeadDetail по клику. i18n. `npm run build`.
+- [ ] **FE-38**: **CrmReportPage** `/crm/report` — API данные. Графики. DateRangePicker. i18n. `npm run build`.
+
+### 3.8 Operations (6)
+- [ ] **FE-39**: **TasksPage** `/tasks` — CRUD (TaskForm: title, description, assignee, priority, dueDate). Kanban + List. Drag-drop. i18n. `npm run build`.
+- [ ] **FE-40**: **NotificationsPage** `/notifications` — markRead/markAllRead mutations. Delete. Tabs по типам. i18n. `npm run build`.
+- [ ] **FE-41**: **MessagesPage** `/messages` — подключить к useChatThreads + useMessages. Compose → useSendMessage. Split layout. i18n. `npm run build`.
+- [ ] **FE-42**: **AppealsPage** `/appeals` — CRUD. Комментарии useAddComment. Фильтры. i18n. `npm run build`.
+- [ ] **FE-43**: **NewsPage** `/news` — CRUD (admin only). NewsForm с FileUpload. Grid/List view. i18n. `npm run build`.
+- [ ] **FE-44**: **ReportsPage** `/reports` — useReportTemplates. Генерация → скачивание. Параметры в Modal. i18n. `npm run build`.
+
+### 3.9 Teachers (2)
+- [ ] **FE-45**: **TeachersListPage** `/teachers` — данные из useTeachers. Клик → `/teachers/:id`. Фильтры. i18n. `npm run build`.
+- [ ] **FE-46**: **TeacherProfilePage** `/teachers/:id` — tabs Info/Schedule/Load/Publications. Print. "Nazad". i18n. `npm run build`.
+
+### 3.10 Science (4)
+- [ ] **FE-47**: **ResearchPage** `/research` — Tab Loyihalar CRUD (ProjectForm). Tab Maqolalar CRUD (ArticleForm). Tab Grantlar read. i18n. `npm run build`.
+- [ ] **FE-48**: **ThesesPage** `/theses` — CRUD (ThesisForm). Фильтры: stage, type. i18n. `npm run build`.
+- [ ] **FE-49**: **ConferencesPage** `/conferences` — CRUD (ConferenceForm). Tabs: Kelgusi/O'tgan. i18n. `npm run build`.
+- [ ] **FE-50**: **PatentsPage** `/patents` — CRUD (PatentForm). Status tabs. i18n. `npm run build`.
+
+### 3.11 System (4)
+- [ ] **FE-51**: **UsersListPage** `/system/users` — CRUD (UserForm). Block/Unblock. Reset password. i18n. `npm run build`.
+- [ ] **FE-52**: **RolesPage** `/system/roles` — системные read-only, кастомные CRUD. i18n. `npm run build`.
+- [ ] **FE-53**: **PermissionMatrixPage** `/system/permissions` — matrix из API. Click toggle → mutation. i18n. `npm run build`.
+- [ ] **FE-54**: **AuditLogPage** `/system/audit` — API данные. DateRangePicker. Export Excel. i18n. `npm run build`.
+
+### 3.12 Admin (3)
+- [ ] **FE-55**: **DmsPage** `/dms` — folder sidebar (useFolders). Documents CRUD (DocumentForm + FileUpload). Фильтры. i18n. `npm run build`.
+- [ ] **FE-56**: **AnalyticsPage** `/analytics` — данные из useAnalytics. Графики. DateRangePicker. i18n. `npm run build`.
+- [ ] **FE-57**: **ReferencesPage** `/reference` — CRUD по типам справочников. Кнопка "HEMIS dan sinxronlash" → POST `/core/hemis/sync/`. Показывать hemis_id. i18n. `npm run build`.
+
+### 3.13 Infrastructure (3)
+- [ ] **FE-58**: **DormitoryPage** `/dormitory` — buildings + rooms CRUD. Поселение/выселение. i18n. `npm run build`.
+- [ ] **FE-59**: **EquipmentPage** `/equipment` — CRUD (EquipmentForm). Фильтры. Export Excel. i18n. `npm run build`.
+- [ ] **FE-60**: **TransportPage** `/transport` — CRUD (VehicleForm). Status tabs. i18n. `npm run build`.
+
+### 3.14 Warehouse (1)
+- [ ] **FE-61**: **WarehousePage** `/warehouse` — CRUD items (ItemForm). Tab Harakatlar (MovementForm). AlertBanner belowMinimum. Export Excel. i18n. `npm run build`.
+
+### 3.15 Legacy (2)
+- [ ] **FE-62**: **LegacyOrdersPage** `/orders` — read-only. Пагинация. DateRangePicker. i18n. `npm run build`.
+- [ ] **FE-63**: **StaffingPage** `/staffing` — read-only. Department filter. ProgressBar. i18n. `npm run build`.
+
+### 3.16 Cabinets (2)
+- [ ] **FE-64**: **StudentCabinetPage** `/student-cabinet` — cabinet.service.ts USE_MOCK toggle. Данные из `/cabinets/student/` API. Student info, schedule, grades, exams, notifications. i18n. `npm run build`.
+- [ ] **FE-65**: **TeacherCabinetPage** `/teacher-cabinet` — данные из `/cabinets/teacher/` API. Teacher info, classes, groups, tasks, stats. i18n. `npm run build`.
+
+### 3.17 Profile (2)
+- [ ] **FE-66**: **ProfilePage** `/profile` — FileUpload фото. useUpdateProfile mutation. i18n. `npm run build`.
+- [ ] **FE-67**: **SettingsPage** `/settings` — Смена пароля (Zod). HEMIS sync секция для admin. Notification settings → API. i18n. `npm run build`.
+
+### 3.18 Cross-cutting
+- [ ] **FE-68**: Error handling — для КАЖДОЙ страницы с useQuery добавить: `if (error) return <AlertBanner variant="error" ... />`. Пройти все 67 страниц. `npm run build`.
+- [ ] **FE-69**: Frontend final: `npm run build` — 0 ошибок. `npm test` — все тесты. Git commit + push.
+
+---
+
+## PHASE 4: INTEGRATION — Полная проверка
+
+- [ ] **INT-1**: Запустить backend + frontend. Проверить ВСЕ страницы — данные из API. Исправить что не работает.
+- [ ] **INT-2**: CRUD тест: `/students` (C/R/U/D), `/finance/contracts` (C/R/U/D), `/hr/employees` (C/R/U/D), `/crm` (C/R/U/D), `/exams` (C/R/U/D).
+- [ ] **INT-3**: Роли: admin/buxgalter/dekan/oqituvchi/talaba — sidebar правильный, страницы без ошибок.
+- [ ] **INT-4**: i18n: переключить UZ→RU→EN — тексты меняются на всех страницах.
+- [ ] **INT-5**: Dark mode — все страницы корректно.
+- [ ] **INT-6**: HEMIS sync: кнопка "Sinxronlash" на `/reference` → проверить что данные подтягиваются.
+- [ ] **INT-7**: Deploy: `git add -A && git commit -m "feat: MVP complete — all pages + HEMIS integration" && git push origin main`.
 
 ---
 

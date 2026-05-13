@@ -68,6 +68,7 @@ class Department(BaseModel):
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name="departments")
     name = models.CharField(max_length=200, verbose_name="Nomi")
     code = models.CharField(max_length=20, verbose_name="Kodi")
+    hemis_id = models.IntegerField(null=True, blank=True, unique=True, verbose_name="HEMIS ID")
     head = models.ForeignKey(
         "accounts.User",
         null=True,
@@ -90,6 +91,7 @@ class Specialty(BaseModel):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="specialties")
     name = models.CharField(max_length=200, verbose_name="Nomi")
     code = models.CharField(max_length=20, verbose_name="Kodi")
+    hemis_id = models.IntegerField(null=True, blank=True, unique=True, verbose_name="HEMIS ID")
     level = models.CharField(
         max_length=20,
         choices=[("bakalavr", "Bakalavr"), ("magistr", "Magistr")],
@@ -124,6 +126,7 @@ class Semester(BaseModel):
         AcademicYear, on_delete=models.CASCADE, related_name="semesters"
     )
     number = models.PositiveSmallIntegerField(verbose_name="Raqami")
+    hemis_id = models.IntegerField(null=True, blank=True, unique=True, verbose_name="HEMIS ID")
     start_date = models.DateField(verbose_name="Boshlanish sanasi")
     end_date = models.DateField(verbose_name="Tugash sanasi")
 
@@ -137,6 +140,7 @@ class Semester(BaseModel):
 
 class Group(BaseModel):
     name = models.CharField(max_length=20, verbose_name="Nomi")
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True, verbose_name="HEMIS ID")
     specialty = models.ForeignKey(Specialty, on_delete=models.CASCADE, related_name="groups")
     course = models.PositiveSmallIntegerField(verbose_name="Kurs")
     education_form = models.CharField(
@@ -194,3 +198,51 @@ class AuditLog(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} — {self.action} {self.model} [{self.timestamp:%Y-%m-%d %H:%M}]"
+
+
+class ReferenceData(BaseModel):
+    """Universal reference data — syncs with HEMIS."""
+
+    TYPE_CHOICES = [
+        ("education_type", "Ta'lim turi"),
+        ("education_form", "Ta'lim shakli"),
+        ("payment_form", "To'lov shakli"),
+        ("accommodation", "Yashash joyi"),
+        ("country", "Davlat"),
+        ("region", "Viloyat"),
+        ("district", "Tuman"),
+        ("nationality", "Millat"),
+        ("citizenship", "Fuqarolik"),
+        ("social_category", "Ijtimoiy toifa"),
+        ("student_status", "Talaba holati"),
+        ("gender", "Jinsi"),
+        ("marital_status", "Oilaviy holat"),
+        ("language", "Til"),
+        ("subject_type", "Fan turi"),
+        ("academic_degree", "Ilmiy daraja"),
+        ("academic_rank", "Ilmiy unvon"),
+        ("employment_form", "Bandlik shakli"),
+        ("custom", "Boshqa"),
+    ]
+
+    type = models.CharField(max_length=30, choices=TYPE_CHOICES, db_index=True)
+    code = models.CharField(max_length=50)
+    name = models.CharField(max_length=300)
+    name_uz = models.CharField(max_length=300, blank=True)
+    name_ru = models.CharField(max_length=300, blank=True)
+    name_en = models.CharField(max_length=300, blank=True)
+    hemis_id = models.IntegerField(null=True, blank=True, db_index=True)
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="children"
+    )
+    is_active = models.BooleanField(default=True)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ["type", "code"]
+        ordering = ["type", "sort_order", "name"]
+        verbose_name = "Ma'lumotnoma"
+        verbose_name_plural = "Ma'lumotnomalar"
+
+    def __str__(self) -> str:
+        return f"{self.type}: {self.name}"
