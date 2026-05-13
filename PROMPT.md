@@ -304,7 +304,7 @@ Response: { "status": "ok", "synced": { "departments": 15, "students": 200, ... 
 - [x] **INT-4**: i18n: переключить UZ→RU→EN — тексты меняются на всех страницах.
 - [x] **INT-5**: Dark mode — все страницы корректно.
 - [x] **INT-6**: HEMIS sync: кнопка "Sinxronlash" на `/reference` → проверить что данные подтягиваются.
-- [ ] **INT-7**: Deploy: `git add -A && git commit -m "feat: MVP complete — all pages + HEMIS integration" && git push origin main`.
+- [x] **INT-7**: Deploy: `git add -A && git commit -m "feat: MVP complete — all pages + HEMIS integration" && git push origin main`.
 
 ---
 
