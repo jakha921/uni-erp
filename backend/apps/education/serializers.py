@@ -297,6 +297,8 @@ class CurriculumCreateSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     categoryLabel = serializers.SerializerMethodField()
+    totalCopies = serializers.IntegerField(source="copies_total")
+    availableCopies = serializers.IntegerField(source="copies_available", read_only=True)
 
     class Meta:
         model = Book
@@ -308,8 +310,8 @@ class BookSerializer(serializers.ModelSerializer):
             "year",
             "category",
             "categoryLabel",
-            "copies_total",
-            "copies_available",
+            "totalCopies",
+            "availableCopies",
             "location",
             "created_at",
         ]
