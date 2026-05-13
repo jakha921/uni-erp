@@ -4,7 +4,7 @@ import type {
   BudgetSummary,
 } from '@/types/finance';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient } from '../client';
+import { apiClient, drfListToArray } from '../client';
 import { BudgetMockService } from '../mock/budget.mock';
 
 export interface IBudgetService {
@@ -15,9 +15,10 @@ export interface IBudgetService {
 
 class BudgetApiService implements IBudgetService {
   async getCategories(params: BudgetListParams): Promise<BudgetCategory[]> {
-    return apiClient.get<BudgetCategory[]>(ENDPOINTS.budget.categories, {
+    const res = await apiClient.get<{ count: number; next: null; previous: null; results: BudgetCategory[] } | BudgetCategory[]>(ENDPOINTS.budget.categories, {
       params: { year: params.year, quarter: params.quarter },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: BudgetCategory[] });
   }
 
   async getSummary(year: number): Promise<BudgetSummary> {

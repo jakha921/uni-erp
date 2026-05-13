@@ -1,7 +1,7 @@
 import type { LegacyOrder, LegacyOrderListParams, StaffingPosition, StaffingListParams } from '@/types/legacy';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient, transformPaginated } from '../client';
+import { apiClient, transformPaginated, drfListToArray } from '../client';
 import { LegacyMockService } from '../mock/legacy.mock';
 
 export interface ILegacyService {
@@ -19,9 +19,10 @@ class LegacyApiService implements ILegacyService {
     return transformPaginated(drf, page, pageSize);
   }
   async getStaffing(params: StaffingListParams) {
-    return apiClient.get<StaffingPosition[]>(ENDPOINTS.legacy.staffing, {
+    const res = await apiClient.get<{ count: number; next: null; previous: null; results: StaffingPosition[] } | StaffingPosition[]>(ENDPOINTS.legacy.staffing, {
       params: { department_id: params.departmentId },
     });
+    return drfListToArray(res as { count: number; next: null; previous: null; results: StaffingPosition[] });
   }
 }
 

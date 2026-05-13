@@ -11,7 +11,7 @@ import type {
 } from '@/types/education';
 import type { PaginatedResponse } from '@/types/common';
 import { USE_MOCK, ENDPOINTS } from '@/config/api';
-import { apiClient, transformPaginated } from '../client';
+import { apiClient, transformPaginated, drfListToArray } from '../client';
 import { LibraryMockService } from '../mock/library.mock';
 
 export interface ILibraryService {
@@ -79,7 +79,8 @@ class LibraryApiService implements ILibraryService {
   }
 
   async getQueue(): Promise<BookQueueEntry[]> {
-    return apiClient.get<BookQueueEntry[]>(ENDPOINTS.library.queue);
+    const res = await apiClient.get<{ count: number; next: null; previous: null; results: BookQueueEntry[] } | BookQueueEntry[]>(ENDPOINTS.library.queue);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: BookQueueEntry[] });
   }
 
   async addToQueue(data: CreateQueueEntryDto): Promise<BookQueueEntry> {

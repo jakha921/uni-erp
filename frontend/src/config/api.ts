@@ -159,7 +159,7 @@ export const ENDPOINTS = {
     items: '/warehouse/items/',
     itemDetail: (id: number) => `/warehouse/items/${id}/`,
     movements: '/warehouse/movements/',
-    stats: '/warehouse/stats/',
+    stats: '/warehouse/items/stats/',
   },
   legacy: {
     orders: '/legacy/orders/',

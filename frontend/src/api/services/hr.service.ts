@@ -73,7 +73,8 @@ class HrApiService implements IHrService {
   }
 
   async getDepartments(): Promise<HrDepartment[]> {
-    return apiClient.get<HrDepartment[]>(ENDPOINTS.hr.departments);
+    const res = await apiClient.get<{ count: number; next: null; previous: null; results: HrDepartment[] } | HrDepartment[]>(ENDPOINTS.hr.departments);
+    return drfListToArray(res as { count: number; next: null; previous: null; results: HrDepartment[] });
   }
 
   async createDepartment(dto: Omit<HrDepartment, 'id' | 'headName' | 'employeeCount'>): Promise<HrDepartment> {
