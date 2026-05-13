@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  GraduationCap, FileText, Globe, Users, BookOpen, MapPin, Home, Briefcase, ArrowLeft, Plus, Pencil, Trash2,
+  GraduationCap, FileText, Globe, Users, BookOpen, MapPin, Home, Briefcase, ArrowLeft, Plus, Pencil, Trash2, RefreshCw,
   type LucideIcon,
 } from 'lucide-react';
 import { PageContent, PageHeader } from '@/components/layout';
 import { Button, Spinner, AlertBanner } from '@/components/ui';
 import { ConfirmDialog } from '@/components/overlays';
 import { useDictionaryItems, useCreateDictionaryItem, useUpdateDictionaryItem, useDeleteDictionaryItem } from '@/api/hooks/useDictionary';
+import { useHemisSync } from '@/api/hooks/useHemis';
 import { DictionaryItemForm } from '../components/DictionaryItemForm';
 import type { DictionaryType, DictionaryItem, CreateDictionaryItemDto } from '@/types/admin';
 
@@ -165,6 +166,16 @@ function DictionaryDetail({ config, onBack }: { config: DictConfig; onBack: () =
 export function ReferencesPage() {
   const { t } = useTranslation();
   const [activeConfig, setActiveConfig] = useState<DictConfig | null>(null);
+  const [syncResult, setSyncResult] = useState<string | null>(null);
+  const hemisSync = useHemisSync();
+
+  const handleSync = () => {
+    setSyncResult(null);
+    hemisSync.mutate('references', {
+      onSuccess: (data) => setSyncResult(data.output ?? t('admin.syncComplete')),
+      onError: (err) => setSyncResult(`Xato: ${err.message}`),
+    });
+  };
 
   return (
     <PageContent>
@@ -176,7 +187,26 @@ export function ReferencesPage() {
           { label: t('nav.references'), path: activeConfig ? '/references' : undefined },
           ...(activeConfig ? [{ label: activeConfig.name }] : []),
         ]}
+        actions={
+          <Button
+            variant="secondary"
+            leftIcon={<RefreshCw className="h-4 w-4" />}
+            loading={hemisSync.isPending}
+            onClick={handleSync}
+          >
+            HEMIS dan sinxronlash
+          </Button>
+        }
       />
+
+      {syncResult && (
+        <AlertBanner
+          variant={syncResult.startsWith('Xato') ? 'error' : 'success'}
+          title={syncResult.startsWith('Xato') ? t('errors.unexpected') : 'HEMIS sinxronizatsiya'}
+          message={syncResult}
+          className="mb-4"
+        />
+      )}
 
       {activeConfig ? (
         <DictionaryDetail config={activeConfig} onBack={() => setActiveConfig(null)} />

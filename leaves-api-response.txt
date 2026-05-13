@@ -1,0 +1,1 @@
+"{\n  \"id\": 8,\n  \"employee\": 27,\n  \"employeeName\": \"Nazarov Nilufar Xoliqovna\",\n  \"type\": \"sick\",\n  \"start_date\": \"2025-06-23\",\n  \"end_date\": \"2025-07-03\",\n  \"days\": 10,\n  \"destination\": \"\",\n  \"reason\": \"\",\n  \"status\": \"pending\",\n  \"created_at\": \"2026-05-09T20:23:58.349419+05:00\"\n}"

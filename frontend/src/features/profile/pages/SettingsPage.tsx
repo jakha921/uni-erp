@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Moon, Sun, Bell, Shield, Eye, EyeOff, Building2 } from 'lucide-react';
+import { Globe, Moon, Sun, Bell, Shield, Eye, EyeOff, Building2, RefreshCw } from 'lucide-react';
 import { PageHeader, PageContent } from '@/components/layout';
 import { Card } from '@/components/data-display/Card';
 import { Button } from '@/components/ui/Button';
 import { Toggle } from '@/components/ui/Toggle';
 import { useAppStore } from '@/stores/app.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { useTranslation } from 'react-i18next';
 import { useChangePassword } from '@/api/hooks/useProfile';
+import { useHemisSync } from '@/api/hooks/useHemis';
 import { changePasswordSchema, type ChangePasswordFormData } from '../schemas/settings.schema';
 import type { Resolver } from 'react-hook-form';
 
 export function SettingsPage() {
   const { i18n } = useTranslation();
   const { lang, setLang, theme, setTheme, institutionName, setInstitutionName } = useAppStore();
+  const { currentUser } = useAuthStore();
+  const isAdmin = currentUser?.role === 'admin';
+  const hemisSync = useHemisSync();
+  const [syncOutput, setSyncOutput] = useState<string | null>(null);
 
   const LANGUAGES = [
     { code: 'uz' as const, label: "O'zbek", flag: '🇺🇿' },
@@ -158,6 +164,44 @@ export function SettingsPage() {
             </div>
           </div>
         </Card>
+
+        {/* HEMIS Sync — admin only */}
+        {isAdmin && (
+          <Card>
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <RefreshCw className="h-5 w-5 text-primary-500" />
+                <h3 className="text-base font-semibold text-slate-900">HEMIS sinxronizatsiya</h3>
+              </div>
+              {syncOutput && (
+                <pre className="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700 whitespace-pre-wrap border border-border">
+                  {syncOutput}
+                </pre>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'references', 'students', 'employees'] as const).map((type) => (
+                  <Button
+                    key={type}
+                    variant="secondary"
+                    size="sm"
+                    loading={hemisSync.isPending}
+                    onClick={() => {
+                      setSyncOutput(null);
+                      hemisSync.mutate(type, {
+                        onSuccess: (d) => setSyncOutput(d.output ?? 'Sinxronizatsiya yakunlandi'),
+                        onError: (e) => setSyncOutput(`Xato: ${e.message}`),
+                      });
+                    }}
+                  >
+                    {type === 'all' ? "Barcha ma'lumotlarni" :
+                     type === 'references' ? "Faqat ma'lumotnomalar" :
+                     type === 'students' ? 'Faqat talabalar' : 'Faqat xodimlar'}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
     </PageContent>
   );

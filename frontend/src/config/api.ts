@@ -21,6 +21,8 @@ export const ENDPOINTS = {
     semesters: '/core/semesters',
     smsSend: '/core/sms/send',
     notificationSend: '/core/notifications/send',
+    hemisSync: '/core/hemis/sync/',
+    references: (type: string) => `/core/references/${type}/`,
   },
   students: {
     list: '/students',
