@@ -164,6 +164,19 @@ class BookLoanViewSet(ModelViewSet):
         return Response(BookLoanSerializer(loan).data)
 
 
+class BookQueueEntryViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["book", "student", "status"]
+
+    def get_queryset(self):
+        return BookQueueEntry.objects.select_related("book", "student__user").all()
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return BookQueueCreateSerializer
+        return BookQueueEntrySerializer
+
+
 class AlumniViewSet(ModelViewSet):
     serializer_class = AlumniSerializer
     permission_classes = [IsAuthenticated]

@@ -7,6 +7,7 @@ from .models import (
     Attendance,
     Book,
     BookLoan,
+    BookQueueEntry,
     Curriculum,
     CurriculumSubject,
     Exam,
@@ -349,6 +350,39 @@ class BookLoanCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookLoan
         fields = ["book", "student", "due_date", "notes"]
+
+
+class BookQueueEntrySerializer(serializers.ModelSerializer):
+    bookTitle = serializers.CharField(source="book.title", read_only=True)
+    studentName = serializers.SerializerMethodField()
+    statusLabel = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BookQueueEntry
+        fields = [
+            "id",
+            "book",
+            "bookTitle",
+            "student",
+            "studentName",
+            "status",
+            "statusLabel",
+            "added_at",
+            "notified_at",
+        ]
+        read_only_fields = ["added_at", "notified_at"]
+
+    def get_studentName(self, obj: BookQueueEntry) -> str:
+        return obj.student.user.full_name
+
+    def get_statusLabel(self, obj: BookQueueEntry) -> str:
+        return obj.get_status_display()
+
+
+class BookQueueCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookQueueEntry
+        fields = ["book", "student"]
 
 
 class AlumniSerializer(serializers.ModelSerializer):

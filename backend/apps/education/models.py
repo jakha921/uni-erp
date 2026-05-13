@@ -244,6 +244,31 @@ class BookLoan(models.Model):
         self.book.save(update_fields=["copies_available"])
 
 
+class BookQueueEntry(models.Model):
+    """Kutubxona navbati — kitob mavjud bo'lmaganda navbatga yoziladi."""
+
+    STATUS_CHOICES = [
+        ("waiting", "Kutmoqda"),
+        ("notified", "Xabardor qilindi"),
+        ("cancelled", "Bekor qilindi"),
+    ]
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="queue_entries")
+    student = models.ForeignKey(
+        "students.Student", on_delete=models.CASCADE, related_name="book_queue"
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="waiting")
+    added_at = models.DateTimeField(auto_now_add=True)
+    notified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["added_at"]
+        unique_together = [("book", "student", "status")]
+
+    def __str__(self) -> str:
+        return f"{self.student} — {self.book.title} ({self.status})"
+
+
 class Alumni(models.Model):
     """Bitiruvchi."""
 

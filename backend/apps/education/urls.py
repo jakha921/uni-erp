@@ -5,6 +5,7 @@ from .views import (
     AlumniViewSet,
     AttendanceViewSet,
     BookLoanViewSet,
+    BookQueueEntryViewSet,
     BookViewSet,
     BulkAttendanceView,
     BulkGradeView,
@@ -25,6 +26,7 @@ router.register("exams", ExamViewSet, basename="exam")
 router.register("curriculums", CurriculumViewSet, basename="curriculum")
 router.register("library/books", BookViewSet, basename="book")
 router.register("library/loans", BookLoanViewSet, basename="bookloan")
+router.register("library/queue", BookQueueEntryViewSet, basename="book-queue")
 router.register("alumni", AlumniViewSet, basename="alumni")
 router.register("internships", InternshipViewSet, basename="internship")
 

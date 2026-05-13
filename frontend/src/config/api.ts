@@ -61,8 +61,8 @@ export const ENDPOINTS = {
   },
   education: {
     subjects: '/education/subjects/',
-    schedules: '/education/schedules/',
-    scheduleDetail: (id: number) => `/education/schedules/${id}/`,
+    schedules: '/education/schedule/',
+    scheduleDetail: (id: number) => `/education/schedule/${id}/`,
     attendanceBulk: '/education/attendance/bulk/',
     gradesBulk: '/education/grades/bulk/',
     grades: '/education/grades/',
@@ -142,8 +142,8 @@ export const ENDPOINTS = {
     documentDetail: (id: number) => `/admin/documents/${id}/`,
     folders: '/admin/folders/',
     analytics: '/admin/analytics/',
-    dictionaries: (type: string) => `/admin/dictionaries/${type}/`,
-    dictionaryItem: (type: string, id: number) => `/admin/dictionaries/${type}/${id}/`,
+    dictionaries: '/admin/dictionary/',
+    dictionaryItem: (id: number) => `/admin/dictionary/${id}/`,
   },
   infrastructure: {
     buildings: '/infrastructure/dormitory/buildings/',

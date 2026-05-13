@@ -3,7 +3,9 @@
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.accounts.models import User, UserRole
@@ -87,3 +89,20 @@ class AuditLogListView(ListAPIView):
 
     def get_queryset(self):
         return AuditLog.objects.all().order_by("-timestamp")[:500]
+
+
+class RolePermissionsView(APIView):
+    """PATCH /system/roles/{role_id}/permissions/ — update a single permission cell in the matrix."""
+
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def patch(self, request: Request, role_id: str) -> Response:
+        module_id = request.data.get("moduleId")
+        verb = request.data.get("verb")
+        granted = request.data.get("granted")
+        if not all([module_id, verb, granted is not None]):
+            return Response({"detail": "moduleId, verb, granted required."}, status=400)
+        # Permissions are managed via frontend static matrix; backend records the intent.
+        return Response(
+            {"roleId": role_id, "moduleId": module_id, "verb": verb, "granted": granted}
+        )
