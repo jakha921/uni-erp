@@ -176,7 +176,7 @@ export const ENDPOINTS = {
   },
   budget: {
     categories: '/finance/budget/categories/',
-    summary: '/finance/budget/summary/',
+    summary: '/finance/budget/categories/summary/',
   },
   dashboard: {
     stats: '/dashboard/',
